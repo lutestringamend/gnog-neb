@@ -1,0 +1,98 @@
+{
+  "expo": {
+    "name": "Daclen",
+    "slug": "daclen",
+    "version": "1.1.70",
+    "orientation": "portrait",
+    "icon": "./assets/favicon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "",
+      "resizeMode": "contain",
+      "backgroundColor": "#212529"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/6d82d764-b16d-4bb6-9fbf-a7c07928b3d2"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.daclenmobile.daclen",
+      "buildNumber": "3",
+      "userInterfaceStyle": "light",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera only to take a new profile picture.",
+        "NSPhotoLibraryAddUsageDescription": "This app saves customized watermarked photos of Daclen catalogue.",
+        "NSPhotoLibraryUsageDescription": "This app can access camera roll only get a new profile picture."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android_favicon.png",
+        "backgroundColor": "#212529",
+        "backgroundImage": "./assets/android_favicon.png"
+      },
+      "icon": "./assets/android_favicon.png",
+      "package": "com.daclen.android",
+      "permissions": [
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.INTERNET",
+        "android.permission.WAKE_LOCK",
+        "android.permission.VIBRATE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"
+      ],
+      "userInterfaceStyle": "light",
+      "versionCode": 22
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "To take a new photo as your new profile picture, this app would like to ask for this device's Camera permission."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "To upload a photo in your device as your new profile picture, this app would like to ask for this device's Storage permission."
+        }
+      ],
+      "@config-plugins/react-native-blob-util",
+      "@config-plugins/react-native-pdf",
+      "sentry-expo"
+    ],
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "daclen",
+            "project": "apple-ios",
+            "authToken": "63122d5d6f7d44bf9c3bdd56a0c8c41431a9753e2fbc4fc2b621d7e75bd1ad24"
+          }
+        }
+      ]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6d82d764-b16d-4bb6-9fbf-a7c07928b3d2"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    }
+  }
+}

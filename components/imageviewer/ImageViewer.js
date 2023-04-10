@@ -1,0 +1,443 @@
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Image,
+  ActivityIndicator,
+  SafeAreaView,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  Platform,
+  ToastAndroid,
+} from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
+import ViewShot from "react-native-view-shot";
+import * as FileSystem from "expo-file-system";
+import { shareAsync } from "expo-sharing";
+import * as Sentry from "sentry-expo";
+
+import { colors, dimensions } from "../../styles/base";
+
+export default function ImageViewer(props) {
+  let title = props.route.params?.title;
+  let uri = props.route.params?.uri;
+  let isSquare = props.route.params?.isSquare;
+  let userId = props.route.params?.userId;
+  let watermarkData = props.route.params?.watermarkData;
+  let width = props.route.params?.width;
+  let height = props.route.params?.height;
+  let ratio = width / dimensions.productPhotoWidth;
+  let ratioRounded = Math.round(ratio);
+
+  const sharingOptions = {
+    UTI: "JPEG",
+    dialogTitle: "Share foto Daclen",
+    mimeType: "image/jpeg",
+  }
+
+  const [productPhotoHeight, setProductPhotoHeight] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [transformedImage, setTransformedImage] = useState(null);
+  const [downloadUri, setDownloadUri] = useState(null);
+
+  const imageRef = useRef();
+
+  useEffect(() => {
+    if (isSquare) {
+      setProductPhotoHeight(dimensions.productPhotoWidth);
+    } else {
+      setProductPhotoHeight(height / ratio);
+    }
+  }, [isSquare]);
+
+  useEffect(() => {
+    if (userId === 8054) {
+      setError(`uri ${uri}\nw x h ${width} x ${height}\nppW${dimensions.productPhotoWidth}\nppH${productPhotoHeight}`);
+    }
+    }, [productPhotoHeight]);
+
+  useEffect(() => {
+    if (watermarkData !== undefined) {
+      props.navigation.setOptions({ title: `${getFileName(uri)}` });
+    } else if (title !== null && title !== undefined && title !== "") {
+      props.navigation.setOptions({ title });
+    }
+  }, [title]);
+
+  useEffect(() => {
+    const transformImage = async () => {
+      try {
+        imageRef.current
+          .capture()
+          .then((uri) => {
+            console.log(uri);
+            setTransformedImage(uri);
+            setLoading(false);
+          })
+          .catch((e) => {
+            console.error(e);
+            setError(JSON.stringify(e));
+            setLoading(false);
+            if (Platform.OS === "android") {
+              ToastAndroid.show(`${e?.message}`, ToastAndroid.LONG);
+            }
+          });
+      } catch (e) {
+        console.error(e);
+        setError(JSON.stringify(e));
+        setLoading(false);
+        if (Platform.OS === "web") {
+          Sentry.Browser.captureException(e);
+        } else {
+          Sentry.Native.captureException(e);
+          if (Platform.OS === "android") {
+            ToastAndroid.show(`${e?.message}`, ToastAndroid.LONG);
+          }
+        }
+      }
+    };
+
+    if (
+      watermarkData !== undefined &&
+      (uri !== null) & (uri !== undefined) &&
+      Platform.OS !== "web"
+    ) {
+      setLoading(true);
+      transformImage();
+    }
+  }, [uri]);
+
+  /*useEffect(() => {
+    console.log({ transformedImage });
+    if (transformedImage !== null && Platform.OS === "web") {
+      setError("transformedImage\n" + transformedImage?.substring(0, 64));
+      //ToastAndroid.show(transformedImage, ToastAndroid.LONG);
+    }
+  }, [transformedImage]);*/
+
+  function getFileName(uri) {
+    const uriSplit = uri.split("/");
+    return uriSplit[uriSplit.length - 1];
+  }
+
+  const save = async (uri, mimeType) => {
+    if (Platform.OS === "android") {
+      const permissions =
+        await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+      if (permissions.granted) {
+        const fileName = getFileName(props.route.params?.uri);
+        const base64 = await FileSystem.readAsStringAsync(uri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+        await FileSystem.StorageAccessFramework.createFileAsync(
+          permissions.directoryUri,
+          fileName,
+          mimeType ? mimeType : "image/jpeg"
+        )
+          .then(async (safUri) => {
+            setError(safUri);
+            try {
+              await FileSystem.writeAsStringAsync(safUri, base64, {
+                encoding: FileSystem.EncodingType.Base64,
+              });
+              setError("Foto berhasil disimpan dan siap dibagikan");
+              setSuccess(true);
+              shareAsync(uri, sharingOptions);
+            } catch (e) {
+              console.error(e);
+              setError(
+                (error) =>
+                  error + "\nwriteAsStringAsync catch\n" + JSON.stringify(e)
+              );
+              setSuccess(false);
+            }
+          })
+          .catch((e) => {
+            console.error(e);
+            setSuccess(false);
+            if (e?.code === "ERR_FILESYSTEM_CANNOT_CREATE_FILE") {
+              setError(
+                "Tidak bisa menyimpan foto di folder sistem. Mohon pilih folder lain."
+              );
+            } else {
+              setError(
+                base64.substring(0, 64) +
+                  "\ncreateFileAsync catch\n" +
+                  JSON.stringify(e)
+              );
+            }
+            if (Platform.OS === "android") {
+              ToastAndroid.show(
+                base64.substring(0, 64) +
+                  "\ncreateFileAsync catch\n" +
+                  e.toString(),
+                ToastAndroid.LONG
+              );
+            }
+          });
+      } else {
+        setSuccess(false);
+        setError("Anda tidak memberikan izin untuk mengakses penyimpanan");
+      }
+    } else {
+      setSuccess(true);
+      setError("Foto siap dibagikan");
+      shareAsync(uri, sharingOptions);
+    }
+  };
+
+  const startDownload = async (useWatermark) => {
+    if (!loading) {
+      if (downloadUri === null) {
+        setError(null);
+        setLoading(true);
+        if (
+          transformedImage === null ||
+          transformedImage === "" ||
+          !useWatermark
+        ) {
+          try {
+            const fileName = getFileName(props.route.params?.uri);
+            const result = await FileSystem.downloadAsync(
+              transformedImage ? transformedImage : uri,
+              FileSystem.documentDirectory + fileName
+            );
+            console.log(result);
+            setDownloadUri(result.uri, result.headers["Content-Type"]);
+            save(result.uri);
+          } catch (e) {
+            console.error(e);
+            setSuccess(false);
+            setError("downloadAsync catch\n" + e?.message);
+          }
+        } else {
+          try {
+            //save(transformedImage);
+            shareAsync(transformedImage, sharingOptions);
+          } catch (e) {
+            console.error(e);
+            setSuccess(false);
+            setError("transformedImage catch\n" + e?.message);
+          }
+        }
+        setLoading(false);
+      } else {
+        shareAsync(downloadUri, sharingOptions);
+      }
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {watermarkData === undefined || watermarkData === null ? null : (
+        <ViewShot
+          ref={imageRef}
+          options={{ fileName: "watermarkphoto", format: "jpg", quality: 1 }}
+          style={[
+            styles.containerImage,
+            {
+              width,
+              height,
+              position: "absolute",
+              top: 0,
+              start: 0,
+              elevation: 0,
+              opacity: 100,
+            },
+          ]}
+        >
+          <Image
+            source={{ uri: transformedImage ? transformedImage : uri }}
+            resizeMode={"cover"}
+            style={[
+              styles.image,
+              {
+                width,
+                height,
+              },
+            ]}
+          />
+          <Text
+            style={[
+              styles.textWatermark,
+              {
+                fontSize: 3 * ratioRounded,
+                paddingVertical: ratioRounded,
+                paddingHorizontal: 2 * ratioRounded,
+                top: ratioRounded,
+                start: ratioRounded,
+                borderRadius: ratioRounded,
+              },
+            ]}
+          >
+            {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
+          </Text>
+        </ViewShot>
+      )}
+      <View style={styles.containerInside}>
+        {error ? (
+          <Text
+            style={[
+              styles.textError,
+              success && { backgroundColor: colors.daclen_green },
+            ]}
+          >
+            {error}
+          </Text>
+        ) : null}
+
+        {loading || productPhotoHeight === 0 ? (
+          <ActivityIndicator
+            size="large"
+            color={colors.daclen_orange}
+            style={styles.spinner}
+          />
+        ) : (
+          <View
+            style={[
+              styles.containerImage,
+              {
+                height: isSquare
+                  ? dimensions.productPhotoWidth
+                  : productPhotoHeight,
+              },
+            ]}
+          >
+            <Image
+              source={{ uri: transformedImage ? transformedImage : uri }}
+              resizeMode={isSquare ? "contain" : "stretch"}
+              style={[
+                styles.image,
+                { height: productPhotoHeight, overlay: 100 }
+              ]}
+            />
+            {watermarkData === null || watermarkData === undefined ? null : (
+              <Text style={styles.textWatermark}>
+                {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
+              </Text>
+            )}
+          </View>
+        )}
+
+        {watermarkData === undefined ||
+        watermarkData === null ||
+        loading ? null : (
+          <View style={styles.containerBottom}>
+            <TouchableOpacity
+              onPress={() =>
+                startDownload(
+                  transformedImage !== null && transformedImage !== ""
+                )
+              }
+              style={[
+                styles.button,
+                loading && { backgroundColor: colors.daclen_gray },
+              ]}
+              disabled={loading}
+            >
+              <MaterialCommunityIcons
+                name={
+                  downloadUri !== null || transformedImage !== null
+                    ? "share-variant"
+                    : "download"
+                }
+                size={18}
+                color="white"
+              />
+              <Text style={styles.textButton}>
+                {downloadUri !== null || transformedImage !== null
+                  ? "Share Foto"
+                  : "Download Foto"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  containerInside: {
+    flex: 1,
+    elevation: 2,
+    width: dimensions.fullWidth,
+    height: dimensions.fullHeight,
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  containerBottom: {
+    alignSelf: "center",
+    position: "absolute",
+    backgroundColor: "transparent",
+    bottom: 32,
+    elevation: 10,
+  },
+  containerImage: {
+    flexDirection: "row",
+    alignSelf: "center",
+    backgroundColor: "transparent",
+    width: dimensions.productPhotoWidth,
+  },
+  image: {
+    position: "absolute",
+    top: 0,
+    start: 0,
+    elevation: 3,
+    backgroundColor: "transparent",
+    width: dimensions.productPhotoWidth,
+    height: dimensions.productPhotoWidth,
+  },
+  button: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    backgroundColor: colors.daclen_orange,
+  },
+  textButton: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginStart: 6,
+    color: "white",
+  },
+  textError: {
+    width: dimensions.fullWidth,
+    position: "absolute",
+    elevation: 10,
+    top: 0,
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "white",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: colors.daclen_danger,
+    textAlign: "center",
+  },
+  textWatermark: {
+    position: "absolute",
+    top: 1,
+    start: 1,
+    elevation: 4,
+    paddingVertical: 1,
+    paddingHorizontal: 2,
+    fontSize: 3,
+    fontWeight: "bold",
+    color: colors.daclen_black,
+    backgroundColor: colors.daclen_light,
+    borderRadius: 1,
+  },
+  spinner: {
+    alignSelf: "center",
+    elevation: 10,
+  },
+});

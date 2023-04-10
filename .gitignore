@@ -1,0 +1,20 @@
+.env
+node_modules/
+.expo/
+dist/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+credentials.json
+
+# android
+android/keystores/
+
+# macOS
+.DS_Store
+ios/*.jsbundle

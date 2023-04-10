@@ -1,0 +1,289 @@
+import React, { useState, useEffect, useRef } from "react";
+import {
+  SafeAreaView,
+  StyleSheet,
+  View,
+  Text,
+  FlatList,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+//import { MaterialCommunityIcons } from '@expo/vector-icons';
+import RBSheet from "react-native-raw-bottom-sheet";
+
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+
+import { showProduct } from "../../axios/product";
+import Cart from "../cart/Cart";
+
+import ProductSlider from "./ProductSlider";
+import ProductDesc from "./ProductDesc";
+/*import ProductModal from "../modal/ProductModal";
+import useModal from "../../hook/useModal";*/
+import BSPopup from "../bottomsheets/BSPopup";
+import BSProductBenefit from "../bottomsheets/BSProductBenefit";
+import { openCheckout } from "./CheckoutScreen";
+import { colors, dimensions } from "../../styles/base";
+import { useNavigation } from "@react-navigation/native";
+
+function Product(props, { navigation }) {
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const rbSheet = useRef();
+  const { token, currentUser } = props;
+  let name = props.route.params?.nama;
+  //const navigation = useNavigation();
+
+  useEffect(() => {
+    if (props.route.params?.id === null) {
+      console.log("productId is null");
+      useNavigation().goBack();
+      return;
+    }
+
+    const check = props.productItems.find(
+      ({ id }) => id === props.route.params?.id
+    );
+
+    if (check === undefined) {
+      console.log("productItem is not found");
+      setLoading(true);
+      setProduct(null);
+      props.showProduct(props.route.params.id);
+    } else {
+      console.log("productItem is found");
+      setProduct(check);
+      setLoading(false);
+    }
+  }, [props.route.params?.id, props.productItems]);
+
+  useEffect(() => {
+    props.navigation.setOptions({
+      title: name,
+      headerShown: true,
+    });
+  }, [name]);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {product === null || loading ? (
+        <ActivityIndicator
+          size="large"
+          color={colors.daclen_orange}
+          style={{ alignSelf: "center", marginVertical: 20 }}
+        />
+      ) : (
+        <ScrollView style={styles.scrollView}>
+          <ProductSlider id={product?.id} title={name} />
+          <View style={styles.containerInfo}>
+            <Text style={styles.text}>{name}</Text>
+            <View style={styles.containerTitle}>
+              <Text style={styles.textPrice}>Rp {product?.harga_currency}</Text>
+
+              <Cart produk_id={product?.id} />
+            </View>
+
+            {product?.tag_produk?.length > 0 && (
+              <View style={styles.containerCategory}>
+                <Text style={styles.textCategory}>Kategori</Text>
+                <FlatList
+                  horizontal={true}
+                  data={product?.tag_produk}
+                  renderItem={({ item }) => (
+                    <Text style={styles.textTag}>{item?.nama}</Text>
+                  )}
+                />
+              </View>
+            )}
+
+            {product?.poin_produk !== null && (
+              <TouchableOpacity onPress={() => rbSheet.current.open()}>
+                <View style={styles.containerBenefit}>
+                  <MaterialCommunityIcons
+                    name="hand-coin"
+                    size={20}
+                    color="white"
+                  />
+                  <Text style={styles.textBenefit}>Keuntungan</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+
+            <ProductDesc
+              deskripsi={product?.deskripsi}
+              dimensi={product?.dimensi}
+              berat={product?.berat}
+            />
+          </View>
+        </ScrollView>
+      )}
+
+      {token && product !== null && props.cart?.jumlah_produk > 0 && (
+        <TouchableOpacity
+          style={styles.containerCheckout}
+          onPress={() =>
+            openCheckout(
+              props.navigation,
+              false,
+              token,
+              currentUser,
+              props.cart?.jumlah_produk,
+              null
+            )
+          }
+        >
+          <MaterialCommunityIcons name="cart" size={32} color="white" />
+          <View style={styles.containerNumber}>
+            <Text style={styles.textNumber}>
+              {props.cart?.jumlah_produk.toString()}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      )}
+
+      <RBSheet ref={rbSheet} openDuration={250} height={300}>
+        <BSPopup
+          title="Keuntungan"
+          content={
+            <BSProductBenefit
+              poin={product?.poin_produk?.poin}
+              komisi={product?.poin_produk?.komisi}
+              harga_value={product?.harga}
+            />
+          }
+          buttonNegative={null}
+          closeThis={() => rbSheet.current.close()}
+          onPress={null}
+        />
+      </RBSheet>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: dimensions.fullWidth,
+    backgroundColor: "white",
+  },
+  scrollView: {
+    flex: 1,
+    backgroundColor: "transparent",
+    paddingBottom: dimensions.pageBottomPadding,
+  },
+  containerTitle: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  containerInfo: {
+    marginHorizontal: 20,
+    marginVertical: 20,
+  },
+  containerCategory: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  containerBenefit: {
+    flexDirection: "row",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: colors.daclen_orange,
+    marginVertical: 14,
+    borderRadius: 4,
+    alignSelf: "flex-start",
+  },
+  containerNumber: {
+    position: "absolute",
+    end: 10,
+    top: 10,
+    elevation: 12,
+    padding: 2,
+    backgroundColor: colors.daclen_orange,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+  },
+  containerImage: {
+    flex: 1 / 3,
+  },
+  containerCheckout: {
+    position: "absolute",
+    end: 12,
+    bottom: 40,
+    elevation: 10,
+    padding: 20,
+    backgroundColor: colors.daclen_green,
+    borderRadius: 100,
+  },
+  text: {
+    fontWeight: "bold",
+    fontSize: 24,
+    color: colors.daclen_black,
+    marginVertical: 10,
+  },
+
+  textPrice: {
+    flex: 1,
+    fontSize: 20,
+    marginBottom: 10,
+    color: colors.daclen_orange,
+    fontWeight: "bold",
+  },
+  textCategory: {
+    fontWeight: "bold",
+    fontSize: 16,
+    color: colors.daclen_blue,
+    paddingEnd: 20,
+  },
+  textTag: {
+    fontSize: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    textAlign: "center",
+    fontWeight: "bold",
+    backgroundColor: colors.daclen_blue,
+    color: colors.daclen_light,
+    borderRadius: 2,
+    marginVertical: 2,
+    marginEnd: 8,
+    flex: 1 / 3,
+  },
+  textUid: {
+    fontSize: 12,
+    marginBottom: 20,
+    color: colors.daclen_gray,
+  },
+  textNumber: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
+  },
+  textBenefit: {
+    color: "white",
+    fontSize: 14,
+    marginStart: 10,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+});
+
+const mapStateToProps = (store) => ({
+  productItems: store.productState.productItems,
+  token: store.userState.token,
+  currentUser: store.userState.currentUser,
+  cart: store.userState.cart,
+});
+
+const mapDispatchProps = (dispatch) =>
+  bindActionCreators(
+    {
+      showProduct,
+    },
+    dispatch
+  );
+
+export default connect(mapStateToProps, mapDispatchProps)(Product);
