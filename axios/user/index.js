@@ -35,6 +35,7 @@ import {
   USER_REGISTER_TOKEN_STATE_CHANGE,
   DISABLE_FORCE_LOGOUT,
   ENABLE_FORCE_LOGOUT,
+  USER_HPV_STATE_CHANGE,
 } from "../../redux/constants";
 import {
   calculateBase64SizeInBytes,
@@ -95,7 +96,9 @@ export function getHPV(id, token) {
 
     Axios.get(url, config)
       .then((response) => {
-        console.log("HPV data", response.data);
+        const data = response.data;
+        console.log("HPV data", data);
+        dispatch({ type: USER_HPV_STATE_CHANGE, data });
         /*const token = response.data.token;
         if (token !== null && token !== undefined) {
           //dispatch(setNewToken(token));
