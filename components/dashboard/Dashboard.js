@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -13,7 +13,7 @@ import {
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { clearUserData, getCurrentUser } from "../../axios/user";
+import { clearUserData, getCurrentUser, getHPV } from "../../axios/user";
 
 import Header from "./Header";
 import { colors, dimensions } from "../../styles/base";
@@ -29,6 +29,10 @@ function DashboardMain(props) {
   const [browserText, setBrowserText] = useState(null);
   const navigation = useNavigation();
   const { currentUser, token } = props;
+
+  useEffect(() => {
+    props.getHPV(currentUser?.id, token);
+  }, [token]);
 
   function buttonPress(text) {
     setBrowserText(`Lihat ${text} di Browser`);
@@ -201,6 +205,7 @@ const mapDispatchProps = (dispatch) =>
     {
       clearUserData,
       getCurrentUser,
+      getHPV,
     },
     dispatch
   );

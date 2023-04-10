@@ -2,7 +2,7 @@
   "expo": {
     "name": "Daclen",
     "slug": "daclen",
-    "version": "1.1.70",
+    "version": "1.1.71",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
     "userInterfaceStyle": "light",
@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.daclenmobile.daclen",
-      "buildNumber": "3",
+      "buildNumber": "1",
       "userInterfaceStyle": "light",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera only to take a new profile picture.",

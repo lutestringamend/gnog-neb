@@ -13,6 +13,7 @@ import {
   updateuserphoto,
   getotp,
   validateotp,
+  gethpv,
 } from "../constants";
 import { getKeranjang } from "../cart";
 import { initialState } from "../../redux/reducers/user";
@@ -77,6 +78,39 @@ export function clearUserData(forceLogout) {
     console.log("clearUserData");
     //setTokenAsync(null);
     dispatch({ type: CLEAR_USER_DATA, forceLogout });
+  };
+}
+
+export function getHPV(id, token) {
+  return (dispatch) => {
+    dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: null });
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    };
+    const url = gethpv + "/" + id.toString();
+    console.log("getHPV with header " + url);
+
+    Axios.get(url, config)
+      .then((response) => {
+        console.log("HPV data", response.data);
+        /*const token = response.data.token;
+        if (token !== null && token !== undefined) {
+          //dispatch(setNewToken(token));
+          dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token });
+        } else {
+          const data =
+            "Tidak bisa mendaftarkan akun baru. Mohon periksa kembali data yang Anda masukkan.";
+          dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data });
+          //dispatch(clearUserData());
+        }*/
+      })
+      .catch((error) => {
+        console.log(error);
+        //dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: error?.message });
+      });
   };
 }
 
