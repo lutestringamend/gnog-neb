@@ -141,7 +141,7 @@ export default function ImageViewer(props) {
     if (
       watermarkData !== undefined &&
       watermarkData !== null &&
-      (uri !== null) & (uri !== undefined) 
+      (uri !== null) & (uri !== undefined)
     ) {
       checkSharing();
     }
@@ -200,7 +200,7 @@ export default function ImageViewer(props) {
               });
               setError("Foto berhasil disimpan dan siap dibagikan");
               setSuccess(true);
-              sharePhotoAsync(uri);
+              sharePhotoAsync(safUri);
             } catch (e) {
               console.error(e);
               setError(
@@ -246,7 +246,7 @@ export default function ImageViewer(props) {
 
   const startDownload = async (useWatermark) => {
     if (!loading) {
-      if (downloadUri === null && Platform.OS !== "web") {
+      if (downloadUri === null) {
         setError(null);
         setLoading(true);
         if (
@@ -280,7 +280,7 @@ export default function ImageViewer(props) {
         }
         setLoading(false);
       } else {
-        sharePhotoAsync(uri);
+        sharePhotoAsync(downloadUri);
       }
     }
   };
@@ -346,9 +346,8 @@ export default function ImageViewer(props) {
             style={[
               styles.containerImage,
               {
-                height: isSquare
-                  ? dimensions.productPhotoWidth
-                  : productPhotoHeight,
+                width: dimensions.productPhotoWidth,
+                height: productPhotoHeight,
               },
             ]}
           >
@@ -357,8 +356,12 @@ export default function ImageViewer(props) {
               resizeMode={isSquare ? "contain" : "cover"}
               style={[
                 styles.image,
-                { height: productPhotoHeight, overflow: "hidden" },
+                {
+                  width: dimensions.productPhotoWidth,
+                  height: productPhotoHeight,
+                },
               ]}
+              onError={(e) => setError(e.toString())}
             />
             <Text style={[styles.textWatermark, generalStyle]}>
               {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
@@ -443,6 +446,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     width: dimensions.productPhotoWidth,
     height: dimensions.productPhotoWidth,
+    overflow: "visible",
   },
   image: {
     position: "absolute",
@@ -450,6 +454,7 @@ const styles = StyleSheet.create({
     start: 0,
     elevation: 3,
     backgroundColor: "white",
+    overflow: "visible",
     width: dimensions.productPhotoWidth,
     height: dimensions.productPhotoWidth,
   },
