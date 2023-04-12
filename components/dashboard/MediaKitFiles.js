@@ -185,6 +185,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    backgroundColor: "white",
     paddingBottom: dimensions.pageBottomPadding,
   },
   containerHeader: {

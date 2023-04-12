@@ -50,14 +50,13 @@ const WatermarkPhotos = ({ photos, watermarkData, userId }) => {
           numColumns={3}
           data={photos}
           renderItem={({ item }) => (
-            <View style={styles.containerImage}>
-              <TouchableHighlight
-                onPress={() => openPhoto(item)}
-                underlayColor={colors.daclen_orange}
-              >
-                <Image style={styles.imageList} source={{ uri: item?.foto }} />
-              </TouchableHighlight>
-            </View>
+            <TouchableHighlight
+              onPress={() => openPhoto(item)}
+              underlayColor={colors.daclen_orange}
+              style={styles.containerImage}
+            >
+              <Image style={styles.imageList} source={{ uri: item?.foto }} />
+            </TouchableHighlight>
           )}
         />
       )}
@@ -74,14 +73,14 @@ const styles = StyleSheet.create({
   containerImage: {
     flex: 1 / 3,
     backgroundColor: colors.daclen_light,
+    borderWidth: 0.5,
+    borderColor: colors.daclen_lightgrey,
   },
   imageList: {
     flex: 1,
     width: "100%",
     height: "100%",
     aspectRatio: 1 / 1,
-    borderColor: colors.daclen_light,
-    borderWidth: 1,
   },
 });
 

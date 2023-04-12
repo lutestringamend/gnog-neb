@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Dimensions } from "react-native";
+import { View, Dimensions, ActivityIndicator } from "react-native";
 import { ImageSlider } from "react-native-image-slider-banner";
 import { useNavigation } from "@react-navigation/native";
 
@@ -37,7 +37,6 @@ function Slider(props) {
       setPhotos(data);
       //console.log(data);
     }
-
   }, [sliders]);
 
   const openProduct = (id) => {
@@ -49,12 +48,21 @@ function Slider(props) {
 
   return (
     <View style={{ width: windowWidth }}>
-      {sliders?.length > 0 && (
+      {loading ? (
+        <ActivityIndicator
+          size="small"
+          style={{ alignSelf: "center", marginVertical: 20 }}
+          color={colors.daclen_gray}
+        />
+      ) : sliders?.length > 0 ? (
         <ImageSlider
           data={photos}
           autoPlay={true}
           preview={false}
-          caroselImageContainerStyle={{ aspectRatio }}
+          caroselImageContainerStyle={{
+            aspectRatio,
+            backgroundColor: colors.daclen_light,
+          }}
           caroselImageStyle={{
             width: windowWidth,
             height: windowWidth / aspectRatio,
@@ -67,7 +75,7 @@ function Slider(props) {
           onClick={(item) => openProduct(item?.id)}
           style={{ margin: 0, padding: 0, width: "100%" }}
         />
-      )}
+      ) : null}
     </View>
   );
 }

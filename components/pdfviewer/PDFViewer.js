@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Platform,
   StyleSheet,
   SafeAreaView,
+  ScrollView,
   ActivityIndicator,
   Linking,
 } from "react-native";
@@ -12,6 +13,7 @@ import { colors, dimensions } from "../../styles/base";
 import MainHeader from "../main/MainHeader";
 import { ErrorView } from "../webview/WebviewChild";
 
+import WebView from "react-native-webview";
 
 let Pdf = require("react-native-render-html").default;
 
@@ -38,10 +40,6 @@ export default function PDFViewer(props) {
   let title = props.route.params?.text;
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    console.log({uri, title });
-  }, []);
-
   if (Platform.OS === "web") {
     return (
       <ErrorScreen
@@ -57,34 +55,35 @@ export default function PDFViewer(props) {
       return (
         <SafeAreaView style={styles.container}>
           <MainHeader title={title ? title : "Daclen"} icon="arrow-left" />
+          <ScrollView style={styles.webContainer}>
+            {loading ? (
+              <ActivityIndicator
+                size="large"
+                color={colors.daclen_orange}
+                style={{ alignSelf: "center", marginVertical: 20 }}
+              />
+            ) : null}
 
-          {loading ? (
-            <ActivityIndicator
-              size="large"
-              color={colors.daclen_orange}
-              style={{ alignSelf: "center", marginVertical: 20 }}
+            <Pdf
+              source={{ uri, cache: true }}
+              contentWidth={dimensions.webviewWidth}
+              onLoadComplete={(numberOfPages, filePath) => {
+                console.log({ numberOfPages, filePath });
+                setLoading(false);
+              }}
+              onPageChanged={(page, numberOfPages) => {
+                console.log({ page, numberOfPages });
+              }}
+              onError={(error) => {
+                console.error(error);
+                setLoading(false);
+              }}
+              onPressLink={(uri) => {
+                console.log({ uri });
+              }}
+              style={styles.pdf}
             />
-          ) : null}
-
-          <Pdf
-            source={{ uri, cache: true }}
-            contentWidth={dimensions.webviewWidth}
-            onLoadComplete={(numberOfPages, filePath) => {
-              console.log({ numberOfPages, filePath });
-              setLoading(false);
-            }}
-            onPageChanged={(page, numberOfPages) => {
-              console.log({ page, numberOfPages });
-            }}
-            onError={(error) => {
-              console.error(error);
-              setLoading(false);
-            }}
-            onPressLink={(uri) => {
-              console.log({ uri });
-            }}
-            style={styles.pdf}
-          />
+          </ScrollView>
         </SafeAreaView>
       );
     } catch (error) {
@@ -106,14 +105,15 @@ export default function PDFViewer(props) {
 }
 
 /*
-<ScrollView style={styles.webContainer}>
-            <WebView
+
+<WebView
               javaScriptEnabled={true}
               style={{ flex: 1 }}
               originWhitelist={["*"]}
               source={{ uri }}
+              onLoadEnd={() => setLoading(false)}
             />
-          </ScrollView>
+
 */
 
 const styles = StyleSheet.create({
@@ -124,8 +124,6 @@ const styles = StyleSheet.create({
   },
   webContainer: {
     flex: 1,
-    marginHorizontal: 12,
-    marginVertical: 20,
     backgroundColor: "white",
   },
   pdf: {

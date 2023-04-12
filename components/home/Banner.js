@@ -4,6 +4,7 @@ import {
   View,
   Image,
   FlatList,
+  ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
 
@@ -15,6 +16,7 @@ import { bindActionCreators } from "redux";
 import { getBannerTiga } from "../../axios/home";
 
 import { webregister, webshop } from "../../axios/constants";
+import { colors } from "../../styles/base";
 
 function Banner(props) {
   const { banners } = props;
@@ -26,7 +28,7 @@ function Banner(props) {
       props.getBannerTiga();
       setLoading(true);
     } else {
-      setLoading(false);    
+      setLoading(false);
     }
     //console.log(banners);
   }, [banners]);
@@ -51,7 +53,13 @@ function Banner(props) {
 
   return (
     <View style={styles.container}>
-      {banners?.length > 0 && (
+      {loading ? (
+        <ActivityIndicator
+          size="small"
+          style={{ alignSelf: "center", marginVertical: 29 }}
+          color={colors.daclen_gray}
+        />
+      ) : banners?.length > 0 ? (
         <FlatList
           numColumns={3}
           horizontal={false}
@@ -68,7 +76,7 @@ function Banner(props) {
             </View>
           )}
         />
-      )}
+      ) : null}
     </View>
   );
 }
@@ -81,6 +89,7 @@ const styles = StyleSheet.create({
   containerItem: {
     flex: 1 / 3,
     paddingHorizontal: 2,
+    backgroundColor: colors.daclen_light,
   },
   imageBanner: {
     aspectRatio: 1 / 1,

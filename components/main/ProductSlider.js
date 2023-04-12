@@ -103,14 +103,12 @@ function ProductSlider(props) {
             horizontal={true}
             data={photos}
             renderItem={({ item }) => (
-              <View style={styles.containerImage}>
-                <TouchableHighlight
-                  onPress={() => openPhoto(item.img)}
-                  underlayColor={colors.daclen_orange}
-                >
-                  <Image style={styles.imageList} source={{ uri: item?.img }} />
-                </TouchableHighlight>
-              </View>
+              <TouchableHighlight
+                onPress={() => openPhoto(item.img)}
+                underlayColor={colors.daclen_orange}
+              >
+                <Image style={styles.imageList} source={{ uri: item?.img }} />
+              </TouchableHighlight>
             )}
           />
         </View>
@@ -132,23 +130,26 @@ const styles = StyleSheet.create({
   },
   containerFlatlist: {
     width: "100%",
-    paddingVertical: 4,
-    borderColor: colors.daclen_lightgrey,
+    paddingVertical: 1,
+    borderColor: colors.daclen_gray,
     backgroundColor: colors.daclen_light,
-    borderWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
     borderRadius: 2,
   },
   image: {
     width: dimensions.fullWidth,
+    backgroundColor: "white",
     aspectRatio: 1 / 1,
   },
   imageList: {
     width: 60,
     height: 60,
     aspectRatio: 1 / 1,
+    backgroundColor: "white",
     borderColor: colors.daclen_lightgrey,
-    borderWidth: 1,
-    marginHorizontal: 2,
+    borderStartWidth: 1,
+    borderEndWidth: 1,
   },
 });
 

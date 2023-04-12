@@ -11,12 +11,12 @@ const ProfileMenuItem = ({ text, textSecondary, icon, webKey, screen, thickness,
   const navigation = useNavigation();
 
   const openScreen = () => {
-    /*if (Platform.OS === "android" && screen === "PDFViewer") {
+    if (screen === "PDFViewer") {
       if (webKey !== null && webKey !== undefined) {
         Linking.openURL(webKey);
       }
       return;
-    }*/
+    }
 
     console.log("ProfileMenuItem going to screen " + screen);
     if (screen !== null) {

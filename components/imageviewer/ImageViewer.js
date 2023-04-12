@@ -14,7 +14,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 
 import ViewShot from "react-native-view-shot";
 import * as FileSystem from "expo-file-system";
-import { shareAsync } from "expo-sharing";
+import { shareAsync, isAvailableAsync } from "expo-sharing";
 import * as Sentry from "sentry-expo";
 
 import { colors, dimensions } from "../../styles/base";
@@ -23,7 +23,6 @@ export default function ImageViewer(props) {
   let title = props.route.params?.title;
   let uri = props.route.params?.uri;
   let isSquare = props.route.params?.isSquare;
-  let userId = props.route.params?.userId;
   let watermarkData = props.route.params?.watermarkData;
 
   let width = props.route.params?.width;
@@ -47,8 +46,8 @@ export default function ImageViewer(props) {
     paddingHorizontal: 2,
     borderRadius: 1,
     textAlign: text_align,
-    top: (text_y / ratio),
-    start: (text_x / ratio),
+    top: text_y / ratio,
+    start: text_x / ratio,
     backgroundColor: "transparent",
     color: font?.color?.warna ? font?.color?.warna : colors.daclen_red,
     fontSize: Math.round(fontSize / ratio),
@@ -70,43 +69,18 @@ export default function ImageViewer(props) {
     mimeType: "image/jpeg",
   };
 
-  const [productPhotoHeight, setProductPhotoHeight] = useState(0);
+  //const [productPhotoHeight, setProductPhotoHeight] = useState(0);
+  const productPhotoHeight = isSquare
+    ? dimensions.productPhotoWidth
+    : height / ratio;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [transformedImage, setTransformedImage] = useState(null);
   const [downloadUri, setDownloadUri] = useState(null);
+  const [sharingAvailability, setSharingAvailability] = useState(false);
 
   const imageRef = useRef();
-
-  useEffect(() => {
-    if (isSquare) {
-      setProductPhotoHeight(dimensions.productPhotoWidth);
-    } else {
-      setProductPhotoHeight(height / ratio);
-    }
-  }, [isSquare]);
-
-  useEffect(() => {
-    if (userId === 8054 && productPhotoHeight > 0) {
-      const report = {
-        width,
-        height,
-        ppw: dimensions.productPhotoWidth,
-        pph: productPhotoHeight,
-        ratio,
-        generalStyle,
-        textStyle,
-      };
-      console.log(report);
-    }
-  }, [productPhotoHeight]);
-
-  useEffect(() => {
-    if (title !== null && title !== undefined && title !== "") {
-      props.navigation.setOptions({ title });
-    }
-  }, [title]);
 
   useEffect(() => {
     const transformImage = async () => {
@@ -141,13 +115,39 @@ export default function ImageViewer(props) {
       }
     };
 
+    const checkSharing = async () => {
+      const result = await isAvailableAsync();
+      if (!result) {
+        setError("Perangkat tidak mengizinkan untuk membagikan file");
+      } else {
+        setLoading(true);
+        transformImage();
+      }
+      setSharingAvailability(result);
+
+      const report = {
+        width,
+        height,
+        ppw: dimensions.productPhotoWidth,
+        pph: productPhotoHeight,
+        ratio,
+        generalStyle,
+        textStyle,
+        sharingAvailability: result,
+      };
+      console.log(report);
+    };
+
     if (
       watermarkData !== undefined &&
-      (uri !== null) & (uri !== undefined) &&
-      Platform.OS !== "web"
+      watermarkData !== null &&
+      (uri !== null) & (uri !== undefined) 
     ) {
-      setLoading(true);
-      transformImage();
+      checkSharing();
+    }
+
+    if (title !== null && title !== undefined && title !== "") {
+      props.navigation.setOptions({ title });
     }
   }, [uri]);
 
@@ -163,6 +163,20 @@ export default function ImageViewer(props) {
     const uriSplit = uri.split("/");
     return uriSplit[uriSplit.length - 1];
   }
+
+  const sharePhotoAsync = async (uri) => {
+    if (!sharingAvailability) {
+      setError("Perangkat tidak mengizinkan untuk membagikan file");
+      return;
+    }
+
+    try {
+      await shareAsync(uri, sharingOptions);
+    } catch (e) {
+      console.error(e);
+      setError(e?.message);
+    }
+  };
 
   const save = async (uri, mimeType) => {
     if (Platform.OS === "android") {
@@ -186,7 +200,7 @@ export default function ImageViewer(props) {
               });
               setError("Foto berhasil disimpan dan siap dibagikan");
               setSuccess(true);
-              shareAsync(uri, sharingOptions);
+              sharePhotoAsync(uri);
             } catch (e) {
               console.error(e);
               setError(
@@ -226,13 +240,13 @@ export default function ImageViewer(props) {
     } else {
       setSuccess(true);
       setError("Foto siap dibagikan");
-      shareAsync(uri, sharingOptions);
+      sharePhotoAsync(uri);
     }
   };
 
   const startDownload = async (useWatermark) => {
     if (!loading) {
-      if (downloadUri === null) {
+      if (downloadUri === null && Platform.OS !== "web") {
         setError(null);
         setLoading(true);
         if (
@@ -257,7 +271,7 @@ export default function ImageViewer(props) {
         } else {
           try {
             //save(transformedImage);
-            shareAsync(transformedImage, sharingOptions);
+            sharePhotoAsync(uri);
           } catch (e) {
             console.error(e);
             setSuccess(false);
@@ -266,7 +280,7 @@ export default function ImageViewer(props) {
         }
         setLoading(false);
       } else {
-        shareAsync(downloadUri, sharingOptions);
+        sharePhotoAsync(uri);
       }
     }
   };
@@ -317,34 +331,42 @@ export default function ImageViewer(props) {
           </Text>
         ) : null}
 
-        {loading || productPhotoHeight === 0 ? (
+        {watermarkData === null || watermarkData === undefined ? (
+          <View style={styles.containerImage}>
+            <Image source={{ uri }} resizeMode="contain" style={styles.image} />
+          </View>
+        ) : loading ? (
           <ActivityIndicator
             size="large"
-            color={colors.daclen_orange}
             style={styles.spinner}
+            color={colors.daclen_orange}
           />
         ) : (
-          <View style={[styles.containerImage, {
-            height: isSquare
-              ? dimensions.productPhotoWidth
-              : productPhotoHeight,
-          },]}>
+          <View
+            style={[
+              styles.containerImage,
+              {
+                height: isSquare
+                  ? dimensions.productPhotoWidth
+                  : productPhotoHeight,
+              },
+            ]}
+          >
             <Image
               source={{ uri: transformedImage ? transformedImage : uri }}
               resizeMode={isSquare ? "contain" : "cover"}
-              style={[styles.image, { height: productPhotoHeight, overflow: "hidden" }]}
+              style={[
+                styles.image,
+                { height: productPhotoHeight, overflow: "hidden" },
+              ]}
             />
-            {watermarkData === null || watermarkData === undefined ? null : (
-              <Text style={[styles.textWatermark, generalStyle]}>
-                {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
-              </Text>
-            )}
+            <Text style={[styles.textWatermark, generalStyle]}>
+              {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
+            </Text>
           </View>
         )}
 
-        {watermarkData === undefined ||
-        watermarkData === null ||
-        loading ? null : (
+        {watermarkData === undefined || watermarkData === null ? null : (
           <View style={styles.containerBottom}>
             <TouchableOpacity
               onPress={() =>
@@ -354,13 +376,27 @@ export default function ImageViewer(props) {
               }
               style={[
                 styles.button,
-                loading && { backgroundColor: colors.daclen_gray },
+                loading ||
+                  ((downloadUri !== null ||
+                    transformedImage !== null ||
+                    Platform.OS === "web") &&
+                    !sharingAvailability && {
+                      backgroundColor: colors.daclen_gray,
+                    }),
               ]}
-              disabled={loading}
+              disabled={
+                loading ||
+                ((downloadUri !== null ||
+                  transformedImage !== null ||
+                  Platform.OS === "web") &&
+                  !sharingAvailability)
+              }
             >
               <MaterialCommunityIcons
                 name={
-                  downloadUri !== null || transformedImage !== null
+                  downloadUri !== null ||
+                  transformedImage !== null ||
+                  Platform.OS === "web"
                     ? "share-variant"
                     : "download"
                 }
@@ -368,7 +404,9 @@ export default function ImageViewer(props) {
                 color="white"
               />
               <Text style={styles.textButton}>
-                {downloadUri !== null || transformedImage !== null
+                {downloadUri !== null ||
+                transformedImage !== null ||
+                Platform.OS === "web"
                   ? "Share Foto"
                   : "Download Foto"}
               </Text>
@@ -404,6 +442,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "transparent",
     width: dimensions.productPhotoWidth,
+    height: dimensions.productPhotoWidth,
   },
   image: {
     position: "absolute",
@@ -432,7 +471,7 @@ const styles = StyleSheet.create({
   textError: {
     width: dimensions.fullWidth,
     position: "absolute",
-    elevation: 10,
+    zIndex: 10,
     top: 0,
     fontSize: 14,
     fontWeight: "bold",
@@ -444,11 +483,11 @@ const styles = StyleSheet.create({
   },
   textWatermark: {
     position: "absolute",
-    elevation: 4,
+    zIndex: 4,
     fontWeight: "bold",
   },
   spinner: {
     alignSelf: "center",
-    elevation: 10,
+    zIndex: 6,
   },
 });
