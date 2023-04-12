@@ -41,6 +41,8 @@ const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified }) => {
           {
             marginVertical: isCurrentUser ? 0 : 12,
             borderRadius: isCurrentUser ? 0 : 6,
+            borderTopStartRadius: 6,
+            borderTopEndRadius: 6,
           },
         ]}
       >
@@ -51,8 +53,10 @@ const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified }) => {
               borderColor: isVerified
                 ? colors.daclen_red
                 : colors.daclen_lightgrey,
+              borderRadius: 6,
+              borderBottomStartRadius: isCurrentUser ? 0 : 6,
               borderWidth: isCurrentUser ? 2 : 1,
-              borderRadius: isCurrentUser ? 0 : 6,
+              borderTopWidth: 0,
             },
           ]}
         >
@@ -63,6 +67,8 @@ const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified }) => {
                 backgroundColor: isVerified
                   ? colors.daclen_red
                   : colors.daclen_lightgrey,
+                borderTopStartRadius: 6,
+                borderTopEndRadius: 6,
               },
             ]}
           >
@@ -134,11 +140,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 6,
     paddingHorizontal: 10,
+    borderTopStartRadius: 6,
+    borderTopEndRadius: 6,
   },
   containerValue: {
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: "transparent",
     padding: 8,
   },
   textHeader: {
@@ -149,7 +157,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    backgroundColor: "white",
+    backgroundColor: "transparent",
   },
 });
 

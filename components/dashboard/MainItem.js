@@ -43,37 +43,22 @@ export default function MainItem(props) {
           </Text>
         </View>
         <View style={styles.containerIcon}>
-        <MaterialCommunityIcons
-              name={props?.icon}
-              size={40}
-              color={props?.color ? props?.color : colors.daclen_light}
-            />
+          <MaterialCommunityIcons
+            name={props?.icon}
+            size={40}
+            color={props?.color ? props?.color : colors.daclen_light}
+          />
         </View>
       </View>
     </TouchableHighlight>
   );
 }
 
-/*
-{props?.fontawesome !== undefined && props?.fontawesome !== null ? (
-            <FontAwesomeIcon
-              icon={props?.fontawesome}
-              color={props?.color ? props?.color : colors.daclen_light}
-              size="2x"
-            />
-          ) : (
-            <MaterialCommunityIcons
-              name={props?.icon}
-              size={36}
-              color={props?.color ? props?.color : colors.daclen_light}
-            />
-          )}
-*/
-
 const styles = StyleSheet.create({
   touchableContainer: {
     flex: 1,
-    maxWidth: (dimensions.fullWidth / 2) - (dimensions.dashboardBoxHorizontalMargin * 2),
+    maxWidth:
+      dimensions.fullWidth / 2 - dimensions.dashboardBoxHorizontalMargin * 2,
     marginHorizontal: dimensions.dashboardBoxHorizontalMargin,
     borderWidth: 1,
     borderColor: colors.daclen_light,
@@ -85,6 +70,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     flexDirection: "row",
     alignItems: "stretch",
+    paddingEnd: 10,
   },
   container: {
     flex: 2,
