@@ -25,16 +25,50 @@ export default function ImageViewer(props) {
   let isSquare = props.route.params?.isSquare;
   let userId = props.route.params?.userId;
   let watermarkData = props.route.params?.watermarkData;
+
   let width = props.route.params?.width;
   let height = props.route.params?.height;
   let ratio = width / dimensions.productPhotoWidth;
-  let ratioRounded = Math.round(ratio);
+
+  let text_align = props.route.params?.text_align;
+  let text_x = props.route.params?.text_x;
+  let text_y = props.route.params?.text_y;
+  let font = props.route.params?.font;
+  let fontSize = font?.size?.ukuran
+    ? font?.size?.ukuran > 32
+      ? font?.size?.ukuran / 2
+      : font?.size?.ukuran
+    : 16;
+
+  //let ratioRounded = Math.round(ratio);
+
+  let generalStyle = {
+    paddingVertical: 1,
+    paddingHorizontal: 2,
+    borderRadius: 1,
+    textAlign: text_align,
+    top: `${text_y / ratio}px`,
+    start: `${text_x / ratio}px`,
+    backgroundColor: "transparent",
+    color: font?.color?.warna ? font?.color?.warna : colors.daclen_red,
+    fontSize: `${Math.round(fontSize / ratio)}px`,
+  };
+
+  let textStyle = {
+    ...generalStyle,
+    fontSize: `${fontSize}px`,
+    paddingVertical: generalStyle.paddingVertical * ratio,
+    paddingHorizontal: generalStyle.paddingHorizontal * ratio,
+    borderRadius: generalStyle.borderRadius * ratio,
+    top: `${text_y}px`,
+    start: `${text_x}px`,
+  };
 
   const sharingOptions = {
     UTI: "JPEG",
-    dialogTitle: "Share foto Daclen",
+    dialogTitle: "Share Foto Daclen",
     mimeType: "image/jpeg",
-  }
+  };
 
   const [productPhotoHeight, setProductPhotoHeight] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -54,15 +88,22 @@ export default function ImageViewer(props) {
   }, [isSquare]);
 
   useEffect(() => {
-    if (userId === 8054) {
-      setError(`uri ${uri}\nw x h ${width} x ${height}\nppW${dimensions.productPhotoWidth}\nppH${productPhotoHeight}`);
+    if (userId === 8054 && productPhotoHeight > 0) {
+      const report = {
+        width,
+        height,
+        ppw: dimensions.productPhotoWidth,
+        pph: productPhotoHeight,
+        ratio,
+        generalStyle,
+        textStyle,
+      };
+      console.log(report);
     }
-    }, [productPhotoHeight]);
+  }, [productPhotoHeight]);
 
   useEffect(() => {
-    if (watermarkData !== undefined) {
-      props.navigation.setOptions({ title: `${getFileName(uri)}` });
-    } else if (title !== null && title !== undefined && title !== "") {
+    if (title !== null && title !== undefined && title !== "") {
       props.navigation.setOptions({ title });
     }
   }, [title]);
@@ -251,7 +292,6 @@ export default function ImageViewer(props) {
         >
           <Image
             source={{ uri: transformedImage ? transformedImage : uri }}
-            resizeMode={"cover"}
             style={[
               styles.image,
               {
@@ -260,19 +300,7 @@ export default function ImageViewer(props) {
               },
             ]}
           />
-          <Text
-            style={[
-              styles.textWatermark,
-              {
-                fontSize: 3 * ratioRounded,
-                paddingVertical: ratioRounded,
-                paddingHorizontal: 2 * ratioRounded,
-                top: ratioRounded,
-                start: ratioRounded,
-                borderRadius: ratioRounded,
-              },
-            ]}
-          >
+          <Text style={[styles.textWatermark, textStyle]}>
             {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
           </Text>
         </ViewShot>
@@ -296,26 +324,18 @@ export default function ImageViewer(props) {
             style={styles.spinner}
           />
         ) : (
-          <View
-            style={[
-              styles.containerImage,
-              {
-                height: isSquare
-                  ? dimensions.productPhotoWidth
-                  : productPhotoHeight,
-              },
-            ]}
-          >
+          <View style={[styles.containerImage, {
+            height: isSquare
+              ? dimensions.productPhotoWidth
+              : productPhotoHeight,
+          },]}>
             <Image
               source={{ uri: transformedImage ? transformedImage : uri }}
-              resizeMode={isSquare ? "contain" : "stretch"}
-              style={[
-                styles.image,
-                { height: productPhotoHeight, overlay: 100 }
-              ]}
+              resizeMode={isSquare ? "contain" : "cover"}
+              style={[styles.image, { height: productPhotoHeight, overlay: 100 }]}
             />
             {watermarkData === null || watermarkData === undefined ? null : (
-              <Text style={styles.textWatermark}>
+              <Text style={[styles.textWatermark, generalStyle]}>
                 {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
               </Text>
             )}
@@ -382,7 +402,6 @@ const styles = StyleSheet.create({
   },
   containerImage: {
     flexDirection: "row",
-    alignSelf: "center",
     backgroundColor: "transparent",
     width: dimensions.productPhotoWidth,
   },
@@ -391,7 +410,7 @@ const styles = StyleSheet.create({
     top: 0,
     start: 0,
     elevation: 3,
-    backgroundColor: "transparent",
+    backgroundColor: "white",
     width: dimensions.productPhotoWidth,
     height: dimensions.productPhotoWidth,
   },
@@ -425,16 +444,8 @@ const styles = StyleSheet.create({
   },
   textWatermark: {
     position: "absolute",
-    top: 1,
-    start: 1,
     elevation: 4,
-    paddingVertical: 1,
-    paddingHorizontal: 2,
-    fontSize: 3,
     fontWeight: "bold",
-    color: colors.daclen_black,
-    backgroundColor: colors.daclen_light,
-    borderRadius: 1,
   },
   spinner: {
     alignSelf: "center",

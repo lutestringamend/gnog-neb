@@ -14,7 +14,8 @@ import { useNavigation } from "@react-navigation/native";
 import * as Sentry from "sentry-expo";
 
 import { connect } from "react-redux";
-//import { bindActionCreators } from "redux";
+import { bindActionCreators } from "redux";
+import { getMediaKitPhotos } from "../../axios/mediakit";
 
 import { colors, dimensions } from "../../styles/base";
 import { privacypolicy } from "../profile/constants";
@@ -47,8 +48,10 @@ function MediaKitFiles(props) {
     });
 
     useEffect(() => {
-      console.log(watermarkData);
-    }, [watermarkData]);
+      if (props.mediaKitPhotos?.length === undefined || props.mediaKitPhotos?.length < 1) {
+        props.getMediaKitPhotos();
+      }
+    }, [props.mediaKitPhotos]);
 
     return (
       <SafeAreaView style={styles.container}>
@@ -149,6 +152,7 @@ function MediaKitFiles(props) {
             <WatermarkPhotos
               watermarkData={watermarkData}
               userId={currentUser?.id}
+              photos={props.mediaKitPhotos}
              />
           )}
         </ScrollView>
@@ -257,12 +261,13 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
+  mediaKitPhotos: store.mediaKitState.photos,
 });
 
-/*const mapDispatchProps = (dispatch) =>
-    bindActionCreators(
-      { updateUserAddressData, callRajaOngkir, clearRajaOngkir },
-      dispatch
-    );*/
+const mapDispatchProps = (dispatch) =>
+  bindActionCreators(
+    { getMediaKitPhotos },
+    dispatch
+  );
 
-export default connect(mapStateToProps, null)(MediaKitFiles);
+export default connect(mapStateToProps, mapDispatchProps)(MediaKitFiles);

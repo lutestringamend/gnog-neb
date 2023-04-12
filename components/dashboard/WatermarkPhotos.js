@@ -5,29 +5,32 @@ import {
   TouchableHighlight,
   Image,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors, dimensions } from "../../styles/base";
-import { defaultmediakitphotoheight, defaultmediakitphotowidth, tempmediakitphotos } from "./constants";
 
-const WatermarkPhotos = ({ watermarkData, userId }) => {
-  const [photos, setPhotos] = useState([]);
+const WatermarkPhotos = ({ photos, watermarkData, userId }) => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (photos?.length === undefined || photos?.length < 1) {
-      setPhotos(tempmediakitphotos);
-    } 
+    if (photos?.length > 0) {
+      console.log({ photos });
+    }
   }, [photos]);
 
-  function openPhoto(uri) {
+  function openPhoto(item) {
     navigation.navigate("ImageViewer", {
-      title: "Foto Promosi",
-      uri,
+      title: `Foto ${item?.id.toString()}`,
+      uri: item?.foto,
       isSquare: false,
-      width: defaultmediakitphotowidth,
-      height: defaultmediakitphotoheight,
+      width: item?.width,
+      height: item?.height,
+      text_align: item?.text_align,
+      text_x: item?.text_x,
+      text_y: item?.text_y,
+      font: item?.font,
       watermarkData,
       userId,
     });
@@ -35,7 +38,13 @@ const WatermarkPhotos = ({ watermarkData, userId }) => {
 
   return (
     <View style={styles.containerFlatlist}>
-      {photos?.length === undefined || photos?.length < 1 ? null : (
+      {photos?.length === undefined || photos?.length < 1 ? (
+        <ActivityIndicator
+          size="large"
+          color={colors.daclen_orange}
+          style={{ alignSelf: "center", marginVertical: 20 }}
+        />
+      ) : (
         <FlatList
           horizontal={false}
           numColumns={3}
@@ -46,7 +55,7 @@ const WatermarkPhotos = ({ watermarkData, userId }) => {
                 onPress={() => openPhoto(item)}
                 underlayColor={colors.daclen_orange}
               >
-                <Image style={styles.imageList} source={{ uri: item }} />
+                <Image style={styles.imageList} source={{ uri: item?.foto }} />
               </TouchableHighlight>
             </View>
           )}
@@ -65,7 +74,7 @@ const styles = StyleSheet.create({
   containerImage: {
     flex: 1 / 3,
     backgroundColor: colors.daclen_light,
-  },    
+  },
   imageList: {
     flex: 1,
     width: "100%",

@@ -42,6 +42,7 @@ export const syaratketentuanhtml = "api/mobile/syarat-ketentuan"
 export const dashboardhtml = "api/mobile/dashboard/webview"
 export const contentslider = "api/mobile/content/slider"
 export const contentbannertiga = "api/mobile/content/tiga-banner"
+export const mediakitphoto = "api/mobile/media-kit/foto"
 
 export const webreferral = "daclen.com/register/"
 export const webregister = "https://daclen.com/register"

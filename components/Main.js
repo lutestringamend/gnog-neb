@@ -8,6 +8,7 @@ import SplashScreen from "./Splash";
 import TabNavigator from "./bottomnav/TabNavigator";
 import { getProductData, clearData } from "../axios/product";
 import { setNewToken, getCurrentUser, clearUserData, userLogout, disableForceLogout } from "../axios/user";
+import { clearMediaKitData } from "../axios/mediakit";
 import { getObjectAsync, getTokenAsync } from "./asyncstorage";
 import { ASYNC_PRODUCTS_ARRAY_KEY, ASYNC_USER_CURRENTUSER_KEY } from "./asyncstorage/constants";
 
@@ -49,6 +50,7 @@ function Main(props) {
       const readStorageCurrentUser = async (token) => {
         if (token === null || token === undefined || token === "" || token === "null") {
           props.clearUserData();
+          props.clearMediaKitData();
           setLogin(false);
         } else {
           const storageCurrentUser = await getObjectAsync(ASYNC_USER_CURRENTUSER_KEY);
@@ -88,6 +90,7 @@ function Main(props) {
       const uponForceLogout = async () => {
         await userLogout();
         props.clearUserData(true);
+        props.clearMediaKitData();
         setLoadingUserData(false);
         setLogin(false);
       }
@@ -147,7 +150,7 @@ const mapStateToProps = (store) => ({
 
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
-    { getProductData, clearData, getCurrentUser, clearUserData, setNewToken, disableForceLogout },
+    { getProductData, clearData, getCurrentUser, clearUserData, setNewToken, disableForceLogout, clearMediaKitData },
     dispatch
   );
 

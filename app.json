@@ -2,7 +2,7 @@
   "expo": {
     "name": "Daclen",
     "slug": "daclen",
-    "version": "1.1.71",
+    "version": "1.1.72",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
     "userInterfaceStyle": "light",
@@ -24,9 +24,9 @@
       "buildNumber": "1",
       "userInterfaceStyle": "light",
       "infoPlist": {
-        "NSCameraUsageDescription": "This app uses the camera only to take a new profile picture.",
-        "NSPhotoLibraryAddUsageDescription": "This app saves customized watermarked photos of Daclen catalogue.",
-        "NSPhotoLibraryUsageDescription": "This app can access camera roll only get a new profile picture."
+        "NSCameraUsageDescription": "This app needs Camera permission only to take a new profile picture and save it on Daclen.com.",
+        "NSPhotoLibraryAddUsageDescription": "This app needs Storage permission only to save watermarked product photos from Daclen.com.",
+        "NSPhotoLibraryUsageDescription": "This app needs Storage and Camera Roll permissions only to upload a new profile picture and save it on Daclen.com."
       }
     },
     "android": {
@@ -61,13 +61,13 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "To take a new photo as your new profile picture, this app would like to ask for this device's Camera permission."
+          "cameraPermission": "This app needs Camera permission only to take a new profile picture and save it on Daclen.com."
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "To upload a photo in your device as your new profile picture, this app would like to ask for this device's Storage permission."
+          "photosPermission": "This app needs Storage permission only to upload a new profile picture and save it on Daclen.com."
         }
       ],
       "@config-plugins/react-native-blob-util",
