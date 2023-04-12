@@ -9,6 +9,7 @@ import {
   Text,
   Platform,
   ToastAndroid,
+  ImageBackground,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -342,31 +343,18 @@ export default function ImageViewer(props) {
             color={colors.daclen_orange}
           />
         ) : (
-          <View
-            style={[
-              styles.containerImage,
-              {
-                width: dimensions.productPhotoWidth,
-                height: productPhotoHeight,
-              },
-            ]}
+          <ImageBackground
+            source={{ uri }}
+            style={{
+              width: dimensions.productPhotoWidth,
+              height: productPhotoHeight,
+            }}
+            resizeMode="cover"
           >
-            <Image
-              source={{ uri: transformedImage ? transformedImage : uri }}
-              resizeMode={isSquare ? "contain" : "cover"}
-              style={[
-                styles.image,
-                {
-                  width: dimensions.productPhotoWidth,
-                  height: productPhotoHeight,
-                },
-              ]}
-              onError={(e) => setError(e.toString())}
-            />
             <Text style={[styles.textWatermark, generalStyle]}>
               {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
             </Text>
-          </View>
+          </ImageBackground>
         )}
 
         {watermarkData === undefined || watermarkData === null ? null : (
@@ -421,6 +409,34 @@ export default function ImageViewer(props) {
   );
 }
 
+/*
+<View
+            style={[
+              styles.containerImage,
+              {
+                width: dimensions.productPhotoWidth,
+                height: productPhotoHeight,
+              },
+            ]}
+          >
+            <Image
+              source={{ uri: transformedImage ? transformedImage : uri }}
+              resizeMode={isSquare ? "contain" : "cover"}
+              style={[
+                styles.image,
+                {
+                  width: dimensions.productPhotoWidth,
+                  height: productPhotoHeight,
+                },
+              ]}
+              onError={(e) => setError(e.toString())}
+            />
+            <Text style={[styles.textWatermark, generalStyle]}>
+              {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
+            </Text>
+          </View>
+*/
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -442,7 +458,6 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   containerImage: {
-    flexDirection: "row",
     backgroundColor: "transparent",
     width: dimensions.productPhotoWidth,
     height: dimensions.productPhotoWidth,

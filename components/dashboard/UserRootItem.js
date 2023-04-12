@@ -102,6 +102,7 @@ const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified }) => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     flexDirection: "row",
     backgroundColor: "white",
     alignItems: "center",
@@ -120,7 +121,7 @@ const styles = StyleSheet.create({
   verticalLine: {
     height: "100%",
     width: 2,
-    alignSelf: "start",
+    alignSelf: "flex-start",
     backgroundColor: colors.daclen_red,
   },
   horizontalLine: {
