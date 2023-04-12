@@ -7,7 +7,7 @@ export const dimensions = {
   authBoxWidth: Dimensions.get("window").width - 40,
   authBoxTopHeight: 150,
   authPageRegisterBottomPadding: 300,
-  productPhotoWidth: Dimensions.get('window').width - 20,
+  productPhotoWidth: Dimensions.get('window').width - 10,
   blogTextWidth: Dimensions.get("window").width - 20,
   webviewWidth: Dimensions.get("window").width - 24,
   statusBarPadding: Platform.OS === "android" ? StatusBar.currentHeight : 0,
