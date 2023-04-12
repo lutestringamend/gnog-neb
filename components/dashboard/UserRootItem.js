@@ -29,7 +29,7 @@ const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified }) => {
   return (
     <View style={styles.container}>
       {isCurrentUser ? null : (
-        <VerticalLine style={{ height: isLastItem ? "53%" : "100%" }} />
+        <VerticalLine style={{ height: isLastItem ? "51%" : "100%" }} />
       )}
       {isCurrentUser ? null : <View style={styles.horizontalLine} />}
 
@@ -40,7 +40,7 @@ const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified }) => {
           styles.containerTouchable,
           {
             marginVertical: isCurrentUser ? 0 : 12,
-            borderRadius: isCurrentUser ? 1 : 6,
+            borderRadius: isCurrentUser ? 0 : 6,
           },
         ]}
       >
@@ -52,7 +52,7 @@ const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified }) => {
                 ? colors.daclen_red
                 : colors.daclen_lightgrey,
               borderWidth: isCurrentUser ? 2 : 1,
-              borderRadius: isCurrentUser ? 1 : 6,
+              borderRadius: isCurrentUser ? 0 : 6,
             },
           ]}
         >
@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     backgroundColor: "white",
+    alignItems: "center",
     width: dimensions.fullWidth,
   },
   containerTouchable: {
@@ -119,10 +120,10 @@ const styles = StyleSheet.create({
   verticalLine: {
     height: "100%",
     width: 2,
+    alignSelf: "start",
     backgroundColor: colors.daclen_red,
   },
   horizontalLine: {
-    top: "50%",
     width: 24,
     height: 2,
     backgroundColor: colors.daclen_red,

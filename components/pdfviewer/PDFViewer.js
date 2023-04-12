@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Platform,
   StyleSheet,
   SafeAreaView,
   ActivityIndicator,
-  View,
   Linking,
 } from "react-native";
 import * as Sentry from "sentry-expo";
@@ -12,6 +11,9 @@ import { colors, dimensions } from "../../styles/base";
 
 import MainHeader from "../main/MainHeader";
 import { ErrorView } from "../webview/WebviewChild";
+
+
+let Pdf = require("react-native-render-html").default;
 
 function ErrorScreen({ title, message, uri }) {
   return (
@@ -33,7 +35,12 @@ function openExternalLink(uri) {
 
 export default function PDFViewer(props) {
   let uri = props.route.params?.webKey;
+  let title = props.route.params?.text;
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    console.log({uri, title });
+  }, []);
 
   if (Platform.OS === "web") {
     return (
@@ -45,13 +52,11 @@ export default function PDFViewer(props) {
     );
   } else {
     try {
-      let Pdf = require("react-native-pdf");
+      Pdf = require("react-native-pdf").default;
 
       return (
         <SafeAreaView style={styles.container}>
-          {props.route.params?.text && (
-            <MainHeader title={props.route.params?.text} icon="arrow-left" />
-          )}
+          <MainHeader title={title ? title : "Daclen"} icon="arrow-left" />
 
           {loading ? (
             <ActivityIndicator
@@ -63,6 +68,7 @@ export default function PDFViewer(props) {
 
           <Pdf
             source={{ uri, cache: true }}
+            contentWidth={dimensions.webviewWidth}
             onLoadComplete={(numberOfPages, filePath) => {
               console.log({ numberOfPages, filePath });
               setLoading(false);

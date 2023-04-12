@@ -47,21 +47,21 @@ export default function ImageViewer(props) {
     paddingHorizontal: 2,
     borderRadius: 1,
     textAlign: text_align,
-    top: `${text_y / ratio}px`,
-    start: `${text_x / ratio}px`,
+    top: (text_y / ratio),
+    start: (text_x / ratio),
     backgroundColor: "transparent",
     color: font?.color?.warna ? font?.color?.warna : colors.daclen_red,
-    fontSize: `${Math.round(fontSize / ratio)}px`,
+    fontSize: Math.round(fontSize / ratio),
   };
 
   let textStyle = {
     ...generalStyle,
-    fontSize: `${fontSize}px`,
+    fontSize,
     paddingVertical: generalStyle.paddingVertical * ratio,
     paddingHorizontal: generalStyle.paddingHorizontal * ratio,
     borderRadius: generalStyle.borderRadius * ratio,
-    top: `${text_y}px`,
-    start: `${text_x}px`,
+    top: text_y,
+    start: text_x,
   };
 
   const sharingOptions = {

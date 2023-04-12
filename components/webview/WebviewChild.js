@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   StyleSheet,
   ActivityIndicator,
@@ -33,25 +33,6 @@ export function ErrorView(props) {
 
 function WebviewChild(props) {
   try {
-    //const [error, setError] = useState(null);
-    //const [justOpened, setOpened] = useState(true);
-
-    /*useEffect(() => {
-      if (
-        Platform.OS === "web" &&
-        props?.url !== undefined &&
-        props?.url !== null
-      ) {
-        setError(
-          "Anda harus membuka tab baru di Browser untuk melihat halaman ini"
-        );
-        if (justOpened) {
-          setOpened(false);
-          openExternalLink();
-        }
-      }
-      console.log(props?.url);
-    }, [props?.url]);*/
 
     function openExternalLink() {
       if (props?.url !== null && props?.url !== undefined) {
