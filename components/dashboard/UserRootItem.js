@@ -13,16 +13,16 @@ export function VerticalLine({ style }) {
 const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified }) => {
   
   function onPress() {
-    let message = `${userData?.name}\n`;
+    let message = `${userData?.name}`;
     if (userData?.email_verified_at === null) {
-      message += `${emailnotverified}\n`;
+      message += `\n${emailnotverified}`;
     }
     if (userData?.nomor_telp_verified_at === null) {
-      message += phonenotverified;
+      message += `\n${phonenotverified}`;
     }
     console.log({ id: userData?.id, message });
     if (Platform.OS === "android") {
-      ToastAndroid.show(message, ToastAndroid.LONG);
+      ToastAndroid.show(message, ToastAndroid.SHORT);
     }
   }
 
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   },
   horizontalLine: {
     top: "50%",
-    width: 20,
+    width: 24,
     height: 2,
     backgroundColor: colors.daclen_red,
   },

@@ -24,7 +24,7 @@ export default function UserRootHeaderItem({
     >
       <View style={styles.container}>
         <Text
-          style={{ fontSize: 12, color: color ? color : colors.daclen_gray }}
+          style={{ fontSize: 12, fontWeight: "bold", color: color ? color : colors.daclen_gray }}
         >
           {title}
         </Text>
