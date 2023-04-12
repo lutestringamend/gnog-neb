@@ -28,11 +28,17 @@ function DashboardMain(props) {
   });
   const [browserText, setBrowserText] = useState(null);
   const navigation = useNavigation();
-  const { currentUser, token } = props;
+  const { currentUser, token, hpv } = props;
 
   useEffect(() => {
-    props.getHPV(currentUser?.id, token);
-  }, [token]);
+    if (token !== null) {
+      if (hpv === null || hpv?.length === undefined) {
+        props.getHPV(currentUser?.id, token);
+      } else {
+        console.log({ hpv });
+      }
+    }
+  }, [token, hpv]);
 
   function buttonPress(text) {
     setBrowserText(`Lihat ${text} di Browser`);
@@ -102,11 +108,10 @@ function DashboardMain(props) {
             poin_user={currentUser?.poin_user}
             komisi_user={currentUser?.komisi_user}
             bonus_level_user={currentUser?.bonus_level_user}
+            referral_number={hpv?.length}
             onButtonPress={(e) => buttonPress(e)}
           />
         )}
-
-        
       </ScrollView>
     </SafeAreaView>
   );
@@ -198,6 +203,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
+  hpv: store.userState.hpv,
 });
 
 const mapDispatchProps = (dispatch) =>

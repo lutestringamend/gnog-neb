@@ -19,10 +19,11 @@ import {
   poinuserhpvtitle,
   poinuserpointitle,
   poinusertotaltitle,
+  userroottitle,
 } from "./constants";
 
 export default function Main(props) {
-  const { poin_user, komisi_user, bonus_level_user } = props;
+  const { poin_user, komisi_user, bonus_level_user, referral_number } = props;
   const navigation = useNavigation();
 
   return (
@@ -67,6 +68,14 @@ export default function Main(props) {
           color={colors.daclen_teal}
           icon="percent"
           onButtonPress={(e) => props?.onButtonPress(e)}
+        />
+        <MainItem
+          title={userroottitle}
+          content={referral_number ? referral_number : 0}
+          color={colors.daclen_orange}
+          icon="account-group"
+          onButtonPress={() => navigation.navigate("UserRootsScreen")}
+          disabled={referral_number === undefined || referral_number < 1}
         />
       </View>
 

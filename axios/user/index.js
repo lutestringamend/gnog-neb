@@ -84,7 +84,6 @@ export function clearUserData(forceLogout) {
 
 export function getHPV(id, token) {
   return (dispatch) => {
-    dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: null });
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -97,7 +96,7 @@ export function getHPV(id, token) {
     Axios.get(url, config)
       .then((response) => {
         const data = response.data;
-        console.log("HPV data", data);
+        //console.log("HPV data", data);
         dispatch({ type: USER_HPV_STATE_CHANGE, data });
         /*const token = response.data.token;
         if (token !== null && token !== undefined) {

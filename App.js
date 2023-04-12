@@ -55,6 +55,7 @@ import CameraView from "./components/media/CameraView";
 import ImageViewer from "./components/imageviewer/ImageViewer";
 import MediaKitFiles from "./components/dashboard/MediaKitFiles";
 import DeleteAccountScreen from "./components/auth/DeleteAccount";
+import UserRoots from "./components/dashboard/UserRoots";
 
 import { appname } from "./axios/constants";
 import { colors, dimensions } from "./styles/base";
@@ -229,6 +230,11 @@ export default function App() {
                 name="MediaKitFiles"
                 component={MediaKitFiles}
                 options={{ ...defaultOptions, title: "Materi Promosi" }}
+              />
+              <Stack.Screen
+                name="UserRootsScreen"
+                component={UserRoots}
+                options={{ ...defaultOptions, title: "User Roots" }}
               />
             </Stack.Navigator>
           </NavigationContainer>

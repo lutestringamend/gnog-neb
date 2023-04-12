@@ -17,6 +17,7 @@ export default function MainItem(props) {
         props?.underlayColor ? props?.underlayColor : colors.daclen_light
       }
       style={styles.touchableContainer}
+      disabled={props?.disabled}
     >
       <View style={styles.containerHorizontal}>
         <View style={styles.container}>
@@ -38,7 +39,7 @@ export default function MainItem(props) {
               },
             ]}
           >
-            {props?.content}
+            {props?.content ? props?.content : "0"}
           </Text>
         </View>
         <View style={styles.containerIcon}>

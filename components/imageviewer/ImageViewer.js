@@ -332,7 +332,7 @@ export default function ImageViewer(props) {
             <Image
               source={{ uri: transformedImage ? transformedImage : uri }}
               resizeMode={isSquare ? "contain" : "cover"}
-              style={[styles.image, { height: productPhotoHeight, overlay: 100 }]}
+              style={[styles.image, { height: productPhotoHeight, overflow: "hidden" }]}
             />
             {watermarkData === null || watermarkData === undefined ? null : (
               <Text style={[styles.textWatermark, generalStyle]}>
