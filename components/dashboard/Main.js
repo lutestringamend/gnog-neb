@@ -79,17 +79,15 @@ export default function Main(props) {
         />
       </View>
 
-      {Platform.OS !== "ios" ? (
-        <View style={styles.containerMediaKit}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("MediaKitFiles")}
-            style={styles.button}
-          >
-            <MaterialCommunityIcons name="briefcase" size={18} color="white" />
-            <Text style={styles.textButton}>Materi Promosi</Text>
-          </TouchableOpacity>
-        </View>
-      ) : null}
+      <View style={styles.containerMediaKit}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("MediaKitFiles")}
+          style={styles.button}
+        >
+          <MaterialCommunityIcons name="briefcase" size={18} color="white" />
+          <Text style={styles.textButton}>Materi Promosi</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }

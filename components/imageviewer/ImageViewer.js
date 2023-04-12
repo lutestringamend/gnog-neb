@@ -272,7 +272,7 @@ export default function ImageViewer(props) {
         } else {
           try {
             //save(transformedImage);
-            sharePhotoAsync(uri);
+            sharePhotoAsync(transformedImage);
           } catch (e) {
             console.error(e);
             setSuccess(false);
@@ -305,19 +305,18 @@ export default function ImageViewer(props) {
             },
           ]}
         >
-          <Image
-            source={{ uri: transformedImage ? transformedImage : uri }}
-            style={[
-              styles.image,
-              {
-                width,
-                height,
-              },
-            ]}
-          />
-          <Text style={[styles.textWatermark, textStyle]}>
-            {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
-          </Text>
+          <ImageBackground
+            source={{ uri }}
+            style={{
+              width,
+              height,
+            }}
+            resizeMode="cover"
+          >
+            <Text style={[styles.textWatermark, textStyle]}>
+              {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
+            </Text>
+          </ImageBackground>
         </ViewShot>
       )}
       <View style={styles.containerInside}>
@@ -467,7 +466,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     start: 0,
-    elevation: 3,
+    zIndex: 3,
     backgroundColor: "white",
     overflow: "visible",
     width: dimensions.productPhotoWidth,
