@@ -40,8 +40,6 @@ export default function ImageViewer(props) {
       : font?.size?.ukuran
     : 16;
 
-  //let ratioRounded = Math.round(ratio);
-
   let generalStyle = {
     paddingVertical: 1,
     paddingHorizontal: 2,
@@ -151,14 +149,6 @@ export default function ImageViewer(props) {
       props.navigation.setOptions({ title });
     }
   }, [uri]);
-
-  /*useEffect(() => {
-    console.log({ transformedImage });
-    if (transformedImage !== null && Platform.OS === "web") {
-      setError("transformedImage\n" + transformedImage?.substring(0, 64));
-      //ToastAndroid.show(transformedImage, ToastAndroid.LONG);
-    }
-  }, [transformedImage]);*/
 
   function getFileName(uri) {
     const uriSplit = uri.split("/");
@@ -408,34 +398,6 @@ export default function ImageViewer(props) {
   );
 }
 
-/*
-<View
-            style={[
-              styles.containerImage,
-              {
-                width: dimensions.productPhotoWidth,
-                height: productPhotoHeight,
-              },
-            ]}
-          >
-            <Image
-              source={{ uri: transformedImage ? transformedImage : uri }}
-              resizeMode={isSquare ? "contain" : "cover"}
-              style={[
-                styles.image,
-                {
-                  width: dimensions.productPhotoWidth,
-                  height: productPhotoHeight,
-                },
-              ]}
-              onError={(e) => setError(e.toString())}
-            />
-            <Text style={[styles.textWatermark, generalStyle]}>
-              {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
-            </Text>
-          </View>
-*/
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -508,5 +470,6 @@ const styles = StyleSheet.create({
   spinner: {
     alignSelf: "center",
     zIndex: 6,
+    marginVertical: 20,
   },
 });
