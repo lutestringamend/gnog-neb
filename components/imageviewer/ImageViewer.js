@@ -10,6 +10,7 @@ import {
   Platform,
   ToastAndroid,
   ImageBackground,
+  ScrollView,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -282,18 +283,7 @@ export default function ImageViewer(props) {
         <ViewShot
           ref={imageRef}
           options={{ fileName: "watermarkphoto", format: "jpg", quality: 1 }}
-          style={[
-            styles.containerImage,
-            {
-              width,
-              height,
-              position: "absolute",
-              top: 0,
-              start: 0,
-              elevation: 0,
-              opacity: 100,
-            },
-          ]}
+          style={[styles.containerLargeImage, { width, height }]}
         >
           <ImageBackground
             source={{ uri }}
@@ -309,45 +299,25 @@ export default function ImageViewer(props) {
           </ImageBackground>
         </ViewShot>
       )}
-      <View style={styles.containerInside}>
-        {error ? (
-          <Text
-            style={[
-              styles.textError,
-              success && { backgroundColor: colors.daclen_green },
-            ]}
-          >
-            {error}
-          </Text>
-        ) : null}
 
+      {error ? (
+        <Text
+          style={[
+            styles.textError,
+            success && { backgroundColor: colors.daclen_green },
+          ]}
+        >
+          {error}
+        </Text>
+      ) : null}
+
+      <ScrollView style={styles.scrollView}>
         {watermarkData === null || watermarkData === undefined ? (
           <View style={styles.containerImage}>
             <Image source={{ uri }} resizeMode="contain" style={styles.image} />
           </View>
-        ) : loading ? (
-          <ActivityIndicator
-            size="large"
-            style={styles.spinner}
-            color={colors.daclen_orange}
-          />
         ) : (
-          <ImageBackground
-            source={{ uri }}
-            style={{
-              width: dimensions.productPhotoWidth,
-              height: productPhotoHeight,
-            }}
-            resizeMode="cover"
-          >
-            <Text style={[styles.textWatermark, generalStyle]}>
-              {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
-            </Text>
-          </ImageBackground>
-        )}
-
-        {watermarkData === undefined || watermarkData === null ? null : (
-          <View style={styles.containerBottom}>
+          <View style={styles.containerInside}>
             <TouchableOpacity
               onPress={() =>
                 startDownload(
@@ -391,9 +361,31 @@ export default function ImageViewer(props) {
                   : "Download Foto"}
               </Text>
             </TouchableOpacity>
+            {loading ? (
+              <ActivityIndicator
+                size="large"
+                style={styles.spinner}
+                color={colors.daclen_orange}
+              />
+            ) : (
+              <View style={styles.containerImagePreview}>
+                <ImageBackground
+                  source={{ uri }}
+                  style={{
+                    width: dimensions.productPhotoWidth,
+                    height: productPhotoHeight,
+                  }}
+                  resizeMode="cover"
+                >
+                  <Text style={[styles.textWatermark, generalStyle]}>
+                    {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
+                  </Text>
+                </ImageBackground>
+              </View>
+            )}
           </View>
         )}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -401,34 +393,53 @@ export default function ImageViewer(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: dimensions.fullWidth,
+    height: dimensions.fullHeight,
+    justifyContent: "center",
   },
-  containerInside: {
+  scrollView: {
     flex: 1,
-    elevation: 2,
     width: dimensions.fullWidth,
     height: dimensions.fullHeight,
     backgroundColor: "white",
-    justifyContent: "center",
+  },
+  containerInside: {
+    flex: 1,
+    justifyContent: "space-around",
+    width: dimensions.fullWidth,
+    height: dimensions.fullHeight,
+    backgroundColor: "white",
     alignItems: "center",
   },
-  containerBottom: {
-    alignSelf: "center",
-    position: "absolute",
+  containerLargeImage: {
+    flex: 1,
     backgroundColor: "transparent",
-    bottom: 32,
-    elevation: 10,
+    overflow: "visible",
+    position: "absolute",
+    top: 0,
+    start: 0,
+    zIndex: -1,
+    opacity: 100,
   },
   containerImage: {
+    flex: 1,
     backgroundColor: "transparent",
     width: dimensions.productPhotoWidth,
     height: dimensions.productPhotoWidth,
     overflow: "visible",
+    marginVertical: 32,
+  },
+  containerImagePreview: {
+    flex: 1,
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 32,
   },
   image: {
     position: "absolute",
     top: 0,
     start: 0,
-    zIndex: 3,
     backgroundColor: "white",
     overflow: "visible",
     width: dimensions.productPhotoWidth,
@@ -438,22 +449,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    width: "100%",
     paddingVertical: 12,
     paddingHorizontal: 32,
-    borderRadius: 4,
     backgroundColor: colors.daclen_orange,
   },
   textButton: {
     fontSize: 16,
     fontWeight: "bold",
-    marginStart: 6,
+    marginStart: 10,
     color: "white",
   },
   textError: {
     width: dimensions.fullWidth,
-    position: "absolute",
-    zIndex: 10,
-    top: 0,
+    alignSelf: "flex-start",
     fontSize: 14,
     fontWeight: "bold",
     color: "white",
@@ -464,12 +473,12 @@ const styles = StyleSheet.create({
   },
   textWatermark: {
     position: "absolute",
-    zIndex: 4,
     fontWeight: "bold",
   },
   spinner: {
-    alignSelf: "center",
-    zIndex: 6,
-    marginVertical: 20,
+    position: "absolute",
+    top: "50%",
+    start: "50%",
+    transform: "transform(-50%,-50%)",
   },
 });
