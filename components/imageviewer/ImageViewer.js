@@ -311,56 +311,57 @@ export default function ImageViewer(props) {
         </Text>
       ) : null}
 
-      <ScrollView style={styles.scrollView}>
+      {watermarkData === null || watermarkData === undefined ? null : (
+        <TouchableOpacity
+          onPress={() =>
+            startDownload(transformedImage !== null && transformedImage !== "")
+          }
+          style={[
+            styles.button,
+            loading ||
+              ((downloadUri !== null ||
+                transformedImage !== null ||
+                Platform.OS === "web") &&
+                !sharingAvailability && {
+                  backgroundColor: colors.daclen_gray,
+                }),
+          ]}
+          disabled={
+            loading ||
+            ((downloadUri !== null ||
+              transformedImage !== null ||
+              Platform.OS === "web") &&
+              !sharingAvailability)
+          }
+        >
+          <MaterialCommunityIcons
+            name={
+              downloadUri !== null ||
+              transformedImage !== null ||
+              Platform.OS === "web"
+                ? "share-variant"
+                : "download"
+            }
+            size={18}
+            color="white"
+          />
+          <Text style={styles.textButton}>
+            {downloadUri !== null ||
+            transformedImage !== null ||
+            Platform.OS === "web"
+              ? "Share Foto"
+              : "Download Foto"}
+          </Text>
+        </TouchableOpacity>
+      )}
+
+      <ScrollView contentContainerStyle={styles.scrollView}>
         {watermarkData === null || watermarkData === undefined ? (
           <View style={styles.containerImage}>
             <Image source={{ uri }} resizeMode="contain" style={styles.image} />
           </View>
         ) : (
           <View style={styles.containerInside}>
-            <TouchableOpacity
-              onPress={() =>
-                startDownload(
-                  transformedImage !== null && transformedImage !== ""
-                )
-              }
-              style={[
-                styles.button,
-                loading ||
-                  ((downloadUri !== null ||
-                    transformedImage !== null ||
-                    Platform.OS === "web") &&
-                    !sharingAvailability && {
-                      backgroundColor: colors.daclen_gray,
-                    }),
-              ]}
-              disabled={
-                loading ||
-                ((downloadUri !== null ||
-                  transformedImage !== null ||
-                  Platform.OS === "web") &&
-                  !sharingAvailability)
-              }
-            >
-              <MaterialCommunityIcons
-                name={
-                  downloadUri !== null ||
-                  transformedImage !== null ||
-                  Platform.OS === "web"
-                    ? "share-variant"
-                    : "download"
-                }
-                size={18}
-                color="white"
-              />
-              <Text style={styles.textButton}>
-                {downloadUri !== null ||
-                transformedImage !== null ||
-                Platform.OS === "web"
-                  ? "Share Foto"
-                  : "Download Foto"}
-              </Text>
-            </TouchableOpacity>
             {loading ? (
               <ActivityIndicator
                 size="large"
@@ -394,21 +395,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: dimensions.fullWidth,
-    height: dimensions.fullHeight,
-    justifyContent: "center",
   },
   scrollView: {
-    flex: 1,
+    flexGrow: 1,
     width: dimensions.fullWidth,
-    height: dimensions.fullHeight,
     backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
   },
   containerInside: {
     flex: 1,
-    justifyContent: "space-around",
     width: dimensions.fullWidth,
-    height: dimensions.fullHeight,
     backgroundColor: "white",
+    justifyContent: "center",
     alignItems: "center",
   },
   containerLargeImage: {
@@ -423,23 +422,18 @@ const styles = StyleSheet.create({
   },
   containerImage: {
     flex: 1,
-    backgroundColor: "transparent",
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
     width: dimensions.productPhotoWidth,
-    height: dimensions.productPhotoWidth,
     overflow: "visible",
-    marginVertical: 32,
   },
   containerImagePreview: {
-    flex: 1,
     backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
-    marginVertical: 32,
   },
   image: {
-    position: "absolute",
-    top: 0,
-    start: 0,
     backgroundColor: "white",
     overflow: "visible",
     width: dimensions.productPhotoWidth,
@@ -462,7 +456,6 @@ const styles = StyleSheet.create({
   },
   textError: {
     width: dimensions.fullWidth,
-    alignSelf: "flex-start",
     fontSize: 14,
     fontWeight: "bold",
     color: "white",
@@ -476,9 +469,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   spinner: {
-    position: "absolute",
-    top: "50%",
-    start: "50%",
-    transform: "transform(-50%,-50%)",
+    marginVertical: 20,
   },
 });
