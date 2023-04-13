@@ -5,15 +5,15 @@ import {
   SafeAreaView,
   View,
   StyleSheet,
-  TouchableOpacity,
   Text,
   Platform,
   ToastAndroid,
   ImageBackground,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import ViewShot from "react-native-view-shot";
 import * as FileSystem from "expo-file-system";
 import { shareAsync, isAvailableAsync } from "expo-sharing";
@@ -312,47 +312,51 @@ export default function ImageViewer(props) {
       ) : null}
 
       {watermarkData === null || watermarkData === undefined ? null : (
-        <TouchableOpacity
-          onPress={() =>
-            startDownload(transformedImage !== null && transformedImage !== "")
-          }
-          style={[
-            styles.button,
-            loading ||
+        <View style={styles.containerButton}>
+          <TouchableOpacity
+            onPress={() =>
+              startDownload(
+                transformedImage !== null && transformedImage !== ""
+              )
+            }
+            style={[
+              styles.button,
+              loading ||
+                ((downloadUri !== null ||
+                  transformedImage !== null ||
+                  Platform.OS === "web") &&
+                  !sharingAvailability && {
+                    backgroundColor: colors.daclen_gray,
+                  }),
+            ]}
+            disabled={
+              loading ||
               ((downloadUri !== null ||
                 transformedImage !== null ||
                 Platform.OS === "web") &&
-                !sharingAvailability && {
-                  backgroundColor: colors.daclen_gray,
-                }),
-          ]}
-          disabled={
-            loading ||
-            ((downloadUri !== null ||
-              transformedImage !== null ||
-              Platform.OS === "web") &&
-              !sharingAvailability)
-          }
-        >
-          <MaterialCommunityIcons
-            name={
-              downloadUri !== null ||
+                !sharingAvailability)
+            }
+          >
+            <MaterialCommunityIcons
+              name={
+                downloadUri !== null ||
+                transformedImage !== null ||
+                Platform.OS === "web"
+                  ? "share-variant"
+                  : "download"
+              }
+              size={18}
+              color="white"
+            />
+            <Text style={styles.textButton}>
+              {downloadUri !== null ||
               transformedImage !== null ||
               Platform.OS === "web"
-                ? "share-variant"
-                : "download"
-            }
-            size={18}
-            color="white"
-          />
-          <Text style={styles.textButton}>
-            {downloadUri !== null ||
-            transformedImage !== null ||
-            Platform.OS === "web"
-              ? "Share Foto"
-              : "Download Foto"}
-          </Text>
-        </TouchableOpacity>
+                ? "Share Foto"
+                : "Download Foto"}
+            </Text>
+          </TouchableOpacity>
+        </View>
       )}
 
       <ScrollView contentContainerStyle={styles.scrollView}>
@@ -438,6 +442,10 @@ const styles = StyleSheet.create({
     overflow: "visible",
     width: dimensions.productPhotoWidth,
     height: dimensions.productPhotoWidth,
+  },
+  containerButton: {
+    width: "100%",
+    backgroundColor: colors.daclen_light,
   },
   button: {
     flexDirection: "row",
