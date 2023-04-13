@@ -56,6 +56,7 @@ import ImageViewer from "./components/imageviewer/ImageViewer";
 import MediaKitFiles from "./components/dashboard/MediaKitFiles";
 import DeleteAccountScreen from "./components/auth/DeleteAccount";
 import UserRoots from "./components/dashboard/UserRoots";
+import VideoPlayer from "./components/videoplayer/VideoPlayer";
 
 import { appname } from "./axios/constants";
 import { colors, dimensions } from "./styles/base";
@@ -235,6 +236,11 @@ export default function App() {
                 name="UserRootsScreen"
                 component={UserRoots}
                 options={{ ...defaultOptions, title: "User Roots" }}
+              />
+              <Stack.Screen
+                name="VideoPlayerScreen"
+                component={VideoPlayer}
+                options={{ ...defaultOptions, title: "Video" }}
               />
             </Stack.Navigator>
           </NavigationContainer>

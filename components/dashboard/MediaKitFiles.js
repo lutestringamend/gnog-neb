@@ -142,12 +142,12 @@ function MediaKitFiles(props) {
             
           </View>
           {activeTab === WATERMARK_VIDEO ? (
-            <View style={{ marginHorizontal: 20 }}>
+            <TouchableOpacity style={{ marginHorizontal: 20 }} onPress={() => navigation.navigate("VideoPlayerScreen")}>
               <Text style={styles.textUid}>{activeTab}</Text>
               <Text style={styles.textUid}>
                 {JSON.stringify(watermarkData)}
               </Text>
-            </View>
+            </TouchableOpacity>
           ) : (
             <WatermarkPhotos
               watermarkData={watermarkData}

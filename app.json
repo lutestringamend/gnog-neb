@@ -3,7 +3,7 @@
     "name": "Daclen",
     "slug": "daclen",
     "version": "1.1.72",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/favicon.png",
     "userInterfaceStyle": "light",
     "splash": {
@@ -70,8 +70,6 @@
           "photosPermission": "This app needs Storage permission only to upload a new profile picture and save it on Daclen.com."
         }
       ],
-      "@config-plugins/react-native-blob-util",
-      "@config-plugins/react-native-pdf",
       "sentry-expo"
     ],
     "hooks": {
