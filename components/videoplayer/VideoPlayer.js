@@ -16,11 +16,15 @@ import { getOrientationAsync, Orientation } from "expo-screen-orientation";
 
 import { colors, dimensions } from "../../styles/base";
 import { getFileName } from "../media";
+import MainHeader from "../main/MainHeader";
+import { useNavigation } from "@react-navigation/native";
+import { WATERMARK_VIDEO } from "../dashboard/constants";
 
 export default function VideoPlayer(props) {
   const { title, uri, width, height, thumbnail } = props.route?.params;
   let ratio = width / height;
 
+  const navigation = useNavigation();
   const initialVideoSize = {
     isLandscape: null,
     videoWidth: Dimensions.get("window").width,
@@ -65,15 +69,18 @@ export default function VideoPlayer(props) {
 
     if (uri === undefined || uri === null) {
       setError("Tidak ada Uri");
-    } else if (title !== null && title !== undefined && title !== "") {
-      props.navigation.setOptions({ title });
+    } else {
+      checkInitialOrientation();
     }
-    checkInitialOrientation();
   }, [uri]);
 
   useEffect(() => {
     console.log("videoSize", videoSize);
   }, [videoSize]);
+
+  function onBackPress() {
+    navigation.navigate("MediaKitFiles", { activeTab: WATERMARK_VIDEO });
+  }
 
   const startDownload = async () => {
     if (!loading) {
@@ -100,20 +107,12 @@ export default function VideoPlayer(props) {
 
   return (
     <View style={[styles.container, { width: videoSize.videoWidth }]}>
-      {error ? (
-        <Text
-          style={[
-            styles.textError,
-            {
-              backgroundColor: success
-                ? colors.daclen_green
-                : colors.daclen_red,
-              width: videoSize.videoWidth,
-            },
-          ]}
-        >
-          {error}
-        </Text>
+      {!videoSize.isLandscape ? (
+        <MainHeader
+          icon="arrow-left"
+          title={title}
+          onBackPress={() => onBackPress()}
+        />
       ) : null}
 
       <ScrollView style={styles.scrollView}>
@@ -127,13 +126,33 @@ export default function VideoPlayer(props) {
               },
             ]}
           >
+            {error ? (
+              <Text
+                style={[
+                  styles.textError,
+                  {
+                    backgroundColor: success
+                      ? colors.daclen_green
+                      : colors.daclen_red,
+                    width: videoSize.videoWidth,
+                  },
+                ]}
+              >
+                {error}
+              </Text>
+            ) : null}
+            {videoSize.isLandscape ? (
+              <Text style={styles.textHeaderLandscape}>{title}</Text>
+            ) : null}
             <Video
               ref={video}
               style={[
                 styles.video,
                 {
+                  position: videoSize.isLandscape ? "absolute" : "relative",
                   width: videoSize.videoWidth,
                   height: videoSize.videoHeight,
+                  zIndex: 1,
                 },
               ]}
               source={{
@@ -152,7 +171,7 @@ export default function VideoPlayer(props) {
               style={[
                 styles.video,
                 {
-                  position: "absolute",
+                  position: videoSize.isLandscape ? "absolute" : "relative",
                   width: videoSize.videoWidth,
                   height: videoSize.videoHeight,
                   zIndex: 2,
@@ -180,8 +199,17 @@ export default function VideoPlayer(props) {
               : styles.containerPanelPortrait
           }
         >
+          {videoSize.isLandscape ? (
+            <TouchableOpacity
+              style={styles.buttonClose}
+              onPress={() => onBackPress()}
+            >
+              <MaterialCommunityIcons name="close" size={18} color="white" />
+            </TouchableOpacity>
+          ) : null}
+
           <TouchableOpacity
-            style={styles.button}
+            style={videoSize.isLandscape ? styles.buttonCircle : styles.button}
             onPress={() =>
               status.isPlaying
                 ? video.current.pauseAsync()
@@ -201,7 +229,7 @@ export default function VideoPlayer(props) {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.button}
+            style={videoSize.isLandscape ? styles.buttonCircle : styles.button}
             onPress={() => setHidden(() => !hidden)}
           >
             <MaterialCommunityIcons name="view-day" size={18} color="white" />
@@ -211,7 +239,10 @@ export default function VideoPlayer(props) {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.button, { backgroundColor: colors.daclen_orange }]}
+            style={[
+              videoSize.isLandscape ? styles.buttonCircle : styles.button,
+              { backgroundColor: colors.daclen_orange },
+            ]}
             onPress={() => startDownload()}
             disabled={loading}
           >
@@ -248,12 +279,14 @@ const styles = StyleSheet.create({
   containerPanelPortrait: {
     marginHorizontal: 20,
     paddingBottom: dimensions.pageBottomPadding,
+    alignItems: "center",
   },
   containerPanelLandscape: {
     position: "absolute",
     top: 10,
     end: 10,
     backgroundColor: "transparent",
+    alignItems: "flex-end",
     zIndex: 10,
   },
   video: {
@@ -272,6 +305,36 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginVertical: 10,
     backgroundColor: colors.daclen_blue,
+  },
+  buttonCircle: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginTop: 12,
+    backgroundColor: colors.daclen_blue,
+  },
+  buttonClose: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    marginBottom: 12,
+    backgroundColor: colors.daclen_gray,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  textHeaderLandscape: {
+    zIndex: 4,
+    position: "absolute",
+    top: 0,
+    start: 0,
+    padding: 10,
+    backgroundColor: colors.daclen_black,
+    fontWeight: "bold",
+    color: "white",
+    opacity: 10,
+    fontSize: 16,
   },
   textButton: {
     fontSize: 16,

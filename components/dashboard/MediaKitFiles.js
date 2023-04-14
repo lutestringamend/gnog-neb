@@ -34,7 +34,7 @@ import WatermarkVideos from "./WatermarkVideos";
 
 function MediaKitFiles(props) {
   try {
-    const [activeTab, setActiveTab] = useState(WATERMARK_PHOTO);
+    const [activeTab, setActiveTab] = useState(props.route.params?.activeTab ? props.route.params?.activeTab : WATERMARK_PHOTO);
     const [expand, setExpand] = useState(false);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);

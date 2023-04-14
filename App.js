@@ -240,7 +240,7 @@ export default function App() {
               <Stack.Screen
                 name="VideoPlayerScreen"
                 component={VideoPlayer}
-                options={{ ...defaultOptions, title: "Video" }}
+                options={{ ...defaultOptions, headerShown: false }}
               />
             </Stack.Navigator>
           </NavigationContainer>
