@@ -23,6 +23,7 @@
       "bundleIdentifier": "com.daclenmobile.daclen",
       "buildNumber": "2",
       "userInterfaceStyle": "light",
+      "requireFullScreen": true,
       "infoPlist": {
         "NSCameraUsageDescription": "This app needs Camera permission only to take a new profile picture and save it on Daclen.com.",
         "NSPhotoLibraryAddUsageDescription": "This app needs Storage permission only to save watermarked product photos from Daclen.com.",
@@ -68,6 +69,12 @@
         "expo-image-picker",
         {
           "photosPermission": "This app needs Storage permission only to upload a new profile picture and save it on Daclen.com."
+        }
+      ],
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "PORTRAIT"
         }
       ],
       "sentry-expo"

@@ -6,10 +6,13 @@ import {
   Text,
   ActivityIndicator,
   ImageBackground,
+  Dimensions,
+  ScrollView,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as FileSystem from "expo-file-system";
 import { Video, ResizeMode } from "expo-av";
+import { getOrientationAsync, Orientation } from "expo-screen-orientation";
 
 import { colors, dimensions } from "../../styles/base";
 import { getFileName } from "../media";
@@ -18,7 +21,14 @@ export default function VideoPlayer(props) {
   const { title, uri, width, height, thumbnail } = props.route?.params;
   let ratio = width / height;
 
+  const initialVideoSize = {
+    isLandscape: null,
+    videoWidth: Dimensions.get("window").width,
+    videoHeight: 0,
+  };
   const video = useRef(null);
+  const [videoSize, setVideoSize] = useState(initialVideoSize);
+
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -26,12 +36,44 @@ export default function VideoPlayer(props) {
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
+    const checkInitialOrientation = async () => {
+      const result = await getOrientationAsync();
+      //console.log("getOrientationAsync", result);
+      if (
+        result === Orientation.LANDSCAPE_LEFT ||
+        result === Orientation.LANDSCAPE_RIGHT
+      ) {
+        setVideoSize({
+          isLandscape: true,
+          videoWidth: Dimensions.get("window").width,
+          videoHeight: Dimensions.get("window").height,
+        });
+      } else if (
+        result === Orientation.PORTRAIT_DOWN ||
+        result === Orientation.PORTRAIT_UP
+      ) {
+        setVideoSize({
+          isLandscape: false,
+          videoWidth: Dimensions.get("window").width,
+          videoHeight: Dimensions.get("window").width / ratio,
+        });
+      } else {
+        setVideoSize(initialVideoSize);
+        setError("Unknown screen orientation");
+      }
+    };
+
     if (uri === undefined || uri === null) {
       setError("Tidak ada Uri");
     } else if (title !== null && title !== undefined && title !== "") {
       props.navigation.setOptions({ title });
     }
+    checkInitialOrientation();
   }, [uri]);
+
+  useEffect(() => {
+    console.log("videoSize", videoSize);
+  }, [videoSize]);
 
   const startDownload = async () => {
     if (!loading) {
@@ -57,101 +99,139 @@ export default function VideoPlayer(props) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { width: videoSize.videoWidth }]}>
       {error ? (
         <Text
           style={[
             styles.textError,
-            success && { backgroundColor: colors.daclen_green },
+            {
+              backgroundColor: success
+                ? colors.daclen_green
+                : colors.daclen_red,
+              width: videoSize.videoWidth,
+            },
           ]}
         >
           {error}
         </Text>
       ) : null}
 
-      <Video
-        ref={video}
-        style={[styles.video, { height: dimensions.fullWidth / ratio }]}
-        source={{
-          uri,
-        }}
-        useNativeControls
-        resizeMode={ResizeMode.CONTAIN}
-        isLooping
-        onPlaybackStatusUpdate={(status) => setStatus(() => status)}
-      />
+      <ScrollView style={styles.scrollView}>
+        {videoSize.isLandscape === null ? null : (
+          <View
+            style={[
+              styles.video,
+              {
+                width: videoSize.width,
+                height: videoSize.height,
+              },
+            ]}
+          >
+            <Video
+              ref={video}
+              style={[
+                styles.video,
+                {
+                  width: videoSize.videoWidth,
+                  height: videoSize.videoHeight,
+                },
+              ]}
+              source={{
+                uri,
+              }}
+              useNativeControls
+              resizeMode={
+                videoSize.isLandscape ? ResizeMode.STRETCH : ResizeMode.CONTAIN
+              }
+              isLooping
+              onPlaybackStatusUpdate={(status) => setStatus(() => status)}
+            />
 
-      {!status.isLoaded || hidden ? (
-        <ImageBackground
-          source={{ uri: thumbnail }}
-          style={[
-            styles.video,
-            {
-              height: dimensions.fullWidth / ratio,
-              position: "absolute",
-              top: 0,
-              start: 0,
-              zIndex: 2,
-              backgroundColor: colors.daclen_black,
-            },
-          ]}
-          resizeMode="cover"
-        />
-      ) : null}
+            <ImageBackground
+              source={{ uri: thumbnail }}
+              style={[
+                styles.video,
+                {
+                  position: "absolute",
+                  width: videoSize.videoWidth,
+                  height: videoSize.videoHeight,
+                  zIndex: 2,
+                  backgroundColor: colors.daclen_light,
+                  opacity: !status.isLoaded || hidden ? 100 : 0,
+                },
+              ]}
+              resizeMode="cover"
+            />
 
-      {!status.isLoaded || loading ? (
-        <ActivityIndicator
-          size="large"
-          color={colors.daclen_orange}
-          style={styles.spinner}
-        />
-      ) : null}
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() =>
-          status.isPlaying
-            ? video.current.pauseAsync()
-            : video.current.playAsync()
-        }
-      >
-        <MaterialCommunityIcons
-          name={status.isPlaying ? "pause" : "play"}
-          size={18}
-          color="white"
-        />
-        <Text style={styles.textButton}>
-          {status.isPlaying ? "Pause" : "Play"}
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => setHidden(() => !hidden)}
-      >
-        <MaterialCommunityIcons name="view-day" size={18} color="white" />
-        <Text style={styles.textButton}>{hidden ? "Show" : "Hide"}</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: colors.daclen_orange }]}
-        onPress={() => startDownload()}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator
-            size="small"
-            color="white"
-            style={{
-              alignSelf: "center",
-            }}
-          />
-        ) : (
-          <MaterialCommunityIcons name="download" size={18} color="white" />
+            {loading ? (
+              <ActivityIndicator
+                size="large"
+                color={colors.daclen_orange}
+                style={{ zIndex: 4 }}
+              />
+            ) : null}
+          </View>
         )}
 
-        <Text style={styles.textButton}>Download Video</Text>
-      </TouchableOpacity>
+        <View
+          style={
+            videoSize.isLandscape
+              ? styles.containerPanelLandscape
+              : styles.containerPanelPortrait
+          }
+        >
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() =>
+              status.isPlaying
+                ? video.current.pauseAsync()
+                : video.current.playAsync()
+            }
+          >
+            <MaterialCommunityIcons
+              name={status.isPlaying ? "pause" : "play"}
+              size={18}
+              color="white"
+            />
+            {videoSize.isLandscape ? null : (
+              <Text style={styles.textButton}>
+                {status.isPlaying ? "Pause" : "Play"}
+              </Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setHidden(() => !hidden)}
+          >
+            <MaterialCommunityIcons name="view-day" size={18} color="white" />
+            {videoSize.isLandscape ? null : (
+              <Text style={styles.textButton}>{hidden ? "Show" : "Hide"}</Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: colors.daclen_orange }]}
+            onPress={() => startDownload()}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator
+                size="small"
+                color="white"
+                style={{
+                  alignSelf: "center",
+                }}
+              />
+            ) : (
+              <MaterialCommunityIcons name="download" size={18} color="white" />
+            )}
+            {videoSize.isLandscape ? null : (
+              <Text style={styles.textButton}>Download Video</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -159,14 +239,29 @@ export default function VideoPlayer(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: dimensions.fullWidth,
-    alignItems: "center",
     backgroundColor: "white",
   },
+  scrollView: {
+    flex: 1,
+    backgroundColor: "white",
+  },
+  containerPanelPortrait: {
+    marginHorizontal: 20,
+    paddingBottom: dimensions.pageBottomPadding,
+  },
+  containerPanelLandscape: {
+    position: "absolute",
+    top: 10,
+    end: 10,
+    backgroundColor: "transparent",
+    zIndex: 10,
+  },
   video: {
-    alignSelf: "center",
-    width: dimensions.fullWidth,
+    top: 0,
+    start: 0,
     backgroundColor: colors.daclen_black,
+    justifyContent: "center",
+    alignItems: "center",
   },
   button: {
     flexDirection: "row",
@@ -175,8 +270,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 4,
-    marginVertical: 20,
-    elevation: 3,
+    marginVertical: 10,
     backgroundColor: colors.daclen_blue,
   },
   textButton: {
@@ -186,7 +280,6 @@ const styles = StyleSheet.create({
     marginStart: 6,
   },
   textError: {
-    width: dimensions.fullWidth,
     fontSize: 14,
     fontWeight: "bold",
     color: "white",
@@ -194,12 +287,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: colors.daclen_danger,
     textAlign: "center",
-  },
-  spinner: {
-    position: "absolute",
-    top: dimensions.fullWidth / (ratio * 2),
-    start: dimensions.fullWidth / 2,
-    transform: [{ translateX: "-50%" }, { translateY: "-50%" }],
-    zIndex: 4,
+    zIndex: 6,
   },
 });

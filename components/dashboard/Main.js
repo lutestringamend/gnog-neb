@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
     width: dimensions.fullWidth,
     backgroundColor: colors.daclen_black,
     flex: 1,
+    paddingBottom: dimensions.pageBottomPadding,
   },
   containerHorizontal: {
     width: dimensions.fullWidth,
