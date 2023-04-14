@@ -27,8 +27,10 @@ import {
   watermarkvideoicon,
   WATERMARK_PHOTO,
   WATERMARK_VIDEO,
+  tempvideoarray,
 } from "./constants";
 import WatermarkPhotos from "./WatermarkPhotos";
+import WatermarkVideos from "./WatermarkVideos";
 
 function MediaKitFiles(props) {
   try {
@@ -48,7 +50,10 @@ function MediaKitFiles(props) {
     });
 
     useEffect(() => {
-      if (props.mediaKitPhotos?.length === undefined || props.mediaKitPhotos?.length < 1) {
+      if (
+        props.mediaKitPhotos?.length === undefined ||
+        props.mediaKitPhotos?.length < 1
+      ) {
         props.getMediaKitPhotos();
       }
     }, [props.mediaKitPhotos]);
@@ -132,28 +137,27 @@ function MediaKitFiles(props) {
               onPress={() => setActiveTab(WATERMARK_PHOTO)}
             />
 
-            {currentUser?.id === 8054 ? <HistoryTabItem
-              activeTab={activeTab}
-              name={WATERMARK_VIDEO}
-              icon={watermarkvideoicon}
-              onPress={() => setActiveTab(WATERMARK_VIDEO)}
-            /> : null}
-
-            
+            {currentUser?.id === 8054 ? (
+              <HistoryTabItem
+                activeTab={activeTab}
+                name={WATERMARK_VIDEO}
+                icon={watermarkvideoicon}
+                onPress={() => setActiveTab(WATERMARK_VIDEO)}
+              />
+            ) : null}
           </View>
           {activeTab === WATERMARK_VIDEO ? (
-            <TouchableOpacity style={{ marginHorizontal: 20 }} onPress={() => navigation.navigate("VideoPlayerScreen")}>
-              <Text style={styles.textUid}>{activeTab}</Text>
-              <Text style={styles.textUid}>
-                {JSON.stringify(watermarkData)}
-              </Text>
-            </TouchableOpacity>
+            <WatermarkVideos
+              watermarkData={watermarkData}
+              userId={currentUser?.id}
+              videos={tempvideoarray}
+            />
           ) : (
             <WatermarkPhotos
               watermarkData={watermarkData}
               userId={currentUser?.id}
               photos={props.mediaKitPhotos}
-             />
+            />
           )}
         </ScrollView>
       </SafeAreaView>
@@ -266,9 +270,6 @@ const mapStateToProps = (store) => ({
 });
 
 const mapDispatchProps = (dispatch) =>
-  bindActionCreators(
-    { getMediaKitPhotos },
-    dispatch
-  );
+  bindActionCreators({ getMediaKitPhotos }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchProps)(MediaKitFiles);

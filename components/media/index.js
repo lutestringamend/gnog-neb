@@ -103,6 +103,11 @@ export const takePicture = async (ref) => {
   return null;
 };
 
+export function getFileName(uri) {
+  const uriSplit = uri.split("/");
+  return uriSplit[uriSplit.length - 1];
+}
+
 export const prepareRatio = async (ref) => {
   const { height, width } = Dimensions.get("window");
   const screenRatio = height / width;

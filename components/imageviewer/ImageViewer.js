@@ -20,6 +20,7 @@ import { shareAsync, isAvailableAsync } from "expo-sharing";
 import * as Sentry from "sentry-expo";
 
 import { colors, dimensions } from "../../styles/base";
+import { getFileName } from "../media";
 
 export default function ImageViewer(props) {
   let title = props.route.params?.title;
@@ -150,11 +151,6 @@ export default function ImageViewer(props) {
       props.navigation.setOptions({ title });
     }
   }, [uri]);
-
-  function getFileName(uri) {
-    const uriSplit = uri.split("/");
-    return uriSplit[uriSplit.length - 1];
-  }
 
   const sharePhotoAsync = async (uri) => {
     if (!sharingAvailability) {

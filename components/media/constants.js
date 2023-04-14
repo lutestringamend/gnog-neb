@@ -15,6 +15,3 @@ export const imagepickernocameralrollmessage = "\nAnda tidak memberikan akses ke
 export const bigmediafileerror = "Ukuran file tidak boleh melebihi 2 MB"
 export const mediafileunusable = "File tidak valid"
 
-export const tempvideourl = "https://daclen.com/mp4/source.mp4"
-export const tempvideowidth = 480
-export const tempvideoheight = 270
