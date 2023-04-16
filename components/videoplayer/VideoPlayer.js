@@ -6,7 +6,6 @@ import {
   Text,
   ActivityIndicator,
   ImageBackground,
-  Dimensions,
   ScrollView,
   Platform,
   ToastAndroid,
@@ -15,13 +14,13 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import * as FileSystem from "expo-file-system";
 import { Video, ResizeMode } from "expo-av";
 import { getOrientationAsync, Orientation } from "expo-screen-orientation";
-import { DeviceMotion } from "expo-sensors";
 
 import { colors, dimensions } from "../../styles/base";
 import { getFileName } from "../media";
 import MainHeader from "../main/MainHeader";
 import { useNavigation } from "@react-navigation/native";
 import { WATERMARK_VIDEO } from "../dashboard/constants";
+import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 
 export default function VideoPlayer(props) {
   const { title, uri, width, height, thumbnail, userId } = props.route?.params;
@@ -30,9 +29,10 @@ export default function VideoPlayer(props) {
   const navigation = useNavigation();
   const initialVideoSize = {
     isLandscape: null,
-    videoWidth: Dimensions.get("window").width,
+    videoWidth: dimensions.fullWidth,
     videoHeight: 0,
   };
+  let screenData = useScreenDimensions();
   const video = useRef(null);
   const [videoSize, setVideoSize] = useState(initialVideoSize);
 
@@ -43,7 +43,6 @@ export default function VideoPlayer(props) {
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
- 
     const checkInitialOrientation = async () => {
       const result = await getOrientationAsync();
       //console.log("getOrientationAsync", result);
@@ -51,33 +50,14 @@ export default function VideoPlayer(props) {
         result === Orientation.LANDSCAPE_LEFT ||
         result === Orientation.LANDSCAPE_RIGHT
       ) {
-        setVideoSize({
-          isLandscape: true,
-          videoWidth: Dimensions.get("window").width,
-          videoHeight: Dimensions.get("window").height,
-        });
+        changeVideoOrientation(true);
       } else if (
         result === Orientation.PORTRAIT_DOWN ||
         result === Orientation.PORTRAIT_UP
       ) {
-        setVideoSize({
-          isLandscape: false,
-          videoWidth: Dimensions.get("window").width,
-          videoHeight: Dimensions.get("window").width / ratio,
-        });
+        changeVideoOrientation(false);
       } else {
-        setVideoSize(initialVideoSize);
-        setError("Unknown screen orientation");
-      }
-
-      const availability = await DeviceMotion.isAvailableAsync();
-      console.log("sensors availability", availability);
-
-      const sensorPermission = await DeviceMotion.requestPermissionsAsync();
-      console.log("sensorPermission", sensorPermission);
-
-      if (userId === 8054 && Platform.OS === "android") {
-        ToastAndroid.show(`${JSON.stringify(availability)}\n${JSON.stringify(sensorPermission)}`, ToastAndroid.LONG);
+        changeVideoOrientation(null);
       }
     };
 
@@ -89,8 +69,39 @@ export default function VideoPlayer(props) {
   }, [uri]);
 
   useEffect(() => {
+    if (screenData?.isLandscape !== videoSize.isLandscape) {
+      console.log("new screenData", screenData);
+      changeVideoOrientation(screenData?.isLandscape);
+      if (userId === 8054 && Platform.OS === "android") {
+        ToastAndroid.show(`change orientation ${JSON.stringify(screenData)}`,
+          ToastAndroid.LONG
+        );
+      }
+    }
+  }, [screenData]);
+
+  useEffect(() => {
     console.log("videoSize", videoSize, "userId", userId);
   }, [videoSize]);
+
+  function changeVideoOrientation(isLandscape) {
+    if (isLandscape === undefined || isLandscape === null) {
+      setVideoSize(initialVideoSize);
+      setError("Unknown screen orientation");
+    } else if (isLandscape) {
+      setVideoSize({
+        isLandscape: true,
+        videoWidth: screenData.width,
+        videoHeight: screenData.height,
+      });
+    } else {
+      setVideoSize({
+        isLandscape: false,
+        videoWidth: screenData.width,
+        videoHeight: screenData.width / ratio,
+      });
+    }
+  }
 
   function onBackPress() {
     navigation.navigate("MediaKitFiles", { activeTab: WATERMARK_VIDEO });
@@ -233,7 +244,7 @@ export default function VideoPlayer(props) {
               <ActivityIndicator
                 size="large"
                 color={colors.daclen_orange}
-                style={{ zIndex: 4 }}
+                style={{ zIndex: 10 }}
               />
             ) : null}
           </View>
