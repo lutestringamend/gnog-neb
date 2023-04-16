@@ -1,6 +1,10 @@
 import { StatusBar, Platform } from "react-native";
 import { useScreenDimensions } from "../hooks/useScreenDimensions";
 
+export const staticDimensions = {
+  statusBarPadding: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+}
+
 export const dimensions = () => {
   let screenData = useScreenDimensions();
 
@@ -15,7 +19,6 @@ export const dimensions = () => {
     productPhotoWidth: screenData.width - 10,
     blogTextWidth: screenData.width - 20,
     webviewWidth: screenData.width - 24,
-    statusBarPadding: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     youtubeEmbedAspectRatio: 560 / 340,
     dashboardBoxHorizontalMargin: 5,
   };

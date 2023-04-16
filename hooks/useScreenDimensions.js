@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Dimensions } from 'react-native';
 
 export const useScreenDimensions = () => {
-    const [screenData, setScreenData] = useState(Dimensions.get('window'));
+    const [screenData, setScreenData] = useState(Dimensions.get('screen'));
   
     useEffect(() => {
       const onChange = (result) => {

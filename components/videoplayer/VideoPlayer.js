@@ -9,11 +9,12 @@ import {
   ScrollView,
   Platform,
   ToastAndroid,
+  Dimensions,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as FileSystem from "expo-file-system";
 import { Video, ResizeMode } from "expo-av";
-import { getOrientationAsync, Orientation } from "expo-screen-orientation";
+//import { getOrientationAsync, Orientation } from "expo-screen-orientation";
 
 import { colors, dimensions } from "../../styles/base";
 import { getFileName } from "../media";
@@ -25,14 +26,14 @@ import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 export default function VideoPlayer(props) {
   const { title, uri, width, height, thumbnail, userId } = props.route?.params;
   let ratio = width / height;
+  let screenData = useScreenDimensions();
 
   const navigation = useNavigation();
   const initialVideoSize = {
-    isLandscape: null,
-    videoWidth: dimensions.fullWidth,
-    videoHeight: 0,
+    isLandscape: screenData?.isLandscape,
+    videoWidth: Dimensions.get("window").width,
+    videoHeight: screenData?.isLandscape ? Dimensions.get("window").height : Dimensions.get("window").width / ratio,
   };
-  let screenData = useScreenDimensions();
   const video = useRef(null);
   const [videoSize, setVideoSize] = useState(initialVideoSize);
 
@@ -43,7 +44,7 @@ export default function VideoPlayer(props) {
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
-    const checkInitialOrientation = async () => {
+    /*const checkInitialOrientation = async () => {
       const result = await getOrientationAsync();
       //console.log("getOrientationAsync", result);
       if (
@@ -59,29 +60,34 @@ export default function VideoPlayer(props) {
       } else {
         changeVideoOrientation(null);
       }
-    };
+    };*/
 
     if (uri === undefined || uri === null) {
       setError("Tidak ada Uri");
-    } else {
-      checkInitialOrientation();
+    /*} else if (videoSize.isLandscape === undefined || videoSize.isLandscape === null) {
+      checkInitialOrientation();*/
     }
   }, [uri]);
 
   useEffect(() => {
-    if (screenData?.isLandscape !== videoSize.isLandscape) {
+    if (videoSize?.isLandscape !== undefined && videoSize?.isLandscape !== null && screenData?.isLandscape !== videoSize.isLandscape) {
       console.log("new screenData", screenData);
       changeVideoOrientation(screenData?.isLandscape);
-      if (userId === 8054 && Platform.OS === "android") {
+      /*if (userId === 8054 && Platform.OS === "android") {
         ToastAndroid.show(`change orientation ${JSON.stringify(screenData)}`,
           ToastAndroid.LONG
         );
-      }
+      }*/
     }
   }, [screenData]);
 
   useEffect(() => {
     console.log("videoSize", videoSize, "userId", userId);
+    /*if (userId === 8054 && Platform.OS === "android") {
+      ToastAndroid.show(`videoSize ${JSON.stringify(videoSize)}`,
+        ToastAndroid.LONG
+      );
+    }*/
   }, [videoSize]);
 
   function changeVideoOrientation(isLandscape) {

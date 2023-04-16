@@ -59,7 +59,7 @@ import UserRoots from "./components/dashboard/UserRoots";
 import VideoPlayer from "./components/videoplayer/VideoPlayer";
 
 import { appname } from "./axios/constants";
-import { colors, dimensions } from "./styles/base";
+import { colors, staticDimensions } from "./styles/base";
 
 const Stack = createStackNavigator();
 
@@ -97,11 +97,12 @@ export default function App() {
       <SafeAreaView
         style={{
           flex: 1,
-          paddingTop: dimensions.statusBarPadding,
+          paddingTop: staticDimensions.statusBarPadding,
         }}
       >
         <StatusBar
           backgroundColor={colors.daclen_black}
+          translucent={true}
           style="light"
         />
         <Provider store={store}>
