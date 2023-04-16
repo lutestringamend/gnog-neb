@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 //import { faMedal, faDollarSign, faCoins, faPercent } from '@fortawesome/free-solid-svg-icons'
 
@@ -96,14 +96,14 @@ const styles = StyleSheet.create({
     width: dimensions.fullWidth,
     backgroundColor: colors.daclen_black,
     flex: 1,
-    paddingBottom: dimensions.pageBottomPadding,
+    paddingBottom: staticDimensions.pageBottomPadding,
   },
   containerHorizontal: {
     width: dimensions.fullWidth,
     flexDirection: "row",
     backgroundColor: colors.daclen_black,
     alignItems: "stretch",
-    paddingHorizontal: dimensions.dashboardBoxHorizontalMargin,
+    paddingHorizontal: staticDimensions.dashboardBoxHorizontalMargin,
     marginVertical: 10,
   },
   containerMediaKit: {

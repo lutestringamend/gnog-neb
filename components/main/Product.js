@@ -26,7 +26,7 @@ import useModal from "../../hook/useModal";*/
 import BSPopup from "../bottomsheets/BSPopup";
 import BSProductBenefit from "../bottomsheets/BSProductBenefit";
 import { openCheckout } from "./CheckoutScreen";
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import { useNavigation } from "@react-navigation/native";
 
 function Product(props, { navigation }) {
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     backgroundColor: "transparent",
-    paddingBottom: dimensions.pageBottomPadding,
+    paddingBottom: staticDimensions.pageBottomPadding,
   },
   containerTitle: {
     flexDirection: "row",

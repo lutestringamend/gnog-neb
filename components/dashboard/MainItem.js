@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 //import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 
 export default function MainItem(props) {
   function buttonPress() {
@@ -58,8 +58,8 @@ const styles = StyleSheet.create({
   touchableContainer: {
     flex: 1,
     maxWidth:
-      dimensions.fullWidth / 2 - dimensions.dashboardBoxHorizontalMargin * 2,
-    marginHorizontal: dimensions.dashboardBoxHorizontalMargin,
+      dimensions.fullWidth / 2 - staticDimensions.dashboardBoxHorizontalMargin * 2,
+    marginHorizontal: staticDimensions.dashboardBoxHorizontalMargin,
     borderWidth: 1,
     borderColor: colors.daclen_light,
     borderRadius: 4,

@@ -17,7 +17,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { validateOTP, getCurrentUser } from "../../axios/user";
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import OTPInput from "../OTP/OTPInput";
 import { openCheckout } from "../main/CheckoutScreen";
 import BSPopup from "../bottomsheets/BSPopup";
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
   containerContent: {
     marginHorizontal: 20,
     backgroundColor: "white",
-    paddingBottom: dimensions.pageBottomPadding,
+    paddingBottom: staticDimensions.pageBottomPadding,
   },
   containerLogo: {
     marginVertical: 32,

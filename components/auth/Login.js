@@ -27,7 +27,7 @@ import LoginBox from "./LoginBox";
 import RegisterBox from "./RegisterBox";
 import ChangePasswordBox from "./ChangePasswordBox";
 import BSPopup from "../bottomsheets/BSPopup";
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 
 function setPageHeight(bottomPadding) {
   return dimensions.fullHeight - dimensions.authBoxTopHeight + bottomPadding;
@@ -208,7 +208,7 @@ function Login(props) {
                 height:
                   !isChangePassword && !isLogin
                     ? setPageHeight(dimensions.authPageRegisterBottomPadding)
-                    : setPageHeight(dimensions.pageBottomPadding),
+                    : setPageHeight(staticDimensions.pageBottomPadding),
               },
             ]}
           />
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
   },
   containerBottom: {
     backgroundColor: "white",
-    height: setPageHeight(dimensions.pageBottomPadding),
+    height: setPageHeight(staticDimensions.pageBottomPadding),
     width: "100%",
   },
   containerBack: {

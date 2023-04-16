@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import RenderHTML from "react-native-render-html";
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 
 
 function BlogItem(props) {
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   containerItem: {
-    paddingBottom: dimensions.pageBottomPadding / 2,
+    paddingBottom: staticDimensions.pageBottomPadding / 2,
   },
   icon: {
     margin: 5,

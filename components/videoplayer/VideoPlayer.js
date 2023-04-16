@@ -16,7 +16,7 @@ import * as FileSystem from "expo-file-system";
 import { Video, ResizeMode } from "expo-av";
 //import { getOrientationAsync, Orientation } from "expo-screen-orientation";
 
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import { getFileName } from "../media";
 import MainHeader from "../main/MainHeader";
 import { useNavigation } from "@react-navigation/native";
@@ -213,7 +213,6 @@ export default function VideoPlayer(props) {
               style={[
                 styles.video,
                 {
-                  position: "relative",
                   width: videoSize.videoWidth,
                   height: videoSize.videoHeight,
                   zIndex: 1,
@@ -332,9 +331,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   containerPanelPortrait: {
-    position: "relative",
     marginHorizontal: 20,
-    paddingBottom: dimensions.pageBottomPadding,
+    paddingBottom: staticDimensions.pageBottomPadding,
     alignItems: "center",
   },
   containerPanelLandscape: {

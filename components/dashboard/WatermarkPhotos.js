@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 
 const WatermarkPhotos = ({ photos, watermarkData, userId }) => {
   const navigation = useNavigation();
@@ -67,7 +67,7 @@ const WatermarkPhotos = ({ photos, watermarkData, userId }) => {
 const styles = StyleSheet.create({
   containerFlatlist: {
     width: "100%",
-    paddingBottom: dimensions.pageBottomPadding,
+    paddingBottom: staticDimensions.pageBottomPadding,
     backgroundColor: "white",
   },
   containerImage: {

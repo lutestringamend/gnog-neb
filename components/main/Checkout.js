@@ -25,7 +25,7 @@ import CartItem from "../cart/CartItem";
 import CartDetails from "../cart/CartDetails";
 import CartAction from "../cart/CartAction";
 import Separator from "../profile/Separator";
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 
 function Checkout(props) {
   const [products, setProducts] = useState([]);
@@ -392,7 +392,7 @@ function Checkout(props) {
             style={{ alignSelf: "center", marginVertical: 20 }}
           />
         ) : (
-          <View style={[styles.container, { paddingBottom: dimensions.pageBottomPadding }]}>
+          <View style={[styles.container, { paddingBottom: staticDimensions.pageBottomPadding }]}>
             <View style={styles.containerFlatlist}>
               {cart.length < 1 ? (
                 <Text style={styles.textUid}>Tidak ada Checkout</Text>

@@ -17,7 +17,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { getMediaKitPhotos } from "../../axios/mediakit";
 
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import { privacypolicy } from "../profile/constants";
 import { ErrorView } from "../webview/WebviewChild";
 import HistoryTabItem from "../history/HistoryTabItem";
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     backgroundColor: "white",
-    paddingBottom: dimensions.pageBottomPadding,
+    paddingBottom: staticDimensions.pageBottomPadding,
   },
   containerHeader: {
     flexDirection: "row",

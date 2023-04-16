@@ -25,7 +25,7 @@ import BSTextInput from "../bottomsheets/BSTextInput";
 import BSContainer from "../bottomsheets/BSContainer";
 import { privacypolicy } from "../profile/constants";
 import { selectprovinsi, selectkota, selectkecamatan } from "./constants";
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 
 function FillAddress(props) {
   const [address, setAddress] = useState(AddressData);
@@ -387,7 +387,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 20,
     paddingTop: 10,
-    paddingBottom: dimensions.pageBottomPadding,
+    paddingBottom: staticDimensions.pageBottomPadding,
   },
   containerPrivacy: {
     marginBottom: 20,

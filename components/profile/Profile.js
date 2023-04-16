@@ -39,7 +39,7 @@ import {
   tncicon,
 } from "./constants";
 import { commissionpointpdf, webmediakit } from "../../axios/constants";
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 
 import MainHeader from "../main/MainHeader";
 import Header from "./Header";
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     backgroundColor: "white",
-    paddingBottom: dimensions.pageBottomPadding,
+    paddingBottom: staticDimensions.pageBottomPadding,
   },
   button: {
     alignItems: "center",

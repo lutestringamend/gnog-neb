@@ -11,7 +11,7 @@ import { bindActionCreators } from "redux";
 
 import { getFAQ } from "../../axios/profile";
 import FAQChild from "./FAQChild";
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 
 function FAQ(props) {
   useEffect(() => {
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: dimensions.fullWidth,
     backgroundColor: "white",
-    paddingBottom: dimensions.pageBottomPadding,
+    paddingBottom: staticDimensions.pageBottomPadding,
   },
 });
 

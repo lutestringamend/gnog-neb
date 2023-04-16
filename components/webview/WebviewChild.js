@@ -15,7 +15,7 @@ import * as Sentry from "sentry-expo";
 import RenderHTML from "react-native-render-html";
 //import { WebView } from "react-native-webview";
 
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import MainHeader from "../main/MainHeader";
 
 export function ErrorView(props) {
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   },
   containerHTML: {
     backgroundColor: "white",
-    paddingBottom: dimensions.pageBottomPadding,
+    paddingBottom: staticDimensions.pageBottomPadding,
   },
   webview: {
     flex: 1,

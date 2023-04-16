@@ -11,7 +11,7 @@ import { connect } from "react-redux";
 //import { bindActionCreators } from "redux";
 
 import UserRootItem, { VerticalLine } from "./UserRootItem";
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import UserRootHeaderItem from "./UserRootHeaderItem";
 import { notverified, userverified } from "./constants";
 
@@ -103,14 +103,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "white",
     alignItems: "stretch",
-    paddingHorizontal: dimensions.dashboardBoxHorizontalMargin,
+    paddingHorizontal: staticDimensions.dashboardBoxHorizontalMargin,
     marginVertical: 10,
   },
   containerMain: {
     flex: 1,
     width: dimensions.fullWidth,
     backgroundColor: "white",
-    paddingBottom: dimensions.pageBottomPadding,
+    paddingBottom: staticDimensions.pageBottomPadding,
     marginVertical: 10,
     marginHorizontal: 12,
   },

@@ -11,7 +11,7 @@ import {
 
 import { connect } from "react-redux";
 
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import ShopItem from "./ShopItem";
 
 function Shop(props) {
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "flex-start",
-    paddingBottom: dimensions.pageBottomPadding,
+    paddingBottom: staticDimensions.pageBottomPadding,
   },
   containerHorizontal: {
     flexDirection: "row",

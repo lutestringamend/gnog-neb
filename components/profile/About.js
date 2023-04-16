@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import packageJson from "../../package.json";
 import {
   abouttext,
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    paddingBottom: dimensions.pageBottomPadding,
+    paddingBottom: staticDimensions.pageBottomPadding,
   },
   containerLogo: {
     padding: 20,

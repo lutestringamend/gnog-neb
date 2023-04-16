@@ -16,7 +16,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { getOTP } from "../../axios/user";
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 
 function VerifyPhone(props) {
   const { currentUser, token } = props;
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   containerContent: {
     marginHorizontal: 20,
     backgroundColor: "white",
-    paddingBottom: dimensions.pageBottomPadding,
+    paddingBottom: staticDimensions.pageBottomPadding,
   },
   containerLogo: {
     marginVertical: 32,

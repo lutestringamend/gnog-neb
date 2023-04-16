@@ -3,6 +3,8 @@ import { useScreenDimensions } from "../hooks/useScreenDimensions";
 
 export const staticDimensions = {
   statusBarPadding: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  dashboardBoxHorizontalMargin: 5,
+  pageBottomPadding: 100,
 }
 
 export const dimensions = () => {
@@ -12,7 +14,6 @@ export const dimensions = () => {
     fullHeight: screenData.height,
     fullWidth: screenData.width,
     isLandscape: screenData?.isLandscape,
-    pageBottomPadding: 100,
     authBoxWidth: screenData.width - 40,
     authBoxTopHeight: 150,
     authPageRegisterBottomPadding: 300,
@@ -20,7 +21,6 @@ export const dimensions = () => {
     blogTextWidth: screenData.width - 20,
     webviewWidth: screenData.width - 24,
     youtubeEmbedAspectRatio: 560 / 340,
-    dashboardBoxHorizontalMargin: 5,
   };
 };
 
