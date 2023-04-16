@@ -8,7 +8,6 @@ import {
   ScrollView,
   ActivityIndicator,
   SafeAreaView,
-  Dimensions,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
@@ -28,7 +27,11 @@ import LoginBox from "./LoginBox";
 import RegisterBox from "./RegisterBox";
 import ChangePasswordBox from "./ChangePasswordBox";
 import BSPopup from "../bottomsheets/BSPopup";
-import { colors, staticDimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
+
+function setPageHeight(bottomPadding) {
+  return dimensions.fullHeight - staticDimensions.authBoxTopHeight + bottomPadding;
+}
 
 function Login(props) {
   const [error, setError] = useState(null);
@@ -88,12 +91,6 @@ function Login(props) {
       rbSheet.current.open();
     }
   }, [props.registerToken]);
-
-  function setPageHeight(bottomPadding) {
-    return (
-      Dimensions.get("window").height - staticDimensions.authBoxTopHeight + bottomPadding
-    );
-  }
 
   const onLogin = () => {
     if (props.authData?.email === null || props.authData?.email === undefined) {
@@ -205,24 +202,18 @@ function Login(props) {
             </TouchableOpacity>
           </View>
           <View
-            style={{
-              backgroundColor: "white",
-              width: "100%",
-              height:
-                !isChangePassword && !isLogin
-                  ? setPageHeight(
-                      staticDimensions.authPageRegisterBottomPadding
-                    )
-                  : setPageHeight(staticDimensions.pageBottomPadding),
-            }}
+            style={[
+              styles.containerBottom,
+              {
+                height:
+                  !isChangePassword && !isLogin
+                    ? setPageHeight(staticDimensions.authPageRegisterBottomPadding)
+                    : setPageHeight(staticDimensions.pageBottomPadding),
+              },
+            ]}
           />
 
-          <View
-            style={[
-              styles.containerBox,
-              { width: "90%" },
-            ]}
-          >
+          <View style={styles.containerBox}>
             <Text style={styles.textHeader}>
               {isChangePassword
                 ? "Ganti Password"
@@ -322,6 +313,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
+    height: "100%",
   },
   scrollView: {
     flex: 1,
@@ -333,6 +325,11 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     alignItems: "center",
+  },
+  containerBottom: {
+    backgroundColor: "white",
+    height: setPageHeight(staticDimensions.pageBottomPadding),
+    width: "100%",
   },
   containerBack: {
     position: "absolute",
@@ -348,6 +345,7 @@ const styles = StyleSheet.create({
   },
   containerBox: {
     position: "absolute",
+    width: "90%",
     backgroundColor: colors.daclen_light,
     borderColor: colors.daclen_gray,
     borderWidth: 2,

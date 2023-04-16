@@ -82,7 +82,6 @@ function Product(props, { navigation }) {
             <Text style={styles.text}>{name}</Text>
             <View style={styles.containerTitle}>
               <Text style={styles.textPrice}>Rp {product?.harga_currency}</Text>
-
               <Cart produk_id={product?.id} />
             </View>
 
