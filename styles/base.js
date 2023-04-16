@@ -18,23 +18,6 @@ export const dimensions = {
   fullWidth: Dimensions.get("window").width,
 }
 
-/*export const getDimensions = () => {
-  let screenData = useScreenDimensions();
-  let fullHeight = screenData?.height ? screenData?.height : Dimensions.get("window").height;
-  let fullWidth = screenData?.width ? screenData?.width : Dimensions.get("window").width;
-
-  return {
-    fullHeight,
-    fullWidth,
-    isLandscape: screenData?.isLandscape,
-    authBoxWidth: fullWidth - 40,
-    productPhotoWidth: fullWidth - 10,
-    blogTextWidth: fullWidth - 20,
-    webviewWidth: fullWidth - 24,
-    youtubeEmbedAspectRatio: 560 / 340,
-  };
-};*/
-
 export const colors = {
   daclen_black: "#212529",
   daclen_orange: "#fd7e14",

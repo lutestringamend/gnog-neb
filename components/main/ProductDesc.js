@@ -5,13 +5,11 @@ import RenderHTML from "react-native-render-html";
 
 import Separator from "../profile/Separator";
 import { colors, dimensions } from "../../styles/base";
-import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 
 export default function ProductDesc(props) {
   const [desc, setDesc] = useState(false);
   const [spec, setSpec] = useState(false);
   const [content, setContent] = useState("");
-  const dimensions = useScreenDimensions();
 
   useEffect(() => {
     if (props?.deskripsi === undefined || props?.deskripsi === null || !desc) {
@@ -37,7 +35,7 @@ export default function ProductDesc(props) {
 
       <RenderHTML
         style={styles.textDesc}
-        contentWidth={dimensions.width}
+        contentWidth={dimensions.fullWidth}
         source={{ html: content }}
       />
 

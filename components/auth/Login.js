@@ -8,6 +8,7 @@ import {
   ScrollView,
   ActivityIndicator,
   SafeAreaView,
+  Dimensions,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
@@ -28,7 +29,6 @@ import RegisterBox from "./RegisterBox";
 import ChangePasswordBox from "./ChangePasswordBox";
 import BSPopup from "../bottomsheets/BSPopup";
 import { colors, staticDimensions } from "../../styles/base";
-import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 
 function Login(props) {
   const [error, setError] = useState(null);
@@ -38,7 +38,6 @@ function Login(props) {
   const rbSheet = useRef();
   const webKey = props.route.params?.webKey;
   const navigation = useNavigation();
-  const dimensions = useScreenDimensions();
 
   useEffect(() => {
     console.log(webKey);
@@ -92,7 +91,7 @@ function Login(props) {
 
   function setPageHeight(bottomPadding) {
     return (
-      dimensions.height - staticDimensions.authBoxTopHeight + bottomPadding
+      Dimensions.get("window").height - staticDimensions.authBoxTopHeight + bottomPadding
     );
   }
 
@@ -221,7 +220,7 @@ function Login(props) {
           <View
             style={[
               styles.containerBox,
-              { width: dimensions.width - staticDimensions.authBoxWidthMargin },
+              { width: "90%" },
             ]}
           >
             <Text style={styles.textHeader}>

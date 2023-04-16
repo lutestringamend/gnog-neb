@@ -14,6 +14,7 @@ import {
 
 import { connect } from "react-redux";
 import { colors } from "../../styles/base";
+import { dimensions } from "../../styles/base";
 
 function ProductSlider(props) {
   try {
@@ -72,7 +73,8 @@ function ProductSlider(props) {
 
     return (
       <View style={styles.container}>
-        <TouchableHighlight
+        {mainPhoto === null ? null : (
+          <TouchableHighlight
             style={styles.containerSlider}
             onPress={() => openImageViewer()}
             underlayColor={colors.daclen_lightgrey}
@@ -80,11 +82,15 @@ function ProductSlider(props) {
             <Image
               style={[
                 styles.image,
-                { width: Dimensions.get("window").width, height: Dimensions.get("window").width },
+                {
+                  width: dimensions.fullWidth,
+                  height: dimensions.fullWidth,
+                },
               ]}
               source={{ uri: mainPhoto }}
             />
           </TouchableHighlight>
+        )}
 
         {photos?.length > 1 ? (
           <View style={styles.containerFlatlist}>
@@ -141,11 +147,9 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   containerSlider: {
+    width: "100%",
     justifyContent: "flex-start",
     alignItems: "center",
-  },
-  containerGallery: {
-    marginBottom: 20,
   },
   containerFlatlist: {
     width: "100%",

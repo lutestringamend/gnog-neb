@@ -11,14 +11,12 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import RenderHTML from "react-native-render-html";
-import { colors, staticDimensions } from "../../styles/base";
-import { useScreenDimensions } from "../../hooks/useScreenDimensions";
+import { colors, staticDimensions, dimensions } from "../../styles/base";
 
 
 function BlogItem(props) {
   const [content, setContent] = useState("");
   const navigation = useNavigation();
-  const dimensions = useScreenDimensions();
 
   useEffect(() => {
     if (props?.isi === undefined || props?.isi === null) {
@@ -63,8 +61,7 @@ function BlogItem(props) {
               <Text style={styles.textTitle}>{props?.judul}</Text>
               <RenderHTML
                 style={styles.textDesc}
-                width={dimensions.width - staticDimensions.blogTextWidthMargin}
-                contentWidth={dimensions.width - staticDimensions.blogTextWidthMargin}
+                contentWidth={dimensions.fullWidth - staticDimensions.blogTextWidthMargin}
                 source={{ html: content }}
               />
             </View>

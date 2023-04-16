@@ -19,20 +19,18 @@ import * as FileSystem from "expo-file-system";
 import { shareAsync, isAvailableAsync } from "expo-sharing";
 import * as Sentry from "sentry-expo";
 
-import { colors, staticDimensions } from "../../styles/base";
+import { colors, staticDimensions, dimensions } from "../../styles/base";
 import { getFileName } from "../media";
-import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 
 export default function ImageViewer(props) {
   let title = props.route.params?.title;
   let uri = props.route.params?.uri;
   let isSquare = props.route.params?.isSquare;
   let watermarkData = props.route.params?.watermarkData;
-  let dimensions = useScreenDimensions();
 
   let width = props.route.params?.width;
   let height = props.route.params?.height;
-  let productPhotoWidth = dimensions.width - staticDimensions.productPhotoWidthMargin;
+  let productPhotoWidth = dimensions.fullWidth - staticDimensions.productPhotoWidthMargin;
   let ratio = width / productPhotoWidth;
 
   let text_align = props.route.params?.text_align;
