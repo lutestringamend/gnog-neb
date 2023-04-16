@@ -58,12 +58,13 @@ export default function VideoPlayer(props) {
 
     if (screenData?.isLandscape !== videoSize.isLandscape) {
       console.log("new screenData", screenData);
-      changeVideoOrientation(screenData?.isLandscape);
-      /*if (userId === 8054 && Platform.OS === "android") {
+      if (Platform.OS === "web") {
+        changeVideoOrientation(screenData?.isLandscape);
+      } else if (userId === 8054 && Platform.OS === "android") {
         ToastAndroid.show(`change orientation ${JSON.stringify(screenData)}`,
           ToastAndroid.LONG
         );
-      }*/
+      }
     }
   }, [screenData]);
 
