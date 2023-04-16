@@ -27,7 +27,8 @@
       "infoPlist": {
         "NSCameraUsageDescription": "This app needs Camera permission only to take a new profile picture and save it on Daclen.com.",
         "NSPhotoLibraryAddUsageDescription": "This app needs Storage permission only to save watermarked product photos from Daclen.com.",
-        "NSPhotoLibraryUsageDescription": "This app needs Storage and Camera Roll permissions only to upload a new profile picture and save it on Daclen.com."
+        "NSPhotoLibraryUsageDescription": "This app needs Storage and Camera Roll permissions only to upload a new profile picture and save it on Daclen.com.",
+        "NSMotionUsageDescription": "This app needs access to your device motion to detect change in orientation and readjust views accordingly."
       }
     },
     "android": {
@@ -75,6 +76,12 @@
         "expo-screen-orientation",
         {
           "initialOrientation": "PORTRAIT"
+        }
+      ],
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "This app needs access to your device motion to detect change in orientation and readjust views accordingly."
         }
       ],
       "sentry-expo"

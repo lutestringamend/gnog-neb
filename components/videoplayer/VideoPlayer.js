@@ -8,11 +8,14 @@ import {
   ImageBackground,
   Dimensions,
   ScrollView,
+  Platform,
+  ToastAndroid,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as FileSystem from "expo-file-system";
 import { Video, ResizeMode } from "expo-av";
 import { getOrientationAsync, Orientation } from "expo-screen-orientation";
+import { DeviceMotion } from "expo-sensors";
 
 import { colors, dimensions } from "../../styles/base";
 import { getFileName } from "../media";
@@ -21,7 +24,7 @@ import { useNavigation } from "@react-navigation/native";
 import { WATERMARK_VIDEO } from "../dashboard/constants";
 
 export default function VideoPlayer(props) {
-  const { title, uri, width, height, thumbnail } = props.route?.params;
+  const { title, uri, width, height, thumbnail, userId } = props.route?.params;
   let ratio = width / height;
 
   const navigation = useNavigation();
@@ -40,6 +43,7 @@ export default function VideoPlayer(props) {
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
+ 
     const checkInitialOrientation = async () => {
       const result = await getOrientationAsync();
       //console.log("getOrientationAsync", result);
@@ -65,6 +69,16 @@ export default function VideoPlayer(props) {
         setVideoSize(initialVideoSize);
         setError("Unknown screen orientation");
       }
+
+      const availability = await DeviceMotion.isAvailableAsync();
+      console.log("sensors availability", availability);
+
+      const sensorPermission = await DeviceMotion.requestPermissionsAsync();
+      console.log("sensorPermission", sensorPermission);
+
+      if (userId === 8054 && Platform.OS === "android") {
+        ToastAndroid.show(`${JSON.stringify(availability)}\n${JSON.stringify(sensorPermission)}`, ToastAndroid.LONG);
+      }
     };
 
     if (uri === undefined || uri === null) {
@@ -75,7 +89,7 @@ export default function VideoPlayer(props) {
   }, [uri]);
 
   useEffect(() => {
-    console.log("videoSize", videoSize);
+    console.log("videoSize", videoSize, "userId", userId);
   }, [videoSize]);
 
   function onBackPress() {
@@ -124,7 +138,12 @@ export default function VideoPlayer(props) {
         }
       >
         {error ? (
-          <View style={styles.containerHeader}>
+          <View
+            style={[
+              styles.containerHeader,
+              { position: videoSize.isLandscape ? "absolute" : "relative" },
+            ]}
+          >
             <Text
               style={[
                 styles.textError,
@@ -146,7 +165,7 @@ export default function VideoPlayer(props) {
               {
                 position: "absolute",
                 backgroundColor: colors.daclen_light,
-                opacity: 5,
+                opacity: 0.4,
                 padding: 10,
               },
             ]}
