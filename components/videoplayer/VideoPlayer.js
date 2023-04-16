@@ -115,41 +115,69 @@ export default function VideoPlayer(props) {
         />
       ) : null}
 
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={
+          videoSize.isLandscape
+            ? styles.containerBodyLandscape
+            : styles.containerBodyPortrait
+        }
+      >
+        {error ? (
+          <View style={styles.containerHeader}>
+            <Text
+              style={[
+                styles.textError,
+                {
+                  backgroundColor: success
+                    ? colors.daclen_green
+                    : colors.daclen_red,
+                  width: videoSize.videoWidth,
+                },
+              ]}
+            >
+              {error}
+            </Text>
+          </View>
+        ) : videoSize.isLandscape ? (
+          <View
+            style={[
+              styles.containerHeader,
+              {
+                position: "absolute",
+                backgroundColor: colors.daclen_light,
+                opacity: 5,
+                padding: 10,
+              },
+            ]}
+          >
+            <Text style={styles.textHeaderLandscape}>{title}</Text>
+            <TouchableOpacity
+              style={styles.buttonClose}
+              onPress={() => onBackPress()}
+            >
+              <MaterialCommunityIcons name="close" size={16} color="white" />
+            </TouchableOpacity>
+          </View>
+        ) : null}
+
         {videoSize.isLandscape === null ? null : (
           <View
             style={[
               styles.video,
               {
+                position: videoSize.isLandscape ? "absolute" : "relative",
                 width: videoSize.width,
                 height: videoSize.height,
               },
             ]}
           >
-            {error ? (
-              <Text
-                style={[
-                  styles.textError,
-                  {
-                    backgroundColor: success
-                      ? colors.daclen_green
-                      : colors.daclen_red,
-                    width: videoSize.videoWidth,
-                  },
-                ]}
-              >
-                {error}
-              </Text>
-            ) : null}
-            {videoSize.isLandscape ? (
-              <Text style={styles.textHeaderLandscape}>{title}</Text>
-            ) : null}
             <Video
               ref={video}
               style={[
                 styles.video,
                 {
-                  position: videoSize.isLandscape ? "absolute" : "relative",
+                  position: "relative",
                   width: videoSize.videoWidth,
                   height: videoSize.videoHeight,
                   zIndex: 1,
@@ -171,7 +199,7 @@ export default function VideoPlayer(props) {
               style={[
                 styles.video,
                 {
-                  position: videoSize.isLandscape ? "absolute" : "relative",
+                  position: "absolute",
                   width: videoSize.videoWidth,
                   height: videoSize.videoHeight,
                   zIndex: 2,
@@ -199,15 +227,6 @@ export default function VideoPlayer(props) {
               : styles.containerPanelPortrait
           }
         >
-          {videoSize.isLandscape ? (
-            <TouchableOpacity
-              style={styles.buttonClose}
-              onPress={() => onBackPress()}
-            >
-              <MaterialCommunityIcons name="close" size={18} color="white" />
-            </TouchableOpacity>
-          ) : null}
-
           <TouchableOpacity
             style={videoSize.isLandscape ? styles.buttonCircle : styles.button}
             onPress={() =>
@@ -277,17 +296,34 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   containerPanelPortrait: {
+    position: "relative",
     marginHorizontal: 20,
     paddingBottom: dimensions.pageBottomPadding,
     alignItems: "center",
   },
   containerPanelLandscape: {
-    position: "absolute",
-    top: 10,
-    end: 10,
     backgroundColor: "transparent",
     alignItems: "flex-end",
-    zIndex: 10,
+    zIndex: 6,
+    marginEnd: 20,
+  },
+  containerBodyLandscape: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "flex-end",
+  },
+  containerBodyPortrait: {
+    flex: 1,
+    alignItems: "center",
+  },
+  containerHeader: {
+    zIndex: 4,
+    width: "100%",
+    top: 0,
+    start: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   video: {
     top: 0,
@@ -300,6 +336,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    alignSelf: "center",
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 4,
@@ -316,24 +353,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_blue,
   },
   buttonClose: {
-    width: 24,
-    height: 24,
+    width: 20,
+    height: 20,
     borderRadius: 12,
-    marginBottom: 12,
-    backgroundColor: colors.daclen_gray,
+    backgroundColor: colors.daclen_black,
+    borderColor: colors.daclen_gray,
+    borderWidth: 0.5,
     justifyContent: "center",
     alignItems: "center",
   },
   textHeaderLandscape: {
-    zIndex: 4,
-    position: "absolute",
-    top: 0,
-    start: 0,
-    padding: 10,
-    backgroundColor: colors.daclen_black,
+    backgroundColor: "transparent",
     fontWeight: "bold",
-    color: "white",
-    opacity: 10,
+    color: colors.daclen_black,
     fontSize: 16,
   },
   textButton: {
