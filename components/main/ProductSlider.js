@@ -6,84 +6,116 @@ import {
   TouchableHighlight,
   Image,
   FlatList,
+  Dimensions,
+  Platform,
+  ToastAndroid,
 } from "react-native";
-import { ImageSlider } from "react-native-image-slider-banner";
+//import { ImageSlider } from "react-native-image-slider-banner";
 
 import { connect } from "react-redux";
-import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 import { colors } from "../../styles/base";
 
 function ProductSlider(props) {
-  const [loading, setLoading] = useState(false);
-  const [photos, setPhotos] = useState([]);
-  const [mainPhoto, setMainPhoto] = useState(null);
-  const navigation = useNavigation();
-  const dimensions = useScreenDimensions();
-  const aspectRatio = 1 / 1;
+  try {
+    const [loading, setLoading] = useState(false);
+    const [photos, setPhotos] = useState([]);
+    const [mainPhoto, setMainPhoto] = useState(null);
+    const navigation = useNavigation();
 
-  useEffect(() => {
-    setMainPhoto(null);
-    if ((props.id === null || props.id === undefined) && !loading) {
-      setPhotos([]);
-      console.log("sliders are empty");
-    } else {
-      setLoading(false);
-      console.log("product id is " + props.id);
-      const check = props.productItems.find(({ id }) => id === props.id);
-      if (check !== undefined) {
-        setMainPhoto(check?.foto_url);
-        const data = [
-          { img: check?.foto_url, id: 0 },
-          ...new Set(
-            check?.foto_produk
-              .map(({ foto_url, id }) => ({
-                img: foto_url,
-                id,
-              }))
-              .flat(1)
-          ),
-        ];
-        setPhotos(data);
-        console.log(data);
-      } else {
-        console.log("check is " + check);
+    useEffect(() => {
+      setMainPhoto(null);
+      if ((props.id === null || props.id === undefined) && !loading) {
         setPhotos([]);
+        console.log("sliders are empty");
+      } else {
+        setLoading(false);
+        console.log("product id is " + props.id);
+        const check = props.productItems.find(({ id }) => id === props.id);
+        if (check !== undefined) {
+          setMainPhoto(check?.foto_url);
+          const data = [
+            { img: check?.foto_url, id: 0 },
+            ...new Set(
+              check?.foto_produk
+                .map(({ foto_url, id }) => ({
+                  img: foto_url,
+                  id,
+                }))
+                .flat(1)
+            ),
+          ];
+          setPhotos(data);
+          console.log(data);
+        } else {
+          console.log("check is " + check);
+          setPhotos([]);
+        }
+      }
+    }, [props?.id, props.productItems]);
+
+    const openPhoto = (foto_url) => {
+      console.log(foto_url);
+      if (foto_url !== null && foto_url !== undefined) {
+        setMainPhoto(foto_url);
+      }
+    };
+
+    function openImageViewer() {
+      if (mainPhoto !== null && mainPhoto !== undefined) {
+        navigation.navigate("ImageViewer", {
+          title: props?.title,
+          uri: mainPhoto,
+          isSquare: true,
+        });
       }
     }
-  }, [props?.id, props.productItems]);
 
-  const openPhoto = (foto_url) => {
-    console.log(foto_url);
-    if (foto_url !== null && foto_url !== undefined) {
-      setMainPhoto(foto_url);
-    }
-  };
+    return (
+      <View style={styles.container}>
+        <TouchableHighlight
+            style={styles.containerSlider}
+            onPress={() => openImageViewer()}
+            underlayColor={colors.daclen_lightgrey}
+          >
+            <Image
+              style={[
+                styles.image,
+                { width: Dimensions.get("window").width, height: Dimensions.get("window").width },
+              ]}
+              source={{ uri: mainPhoto }}
+            />
+          </TouchableHighlight>
 
-  function openImageViewer() {
-    if (mainPhoto !== null && mainPhoto !== undefined) {
-      navigation.navigate("ImageViewer", {
-        title: props?.title,
-        uri: mainPhoto,
-        isSquare: true,
-      });
+        {photos?.length > 1 ? (
+          <View style={styles.containerFlatlist}>
+            <FlatList
+              horizontal={true}
+              data={photos}
+              renderItem={({ item }) => (
+                <TouchableHighlight
+                  onPress={() => openPhoto(item.img)}
+                  underlayColor={colors.daclen_orange}
+                >
+                  <Image style={styles.imageList} source={{ uri: item?.img }} />
+                </TouchableHighlight>
+              )}
+            />
+          </View>
+        ) : null}
+      </View>
+    );
+  } catch (e) {
+    console.error(e);
+    if (Platform.OS === "android") {
+      ToastAndroid.show(e?.message, ToastAndroid.LONG);
     }
+    return <View style={styles.container} />;
   }
+}
 
-  return (
-    <View style={styles.container}>
-      <TouchableHighlight
-        style={styles.containerSlider}
-        onPress={() => openImageViewer()}
-        underlayColor={colors.daclen_lightgrey}
-      >
-        {mainPhoto ? (
-          <Image
-            style={[
-              styles.image,
-              { width: dimensions.width, height: dimensions.width},
-            ]}
-            source={{ uri: mainPhoto }}
-          />
+/*
+{mainPhoto ? (
+          
         ) : (
           <ImageSlider
             data={photos}
@@ -102,27 +134,7 @@ function ProductSlider(props) {
             style={{ margin: 0, padding: 0, width: "100%" }}
           />
         )}
-      </TouchableHighlight>
-
-      {photos?.length > 1 ? (
-        <View style={styles.containerFlatlist}>
-          <FlatList
-            horizontal={true}
-            data={photos}
-            renderItem={({ item }) => (
-              <TouchableHighlight
-                onPress={() => openPhoto(item.img)}
-                underlayColor={colors.daclen_orange}
-              >
-                <Image style={styles.imageList} source={{ uri: item?.img }} />
-              </TouchableHighlight>
-            )}
-          />
-        </View>
-      ) : null}
-    </View>
-  );
-}
+*/
 
 const styles = StyleSheet.create({
   container: {
@@ -146,7 +158,6 @@ const styles = StyleSheet.create({
   },
   image: {
     backgroundColor: "white",
-    aspectRatio: 1 / 1,
   },
   imageList: {
     width: 60,

@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Text,
-} from "react-native";
+import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import RenderHTML from "react-native-render-html";
 
@@ -28,58 +23,47 @@ export default function ProductDesc(props) {
 
   return (
     <View style={styles.container}>
-      <View>
-        <Separator thickness={2} />
-        <TouchableOpacity onPress={() => setDesc(!desc)}>
-          <View style={styles.containerHeader}>
-            <Text style={styles.textHeader}>Deskripsi</Text>
-            {desc ? (
-              <MaterialCommunityIcons name="chevron-up" size={24} />
-            ) : (
-              <MaterialCommunityIcons name="chevron-down" size={24} />
-            )}
-          </View>
-        </TouchableOpacity>
-
-        <RenderHTML
-          style={styles.textDesc}
-          width={dimensions.width}
-          contentWidth={dimensions.width}
-          source={{ html: content }}
-        />
-      </View>
-
-      {props?.dimensi !== undefined && props?.berat !== undefined && (
-        <View>
-          <Separator thickness={2} />
-          <TouchableOpacity onPress={() => setSpec(!spec)}>
-            <View style={styles.containerHeader}>
-              <Text style={styles.textHeader}>Spesifikasi</Text>
-              {spec ? (
-                <MaterialCommunityIcons name="chevron-up" size={24} />
-              ) : (
-                <MaterialCommunityIcons name="chevron-down" size={24} />
-              )}
-            </View>
-          </TouchableOpacity>
-
-          {spec && props?.dimensi && (
-            <View style={styles.containerSpec}>
-              <Text style={styles.textSpecHeader}>Dimensi</Text>
-              <Text style={styles.textSpec}>{props?.dimensi} cm</Text>
-            </View>
-          )}
-
-          {spec && props?.berat && (
-            <View style={styles.containerSpec}>
-              <Text style={styles.textSpecHeader}>Berat</Text>
-              <Text style={styles.textSpec}>
-                {(props?.berat / 1000).toFixed(2)} kg
-              </Text>
-            </View>
+      <Separator thickness={2} />
+      <TouchableOpacity onPress={() => setDesc(!desc)}>
+        <View style={styles.containerHeader}>
+          <Text style={styles.textHeader}>Deskripsi</Text>
+          {desc ? (
+            <MaterialCommunityIcons name="chevron-up" size={24} />
+          ) : (
+            <MaterialCommunityIcons name="chevron-down" size={24} />
           )}
         </View>
-      )}
+      </TouchableOpacity>
+
+      <RenderHTML
+        style={styles.textDesc}
+        contentWidth={dimensions.width}
+        source={{ html: content }}
+      />
+
+      <Separator thickness={2} />
+      <TouchableOpacity onPress={() => setSpec(!spec)}>
+        <View style={styles.containerHeader}>
+          <Text style={styles.textHeader}>Spesifikasi</Text>
+          {spec ? (
+            <MaterialCommunityIcons name="chevron-up" size={24} />
+          ) : (
+            <MaterialCommunityIcons name="chevron-down" size={24} />
+          )}
+        </View>
+      </TouchableOpacity>
+
+      <View style={styles.containerSpec}>
+        <Text style={styles.textSpecHeader}>Dimensi</Text>
+        <Text style={styles.textSpec}>{props?.dimensi} cm</Text>
+      </View>
+
+      <View style={styles.containerSpec}>
+        <Text style={styles.textSpecHeader}>Berat</Text>
+        <Text style={styles.textSpec}>
+          {(props?.berat / 1000).toFixed(2)} kg
+        </Text>
+      </View>
     </View>
   );
 }
