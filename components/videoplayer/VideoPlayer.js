@@ -14,7 +14,7 @@ import {
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as FileSystem from "expo-file-system";
 import { Video, ResizeMode } from "expo-av";
-//import { getOrientationAsync, Orientation } from "expo-screen-orientation";
+
 
 import { colors, staticDimensions } from "../../styles/base";
 import { getFileName } from "../media";
@@ -44,24 +44,6 @@ export default function VideoPlayer(props) {
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
-    /*const checkInitialOrientation = async () => {
-      const result = await getOrientationAsync();
-      //console.log("getOrientationAsync", result);
-      if (
-        result === Orientation.LANDSCAPE_LEFT ||
-        result === Orientation.LANDSCAPE_RIGHT
-      ) {
-        changeVideoOrientation(true);
-      } else if (
-        result === Orientation.PORTRAIT_DOWN ||
-        result === Orientation.PORTRAIT_UP
-      ) {
-        changeVideoOrientation(false);
-      } else {
-        changeVideoOrientation(null);
-      }
-    };*/
-
     if (uri === undefined || uri === null) {
       setError("Tidak ada Uri");
     /*} else if (videoSize.isLandscape === undefined || videoSize.isLandscape === null) {
@@ -73,7 +55,7 @@ export default function VideoPlayer(props) {
     if (screenData?.isLandscape === undefined || screenData?.isLandscape === null) {
       return;
     }
-    
+
     if (screenData?.isLandscape !== videoSize.isLandscape) {
       console.log("new screenData", screenData);
       changeVideoOrientation(screenData?.isLandscape);
