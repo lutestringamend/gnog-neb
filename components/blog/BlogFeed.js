@@ -103,11 +103,11 @@ function BlogFeed(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
   },
   containerFlatlist: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
   },
   activityControl: {
     alignSelf: "center",

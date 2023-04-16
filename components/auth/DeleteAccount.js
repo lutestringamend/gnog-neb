@@ -19,7 +19,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { enableForceLogout, deleteAccount } from "../../axios/user";
-import { colors, dimensions } from "../../styles/base";
+import { colors } from "../../styles/base";
 import BSPopup from "../bottomsheets/BSPopup";
 
 function DeleteAccount(props) {
@@ -181,7 +181,7 @@ function DeleteAccount(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
     backgroundColor: "white",
     alignItems: "center",
   },

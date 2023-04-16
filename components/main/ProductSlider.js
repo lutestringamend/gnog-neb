@@ -10,14 +10,15 @@ import {
 import { ImageSlider } from "react-native-image-slider-banner";
 
 import { connect } from "react-redux";
-import { colors, dimensions } from "../../styles/base";
+import { useScreenDimensions } from "../../hooks/useScreenDimensions";
+import { colors } from "../../styles/base";
 
 function ProductSlider(props) {
   const [loading, setLoading] = useState(false);
   const [photos, setPhotos] = useState([]);
   const [mainPhoto, setMainPhoto] = useState(null);
   const navigation = useNavigation();
-  const windowWidth = dimensions.fullWidth;
+  const dimensions = useScreenDimensions();
   const aspectRatio = 1 / 1;
 
   useEffect(() => {
@@ -76,15 +77,21 @@ function ProductSlider(props) {
         underlayColor={colors.daclen_lightgrey}
       >
         {mainPhoto ? (
-          <Image style={styles.image} source={{ uri: mainPhoto }} />
+          <Image
+            style={[
+              styles.image,
+              { width: dimensions.width, height: dimensions.width},
+            ]}
+            source={{ uri: mainPhoto }}
+          />
         ) : (
           <ImageSlider
             data={photos}
             autoPlay={true}
             caroselImageContainerStyle={{ aspectRatio }}
             caroselImageStyle={{
-              width: windowWidth,
-              height: windowWidth / aspectRatio,
+              width: "100%",
+              height: "100%" / aspectRatio,
               resizeMode: "contain",
             }}
             indicatorContainerStyle={{ bottom: 10 }}
@@ -119,7 +126,7 @@ function ProductSlider(props) {
 
 const styles = StyleSheet.create({
   container: {
-    width: dimensions.fullWidth,
+    width: "100%",
   },
   containerSlider: {
     justifyContent: "flex-start",
@@ -138,7 +145,6 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   image: {
-    width: dimensions.fullWidth,
     backgroundColor: "white",
     aspectRatio: 1 / 1,
   },

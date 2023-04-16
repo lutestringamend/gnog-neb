@@ -90,7 +90,7 @@ export default function Header(props) {
 
 const styles = StyleSheet.create({
   containerTouchable: {
-    width: dimensions.fullWidth,
+    width: "100%",
     backgroundColor: colors.daclen_light,
     flexDirection: "row",
     alignItems: "center",

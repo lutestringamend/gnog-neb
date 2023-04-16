@@ -93,13 +93,13 @@ export default function Main(props) {
 
 const styles = StyleSheet.create({
   container: {
-    width: dimensions.fullWidth,
+    width: "100%",
     backgroundColor: colors.daclen_black,
     flex: 1,
     paddingBottom: staticDimensions.pageBottomPadding,
   },
   containerHorizontal: {
-    width: dimensions.fullWidth,
+    width: "100%",
     flexDirection: "row",
     backgroundColor: colors.daclen_black,
     alignItems: "stretch",

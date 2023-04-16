@@ -37,7 +37,7 @@ export default function BSContainer(props) {
 
 const styles = StyleSheet.create({
   container: {
-    width: dimensions.fullWidth,
+    width: "100%",
     flex: 1,
     backgroundColor: colors.daclen_light,
     borderTopWidth: 2,

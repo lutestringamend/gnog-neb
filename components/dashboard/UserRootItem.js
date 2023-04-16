@@ -112,16 +112,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "white",
     alignItems: "center",
-    width: dimensions.fullWidth,
+    width: "100%",
   },
   containerTouchable: {
     flex: 1,
-    width: dimensions.fullWidth / 2,
+    width: "100%" / 2,
     backgroundColor: "white",
   },
   containerMain: {
     flex: 1,
-    width: dimensions.fullWidth / 2,
+    width: "100%" / 2,
     backgroundColor: "white",
   },
   verticalLine: {

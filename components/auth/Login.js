@@ -27,11 +27,8 @@ import LoginBox from "./LoginBox";
 import RegisterBox from "./RegisterBox";
 import ChangePasswordBox from "./ChangePasswordBox";
 import BSPopup from "../bottomsheets/BSPopup";
-import { colors, dimensions, staticDimensions } from "../../styles/base";
-
-function setPageHeight(bottomPadding) {
-  return dimensions.fullHeight - dimensions.authBoxTopHeight + bottomPadding;
-}
+import { colors, staticDimensions } from "../../styles/base";
+import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 
 function Login(props) {
   const [error, setError] = useState(null);
@@ -41,6 +38,7 @@ function Login(props) {
   const rbSheet = useRef();
   const webKey = props.route.params?.webKey;
   const navigation = useNavigation();
+  const dimensions = useScreenDimensions();
 
   useEffect(() => {
     console.log(webKey);
@@ -91,6 +89,12 @@ function Login(props) {
       rbSheet.current.open();
     }
   }, [props.registerToken]);
+
+  function setPageHeight(bottomPadding) {
+    return (
+      dimensions.height - staticDimensions.authBoxTopHeight + bottomPadding
+    );
+  }
 
   const onLogin = () => {
     if (props.authData?.email === null || props.authData?.email === undefined) {
@@ -202,18 +206,24 @@ function Login(props) {
             </TouchableOpacity>
           </View>
           <View
-            style={[
-              styles.containerBottom,
-              {
-                height:
-                  !isChangePassword && !isLogin
-                    ? setPageHeight(dimensions.authPageRegisterBottomPadding)
-                    : setPageHeight(staticDimensions.pageBottomPadding),
-              },
-            ]}
+            style={{
+              backgroundColor: "white",
+              width: "100%",
+              height:
+                !isChangePassword && !isLogin
+                  ? setPageHeight(
+                      staticDimensions.authPageRegisterBottomPadding
+                    )
+                  : setPageHeight(staticDimensions.pageBottomPadding),
+            }}
           />
 
-          <View style={styles.containerBox}>
+          <View
+            style={[
+              styles.containerBox,
+              { width: dimensions.width - staticDimensions.authBoxWidthMargin },
+            ]}
+          >
             <Text style={styles.textHeader}>
               {isChangePassword
                 ? "Ganti Password"
@@ -312,24 +322,18 @@ function Login(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: dimensions.fullWidth,
-    height: dimensions.fullHeight,
+    width: "100%",
   },
   scrollView: {
     flex: 1,
-    width: dimensions.fullWidth,
-    height: dimensions.fullHeight,
+    width: "100%",
+    height: "100%",
     backgroundColor: "white",
   },
   containerFull: {
     flex: 1,
-    width: dimensions.fullWidth,
-    alignItems: "center",
-  },
-  containerBottom: {
-    backgroundColor: "white",
-    height: setPageHeight(staticDimensions.pageBottomPadding),
     width: "100%",
+    alignItems: "center",
   },
   containerBack: {
     position: "absolute",
@@ -341,11 +345,10 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: colors.daclen_black,
     alignItems: "center",
-    height: dimensions.authBoxTopHeight,
+    height: staticDimensions.authBoxTopHeight,
   },
   containerBox: {
     position: "absolute",
-    width: dimensions.authBoxWidth,
     backgroundColor: colors.daclen_light,
     borderColor: colors.daclen_gray,
     borderWidth: 2,

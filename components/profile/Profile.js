@@ -179,7 +179,7 @@ function Profile(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
   },
   scrollView: {
     flex: 1,

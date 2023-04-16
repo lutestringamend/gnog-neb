@@ -188,13 +188,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    width: dimensions.fullWidth,
+    width: "100%",
     backgroundColor: "white",
   },
   scrollView: {
     flex: 1,
-    width: dimensions.fullWidth,
-    height: dimensions.fullHeight,
+    width: "100%",
+    height: "100%",
     backgroundColor: "white",
   },
   containerHeader: {

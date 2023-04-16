@@ -49,10 +49,10 @@ function Alert(props) {
 
 const styles = StyleSheet.create({
   container: {
-    width: dimensions.fullWidth,
+    width: "100%",
   },
   textHasCheckout: {
-    width: dimensions.fullWidth,
+    width: "100%",
     textAlign: "center",
     paddingVertical: 10,
     paddingHorizontal: 20,

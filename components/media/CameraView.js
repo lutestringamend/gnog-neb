@@ -256,7 +256,7 @@ function CameraView(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
     justifyContent: "center",
     alignContent: "center",
     alignItems: "center",
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
   },
   containerBack: {
     position: "absolute",

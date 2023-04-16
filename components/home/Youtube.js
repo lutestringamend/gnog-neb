@@ -6,7 +6,7 @@ import {
 } from "react-native";
 //import YoutubePlayer from "react-native-youtube-iframe";
 import { youtubeurl } from "../profile/constants";
-import { dimensions } from "../../styles/base";
+import { staticDimensions } from "../../styles/base";
 
 export default function Youtube(props) {
   const [loading, setLoading] = useState(true);
@@ -28,8 +28,8 @@ export default function Youtube(props) {
   return (
     <View style={styles.container}>
       <YoutubePlayer
-        width={dimensions.fullWidth}
-        height={dimensions.fullWidth / dimensions.youtubeEmbedAspectRatio}
+        width={"100%"}
+        height={"100%" / staticDimensions.youtubeEmbedAspectRatio}
         play={false}
         videoId={"ScMzIvxBSi4"}
       />
@@ -39,7 +39,7 @@ export default function Youtube(props) {
 
 const styles = StyleSheet.create({
   container: {
-    width: dimensions.fullWidth,
+    width: "100%",
     paddingVertical: 10,
   },
   containerItem: {

@@ -95,11 +95,11 @@ const UserRoots = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
     backgroundColor: "white",
   },
   containerHorizontal: {
-    width: dimensions.fullWidth,
+    width: "100%",
     flexDirection: "row",
     backgroundColor: "white",
     alignItems: "stretch",
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   },
   containerMain: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
     backgroundColor: "white",
     paddingBottom: staticDimensions.pageBottomPadding,
     marginVertical: 10,
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
     backgroundColor: "white",
   },
   containerFlatlist: {

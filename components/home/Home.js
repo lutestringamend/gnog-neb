@@ -28,13 +28,13 @@ function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
     justifyContent: "space-evenly",
     backgroundColor: "transparent",
   },
   scrollView: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
     backgroundColor: colors.daclen_light,
   },
 });

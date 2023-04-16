@@ -19,18 +19,21 @@ import * as FileSystem from "expo-file-system";
 import { shareAsync, isAvailableAsync } from "expo-sharing";
 import * as Sentry from "sentry-expo";
 
-import { colors, dimensions } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 import { getFileName } from "../media";
+import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 
 export default function ImageViewer(props) {
   let title = props.route.params?.title;
   let uri = props.route.params?.uri;
   let isSquare = props.route.params?.isSquare;
   let watermarkData = props.route.params?.watermarkData;
+  let dimensions = useScreenDimensions();
 
   let width = props.route.params?.width;
   let height = props.route.params?.height;
-  let ratio = width / dimensions.productPhotoWidth;
+  let productPhotoWidth = dimensions.width - staticDimensions.productPhotoWidthMargin;
+  let ratio = width / productPhotoWidth;
 
   let text_align = props.route.params?.text_align;
   let text_x = props.route.params?.text_x;
@@ -71,9 +74,7 @@ export default function ImageViewer(props) {
   };
 
   //const [productPhotoHeight, setProductPhotoHeight] = useState(0);
-  const productPhotoHeight = isSquare
-    ? dimensions.productPhotoWidth
-    : height / ratio;
+  const productPhotoHeight = isSquare ? productPhotoWidth : height / ratio;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -129,7 +130,7 @@ export default function ImageViewer(props) {
       const report = {
         width,
         height,
-        ppw: dimensions.productPhotoWidth,
+        ppw: productPhotoWidth,
         pph: productPhotoHeight,
         ratio,
         generalStyle,
@@ -357,8 +358,15 @@ export default function ImageViewer(props) {
 
       <ScrollView contentContainerStyle={styles.scrollView}>
         {watermarkData === null || watermarkData === undefined ? (
-          <View style={styles.containerImage}>
-            <Image source={{ uri }} resizeMode="contain" style={styles.image} />
+          <View style={[styles.containerImage, { width: productPhotoWidth }]}>
+            <Image
+              source={{ uri }}
+              resizeMode="contain"
+              style={[
+                styles.image,
+                { width: productPhotoWidth, height: productPhotoWidth },
+              ]}
+            />
           </View>
         ) : (
           <View style={styles.containerInside}>
@@ -373,7 +381,7 @@ export default function ImageViewer(props) {
                 <ImageBackground
                   source={{ uri }}
                   style={{
-                    width: dimensions.productPhotoWidth,
+                    width: productPhotoWidth,
                     height: productPhotoHeight,
                   }}
                   resizeMode="cover"
@@ -394,18 +402,18 @@ export default function ImageViewer(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
   },
   scrollView: {
     flexGrow: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
     backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
   },
   containerInside: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
     backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
@@ -425,7 +433,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
-    width: dimensions.productPhotoWidth,
     overflow: "visible",
   },
   containerImagePreview: {
@@ -436,8 +443,6 @@ const styles = StyleSheet.create({
   image: {
     backgroundColor: "white",
     overflow: "visible",
-    width: dimensions.productPhotoWidth,
-    height: dimensions.productPhotoWidth,
   },
   containerButton: {
     width: "100%",
@@ -459,7 +464,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   textError: {
-    width: dimensions.fullWidth,
+    width: "100%",
     fontSize: 14,
     fontWeight: "bold",
     color: "white",

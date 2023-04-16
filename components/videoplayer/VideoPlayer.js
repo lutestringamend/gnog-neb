@@ -16,7 +16,7 @@ import * as FileSystem from "expo-file-system";
 import { Video, ResizeMode } from "expo-av";
 //import { getOrientationAsync, Orientation } from "expo-screen-orientation";
 
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 import { getFileName } from "../media";
 import MainHeader from "../main/MainHeader";
 import { useNavigation } from "@react-navigation/native";
@@ -70,7 +70,11 @@ export default function VideoPlayer(props) {
   }, [uri]);
 
   useEffect(() => {
-    if (videoSize?.isLandscape !== undefined && videoSize?.isLandscape !== null && screenData?.isLandscape !== videoSize.isLandscape) {
+    if (screenData?.isLandscape === undefined || screenData?.isLandscape === null) {
+      return;
+    }
+    
+    if (screenData?.isLandscape !== videoSize.isLandscape) {
       console.log("new screenData", screenData);
       changeVideoOrientation(screenData?.isLandscape);
       /*if (userId === 8054 && Platform.OS === "android") {

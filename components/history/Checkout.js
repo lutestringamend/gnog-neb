@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    width: dimensions.fullWidth,
+    width: "100%",
   },
   containerDescVertical: {
     flex: 1,

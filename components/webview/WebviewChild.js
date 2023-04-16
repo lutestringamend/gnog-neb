@@ -15,8 +15,9 @@ import * as Sentry from "sentry-expo";
 import RenderHTML from "react-native-render-html";
 //import { WebView } from "react-native-webview";
 
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 import MainHeader from "../main/MainHeader";
+import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 
 export function ErrorView(props) {
   return (
@@ -32,6 +33,8 @@ export function ErrorView(props) {
 }
 
 function WebviewChild(props) {
+  const dimensions = useScreenDimensions();
+
   try {
 
     function openExternalLink() {
@@ -62,7 +65,7 @@ function WebviewChild(props) {
           ) : (
             <RenderHTML
               style={styles.containerHTML}
-              contentWidth={dimensions.webviewWidth}
+              contentWidth={dimensions.width - staticDimensions.webviewWidthMargin}
               source={{ html: props?.content }}
               enableExperimentalMarginCollapsing={true}
             />
@@ -109,7 +112,7 @@ error ? (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
     backgroundColor: "white",
   },
   scrollView: {

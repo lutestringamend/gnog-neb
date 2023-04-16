@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, View, Text, Image, SafeAreaView } from "react-native";
 
 import packageJson from "../package.json";
-import { colors, dimensions } from "../styles/base";
+import { colors } from "../styles/base";
 
 function SplashScreen(props) {
   const versionText = `Versi Aplikasi ${packageJson?.version}`;
@@ -26,7 +26,7 @@ function SplashScreen(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
     backgroundColor: colors.daclen_black,
     alignItems: "center",
     justifyContent: "center",

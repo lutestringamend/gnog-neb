@@ -7,7 +7,7 @@ import { bindActionCreators } from "redux";
 import { showBlog } from "../../axios/blog";
 
 import BlogItem from "./BlogItem";
-import { colors, dimensions } from "../../styles/base";
+import { colors } from "../../styles/base";
 
 function Blog(props, { navigation }) {
   const { blogItems } = props;
@@ -85,7 +85,7 @@ function Blog(props, { navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    width: dimensions.fullWidth,
+    width: "100%",
     justifyContent: "flex-start",
   },
 });

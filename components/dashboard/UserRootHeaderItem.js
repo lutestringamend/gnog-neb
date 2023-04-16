@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   containerHorizontal: {
     flex: 1,
     maxWidth:
-      dimensions.fullWidth / 2 - dimensions.dashboardBoxHorizontalMargin * 2,
+      "100%" / 2 - dimensions.dashboardBoxHorizontalMargin * 2,
     marginHorizontal: dimensions.dashboardBoxHorizontalMargin,
     borderRadius: 4,
     justifyContent: "center",

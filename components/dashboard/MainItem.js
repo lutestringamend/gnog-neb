@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   touchableContainer: {
     flex: 1,
     maxWidth:
-      dimensions.fullWidth / 2 - staticDimensions.dashboardBoxHorizontalMargin * 2,
+      "100%" / 2 - staticDimensions.dashboardBoxHorizontalMargin * 2,
     marginHorizontal: staticDimensions.dashboardBoxHorizontalMargin,
     borderWidth: 1,
     borderColor: colors.daclen_light,

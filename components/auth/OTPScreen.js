@@ -17,7 +17,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { validateOTP, getCurrentUser } from "../../axios/user";
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 import OTPInput from "../OTP/OTPInput";
 import { openCheckout } from "../main/CheckoutScreen";
 import BSPopup from "../bottomsheets/BSPopup";
@@ -215,7 +215,7 @@ function OTPScreen(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
     backgroundColor: "white",
     alignItems: "center",
   },

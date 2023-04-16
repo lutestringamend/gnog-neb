@@ -11,12 +11,14 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import RenderHTML from "react-native-render-html";
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
+import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 
 
 function BlogItem(props) {
   const [content, setContent] = useState("");
   const navigation = useNavigation();
+  const dimensions = useScreenDimensions();
 
   useEffect(() => {
     if (props?.isi === undefined || props?.isi === null) {
@@ -61,7 +63,8 @@ function BlogItem(props) {
               <Text style={styles.textTitle}>{props?.judul}</Text>
               <RenderHTML
                 style={styles.textDesc}
-                contentWidth={dimensions.blogTextWidth}
+                width={dimensions.width - staticDimensions.blogTextWidthMargin}
+                contentWidth={dimensions.width - staticDimensions.blogTextWidthMargin}
                 source={{ html: content }}
               />
             </View>
@@ -80,7 +83,7 @@ function BlogItem(props) {
 
 const styles = StyleSheet.create({
   container: {
-    width: dimensions.fullWidth,
+    width: "100%",
   },
   containerDescVertical: {
     marginVertical: 10,
@@ -139,7 +142,7 @@ const styles = StyleSheet.create({
     marginEnd: 8,
   },
   image: {
-    width: dimensions.fullWidth,
+    width: "100%",
     aspectRatio: 2 / 1,
   },
 });

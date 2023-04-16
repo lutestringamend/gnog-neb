@@ -175,12 +175,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    width: dimensions.fullWidth,
+    width: "100%",
     backgroundColor: "white",
   },
   scrollView: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
     backgroundColor: "white",
   },
   containerHeader: {

@@ -1,28 +1,39 @@
-import { StatusBar, Platform } from "react-native";
-import { useScreenDimensions } from "../hooks/useScreenDimensions";
+import { StatusBar, Platform, Dimensions } from "react-native";
 
 export const staticDimensions = {
   statusBarPadding: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   dashboardBoxHorizontalMargin: 5,
   pageBottomPadding: 100,
+  authBoxTopHeight: 150,
+  authBoxWidthMargin: 40,
+  authPageRegisterBottomPadding: 300,
+  blogTextWidthMargin: 20,
+  webviewWidthMargin: 24,
+  productPhotoWidthMargin: 10,
+  youtubeEmbedAspectRatio: 560 / 340,
 }
 
-export const dimensions = () => {
+export const dimensions = {
+  fullHeight: Dimensions.get("window").height,
+  fullWidth: Dimensions.get("window").width,
+}
+
+/*export const getDimensions = () => {
   let screenData = useScreenDimensions();
+  let fullHeight = screenData?.height ? screenData?.height : Dimensions.get("window").height;
+  let fullWidth = screenData?.width ? screenData?.width : Dimensions.get("window").width;
 
   return {
-    fullHeight: screenData.height,
-    fullWidth: screenData.width,
+    fullHeight,
+    fullWidth,
     isLandscape: screenData?.isLandscape,
-    authBoxWidth: screenData.width - 40,
-    authBoxTopHeight: 150,
-    authPageRegisterBottomPadding: 300,
-    productPhotoWidth: screenData.width - 10,
-    blogTextWidth: screenData.width - 20,
-    webviewWidth: screenData.width - 24,
+    authBoxWidth: fullWidth - 40,
+    productPhotoWidth: fullWidth - 10,
+    blogTextWidth: fullWidth - 20,
+    webviewWidth: fullWidth - 24,
     youtubeEmbedAspectRatio: 560 / 340,
   };
-};
+};*/
 
 export const colors = {
   daclen_black: "#212529",

@@ -120,12 +120,12 @@ function DashboardMain(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
   },
   scrollView: {
     flex: 1,
-    width: dimensions.fullWidth,
-    height: dimensions.fullHeight,
+    width: "100%",
+    height: "100%",
     backgroundColor: colors.daclen_black,
   },
   containerVerification: {

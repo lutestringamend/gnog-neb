@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "flex-start",
-    width: dimensions.fullWidth,
+    width: "100%",
     backgroundColor: "white",
   },
   scrollView: {

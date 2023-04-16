@@ -59,7 +59,7 @@ export default function About() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: dimensions.fullWidth,
+    width: "100%",
     backgroundColor: colors.daclen_black,
   },
   scrollView: {
