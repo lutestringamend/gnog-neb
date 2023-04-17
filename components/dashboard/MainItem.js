@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 //import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 
 export default function MainItem(props) {
   function buttonPress() {

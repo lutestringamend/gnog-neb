@@ -28,7 +28,7 @@ function checkVerification(userData) {
 const UserRoots = (props) => {
   const [numRoots, setNumRoots] = useState(0);
   const [numVerified, setNumVerified] = useState(0);
-  const [popupUser, setPopupUser] = useState(null);
+  const [popupUser, setPopupUser] = useState({name: null});
   const { currentUser, hpv } = props;
   const rbSheet = useRef();
 
@@ -47,13 +47,17 @@ const UserRoots = (props) => {
   }, [hpv]);
 
   useEffect(() => {
-    if (popupUser !== null) {
+    if (popupUser?.name !== null) {
       rbSheet.current.open();
     }
   }, [popupUser]);
 
   function openUserPopup(data) {
-    setPopupUser(data);
+    if (popupUser?.name === null || popupUser?.name !== data?.name) {
+      setPopupUser(data);
+    } else {
+      rbSheet.current.open();
+    }
   }
 
   return (

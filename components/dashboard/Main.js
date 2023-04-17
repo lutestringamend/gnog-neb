@@ -1,23 +1,18 @@
 import React from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 //import { faMedal, faDollarSign, faCoins, faPercent } from '@fortawesome/free-solid-svg-icons'
 
 import MainItem from "./MainItem";
 import {
-  bonusroottitle,
-  komisiusertotaltitle,
-  poinuserhpvtitle,
-  poinuserpointitle,
-  poinusertotaltitle,
+  bonusrootpopup,
+  komisiuserpopup,
+  poinuserhpvpopup,
+  poinuserpopup,
+  poinusertotalpopup,
   userroottitle,
 } from "./constants";
 
@@ -29,43 +24,43 @@ export default function Main(props) {
     <View style={styles.container}>
       <View style={styles.containerHorizontal}>
         <MainItem
-          title={poinuserpointitle}
+          title={poinuserpopup.title}
           content={poin_user?.poin}
           color={colors.daclen_light}
-          icon="medal"
+          icon={poinuserpopup.icon}
           onButtonPress={(e) => props?.onButtonPress(e)}
         />
         <MainItem
-          title={poinuserhpvtitle}
+          title={poinuserhpvpopup.title}
           content={poin_user?.hpv}
           color={colors.daclen_red}
-          icon="family-tree"
+          icon={poinuserhpvpopup.icon}
           onButtonPress={(e) => props?.onButtonPress(e)}
         />
       </View>
       <View style={styles.containerHorizontal}>
         <MainItem
-          title={poinusertotaltitle}
+          title={poinusertotalpopup.title}
           content={poin_user?.total}
           color={colors.daclen_blue}
-          icon="hand-coin"
+          icon={poinusertotalpopup.icon}
           onButtonPress={(e) => props?.onButtonPress(e)}
         />
         <MainItem
-          title={komisiusertotaltitle}
+          title={komisiuserpopup.title}
           content={`Rp ${komisi_user?.total_currency}`}
           color={colors.daclen_yellow}
           fontSize={16}
-          icon="bitcoin"
+          icon={komisiuserpopup.icon}
           onButtonPress={(e) => props?.onButtonPress(e)}
         />
       </View>
       <View style={styles.containerHorizontal}>
         <MainItem
-          title={bonusroottitle}
+          title={bonusrootpopup.title}
           content={bonus_level_user?.total}
           color={colors.daclen_teal}
-          icon="percent"
+          icon={bonusrootpopup.icon}
           onButtonPress={(e) => props?.onButtonPress(e)}
         />
         <MainItem

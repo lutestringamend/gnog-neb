@@ -14,6 +14,7 @@ import {
   getotp,
   validateotp,
   gethpv,
+  laporanpoinuser,
 } from "../constants";
 import { getKeranjang } from "../cart";
 import { initialState } from "../../redux/reducers/user";
@@ -36,6 +37,7 @@ import {
   DISABLE_FORCE_LOGOUT,
   ENABLE_FORCE_LOGOUT,
   USER_HPV_STATE_CHANGE,
+  USER_POINTS_STATE_CHANGE,
 } from "../../redux/constants";
 import {
   calculateBase64SizeInBytes,
@@ -82,6 +84,29 @@ export function clearUserData(forceLogout) {
   };
 }
 
+export function getLaporanPoin(id, token) {
+  return (dispatch) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    };
+    const url = laporanpoinuser + "/" + id.toString();
+    console.log("laporanpoinuser with header " + url);
+
+    Axios.get(url, config)
+      .then((response) => {
+        const data = response.data;
+        dispatch({ type: USER_POINTS_STATE_CHANGE, data });
+      })
+      .catch((error) => {
+        console.log(error);
+        //dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: error?.message });
+      });
+  };
+}
+
 export function getHPV(id, token) {
   return (dispatch) => {
     const config = {
@@ -96,18 +121,7 @@ export function getHPV(id, token) {
     Axios.get(url, config)
       .then((response) => {
         const data = response.data;
-        //console.log("HPV data", data);
         dispatch({ type: USER_HPV_STATE_CHANGE, data });
-        /*const token = response.data.token;
-        if (token !== null && token !== undefined) {
-          //dispatch(setNewToken(token));
-          dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token });
-        } else {
-          const data =
-            "Tidak bisa mendaftarkan akun baru. Mohon periksa kembali data yang Anda masukkan.";
-          dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data });
-          //dispatch(clearUserData());
-        }*/
       })
       .catch((error) => {
         console.log(error);

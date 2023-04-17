@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -15,11 +15,20 @@ import { bindActionCreators } from "redux";
 
 import { clearUserData, getCurrentUser, getHPV } from "../../axios/user";
 
+import RBSheet from "react-native-raw-bottom-sheet";
 import Header from "./Header";
-import { colors, dimensions } from "../../styles/base";
+import { colors } from "../../styles/base";
 import Main from "./Main";
 import { webdashboard } from "../../axios/constants";
 import { useNavigation } from "@react-navigation/native";
+import BSDashboard from "../bottomsheets/BSDashboard";
+import {
+  bonusrootpopup,
+  komisiuserpopup,
+  poinuserhpvpopup,
+  poinuserpopup,
+  poinusertotalpopup,
+} from "./constants";
 
 function DashboardMain(props) {
   const [message, setMessage] = useState({
@@ -27,7 +36,9 @@ function DashboardMain(props) {
     isError: false,
   });
   const [browserText, setBrowserText] = useState(null);
+  const [popupDetail, setPopupDetail] = useState({title: null});
   const navigation = useNavigation();
+  const rbSheet = useRef();
   const { currentUser, token, hpv } = props;
 
   useEffect(() => {
@@ -40,8 +51,38 @@ function DashboardMain(props) {
     }
   }, [token, hpv]);
 
-  function buttonPress(text) {
-    setBrowserText(`Lihat ${text} di Browser`);
+  useEffect(() => {
+    if (popupDetail?.title !== null) {
+      rbSheet.current.open();
+    }
+    //console.log("popupDetail", popupDetail);
+  }, [popupDetail]);
+
+  function buttonPress(title) {
+    if (title !== null && title === popupDetail?.title) {
+      rbSheet.current.open();
+    } else {
+      setBrowserText(`Lihat ${title} di Browser`);
+      switch (title) {
+        case poinuserpopup.title:
+          setPopupDetail(poinuserpopup);
+          break;
+        case poinuserhpvpopup.title:
+          setPopupDetail(poinuserhpvpopup);
+          break;
+        case poinusertotalpopup.title:
+          setPopupDetail(poinusertotalpopup);
+          break;
+        case komisiuserpopup.title:
+          setPopupDetail(komisiuserpopup);
+          break;
+        case bonusrootpopup.title:
+          setPopupDetail(bonusrootpopup);
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   return (
@@ -113,6 +154,12 @@ function DashboardMain(props) {
           />
         )}
       </ScrollView>
+      <RBSheet ref={rbSheet} openDuration={250} height={popupDetail?.height ? popupDetail?.height : 370}>
+        <BSDashboard
+          data={popupDetail}
+          closeThis={() => rbSheet.current.close()}
+        />
+      </RBSheet>
     </SafeAreaView>
   );
 }
@@ -148,7 +195,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     alignItems: "center",
   },
-  
   logo: {
     width: 120,
     height: 120,
