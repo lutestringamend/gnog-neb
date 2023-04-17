@@ -11,7 +11,7 @@ import { connect } from "react-redux";
 //import { bindActionCreators } from "redux";
 
 import UserRootItem, { VerticalLine } from "./UserRootItem";
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 import UserRootHeaderItem from "./UserRootHeaderItem";
 import { notverified, userverified } from "./constants";
 
@@ -29,13 +29,13 @@ const UserRoots = (props) => {
   const { currentUser, hpv } = props;
 
   useEffect(() => {
-    if (hpv?.length === undefined || hpv?.length < 1) {
+    if (hpv?.children?.length === undefined || hpv?.children?.length < 1) {
       setNumRoots(0);
       setNumVerified(0);
     } else {
-      setNumRoots(hpv?.length);
-      for (let i = 0; i < hpv?.length; i++) {
-        if (checkVerification(hpv[i])) {
+      setNumRoots(hpv?.children?.length);
+      for (let i = 0; i < hpv?.children?.length; i++) {
+        if (checkVerification(hpv?.children[i])) {
           setNumVerified((n) => n + 1);
         }
       }
@@ -74,7 +74,7 @@ const UserRoots = (props) => {
               <FlatList
                 numColumns={1}
                 horizontal={false}
-                data={hpv}
+                data={hpv?.children}
                 renderItem={({ item, index }) => (
                   <UserRootItem
                     userData={item}

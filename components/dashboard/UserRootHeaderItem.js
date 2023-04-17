@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 
 export default function UserRootHeaderItem({
   title,
@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
   containerHorizontal: {
     flex: 1,
     maxWidth:
-      "100%" / 2 - dimensions.dashboardBoxHorizontalMargin * 2,
-    marginHorizontal: dimensions.dashboardBoxHorizontalMargin,
+      dimensions.fullWidth / 2 - staticDimensions.dashboardBoxHorizontalMargin * 2,
+    marginHorizontal: staticDimensions.dashboardBoxHorizontalMargin,
     borderRadius: 4,
     justifyContent: "center",
     backgroundColor: "transparent",
