@@ -16,7 +16,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import * as FileSystem from "expo-file-system";
 import { Video, ResizeMode } from "expo-av";
 
-import { colors, staticDimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import { getFileName } from "../media";
 import MainHeader from "../main/MainHeader";
 import { useNavigation } from "@react-navigation/native";
@@ -104,7 +104,9 @@ export default function VideoPlayer(props) {
     }, [videoSize]);
 
     function changeVideoOrientation(isLandscape) {
-      if (!videoLoading) {
+      if (isLandscape === undefined || isLandscape === null) {
+        return;
+      } else if (!videoLoading) {
         setVideoLoading(true);
       }
       if (isLandscape) {
@@ -113,8 +115,7 @@ export default function VideoPlayer(props) {
           videoWidth: screenData.width,
           videoHeight: screenData.height,
         });
-      } else if (!isLandscape) {
-        setLoading(true);
+      } else {
         setVideoSize({
           isLandscape: false,
           videoWidth: screenData.width,
@@ -223,12 +224,12 @@ export default function VideoPlayer(props) {
                 styles.video,
                 {
                   position: videoSize.isLandscape ? "absolute" : "relative",
-                  width: videoSize.width,
-                  height: videoSize.height,
+                  width: videoSize.videoWidth,
+                  height: videoSize.videoHeight,
                 },
               ]}
             >
-              <Video
+              {Platform.OS === "web" ? (<Video
                 ref={video}
                 style={[
                   styles.video,
@@ -247,9 +248,9 @@ export default function VideoPlayer(props) {
                     ? ResizeMode.STRETCH
                     : ResizeMode.CONTAIN
                 }
-                isLooping
                 onPlaybackStatusUpdate={(status) => setStatus(() => status)}
-              />
+              />) : null}
+              
 
               <ImageBackground
                 source={{ uri: thumbnail }}
