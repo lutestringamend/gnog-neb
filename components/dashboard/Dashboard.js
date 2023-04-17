@@ -108,7 +108,7 @@ function DashboardMain(props) {
             poin_user={currentUser?.poin_user}
             komisi_user={currentUser?.komisi_user}
             bonus_level_user={currentUser?.bonus_level_user}
-            referral_number={hpv?.children?.length}
+            referral_number={hpv?.data?.children?.length}
             onButtonPress={(e) => buttonPress(e)}
           />
         )}

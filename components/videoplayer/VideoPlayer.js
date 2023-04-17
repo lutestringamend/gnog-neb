@@ -38,13 +38,14 @@ export default function VideoPlayer(props) {
         : Dimensions.get("window").width / ratio,
     };
     const [videoSize, setVideoSize] = useState(initialVideoSize);*/
-    const videoSize = {
+    const initialVideoSize = {
       isLandscape: Dimensions.get("window").width > Dimensions.get("window").height,
       videoWidth: Dimensions.get("window").width,
       videoHeight: Dimensions.get("window").width > Dimensions.get("window").height
         ? Dimensions.get("window").height
         : Dimensions.get("window").width / ratio,
     }
+    const [videoSize, setVideoSize] = useState(initialVideoSize);
 
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
@@ -77,7 +78,7 @@ export default function VideoPlayer(props) {
           );
         }
       }
-    }, [screenData]);
+    }, [screenData]);*/
 
     useEffect(() => {
       console.log("videoSize", videoSize, "userId", userId);
@@ -101,11 +102,11 @@ export default function VideoPlayer(props) {
       } else if (videoLoading) {
         setVideoLoading(false);
       }
-      if (userId === 8054 && Platform.OS === "android") {
+      /*if (userId === 8054 && Platform.OS === "android") {
         ToastAndroid.show(`videoSize ${JSON.stringify(videoSize)}`,
           ToastAndroid.LONG
         );
-      }
+      }*/
     }, [videoSize]);
 
     function changeVideoOrientation(isLandscape) {
@@ -114,20 +115,21 @@ export default function VideoPlayer(props) {
       } else if (!videoLoading) {
         setVideoLoading(true);
       }
+      changeOrie
       if (isLandscape) {
         setVideoSize({
           isLandscape: true,
-          videoWidth: screenData.width,
-          videoHeight: screenData.height,
+          videoWidth: Dimensions.get("window").width,
+          videoHeight: Dimensions.get("window").height,
         });
       } else {
         setVideoSize({
           isLandscape: false,
-          videoWidth: screenData.width,
-          videoHeight: screenData.width / ratio,
+          videoWidth: Dimensions.get("window").width,
+          videoHeight: Dimensions.get("window").width / ratio,
         });
       }
-    }*/
+    }
 
     function onBackPress() {
       navigation.navigate("MediaKitFiles", { activeTab: WATERMARK_VIDEO });
@@ -308,13 +310,13 @@ export default function VideoPlayer(props) {
               style={
                 videoSize.isLandscape ? styles.buttonCircle : styles.button
               }
-              onPress={() => setHidden(() => !hidden)}
+              onPress={() => changeVideoOrientation(!videoSize.isLandscape)}
               disabled={videoLoading}
             >
               <MaterialCommunityIcons name="view-day" size={18} color="white" />
               {videoSize.isLandscape ? null : (
                 <Text style={styles.textButton}>
-                  {hidden ? "Show" : "Hide"}
+                  Landscape
                 </Text>
               )}
             </TouchableOpacity>

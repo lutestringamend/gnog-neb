@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-import { colors, dimensions } from "../../styles/base";
+import { colors } from "../../styles/base";
 
 export default function BSPopup(props) {
   const [loading, setLoading] = useState(false);

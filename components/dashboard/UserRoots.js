@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   SafeAreaView,
   View,
@@ -6,10 +6,12 @@ import {
   FlatList,
   ScrollView,
 } from "react-native";
+import RBSheet from "react-native-raw-bottom-sheet";
 
 import { connect } from "react-redux";
 //import { bindActionCreators } from "redux";
 
+import BSUserRoot from "../bottomsheets/BSUserRoot";
 import UserRootItem, { VerticalLine } from "./UserRootItem";
 import { colors, staticDimensions } from "../../styles/base";
 import UserRootHeaderItem from "./UserRootHeaderItem";
@@ -26,14 +28,16 @@ function checkVerification(userData) {
 const UserRoots = (props) => {
   const [numRoots, setNumRoots] = useState(0);
   const [numVerified, setNumVerified] = useState(0);
+  const [popupUser, setPopupUser] = useState(null);
   const { currentUser, hpv } = props;
+  const rbSheet = useRef();
 
   useEffect(() => {
-    if (hpv?.children?.length === undefined || hpv?.children?.length < 1) {
+    if (hpv?.data?.children?.length === undefined || hpv?.data?.children?.length < 1) {
       setNumRoots(0);
       setNumVerified(0);
     } else {
-      setNumRoots(hpv?.children?.length);
+      setNumRoots(hpv?.data?.children?.length);
       for (let i = 0; i < hpv?.children?.length; i++) {
         if (checkVerification(hpv?.children[i])) {
           setNumVerified((n) => n + 1);
@@ -41,6 +45,16 @@ const UserRoots = (props) => {
       }
     }
   }, [hpv]);
+
+  useEffect(() => {
+    if (popupUser !== null) {
+      rbSheet.current.open();
+    }
+  }, [popupUser]);
+
+  function openUserPopup(data) {
+    setPopupUser(data);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -64,6 +78,7 @@ const UserRoots = (props) => {
         <View style={styles.containerMain}>
           <UserRootItem
             userData={currentUser}
+            onPress={() => openUserPopup(currentUser)}
             isCurrentUser={true}
             isLastItem={false}
             isVerified={checkVerification(currentUser)}
@@ -74,10 +89,11 @@ const UserRoots = (props) => {
               <FlatList
                 numColumns={1}
                 horizontal={false}
-                data={hpv?.children}
+                data={hpv?.data?.children}
                 renderItem={({ item, index }) => (
                   <UserRootItem
                     userData={item}
+                    onPress={() => openUserPopup(item)}
                     isCurrentUser={false}
                     isLastItem={index >= numRoots - 1}
                     isVerified={checkVerification(item)}
@@ -88,6 +104,17 @@ const UserRoots = (props) => {
           </View>
         </View>
       </ScrollView>
+      <RBSheet
+        ref={rbSheet}
+        openDuration={250}
+        height={300}
+      >
+        <BSUserRoot
+          title="Detail User"
+          data={popupUser}
+          closeThis={() => rbSheet.current.close()}
+        />
+      </RBSheet>
     </SafeAreaView>
   );
 };

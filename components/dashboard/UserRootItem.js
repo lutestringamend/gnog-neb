@@ -10,9 +10,9 @@ export function VerticalLine({ style }) {
   return <View style={[styles.verticalLine, style]} />;
 }
 
-const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified }) => {
+const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified, onPress }) => {
   
-  function onPress() {
+  function userPress() {
     let message = `${userData?.name}`;
     if (userData?.email_verified_at === null) {
       message += `\n${emailnotverified}`;
@@ -21,9 +21,10 @@ const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified }) => {
       message += `\n${phonenotverified}`;
     }
     console.log({ id: userData?.id, message });
-    if (Platform.OS === "android") {
+    onPress();
+    /*if (Platform.OS === "android") {
       ToastAndroid.show(message, ToastAndroid.SHORT);
-    }
+    }*/
   }
 
   return (
@@ -34,7 +35,7 @@ const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified }) => {
       {isCurrentUser ? null : <View style={styles.horizontalLine} />}
 
       <TouchableHighlight
-        onPress={() => onPress()}
+        onPress={() => userPress()}
         underlayColor={colors.daclen_orange}
         style={[
           styles.containerTouchable,
@@ -97,7 +98,7 @@ const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified }) => {
                 },
               ]}
             >
-              0
+              {userData?.rpv ? userData?.rpv : "0"}
             </Text>
           </View>
         </View>

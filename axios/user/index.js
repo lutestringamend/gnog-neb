@@ -95,7 +95,7 @@ export function getHPV(id, token) {
 
     Axios.get(url, config)
       .then((response) => {
-        const data = response.data?.data;
+        const data = response.data;
         //console.log("HPV data", data);
         dispatch({ type: USER_HPV_STATE_CHANGE, data });
         /*const token = response.data.token;
