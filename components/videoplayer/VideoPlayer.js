@@ -7,8 +7,6 @@ import {
   ActivityIndicator,
   ImageBackground,
   ScrollView,
-  Platform,
-  ToastAndroid,
   Dimensions,
   SafeAreaView,
 } from "react-native";
@@ -16,21 +14,22 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import * as FileSystem from "expo-file-system";
 import { Video, ResizeMode } from "expo-av";
 
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 import { getFileName } from "../media";
 import MainHeader from "../main/MainHeader";
 import { useNavigation } from "@react-navigation/native";
 import { WATERMARK_VIDEO } from "../dashboard/constants";
-import { useScreenDimensions } from "../../hooks/useScreenDimensions";
+//import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 import { ErrorView } from "../webview/WebviewChild";
 
 export default function VideoPlayer(props) {
   const { title, uri, width, height, thumbnail, userId } = props.route?.params;
   let ratio = width / height;
+  const video = useRef(null);
   const navigation = useNavigation();
 
   try {
-    let screenData = useScreenDimensions();
+    /*let screenData = useScreenDimensions();
     const initialVideoSize = {
       isLandscape: screenData?.isLandscape,
       videoWidth: Dimensions.get("window").width,
@@ -38,8 +37,14 @@ export default function VideoPlayer(props) {
         ? Dimensions.get("window").height
         : Dimensions.get("window").width / ratio,
     };
-    const video = useRef(null);
-    const [videoSize, setVideoSize] = useState(initialVideoSize);
+    const [videoSize, setVideoSize] = useState(initialVideoSize);*/
+    const videoSize = {
+      isLandscape: Dimensions.get("window").width > Dimensions.get("window").height,
+      videoWidth: Dimensions.get("window").width,
+      videoHeight: Dimensions.get("window").width > Dimensions.get("window").height
+        ? Dimensions.get("window").height
+        : Dimensions.get("window").width / ratio,
+    }
 
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
@@ -54,7 +59,7 @@ export default function VideoPlayer(props) {
       }
     }, [uri]);
 
-    useEffect(() => {
+    /*useEffect(() => {
       if (
         screenData?.isLandscape === undefined ||
         screenData?.isLandscape === null
@@ -65,12 +70,12 @@ export default function VideoPlayer(props) {
       if (screenData?.isLandscape !== videoSize.isLandscape) {
         console.log("new screenData", screenData);
         changeVideoOrientation(screenData?.isLandscape);
-        /*if (userId === 8054 && Platform.OS === "android") {
+        if (userId === 8054 && Platform.OS === "android") {
           ToastAndroid.show(
             `change orientation ${JSON.stringify(screenData)}`,
             ToastAndroid.LONG
           );
-        }*/
+        }
       }
     }, [screenData]);
 
@@ -96,11 +101,11 @@ export default function VideoPlayer(props) {
       } else if (videoLoading) {
         setVideoLoading(false);
       }
-      /*if (userId === 8054 && Platform.OS === "android") {
+      if (userId === 8054 && Platform.OS === "android") {
         ToastAndroid.show(`videoSize ${JSON.stringify(videoSize)}`,
           ToastAndroid.LONG
         );
-      }*/
+      }
     }, [videoSize]);
 
     function changeVideoOrientation(isLandscape) {
@@ -122,7 +127,7 @@ export default function VideoPlayer(props) {
           videoHeight: screenData.width / ratio,
         });
       }
-    }
+    }*/
 
     function onBackPress() {
       navigation.navigate("MediaKitFiles", { activeTab: WATERMARK_VIDEO });
@@ -229,14 +234,13 @@ export default function VideoPlayer(props) {
                 },
               ]}
             >
-              {Platform.OS === "web" ? (<Video
+              <Video
                 ref={video}
                 style={[
                   styles.video,
                   {
                     width: videoSize.videoWidth,
                     height: videoSize.videoHeight,
-                    zIndex: 1,
                   },
                 ]}
                 source={{
@@ -249,7 +253,7 @@ export default function VideoPlayer(props) {
                     : ResizeMode.CONTAIN
                 }
                 onPlaybackStatusUpdate={(status) => setStatus(() => status)}
-              />) : null}
+              />
               
 
               <ImageBackground
@@ -359,18 +363,22 @@ export default function VideoPlayer(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: "100%",
     backgroundColor: "white",
   },
   scrollView: {
     flex: 1,
+    width: "100%",
     backgroundColor: "white",
   },
   containerPanelPortrait: {
+    width: "100%",
     marginHorizontal: 20,
     paddingBottom: staticDimensions.pageBottomPadding,
     alignItems: "center",
   },
   containerPanelLandscape: {
+    width: "100%",
     backgroundColor: "transparent",
     alignItems: "flex-end",
     zIndex: 6,
