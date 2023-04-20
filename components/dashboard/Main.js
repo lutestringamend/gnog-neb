@@ -81,6 +81,37 @@ export default function Main(props) {
           <MaterialCommunityIcons name="briefcase" size={18} color="white" />
           <Text style={styles.textButton}>Materi Promosi</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("PointReportScreen")}
+          style={[
+            styles.button,
+            { backgroundColor: colors.daclen_green, marginTop: 12 },
+          ]}
+        >
+          <MaterialCommunityIcons name="hand-coin" size={18} color="white" />
+          <Text style={styles.textButton}>Laporan Poin</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("SaldoReportScreen")}
+          style={[
+            styles.button,
+            { backgroundColor: colors.daclen_reddishbrown, marginTop: 12 },
+          ]}
+        >
+          <MaterialCommunityIcons name="bitcoin" size={18} color="white" />
+          <Text style={styles.textButton}>Laporan Saldo</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => navigation.navigate("BonusRootScreen")}
+          style={[
+            styles.button,
+            { backgroundColor: colors.daclen_indigo, marginTop: 12 },
+          ]}
+        >
+          <MaterialCommunityIcons name="percent" size={18} color="white" />
+          <Text style={styles.textButton}>Syarat Bonus Root</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

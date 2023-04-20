@@ -62,7 +62,7 @@ function DashboardMain(props) {
     if (title !== null && title === popupDetail?.title) {
       rbSheet.current.open();
     } else {
-      setBrowserText(`Lihat ${title} di Browser`);
+      //setBrowserText(`Lihat ${title} di Browser`);
       switch (title) {
         case poinuserpopup.title:
           setPopupDetail(poinuserpopup);

@@ -106,7 +106,7 @@ function CheckoutItem(props) {
           />
         }
       >
-        {checkout === null || refreshing ? (
+        {checkout === null  || checkout?.detail_checkout === undefined || refreshing ? (
           <ActivityIndicator
             size="large"
             color={colors.daclen_orange}

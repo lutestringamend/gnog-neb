@@ -25,6 +25,7 @@ import {
 } from "../../axios/history";
 
 import { colors, dimensions } from "../../styles/base";
+import Separator from "../profile/Separator";
 
 function Checkout(props) {
   const { token, checkouts, checkout } = props;
@@ -93,47 +94,50 @@ function Checkout(props) {
               numColumns={1}
               horizontal={false}
               data={checkouts}
-              style={{paddingBottom: 100}}
+              style={{ paddingBottom: 100 }}
               renderItem={({ item }) => (
-                <View style={styles.containerItem}>
-                  <MaterialCommunityIcons
-                    name="check-circle"
-                    size={24}
-                    color={colors.daclen_black}
-                    style={styles.icon}
-                    onPress={() => openItem(item?.id)}
-                  />
+                <View style={{ width: "100%" }}>
+                  <View style={styles.containerItem}>
+                    <MaterialCommunityIcons
+                      name="check-circle"
+                      size={24}
+                      color={colors.daclen_black}
+                      style={styles.icon}
+                      onPress={() => openItem(item?.id)}
+                    />
 
-                  <View style={styles.containerDescVertical}>
-                    <TouchableOpacity onPress={() => openItem(item?.id)}>
-                      <Text style={styles.textTitle}>{item?.invoice}</Text>
-                    </TouchableOpacity>
-                    <View style={styles.containerDescHorizontal}>
-                      <Text style={styles.textDate}>{item?.created_at}</Text>
-                      <Text style={styles.textPrice}>
-                        Rp {item?.total_currency}
-                      </Text>
+                    <View style={styles.containerDescVertical}>
+                      <TouchableOpacity onPress={() => openItem(item?.id)}>
+                        <Text style={styles.textTitle}>{item?.invoice}</Text>
+                      </TouchableOpacity>
+                      <View style={styles.containerDescHorizontal}>
+                        <Text style={styles.textDate}>{item?.created_at}</Text>
+                        <Text style={styles.textPrice}>
+                          Rp {item?.total_currency}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
 
-                  <TouchableOpacity
-                    onPress={() => openItem(item?.id)}
-                    disabled={loading}
-                    style={[
-                      styles.button,
-                      item?.status === "ditolak"
-                        ? { backgroundColor: colors.daclen_danger }
-                        : item?.status === "diverifikasi" && {
-                            backgroundColor: colors.daclen_green,
-                          },
-                    ]}
-                  >
-                    <Text style={styles.textButton}>
-                      {item?.status === null
-                        ? "Bayar Pesanan"
-                        : capitalizeFirstLetter(item?.status)}
-                    </Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => openItem(item?.id)}
+                      disabled={loading}
+                      style={[
+                        styles.button,
+                        item?.status === "ditolak"
+                          ? { backgroundColor: colors.daclen_danger }
+                          : item?.status === "diverifikasi" && {
+                              backgroundColor: colors.daclen_green,
+                            },
+                      ]}
+                    >
+                      <Text style={styles.textButton}>
+                        {item?.status === null
+                          ? "Bayar Pesanan"
+                          : capitalizeFirstLetter(item?.status)}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  <Separator thickness={2} style={{ marginTop: 10 }} />
                 </View>
               )}
             />

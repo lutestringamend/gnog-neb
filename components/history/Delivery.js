@@ -23,6 +23,7 @@ import {
 } from "../../axios/history";
 
 import { colors, dimensions } from "../../styles/base";
+import Separator from "../profile/Separator";
 
 function Delivery(props) {
   const { token, deliveries, delivery, deliveryStatus } = props;
@@ -92,42 +93,45 @@ function Delivery(props) {
               horizontal={false}
               data={deliveries}
               renderItem={({ item }) => (
-                <View style={styles.containerItem}>
-                  <MaterialCommunityIcons
-                    name="truck-delivery"
-                    size={24}
-                    color={colors.daclen_black}
-                    style={styles.icon}
-                    onPress={() => openItem(item?.id)}
-                  />
+                <View style={{ width: "100%" }}>
+                  <View style={styles.containerItem}>
+                    <MaterialCommunityIcons
+                      name="truck-delivery"
+                      size={24}
+                      color={colors.daclen_black}
+                      style={styles.icon}
+                      onPress={() => openItem(item?.id)}
+                    />
 
-                  <View style={styles.containerDescVertical}>
-                    <TouchableOpacity onPress={() => openItem(item?.id)}>
-                      <Text style={styles.textTitle}>{item?.nomor_resi}</Text>
-                    </TouchableOpacity>
-                    <View style={styles.containerDescHorizontal}>
-                      <Text style={styles.textDate}>
-                        {item?.tgl_pengiriman}
-                      </Text>
-                      <Text style={styles.textPrice}>{item?.nama_kurir}</Text>
+                    <View style={styles.containerDescVertical}>
+                      <TouchableOpacity onPress={() => openItem(item?.id)}>
+                        <Text style={styles.textTitle}>{item?.nomor_resi}</Text>
+                      </TouchableOpacity>
+                      <View style={styles.containerDescHorizontal}>
+                        <Text style={styles.textDate}>
+                          {item?.tgl_pengiriman}
+                        </Text>
+                        <Text style={styles.textPrice}>{item?.nama_kurir}</Text>
+                      </View>
                     </View>
+                    <TouchableOpacity
+                      onPress={() => openItem(item?.id)}
+                      disabled={loading}
+                      style={[
+                        styles.button,
+                        item?.status === "dikirim" && {
+                          backgroundColor: colors.daclen_green,
+                        },
+                      ]}
+                    >
+                      <Text style={styles.textButton}>
+                        {item?.status === null
+                          ? "Detil"
+                          : capitalizeFirstLetter(item?.status)}
+                      </Text>
+                    </TouchableOpacity>
                   </View>
-                  <TouchableOpacity
-                    onPress={() => openItem(item?.id)}
-                    disabled={loading}
-                    style={[
-                      styles.button,
-                      item?.status === "dikirim" && {
-                        backgroundColor: colors.daclen_green,
-                      },
-                    ]}
-                  >
-                    <Text style={styles.textButton}>
-                      {item?.status === null
-                        ? "Detil"
-                        : capitalizeFirstLetter(item?.status)}
-                    </Text>
-                  </TouchableOpacity>
+                  <Separator thickness={2} style={{ marginTop: 10 }} />
                 </View>
               )}
             />

@@ -57,6 +57,8 @@ import MediaKitFiles from "./components/dashboard/MediaKitFiles";
 import DeleteAccountScreen from "./components/auth/DeleteAccount";
 import PointReportScreen from "./components/dashboard/PointReport";
 import UserRoots from "./components/dashboard/UserRoots";
+import BonusRoot from "./components/dashboard/BonusRoot";
+import SaldoReport from "./components/dashboard/SaldoReport";
 import VideoPlayer from "./components/videoplayer/VideoPlayer";
 
 import { appname } from "./axios/constants";
@@ -242,6 +244,16 @@ export default function App() {
                 name="UserRootsScreen"
                 component={UserRoots}
                 options={{ ...defaultOptions, title: "User Roots" }}
+              />
+              <Stack.Screen
+                name="BonusRootScreen"
+                component={BonusRoot}
+                options={{ ...defaultOptions, title: "Syarat Bonus Root" }}
+              />
+              <Stack.Screen
+                name="SaldoReportScreen"
+                component={SaldoReport}
+                options={{ ...defaultOptions, title: "Syarat Bonus Root" }}
               />
               <Stack.Screen
                 name="VideoPlayerScreen"
