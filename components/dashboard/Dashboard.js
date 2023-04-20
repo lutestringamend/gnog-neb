@@ -9,6 +9,7 @@ import {
   Image,
   Linking,
 } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -24,6 +25,7 @@ import { useNavigation } from "@react-navigation/native";
 import BSDashboard from "../bottomsheets/BSDashboard";
 import {
   bonusrootpopup,
+  dashboardbrowser,
   komisiuserpopup,
   poinuserhpvpopup,
   poinuserpopup,
@@ -35,7 +37,7 @@ function DashboardMain(props) {
     text: null,
     isError: false,
   });
-  const [browserText, setBrowserText] = useState(null);
+
   const [popupDetail, setPopupDetail] = useState({title: null});
   const navigation = useNavigation();
   const rbSheet = useRef();
@@ -106,19 +108,13 @@ function DashboardMain(props) {
             {message?.text}
           </Text>
         ) : null}
-        <TouchableOpacity onPress={() => Linking.openURL(webdashboard)}>
+        <TouchableOpacity onPress={() => Linking.openURL(webdashboard)} style={styles.buttonLogin}>
+        <MaterialCommunityIcons name="web" size={16} color="white" />
           <Text
-            style={[
-              styles.textLogin,
-              {
-                backgroundColor:
-                  browserText === null
-                    ? colors.daclen_graydark
-                    : colors.daclen_orange,
-              },
-            ]}
+            style={styles.textLogin}
           >
-            {browserText === null ? "Lihat Dashboard lengkap" : browserText}
+            
+            {dashboardbrowser}
           </Text>
         </TouchableOpacity>
         {currentUser?.nomor_telp_verified_at === null ? (
@@ -228,13 +224,21 @@ const styles = StyleSheet.create({
     color: colors.daclen_gray,
     textAlign: "center",
   },
+  buttonLogin: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.daclen_graydark,
+    padding: 10,
+    marginBottom: 10,
+  },
   textLogin: {
     color: colors.daclen_light,
+    marginStart: 10,
     textAlign: "center",
     fontSize: 16,
     fontWeight: "bold",
-    padding: 10,
-    marginBottom: 10,
   },
   textError: {
     fontSize: 14,

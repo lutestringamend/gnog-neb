@@ -45,6 +45,7 @@ export const bonusrootpopup = {
 
 export const userroottitle = "USER ROOTS";
 
+export const dashboardbrowser = "Buka Dashboard Web";
 export const userverified = "Terverifikasi";
 export const notverified = "Belum Terverifikasi";
 export const emailnotverified = "Email Belum Terverifikasi";

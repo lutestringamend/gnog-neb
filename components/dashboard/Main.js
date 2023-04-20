@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "white",
-    marginStart: 6,
+    marginStart: 10,
   },
   textReferral: {
     color: "white",
