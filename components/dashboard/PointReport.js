@@ -196,6 +196,7 @@ const styles = StyleSheet.create({
   containerDescHorizontal: {
     flexDirection: "row",
     alignItems: "center",
+    alignSelf: "center",
   },
   containerPoints: {
     marginHorizontal: 10,
@@ -207,6 +208,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     padding: 10,
   },
   icon: {
