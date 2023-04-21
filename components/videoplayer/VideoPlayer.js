@@ -168,7 +168,7 @@ export default function VideoPlayer(props) {
       if (uri === undefined || uri === null || loading) return;
       const resultVideo =
         Platform.OS === "web" ? "d:/test.mp4" : await getResultPath();
-      const sourceVideo = await startDownload();
+      const sourceVideo = uri;
       if (sourceVideo === null) return;
 
       setLoading(true);
