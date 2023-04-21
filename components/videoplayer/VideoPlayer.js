@@ -9,10 +9,12 @@ import {
   ScrollView,
   Dimensions,
   SafeAreaView,
+  Platform,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as FileSystem from "expo-file-system";
 import { Video, ResizeMode } from "expo-av";
+import { FFmpegKit } from "ffmpeg-kit-react-native";
 
 import { colors, staticDimensions } from "../../styles/base";
 import { getFileName } from "../media";
@@ -39,12 +41,14 @@ export default function VideoPlayer(props) {
     };
     const [videoSize, setVideoSize] = useState(initialVideoSize);*/
     const initialVideoSize = {
-      isLandscape: Dimensions.get("window").width > Dimensions.get("window").height,
+      isLandscape:
+        Dimensions.get("window").width > Dimensions.get("window").height,
       videoWidth: Dimensions.get("window").width,
-      videoHeight: Dimensions.get("window").width > Dimensions.get("window").height
-        ? Dimensions.get("window").height
-        : Dimensions.get("window").width / ratio,
-    }
+      videoHeight:
+        Dimensions.get("window").width > Dimensions.get("window").height
+          ? Dimensions.get("window").height
+          : Dimensions.get("window").width / ratio,
+    };
     const [videoSize, setVideoSize] = useState(initialVideoSize);
 
     const [error, setError] = useState(null);
@@ -115,7 +119,7 @@ export default function VideoPlayer(props) {
       } else if (!videoLoading) {
         setVideoLoading(true);
       }
-      changeOrie
+      changeOrie;
       if (isLandscape) {
         setVideoSize({
           isLandscape: true,
@@ -134,6 +138,59 @@ export default function VideoPlayer(props) {
     function onBackPress() {
       navigation.navigate("MediaKitFiles", { activeTab: WATERMARK_VIDEO });
     }
+
+    const getResultPath = async () => {
+      const videoDir = `${FileSystem.cacheDirectory}video/`;
+
+      async function ensureDirExists() {
+        try {
+          const dirInfo = await FileSystem.getInfoAsync(videoDir);
+          if (!dirInfo.exists) {
+            console.log(`creating directory ${videoDir}`);
+            await FileSystem.makeDirectoryAsync(videoDir, {
+              intermediates: true,
+            });
+          }
+        } catch (e) {
+          console.error(e);
+          setLoading(false);
+          setError(`filesystem getInfoAsync error\n${e?.message}\n${e.toString()}`);
+        }
+      }
+
+      await ensureDirExists();
+      return `${videoDir}test.mp4`;
+    };
+
+    const processVideo = async () => {
+      if (uri === undefined || uri === null || loading) return;
+      setLoading(true);
+      const resultVideo = Platform.OS === "web" ? "d:/test.mp4" : await getResultPath();
+      const ffmpegCommand = `-i ${uri} -c:v mpeg4 -y ${resultVideo}`;
+      console.log("command", ffmpegCommand);
+      setError(ffmpegCommand);
+
+      try {
+        FFmpegKit
+        .execute(ffmpegCommand)
+        .then((session) => {
+          console.log("session", session.toString());
+          setLoading(false);
+          setSuccess(true);
+          setError(`result in ${resultVideo}`);
+        })
+        .catch((error) => {
+          console.error(error);
+          setLoading(false);
+          setSuccess(false);
+          setError(`ffmpeg process error\n${ffmpegCommand}\n${error.toString()}`);
+        });
+      } catch (e) {
+        console.error(e);
+        setLoading(false);
+        setError(`ffmpeg loading error\n${ffmpegCommand}\n${e.toString()}`);
+      }
+    };
 
     const startDownload = async () => {
       if (!loading) {
@@ -256,7 +313,6 @@ export default function VideoPlayer(props) {
                 }
                 onPlaybackStatusUpdate={(status) => setStatus(() => status)}
               />
-              
 
               <ImageBackground
                 source={{ uri: thumbnail }}
@@ -315,9 +371,7 @@ export default function VideoPlayer(props) {
             >
               <MaterialCommunityIcons name="view-day" size={18} color="white" />
               {videoSize.isLandscape ? null : (
-                <Text style={styles.textButton}>
-                  Landscape
-                </Text>
+                <Text style={styles.textButton}>Landscape</Text>
               )}
             </TouchableOpacity>
 
@@ -346,6 +400,34 @@ export default function VideoPlayer(props) {
               )}
               {videoSize.isLandscape ? null : (
                 <Text style={styles.textButton}>Download Video</Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                videoSize.isLandscape ? styles.buttonCircle : styles.button,
+                { backgroundColor: colors.daclen_indigo },
+              ]}
+              onPress={() => processVideo()}
+              disabled={loading || videoLoading}
+            >
+              {loading ? (
+                <ActivityIndicator
+                  size="small"
+                  color="white"
+                  style={{
+                    alignSelf: "center",
+                  }}
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="file-download"
+                  size={18}
+                  color="white"
+                />
+              )}
+              {videoSize.isLandscape ? null : (
+                <Text style={styles.textButton}>Watermarked</Text>
               )}
             </TouchableOpacity>
           </View>
