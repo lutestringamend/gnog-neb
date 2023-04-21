@@ -172,7 +172,7 @@ function BonusRoot(props) {
                 {" %"}
               </Text>
             </View>
-            <View style={[styles.containerSpec, { borderBottomWidth: 0 }]}>
+            <View style={styles.containerSpec}>
               <Text style={styles.textSpecHeader}>{bonussecondroot}</Text>
               <Text
                 style={[
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     alignItems: "center",
     borderColor: colors.daclen_gray,
-    borderBottomWidth: 1,
+    borderTopWidth: 1,
   },
   tabView: {
     width: "100%",
@@ -359,8 +359,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     padding: 10,
     fontWeight: "bold",
-    borderBottomWidth: 1,
-    borderColor: colors.daclen_gray,
   },
   textRootHeader: {
     paddingVertical: 10,
