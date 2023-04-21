@@ -154,7 +154,9 @@ export default function VideoPlayer(props) {
         } catch (e) {
           console.error(e);
           setLoading(false);
-          setError(`filesystem getInfoAsync error\n${e?.message}\n${e.toString()}`);
+          setError(
+            `filesystem getInfoAsync error\n${e?.message}\n${e.toString()}`
+          );
         }
       }
 
@@ -164,27 +166,32 @@ export default function VideoPlayer(props) {
 
     const processVideo = async () => {
       if (uri === undefined || uri === null || loading) return;
+      const resultVideo =
+        Platform.OS === "web" ? "d:/test.mp4" : await getResultPath();
+      const sourceVideo = Platform.OS === "web" ? uri : await startDownload();
+      if (sourceVideo === null) return;
+
       setLoading(true);
-      const resultVideo = Platform.OS === "web" ? "d:/test.mp4" : await getResultPath();
-      const ffmpegCommand = `-i ${uri} -c:v mpeg4 -y ${resultVideo}`;
+      const ffmpegCommand = `-i ${sourceVideo} -c:v mpeg4 -y ${resultVideo}`;
       console.log("command", ffmpegCommand);
       setError(ffmpegCommand);
 
       try {
-        FFmpegKit
-        .execute(ffmpegCommand)
-        .then((session) => {
-          console.log("session", session.toString());
-          setLoading(false);
-          setSuccess(true);
-          setError(`result in ${resultVideo}`);
-        })
-        .catch((error) => {
-          console.error(error);
-          setLoading(false);
-          setSuccess(false);
-          setError(`ffmpeg process error\n${ffmpegCommand}\n${error.toString()}`);
-        });
+        FFmpegKit.execute(ffmpegCommand)
+          .then((session) => {
+            console.log("session", session.toString());
+            setLoading(false);
+            setSuccess(true);
+            setError(`result in ${resultVideo}`);
+          })
+          .catch((error) => {
+            console.error(error);
+            setLoading(false);
+            setSuccess(false);
+            setError(
+              `ffmpeg process error\n${ffmpegCommand}\n${error.toString()}`
+            );
+          });
       } catch (e) {
         console.error(e);
         setLoading(false);
@@ -204,13 +211,15 @@ export default function VideoPlayer(props) {
           );
           console.log(result);
           setSuccess(true);
-          setError(JSON.stringify(result.uri, result.headers["Content-Type"]));
+          setError(`Berhasil didownload ke ${result.uri}`);
           setLoading(false);
+          return result.uri;
         } catch (e) {
           console.error(e);
           setSuccess(false);
           setError("downloadAsync catch\n" + e?.message);
           setLoading(false);
+          return null;
         }
       }
     };
