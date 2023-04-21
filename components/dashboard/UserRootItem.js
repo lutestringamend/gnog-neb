@@ -108,20 +108,14 @@ const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified, onPress
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: "row",
     backgroundColor: "white",
     alignItems: "center",
-    width: "100%",
   },
   containerTouchable: {
-    flex: 1,
-    width: "50%",
     backgroundColor: "white",
   },
   containerMain: {
-    flex: 1,
-    width: "50%",
     backgroundColor: "white",
   },
   verticalLine: {
@@ -139,7 +133,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 6,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     borderTopStartRadius: 6,
     borderTopEndRadius: 6,
   },

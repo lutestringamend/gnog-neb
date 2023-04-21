@@ -22,8 +22,11 @@ import { colors, staticDimensions } from "../../styles/base";
 import Separator from "../profile/Separator";
 import HistoryTabItem from "../history/HistoryTabItem";
 import {
+  bonusfirstroot,
   bonusrootlevelcolors,
+  bonussecondroot,
   hpvtitle,
+  pvtitle,
   rpvshort,
   rpvtitle,
 } from "./constants";
@@ -96,10 +99,39 @@ function BonusRoot(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {token ||
+      {syaratRoot?.length === undefined || syaratRoot?.length < 1 ? null : (
+        <View style={styles.tabView}>
+          <FlatList
+            horizontal={true}
+            data={syaratRoot}
+            style={styles.containerFlatlist}
+            renderItem={({ item, index }) => (
+              <HistoryTabItem
+                activeTab={activeTab}
+                name={index}
+                title={item?.level}
+                style={styles.containerTabItem}
+                backgroundColor={bonusrootlevelcolors[index]}
+                selectedColor={colors.daclen_blue}
+                marginEnd={10}
+                icon="account-multiple"
+                onPress={() => setActiveTab(index)}
+              />
+            )}
+          />
+        </View>
+      )}
+
+      {token === null ||
       activeTab === null ||
       syaratRoot?.length === undefined ||
       syaratRoot?.length < 1 ? (
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <Text style={styles.textUid}>
+            Anda harus Login / Register untuk melihat syarat bonus root
+          </Text>
+        </TouchableOpacity>
+      ) : (
         <ScrollView
           style={styles.containerFlatlist}
           refreshControl={
@@ -109,25 +141,51 @@ function BonusRoot(props) {
             />
           }
         >
-          <View style={styles.tabView}>
-            <FlatList
-              horizontal={true}
-              data={syaratRoot}
-              style={styles.containerFlatlist}
-              renderItem={({ item, index }) => (
-                <HistoryTabItem
-                  activeTab={activeTab}
-                  name={index}
-                  title={item?.level}
-                  style={styles.containerTabItem}
-                  backgroundColor={bonusrootlevelcolors[index]}
-                  selectedColor={colors.daclen_blue}
-                  marginEnd={10}
-                  icon="account-multiple"
-                  onPress={() => setActiveTab(index)}
-                />
-              )}
-            />
+          <View style={styles.containerTable}>
+            <Text
+              style={[
+                styles.textTableHeader,
+                { color: bonusrootlevelcolors[activeTab] },
+              ]}
+            >
+              Syarat Bonus Root Level {syaratRoot[activeTab]?.level}
+            </Text>
+            <View style={styles.containerSpec}>
+              <Text style={styles.textSpecHeader}>{pvtitle}</Text>
+              <Text
+                style={[
+                  styles.textSpec,
+                  { color: bonusrootlevelcolors[activeTab] },
+                ]}
+              >
+                {syaratRoot[activeTab]?.pv}
+              </Text>
+            </View>
+
+            <View style={styles.containerSpec}>
+              <Text style={styles.textSpecHeader}>{bonusfirstroot}</Text>
+              <Text
+                style={[
+                  styles.textSpec,
+                  { color: bonusrootlevelcolors[activeTab] },
+                ]}
+              >
+                {syaratRoot[activeTab]?.bonus_1 ? syaratRoot[activeTab]?.bonus_1 : "0"}
+                {" %"}
+              </Text>
+            </View>
+            <View style={[styles.containerSpec, { borderBottomWidth: 0 }]}>
+              <Text style={styles.textSpecHeader}>{bonussecondroot}</Text>
+              <Text
+                style={[
+                  styles.textSpec,
+                  { color: bonusrootlevelcolors[activeTab] },
+                ]}
+              >
+                {syaratRoot[activeTab]?.bonus_2 ? syaratRoot[activeTab]?.bonus_2 : "0"}
+                {" %"}
+              </Text>
+            </View>
           </View>
 
           <View style={styles.containerMain}>
@@ -218,12 +276,6 @@ function BonusRoot(props) {
             </View>
           </View>
         </ScrollView>
-      ) : (
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.textUid}>
-            Anda harus Login / Register untuk melihat syarat bonus root
-          </Text>
-        </TouchableOpacity>
       )}
     </SafeAreaView>
   );
@@ -270,21 +322,51 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "center",
   },
+  containerTable: {
+    width: "90%",
+    alignSelf: "center",
+    borderRadius: 2,
+    backgroundColor: "transparent",
+    marginVertical: 20,
+    marginHorizontal: 10,
+    borderWidth: 1,
+    borderColor: colors.daclen_gray,
+  },
+  containerSpec: {
+    backgroundColor: "white",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    borderColor: colors.daclen_gray,
+    borderBottomWidth: 1,
+  },
   tabView: {
     width: "100%",
     backgroundColor: colors.daclen_light,
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderColor: colors.daclen_gray,
   },
   horizontalLine: {
     width: 8,
     height: 2,
     backgroundColor: colors.daclen_red,
   },
-  textRootHeader: {
-    width: "50%",
+  textTableHeader: {
+    width: "100%",
+    backgroundColor: "transparent",
+    textAlign: "center",
+    fontSize: 16,
     padding: 10,
+    fontWeight: "bold",
+    borderBottomWidth: 1,
+    borderColor: colors.daclen_gray,
+  },
+  textRootHeader: {
+    paddingVertical: 10,
+    paddingHorizontal: 32,
     color: colors.daclen_light,
     borderTopStartRadius: 6,
     borderBottomEndRadius: 6,
@@ -292,6 +374,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  textSpecHeader: {
+    flex: 1,
+    padding: 10,
+    fontSize: 12,
+    borderEndWidth: 1,
+    backgroundColor: "transparent",
+    borderColor: colors.daclen_gray,
+    color: colors.daclen_graydark,
+  },
+  textSpec: {
+    flex: 1,
+    padding: 10,
+    fontWeight: "bold",
+    fontSize: 14,
+    backgroundColor: "transparent",
+    color: colors.daclen_black,
   },
   textUid: {
     fontSize: 16,

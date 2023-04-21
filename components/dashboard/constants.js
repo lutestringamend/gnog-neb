@@ -56,6 +56,10 @@ export const phonenotverified = "Nomor Telepon Belum Terverifikasi";
 export const hpvtitle = "Home Point Value";
 export const rpvtitle = "Root Point Value";
 export const rpvshort = "RPV";
+export const pvtitle = "Poin Penjualan Bulanan";
+export const bonusfirstroot = "Bonus Keuntungan Root Pertama";
+export const bonussecondroot = "Bonus Keuntungan Root Kedua";
+
 export const bonusrootlevelcolors = [
   colors.daclen_green,
   colors.daclen_orange,
