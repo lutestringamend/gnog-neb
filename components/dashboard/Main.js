@@ -91,16 +91,7 @@ export default function Main(props) {
           <MaterialCommunityIcons name="hand-coin" size={18} color="white" />
           <Text style={styles.textButton}>Laporan Poin</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("SaldoReportScreen")}
-          style={[
-            styles.button,
-            { backgroundColor: colors.daclen_reddishbrown, marginTop: 12 },
-          ]}
-        >
-          <MaterialCommunityIcons name="bitcoin" size={18} color="white" />
-          <Text style={styles.textButton}>Laporan Saldo</Text>
-        </TouchableOpacity>
+        
 
         <TouchableOpacity
           onPress={() => navigation.navigate("BonusRootScreen")}
@@ -116,6 +107,19 @@ export default function Main(props) {
     </View>
   );
 }
+
+/*
+<TouchableOpacity
+          onPress={() => navigation.navigate("SaldoReportScreen")}
+          style={[
+            styles.button,
+            { backgroundColor: colors.daclen_reddishbrown, marginTop: 12 },
+          ]}
+        >
+          <MaterialCommunityIcons name="bitcoin" size={18} color="white" />
+          <Text style={styles.textButton}>Laporan Saldo</Text>
+        </TouchableOpacity>
+*/
 
 const styles = StyleSheet.create({
   container: {

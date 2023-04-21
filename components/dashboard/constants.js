@@ -31,7 +31,7 @@ export const komisiuserpopup = {
   title: "SALDO",
   desc: "Saldo adalah Cashback yang ada terima dari pembelian produk Daclen. Saldo dapat anda tarik dengan minimal penarikan Rp. 50.000,-",
   button: "Lihat Laporan Saldo",
-  screen: "SaldoReportScreen",
+  screen: "Main",
   icon: "bitcoin",
   height: 300,
 };

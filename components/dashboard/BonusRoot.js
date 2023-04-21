@@ -10,16 +10,14 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { getSyaratRoot } from "../../axios/user";
+import { getSyaratRoot, clearSyaratRoot } from "../../axios/user";
 
 import { colors, staticDimensions } from "../../styles/base";
-import Separator from "../profile/Separator";
 import HistoryTabItem from "../history/HistoryTabItem";
 import {
   bonusfirstroot,
@@ -27,7 +25,6 @@ import {
   bonussecondroot,
   hpvtitle,
   pvtitle,
-  rpvshort,
   rpvtitle,
 } from "./constants";
 import BonusRootItem, { VerticalLine } from "./BonusRootItem";
@@ -44,12 +41,12 @@ function BonusRoot(props) {
       (syaratRoot?.length === undefined || syaratRoot?.length < 1) &&
       token !== null
     ) {
-      props.getSyaratRoot(token);
       setLoading(true);
+      props.getSyaratRoot(token);
     } else {
       setLoading(false);
       setActiveTab(0);
-      console.log("syaratRoot", syaratRoot);
+      //console.log("syaratRoot", syaratRoot);
     }
   }, [token, syaratRoot]);
 
@@ -81,9 +78,10 @@ function BonusRoot(props) {
     }
   }, [activeTab]);
 
-  useEffect(() => {
-    console.log("rootTree", rootTree);
-  }, [rootTree]);
+  function refreshPage() {
+    setLoading(true);
+    props.clearSyaratRoot();
+  }
 
   if (loading) {
     return (
@@ -411,6 +409,7 @@ const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
       getSyaratRoot,
+      clearSyaratRoot,
     },
     dispatch
   );

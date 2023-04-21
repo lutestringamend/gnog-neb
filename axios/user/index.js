@@ -86,6 +86,12 @@ export function clearUserData(forceLogout) {
   };
 }
 
+export function clearSyaratRoot() {
+  return (dispatch) => {
+    dispatch({ type: USER_SYARAT_ROOT_STATE_CHANGE, data: [] });
+  }
+}
+
 export function getSyaratRoot(token) {
   return (dispatch) => {
     const config = {
