@@ -45,7 +45,7 @@ function BonusRoot(props) {
       props.getSyaratRoot(token);
     } else {
       setLoading(false);
-      setActiveTab(0);
+      setActiveTab((activeTab) => activeTab === null ? 0 : activeTab);
       //console.log("syaratRoot", syaratRoot);
     }
   }, [token, syaratRoot]);
