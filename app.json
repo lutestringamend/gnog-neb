@@ -102,7 +102,7 @@
             }
           },
           "ios": {
-            "deploymentTarget": "13.0"
+            "deploymentTarget": "12.1"
           }
         }
       ]

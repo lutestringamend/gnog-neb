@@ -168,7 +168,7 @@ export default function VideoPlayer(props) {
       if (uri === undefined || uri === null || loading) return;
       const resultVideo =
         Platform.OS === "web" ? "d:/test.mp4" : await getResultPath();
-      const sourceVideo = Platform.OS === "web" ? uri : await startDownload();
+      const sourceVideo = await startDownload();
       if (sourceVideo === null) return;
 
       setLoading(true);
@@ -179,10 +179,10 @@ export default function VideoPlayer(props) {
       try {
         FFmpegKit.execute(ffmpegCommand)
           .then((session) => {
-            console.log("session", session.toString());
+            console.log("session", session);
             setLoading(false);
             setSuccess(true);
-            setError(`result in ${resultVideo}`);
+            setError(`result in ${resultVideo}\n${JSON.stringify(session)}`);
           })
           .catch((error) => {
             console.error(error);
