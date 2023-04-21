@@ -78,12 +78,7 @@
         }
       ],
       "sentry-expo",
-      [
-        "@config-plugins/ffmpeg-kit-react-native",
-        {
-          "package": "video"
-        }
-      ],
+      "@config-plugins/ffmpeg-kit-react-native",
       [
         "expo-build-properties",
         {
@@ -102,7 +97,7 @@
             }
           },
           "ios": {
-            "deploymentTarget": "12.1"
+            "deploymentTarget": "13.0"
           }
         }
       ]
