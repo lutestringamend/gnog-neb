@@ -18,7 +18,7 @@ import { bindActionCreators } from "redux";
 
 import { getLaporanPoin } from "../../axios/user";
 
-import { colors } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 import Separator from "../profile/Separator";
 
 function PointReport(props) {
@@ -102,7 +102,7 @@ function PointReport(props) {
               numColumns={1}
               horizontal={false}
               data={points?.data}
-              style={{ paddingBottom: 100 }}
+              style={{ paddingBottom: staticDimensions.pageBottomPadding }}
               renderItem={({ item }) => (
                 <View style={{ width: "100%" }}>
                   <View style={styles.containerItem}>

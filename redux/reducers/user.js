@@ -24,6 +24,7 @@ import {
   ENABLE_FORCE_LOGOUT,
   USER_HPV_STATE_CHANGE,
   USER_POINTS_STATE_CHANGE,
+  USER_SYARAT_ROOT_STATE_CHANGE,
 } from "../constants";
 
 import { mainhttp } from "../../axios/constants";
@@ -33,6 +34,7 @@ export const initialState = {
   currentUser: null,
   hpv: null,
   points: null,
+  syaratRoot: [],
   forceLogout: false,
   cart: null,
   currentAddress: null,
@@ -115,6 +117,11 @@ export const user = (state = initialState, action) => {
       return {
         ...state,
         points: action.data,
+      };
+    case USER_SYARAT_ROOT_STATE_CHANGE:
+      return {
+        ...state,
+        syaratRoot: action.data,
       };
     case USER_CART_STATE_CHANGE:
       return {

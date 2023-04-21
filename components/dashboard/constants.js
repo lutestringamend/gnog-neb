@@ -1,3 +1,5 @@
+import { colors } from "../../styles/base";
+
 export const poinuserpopup = {
   title: "POINT PENJUALAN BULAN INI",
   desc: "Point Penjualan Bulan ini adalah point yang didapat dari produk yang anda beli selama bulan ini. Dan point referal member yang kamu ajak bulan ini.",
@@ -50,6 +52,16 @@ export const userverified = "Terverifikasi";
 export const notverified = "Belum Terverifikasi";
 export const emailnotverified = "Email Belum Terverifikasi";
 export const phonenotverified = "Nomor Telepon Belum Terverifikasi";
+
+export const hpvtitle = "Home Point Value";
+export const rpvtitle = "Root Point Value";
+export const rpvshort = "RPV";
+export const bonusrootlevelcolors = [
+  colors.daclen_green,
+  colors.daclen_orange,
+  colors.daclen_red,
+  colors.daclen_reddishbrown
+]
 
 export const WATERMARK_PHOTO = "Foto Promosi";
 export const WATERMARK_VIDEO = "Video Promosi";

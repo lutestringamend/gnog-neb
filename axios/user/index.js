@@ -15,6 +15,7 @@ import {
   validateotp,
   gethpv,
   laporanpoinuser,
+  getsyaratroot,
 } from "../constants";
 import { getKeranjang } from "../cart";
 import { initialState } from "../../redux/reducers/user";
@@ -38,6 +39,7 @@ import {
   ENABLE_FORCE_LOGOUT,
   USER_HPV_STATE_CHANGE,
   USER_POINTS_STATE_CHANGE,
+  USER_SYARAT_ROOT_STATE_CHANGE,
 } from "../../redux/constants";
 import {
   calculateBase64SizeInBytes,
@@ -81,6 +83,28 @@ export function clearUserData(forceLogout) {
     console.log("clearUserData");
     //setTokenAsync(null);
     dispatch({ type: CLEAR_USER_DATA, forceLogout });
+  };
+}
+
+export function getSyaratRoot(token) {
+  return (dispatch) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    };
+    console.log("getSyaratRoot with header");
+
+    Axios.get(getsyaratroot, config)
+      .then((response) => {
+        const data = response.data?.data;
+        dispatch({ type: USER_SYARAT_ROOT_STATE_CHANGE, data });
+      })
+      .catch((error) => {
+        console.log(error);
+        //dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: error?.message });
+      });
   };
 }
 
