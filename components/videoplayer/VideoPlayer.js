@@ -61,6 +61,7 @@ export default function VideoPlayer(props) {
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
     const [videoLoading, setVideoLoading] = useState(false);
+    const [watermarkLoading, setWatermarkLoading] = useState(false);
     const [status, setStatus] = useState({ isLoaded: false });
     const [watermarkImage, setWatermarkImage] = useState(null);
     const [sharingAvailability, setSharingAvailability] = useState(false);
@@ -68,12 +69,12 @@ export default function VideoPlayer(props) {
 
     useEffect(() => {
       const captureText = async () => {
-        setLoading(true);
+        setWatermarkLoading(true);
         imageRef.current
           .capture()
           .then((uri) => {
             console.log(uri);
-            setLoading(false);
+            setWatermarkLoading(false);
             setWatermarkImage(uri);
           })
           .catch((e) => {
@@ -81,7 +82,7 @@ export default function VideoPlayer(props) {
             setError(
               (error) => `${error === null ? "" : `${error}\n`}${e.toString()}`
             );
-            setLoading(false);
+            setWatermarkLoading(false);
             sentryLog(e);
           });
       };
@@ -286,34 +287,34 @@ export default function VideoPlayer(props) {
 
     return (
       <SafeAreaView style={[styles.container, { width: videoSize.videoWidth }]}>
-        {watermarkData === undefined || watermarkData === null ? null : (
-          <ViewShot
-            ref={imageRef}
-            options={{
-              fileName: "watermarktext",
-              format: "jpg",
-              quality: 1,
-            }}
-            style={{
-              position: "absolute",
-              top: 0,
-              start: 0,
-            }}
-          >
-            <WatermarkModel
-              watermarkData={watermarkData}
-              ratio={ratio}
-              fontSize={Math.round(16 / ratio)}
-              backgroundColor={colors.daclen_black}
-              color={colors.daclen_orange}
-              paddingHorizontal={3}
-              paddingVertical={3}
-              borderRadius={4}
-              text_x={0}
-              text_y={0}
-            />
-          </ViewShot>
-        )}
+        <ViewShot
+          ref={imageRef}
+          options={{
+            fileName: "watermarktext",
+            format: "jpg",
+            quality: 1,
+          }}
+          style={{
+            position: "absolute",
+            top: 0,
+            start: 0,
+            zIndex: 0,
+            opacity: 100,
+          }}
+        >
+          <WatermarkModel
+            watermarkData={watermarkData}
+            ratio={ratio}
+            fontSize={Math.round(16 / ratio)}
+            backgroundColor={colors.daclen_black}
+            color={colors.daclen_orange}
+            paddingHorizontal={3}
+            paddingVertical={3}
+            borderRadius={4}
+            text_x={0}
+            text_y={0}
+          />
+        </ViewShot>
 
         {!videoSize.isLandscape ? (
           <MainHeader
@@ -412,17 +413,30 @@ export default function VideoPlayer(props) {
                 onPlaybackStatusUpdate={(status) => setStatus(() => status)}
               />
 
-              <WatermarkModel
-                watermarkData={watermarkData}
-                ratio={1}
-                fontSize={Math.round(16 / ratio)}
-                backgroundColor={colors.daclen_black}
-                color={colors.daclen_orange}
-                paddingHorizontal={3}
-                paddingVertical={3}
-                borderRadius={4}
-                style={{ zIndex: 3, opacity: 30 }}
-              />
+              {watermarkLoading ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.daclen_graydark}
+                  style={{
+                    position: "absolute",
+                    top: 20,
+                    start: 20,
+                    zIndex: 3,
+                  }}
+                />
+              ) : (
+                <WatermarkModel
+                  watermarkData={watermarkData}
+                  ratio={1}
+                  fontSize={Math.round(16 / ratio)}
+                  backgroundColor={colors.daclen_black}
+                  color={colors.daclen_orange}
+                  paddingHorizontal={3}
+                  paddingVertical={3}
+                  borderRadius={4}
+                  style={{ zIndex: 3, opacity: 30 }}
+                />
+              )}
 
               <ImageBackground
                 source={{ uri: thumbnail }}
