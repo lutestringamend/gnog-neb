@@ -2,7 +2,6 @@ import { Camera, ImageType } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { Dimensions, Platform } from "react-native";
 import { getInfoAsync } from "expo-file-system";
-import * as Sentry from "sentry-expo";
 
 import {
   MEDIA_PROFILE_PICTURE_STATE_CHANGE,
@@ -24,6 +23,7 @@ import {
   mediafileunusable,
   PICKER_COMPRESSION_QUALITY,
 } from "./constants";
+import { sentryLog } from "../../sentry";
 
 export const intiialPermissions = {
   cameraPermission: null,
@@ -93,11 +93,7 @@ export const takePicture = async (ref) => {
     }
   } catch (error) {
     console.error(error);
-    if (Platform.OS === "web") {
-      Sentry.Browser.captureException(error);
-    } else {
-      Sentry.Native.captureException(error);
-    }
+    sentryLog(error);
   }
   console.log("takePicture returning null");
   return null;
@@ -153,11 +149,7 @@ export const prepareRatio = async (ref) => {
   } catch (error) {
     console.error(error);
     errorMessage = error.message;
-    if (Platform.OS === "web") {
-      Sentry.Browser.captureException(error);
-    } else {
-      Sentry.Native.captureException(error);
-    }
+    sentryLog(error);
   }
 
   return { ratios, ratio: desiredRatio, imagePadding: remainder, errorMessage };
@@ -355,11 +347,7 @@ export const pickImage = async () => {
     }
   } catch (error) {
     console.error(error);
-    if (Platform.OS === "web") {
-      Sentry.Browser.captureException(error);
-    } else {
-      Sentry.Native.captureException(error);
-    }
+    sentryLog(error);
     return IMAGE_PICKER_ERROR;
   }
   

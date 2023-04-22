@@ -17,11 +17,11 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import ViewShot from "react-native-view-shot";
 import * as FileSystem from "expo-file-system";
 import { shareAsync, isAvailableAsync } from "expo-sharing";
-import * as Sentry from "sentry-expo";
 
 import { colors, staticDimensions, dimensions } from "../../styles/base";
 import { getFileName } from "../media";
 import WatermarkModel from "../media/WatermarkModel";
+import { sentryLog } from "../../sentry";
 
 export default function ImageViewer(props) {
   let {
@@ -85,14 +85,7 @@ export default function ImageViewer(props) {
         console.error(e);
         setError(JSON.stringify(e));
         setLoading(false);
-        if (Platform.OS === "web") {
-          Sentry.Browser.captureException(e);
-        } else {
-          Sentry.Native.captureException(e);
-          if (Platform.OS === "android") {
-            ToastAndroid.show(`${e?.message}`, ToastAndroid.LONG);
-          }
-        }
+        sentryLog(e);
       }
     };
 

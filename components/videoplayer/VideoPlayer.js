@@ -10,7 +10,6 @@ import {
   Dimensions,
   SafeAreaView,
   Platform,
-  ToastAndroid,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as FileSystem from "expo-file-system";
@@ -27,6 +26,7 @@ import { WATERMARK_VIDEO } from "../dashboard/constants";
 //import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 import { ErrorView } from "../webview/WebviewChild";
 import WatermarkModel from "../media/WatermarkModel";
+import { sentryLog } from "../../sentry";
 
 export default function VideoPlayer(props) {
   const { title, uri, width, height, thumbnail, userId, watermarkData } =
@@ -194,9 +194,7 @@ export default function VideoPlayer(props) {
           console.error(e);
           setError(e.toString());
           setLoading(false);
-          if (Platform.OS === "android") {
-            ToastAndroid.show(`${e?.message}`, ToastAndroid.LONG);
-          }
+          sentryLog(e);
         });
     };
 
@@ -241,7 +239,11 @@ export default function VideoPlayer(props) {
         return;
       }
       try {
-        await shareAsync(uri, sharingOptions);
+        await shareAsync(uri, {
+          UTI: "JPEG",
+          dialogTitle: "Share Watermark",
+          mimeType: "image/jpeg",
+        });
       } catch (e) {
         console.error(e);
         setError(e.toString());
@@ -383,7 +385,7 @@ export default function VideoPlayer(props) {
                   position: "absolute",
                   top: 1,
                   start: 1,
-                  backgroundColor: "transparent",
+                  zIndex: 2,
                 }}
               >
                 <WatermarkModel
@@ -397,7 +399,7 @@ export default function VideoPlayer(props) {
                   borderRadius={4}
                   text_x={0}
                   text_y={0}
-                  style={{ zIndex: 2, opacity: 30 }}
+                  style={{ opacity: 30 }}
                 />
               </ViewShot>
 
