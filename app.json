@@ -32,11 +32,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/android_favicon.png",
+        "foregroundImage": "./assets/favicon.png",
         "backgroundColor": "#212529",
-        "backgroundImage": "./assets/android_favicon.png"
+        "backgroundImage": "./assets/favicon.png"
       },
-      "icon": "./assets/android_favicon.png",
+      "icon": "./assets/favicon.png",
       "package": "com.daclen.android",
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
