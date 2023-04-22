@@ -78,7 +78,9 @@ export default function VideoPlayer(props) {
           })
           .catch((e) => {
             console.error(e);
-            setError((error) => `${error}\n${e.toString()}`);
+            setError(
+              (error) => `${error === null ? "" : `${error}\n`}${e.toString()}`
+            );
             setLoading(false);
             sentryLog(e);
           });
@@ -89,7 +91,9 @@ export default function VideoPlayer(props) {
         if (!result) {
           setError(
             (error) =>
-              `${error}\nPerangkat tidak mengizinkan untuk membagikan file`
+              `${
+                error === null ? "" : `${error}\n`
+              }Perangkat tidak mengizinkan untuk membagikan file`
           );
         }
         setSharingAvailability(result);
@@ -97,7 +101,7 @@ export default function VideoPlayer(props) {
 
       if (uri === undefined || uri === null) {
         setError("Tidak ada Uri");
-      } else {
+      } else if (Platform.OS !== "web") {
         checkSharing();
         captureText();
       }
@@ -282,6 +286,35 @@ export default function VideoPlayer(props) {
 
     return (
       <SafeAreaView style={[styles.container, { width: videoSize.videoWidth }]}>
+        {watermarkData === undefined || watermarkData === null ? null : (
+          <ViewShot
+            ref={imageRef}
+            options={{
+              fileName: "watermarktext",
+              format: "jpg",
+              quality: 1,
+            }}
+            style={{
+              position: "absolute",
+              top: 0,
+              start: 0,
+            }}
+          >
+            <WatermarkModel
+              watermarkData={watermarkData}
+              ratio={ratio}
+              fontSize={Math.round(16 / ratio)}
+              backgroundColor={colors.daclen_black}
+              color={colors.daclen_orange}
+              paddingHorizontal={3}
+              paddingVertical={3}
+              borderRadius={4}
+              text_x={0}
+              text_y={0}
+            />
+          </ViewShot>
+        )}
+
         {!videoSize.isLandscape ? (
           <MainHeader
             icon="arrow-left"
@@ -379,34 +412,17 @@ export default function VideoPlayer(props) {
                 onPlaybackStatusUpdate={(status) => setStatus(() => status)}
               />
 
-              <ViewShot
-                ref={imageRef}
-                options={{
-                  fileName: "watermarktext",
-                  format: "jpg",
-                  quality: 1,
-                }}
-                style={{
-                  position: "absolute",
-                  top: 1,
-                  start: 1,
-                  zIndex: 2,
-                }}
-              >
-                <WatermarkModel
-                  watermarkData={watermarkData}
-                  ratio={1}
-                  fontSize={Math.round(16 / ratio)}
-                  backgroundColor={colors.daclen_black}
-                  color={colors.daclen_orange}
-                  paddingHorizontal={3}
-                  paddingVertical={3}
-                  borderRadius={4}
-                  text_x={0}
-                  text_y={0}
-                  style={{ opacity: 30 }}
-                />
-              </ViewShot>
+              <WatermarkModel
+                watermarkData={watermarkData}
+                ratio={1}
+                fontSize={Math.round(16 / ratio)}
+                backgroundColor={colors.daclen_black}
+                color={colors.daclen_orange}
+                paddingHorizontal={3}
+                paddingVertical={3}
+                borderRadius={4}
+                style={{ zIndex: 3, opacity: 30 }}
+              />
 
               <ImageBackground
                 source={{ uri: thumbnail }}
@@ -498,7 +514,7 @@ export default function VideoPlayer(props) {
               )}
             </TouchableOpacity>
 
-            {sharingAvailability || watermarkImage === null ? (
+            {sharingAvailability && watermarkImage !== null ? (
               <TouchableOpacity
                 style={[
                   videoSize.isLandscape ? styles.buttonCircle : styles.button,
