@@ -65,11 +65,11 @@ export default function VideoPlayer(props) {
     const [status, setStatus] = useState({ isLoaded: false });
     const [watermarkImage, setWatermarkImage] = useState(null);
     const [sharingAvailability, setSharingAvailability] = useState(false);
-    const [hidden, setHidden] = useState(false);
 
     useEffect(() => {
       const captureText = async () => {
         setWatermarkLoading(true);
+      
         imageRef.current
           .capture()
           .then((uri) => {
@@ -294,13 +294,7 @@ export default function VideoPlayer(props) {
             format: "jpg",
             quality: 1,
           }}
-          style={{
-            position: "absolute",
-            top: 0,
-            start: 0,
-            zIndex: 0,
-            opacity: 100,
-          }}
+          style={styles.containerViewShot}
         >
           <WatermarkModel
             watermarkData={watermarkData}
@@ -419,8 +413,8 @@ export default function VideoPlayer(props) {
                   color={colors.daclen_graydark}
                   style={{
                     position: "absolute",
-                    top: 20,
-                    start: 20,
+                    top: 10,
+                    start: 10,
                     zIndex: 3,
                   }}
                 />
@@ -448,7 +442,7 @@ export default function VideoPlayer(props) {
                     height: videoSize.videoHeight,
                     zIndex: 3,
                     backgroundColor: colors.daclen_light,
-                    opacity: !status.isLoaded || hidden ? 100 : 0,
+                    opacity: !status.isLoaded ? 100 : 0,
                   },
                 ]}
                 resizeMode="cover"
@@ -591,6 +585,7 @@ export default function VideoPlayer(props) {
     );
   } catch (e) {
     console.error(e);
+    sentryLog(e);
     return (
       <SafeAreaView>
         <ErrorView error={e.toString()} />
@@ -609,6 +604,16 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: "white",
+  },
+  containerViewShot: {
+    flex: 1,
+    backgroundColor: "transparent",
+    overflow: "visible",
+    position: "absolute",
+    top: 0,
+    start: 0,
+    zIndex: -1,
+    opacity: 100,
   },
   containerPanelPortrait: {
     width: "100%",
