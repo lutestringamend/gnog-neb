@@ -46,25 +46,6 @@ export default function ImageViewer(props) {
       : font?.size?.ukuran
     : 16;
 
-  /*let generalStyle = {
-    ...watermarkStyle,
-    textAlign: text_align ? text_align : watermarkStyle.textAlign,
-    top: text_y ? text_y / ratio : watermarkStyle.top * ratio,
-    start: text_x ? text_x / ratio : watermarkStyle.start * ratio,
-    color: font?.color?.warna ? font?.color?.warna : watermarkStyle.color,
-    fontSize: Math.round(fontSize / ratio),
-  };
-
-  let textStyle = {
-    ...generalStyle,
-    fontSize,
-    paddingVertical: generalStyle.paddingVertical * ratio,
-    paddingHorizontal: generalStyle.paddingHorizontal * ratio,
-    borderRadius: generalStyle.borderRadius * ratio,
-    top: text_y ? text_y : watermarkStyle.top,
-    start: text_x ? text_x : watermarkStyle.start,
-  };*/
-
   const sharingOptions = {
     UTI: "JPEG",
     dialogTitle: "Share Foto Daclen",
@@ -124,18 +105,6 @@ export default function ImageViewer(props) {
         transformImage();
       }
       setSharingAvailability(result);
-
-      /*const report = {
-        width,
-        height,
-        ppw: productPhotoWidth,
-        pph: productPhotoHeight,
-        ratio,
-        generalStyle,
-        textStyle,
-        sharingAvailability: result,
-      };
-      console.log(report);*/
     };
 
     if (
@@ -408,16 +377,6 @@ export default function ImageViewer(props) {
     </SafeAreaView>
   );
 }
-
-/*
-            <Text style={[styles.textWatermark, textStyle]}>
-              {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
-            </Text>
-
-<Text style={[styles.textWatermark, generalStyle]}>
-                    {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
-                  </Text>
-*/
 
 const styles = StyleSheet.create({
   container: {

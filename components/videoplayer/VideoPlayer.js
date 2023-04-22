@@ -10,11 +10,14 @@ import {
   Dimensions,
   SafeAreaView,
   Platform,
+  ToastAndroid,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as FileSystem from "expo-file-system";
 import { Video, ResizeMode } from "expo-av";
 import { FFmpegKit } from "ffmpeg-kit-react-native";
+import ViewShot from "react-native-view-shot";
+import { isAvailableAsync, shareAsync } from "expo-sharing";
 
 import { colors, staticDimensions } from "../../styles/base";
 import { getFileName } from "../media";
@@ -30,6 +33,7 @@ export default function VideoPlayer(props) {
     props.route?.params;
   let ratio = width / height;
   const video = useRef(null);
+  const imageRef = useRef();
   const navigation = useNavigation();
 
   try {
@@ -58,11 +62,22 @@ export default function VideoPlayer(props) {
     const [loading, setLoading] = useState(false);
     const [videoLoading, setVideoLoading] = useState(false);
     const [status, setStatus] = useState({ isLoaded: false });
+    const [sharingAvailability, setSharingAvailability] = useState(false);
     const [hidden, setHidden] = useState(false);
 
     useEffect(() => {
+      const checkSharing = async () => {
+        const result = await isAvailableAsync();
+        if (!result) {
+          setError("Perangkat tidak mengizinkan untuk membagikan file");
+        }
+        setSharingAvailability(result);
+      };
+
       if (uri === undefined || uri === null) {
         setError("Tidak ada Uri");
+      } else {
+        checkSharing();
       }
     }, [uri]);
 
@@ -166,6 +181,25 @@ export default function VideoPlayer(props) {
       return `${videoDir}test.mp4`;
     };
 
+    const captureText = async () => {
+      setLoading(true);
+      imageRef.current
+        .capture()
+        .then((uri) => {
+          console.log(uri);
+          setLoading(false);
+          sharePhotoAsync(uri);
+        })
+        .catch((e) => {
+          console.error(e);
+          setError(e.toString());
+          setLoading(false);
+          if (Platform.OS === "android") {
+            ToastAndroid.show(`${e?.message}`, ToastAndroid.LONG);
+          }
+        });
+    };
+
     const processVideo = async () => {
       if (uri === undefined || uri === null || loading) return;
       const resultVideo =
@@ -198,6 +232,19 @@ export default function VideoPlayer(props) {
         console.error(e);
         setLoading(false);
         setError(`ffmpeg loading error\n${ffmpegCommand}\n${e.toString()}`);
+      }
+    };
+
+    const sharePhotoAsync = async (uri) => {
+      if (!sharingAvailability) {
+        setError("Perangkat tidak mengizinkan untuk membagikan file");
+        return;
+      }
+      try {
+        await shareAsync(uri, sharingOptions);
+      } catch (e) {
+        console.error(e);
+        setError(e.toString());
       }
     };
 
@@ -325,17 +372,34 @@ export default function VideoPlayer(props) {
                 onPlaybackStatusUpdate={(status) => setStatus(() => status)}
               />
 
-              <WatermarkModel
-                watermarkData={watermarkData}
-                ratio={1}
-                fontSize={Math.round(16 / ratio)}
-                backgroundColor={colors.daclen_black}
-                color={colors.daclen_orange}
-                paddingHorizontal={3}
-                paddingVertical={3}
-                borderRadius={4}
-                style={{ zIndex: 2, opacity: 30 }}
-              />
+              <ViewShot
+                ref={imageRef}
+                options={{
+                  fileName: "watermarktext",
+                  format: "jpg",
+                  quality: 1,
+                }}
+                style={{
+                  position: "absolute",
+                  top: 1,
+                  start: 1,
+                  backgroundColor: "transparent",
+                }}
+              >
+                <WatermarkModel
+                  watermarkData={watermarkData}
+                  ratio={1}
+                  fontSize={Math.round(16 / ratio)}
+                  backgroundColor={colors.daclen_black}
+                  color={colors.daclen_orange}
+                  paddingHorizontal={3}
+                  paddingVertical={3}
+                  borderRadius={4}
+                  text_x={0}
+                  text_y={0}
+                  style={{ zIndex: 2, opacity: 30 }}
+                />
+              </ViewShot>
 
               <ImageBackground
                 source={{ uri: thumbnail }}
@@ -386,9 +450,10 @@ export default function VideoPlayer(props) {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={
-                videoSize.isLandscape ? styles.buttonCircle : styles.button
-              }
+              style={[
+                videoSize.isLandscape ? styles.buttonCircle : styles.button,
+                { backgroundColor: colors.daclen_graydark },
+              ]}
               onPress={() => changeVideoOrientation(!videoSize.isLandscape)}
               disabled={videoLoading}
             >
@@ -425,6 +490,36 @@ export default function VideoPlayer(props) {
                 <Text style={styles.textButton}>Download Video</Text>
               )}
             </TouchableOpacity>
+
+            {sharingAvailability ? (
+              <TouchableOpacity
+                style={[
+                  videoSize.isLandscape ? styles.buttonCircle : styles.button,
+                  { backgroundColor: colors.daclen_reddishbrown },
+                ]}
+                onPress={() => captureText()}
+                disabled={loading || videoLoading}
+              >
+                {loading ? (
+                  <ActivityIndicator
+                    size="small"
+                    color="white"
+                    style={{
+                      alignSelf: "center",
+                    }}
+                  />
+                ) : (
+                  <MaterialCommunityIcons
+                    name="content-save"
+                    size={18}
+                    color="white"
+                  />
+                )}
+                {videoSize.isLandscape ? null : (
+                  <Text style={styles.textButton}>Save Text</Text>
+                )}
+              </TouchableOpacity>
+            ) : null}
 
             <TouchableOpacity
               style={[
