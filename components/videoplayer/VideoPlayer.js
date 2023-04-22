@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   View,
   StyleSheet,
@@ -24,16 +24,13 @@ import MainHeader from "../main/MainHeader";
 import { useNavigation } from "@react-navigation/native";
 import { WATERMARK_VIDEO } from "../dashboard/constants";
 //import { useScreenDimensions } from "../../hooks/useScreenDimensions";
-import { ErrorView } from "../webview/WebviewChild";
 import WatermarkModel from "../media/WatermarkModel";
-import { sentryLog } from "../../sentry";
 
 export default function VideoPlayer(props) {
   const { title, uri, width, height, thumbnail, userId, watermarkData } =
     props.route?.params;
   let ratio = width / height;
   const video = useRef(null);
-  const imageRef = useRef();
   const navigation = useNavigation();
 
   /*let screenData = useScreenDimensions();
@@ -60,46 +57,12 @@ export default function VideoPlayer(props) {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [videoLoading, setVideoLoading] = useState(false);
-  const [watermarkLoading, setWatermarkLoading] = useState(false);
+  const [watermarkLoading, setWatermarkLoading] = useState(true);
   const [status, setStatus] = useState({ isLoaded: false });
   const [watermarkImage, setWatermarkImage] = useState(null);
   const [sharingAvailability, setSharingAvailability] = useState(false);
 
   useEffect(() => {
-    const captureText = async () => {
-      setWatermarkLoading(true);
-      try {
-        imageRef.current
-          .capture()
-          .then((uri) => {
-            console.log(uri);
-            setWatermarkLoading(false);
-            setWatermarkImage(uri);
-          })
-          .catch((e) => {
-            console.error(e);
-            setError(
-              (error) =>
-                `${
-                  error === null ? "" : `${error}\ncaptureResult`
-                }${e.toString()}`
-            );
-            setWatermarkLoading(false);
-            sentryLog(e);
-          });
-      } catch (e) {
-        console.error(e);
-        setError(
-          (error) =>
-            `${
-              error === null ? "" : `${error}\ncaptureProcess `
-            }${e.toString()}`
-        );
-        setWatermarkLoading(false);
-        sentryLog(e);
-      }
-    };
-
     const checkSharing = async () => {
       const result = await isAvailableAsync();
       if (!result) {
@@ -117,7 +80,6 @@ export default function VideoPlayer(props) {
       setError("Tidak ada Uri");
     } else {
       checkSharing();
-      captureText();
     }
   }, [uri]);
 
@@ -192,6 +154,23 @@ export default function VideoPlayer(props) {
   function onBackPress() {
     navigation.navigate("MediaKitFiles", { activeTab: WATERMARK_VIDEO });
   }
+
+  const onCapture = useCallback((uri) => {
+    console.log("watermarkUri", uri);
+    setWatermarkImage(uri);
+    setWatermarkLoading(false);
+  }, []);
+
+  const onCaptureFailure = useCallback((e) => {
+    console.error(e);
+    setError(
+      (error) =>
+        `${
+          error === null ? "" : `${error}\nonCaptureFailure `
+        }${e.toString()}`
+    );
+    setWatermarkLoading(false);
+  }, []);
 
   const getResultPath = async () => {
     const videoDir = `${FileSystem.cacheDirectory}video/`;
@@ -298,13 +277,15 @@ export default function VideoPlayer(props) {
   return (
     <SafeAreaView style={[styles.container, { width: videoSize.videoWidth }]}>
       <ViewShot
-        ref={imageRef}
         options={{
           fileName: "watermarktext",
           format: "jpg",
           quality: 1,
         }}
         style={styles.containerViewShot}
+        captureMode="mount"
+        onCapture={onCapture}
+        onCaptureFailure={onCaptureFailure}
       >
         <WatermarkModel
           watermarkData={watermarkData}
