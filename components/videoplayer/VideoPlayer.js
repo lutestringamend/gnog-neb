@@ -194,7 +194,7 @@ export default function VideoPlayer(props) {
     return `${videoDir}test.mp4`;
   };
 
-  const saveWatermarkImage = async () => {
+  /*const saveWatermarkImage = async () => {
     if (Platform.OS === "android") {
       const permissions =
         await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
@@ -257,21 +257,21 @@ export default function VideoPlayer(props) {
       }
     }
     return null;
-  };
+  };*/
 
   const processVideo = async () => {
     if (uri === undefined || uri === null || loading) return;
     const resultVideo =
       Platform.OS === "web" ? "d:/test.mp4" : await getResultPath();
     const sourceVideo = uri;
-    const watermarkFile = await saveWatermarkImage();
-    const ffmpegCommand = setFFMPEGCommand(sourceVideo, watermarkFile, resultVideo, "top-left", 0);
+    //const watermarkFile = await saveWatermarkImage();
+    const ffmpegCommand = setFFMPEGCommand(sourceVideo, watermarkImage, resultVideo, "top-left", 0);
     if (Platform.OS === "android") {
       ToastAndroid.show(ffmpegCommand, ToastAndroid.LONG);
     } else {
-      console.log("command", ffmpegCommand);
+      console.log("ffmpeg", ffmpegCommand);
     }
-    if (sourceVideo === null || watermarkFile === null) return;
+    if (sourceVideo === null || watermarkImage === null) return;
 
     setLoading(true);
     setError(ffmpegCommand);
@@ -305,6 +305,9 @@ export default function VideoPlayer(props) {
       return;
     }
     try {
+      if (Platform.OS === "android" && userId === 8054) {
+        ToastAndroid.show(uri, ToastAndroid.LONG);
+      }
       await shareAsync(uri, {
         UTI: "JPEG",
         dialogTitle: "Share Watermark",
