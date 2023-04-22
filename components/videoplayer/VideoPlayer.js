@@ -23,9 +23,11 @@ import { useNavigation } from "@react-navigation/native";
 import { WATERMARK_VIDEO } from "../dashboard/constants";
 //import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 import { ErrorView } from "../webview/WebviewChild";
+import WatermarkModel from "../media/WatermarkModel";
 
 export default function VideoPlayer(props) {
-  const { title, uri, width, height, thumbnail, userId } = props.route?.params;
+  const { title, uri, width, height, thumbnail, userId, watermarkData } =
+    props.route?.params;
   let ratio = width / height;
   const video = useRef(null);
   const navigation = useNavigation();
@@ -85,7 +87,7 @@ export default function VideoPlayer(props) {
     }, [screenData]);*/
 
     useEffect(() => {
-      console.log("videoSize", videoSize, "userId", userId);
+      console.log("videoSize", videoSize, "ratio", ratio, "userId", userId);
       if (
         videoSize.isLandscape === undefined ||
         videoSize.isLandscape === null
@@ -119,7 +121,7 @@ export default function VideoPlayer(props) {
       } else if (!videoLoading) {
         setVideoLoading(true);
       }
-      changeOrie;
+      //changeOrie;
       if (isLandscape) {
         setVideoSize({
           isLandscape: true,
@@ -323,6 +325,18 @@ export default function VideoPlayer(props) {
                 onPlaybackStatusUpdate={(status) => setStatus(() => status)}
               />
 
+              <WatermarkModel
+                watermarkData={watermarkData}
+                ratio={1}
+                fontSize={Math.round(16 / ratio)}
+                backgroundColor={colors.daclen_black}
+                color={colors.daclen_orange}
+                paddingHorizontal={3}
+                paddingVertical={3}
+                borderRadius={4}
+                style={{ zIndex: 2, opacity: 30 }}
+              />
+
               <ImageBackground
                 source={{ uri: thumbnail }}
                 style={[
@@ -331,7 +345,7 @@ export default function VideoPlayer(props) {
                     position: "absolute",
                     width: videoSize.videoWidth,
                     height: videoSize.videoHeight,
-                    zIndex: 2,
+                    zIndex: 3,
                     backgroundColor: colors.daclen_light,
                     opacity: !status.isLoaded || hidden ? 100 : 0,
                   },

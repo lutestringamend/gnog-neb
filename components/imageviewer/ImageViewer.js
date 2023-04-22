@@ -21,37 +21,37 @@ import * as Sentry from "sentry-expo";
 
 import { colors, staticDimensions, dimensions } from "../../styles/base";
 import { getFileName } from "../media";
+import WatermarkModel from "../media/WatermarkModel";
 
 export default function ImageViewer(props) {
-  let title = props.route.params?.title;
-  let uri = props.route.params?.uri;
-  let isSquare = props.route.params?.isSquare;
-  let watermarkData = props.route.params?.watermarkData;
+  let {
+    title,
+    uri,
+    isSquare,
+    watermarkData,
+    width,
+    height,
+    text_align,
+    text_x,
+    text_y,
+    font,
+  } = props.route.params;
 
-  let width = props.route.params?.width;
-  let height = props.route.params?.height;
-  let productPhotoWidth = dimensions.fullWidth - staticDimensions.productPhotoWidthMargin;
+  let productPhotoWidth =
+    dimensions.fullWidth - staticDimensions.productPhotoWidthMargin;
   let ratio = width / productPhotoWidth;
-
-  let text_align = props.route.params?.text_align;
-  let text_x = props.route.params?.text_x;
-  let text_y = props.route.params?.text_y;
-  let font = props.route.params?.font;
   let fontSize = font?.size?.ukuran
     ? font?.size?.ukuran > 32
       ? font?.size?.ukuran / 2
       : font?.size?.ukuran
     : 16;
 
-  let generalStyle = {
-    paddingVertical: 1,
-    paddingHorizontal: 2,
-    borderRadius: 1,
-    textAlign: text_align,
-    top: text_y / ratio,
-    start: text_x / ratio,
-    backgroundColor: "transparent",
-    color: font?.color?.warna ? font?.color?.warna : colors.daclen_red,
+  /*let generalStyle = {
+    ...watermarkStyle,
+    textAlign: text_align ? text_align : watermarkStyle.textAlign,
+    top: text_y ? text_y / ratio : watermarkStyle.top * ratio,
+    start: text_x ? text_x / ratio : watermarkStyle.start * ratio,
+    color: font?.color?.warna ? font?.color?.warna : watermarkStyle.color,
     fontSize: Math.round(fontSize / ratio),
   };
 
@@ -61,9 +61,9 @@ export default function ImageViewer(props) {
     paddingVertical: generalStyle.paddingVertical * ratio,
     paddingHorizontal: generalStyle.paddingHorizontal * ratio,
     borderRadius: generalStyle.borderRadius * ratio,
-    top: text_y,
-    start: text_x,
-  };
+    top: text_y ? text_y : watermarkStyle.top,
+    start: text_x ? text_x : watermarkStyle.start,
+  };*/
 
   const sharingOptions = {
     UTI: "JPEG",
@@ -125,7 +125,7 @@ export default function ImageViewer(props) {
       }
       setSharingAvailability(result);
 
-      const report = {
+      /*const report = {
         width,
         height,
         ppw: productPhotoWidth,
@@ -135,7 +135,7 @@ export default function ImageViewer(props) {
         textStyle,
         sharingAvailability: result,
       };
-      console.log(report);
+      console.log(report);*/
     };
 
     if (
@@ -288,9 +288,15 @@ export default function ImageViewer(props) {
             }}
             resizeMode="cover"
           >
-            <Text style={[styles.textWatermark, textStyle]}>
-              {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
-            </Text>
+            <WatermarkModel
+              watermarkData={watermarkData}
+              ratio={ratio}
+              text_align={text_align}
+              text_x={text_x / ratio}
+              text_y={text_y / ratio}
+              color={font?.color?.warna}
+              fontSize={Math.round(fontSize / ratio)}
+            />
           </ImageBackground>
         </ViewShot>
       )}
@@ -384,9 +390,15 @@ export default function ImageViewer(props) {
                   }}
                   resizeMode="cover"
                 >
-                  <Text style={[styles.textWatermark, generalStyle]}>
-                    {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
-                  </Text>
+                  <WatermarkModel
+                    watermarkData={watermarkData}
+                    ratio={1}
+                    text_align={text_align}
+                    text_x={text_x / ratio}
+                    text_y={text_y / ratio}
+                    color={font?.color?.warna}
+                    fontSize={Math.round(fontSize / ratio)}
+                  />
                 </ImageBackground>
               </View>
             )}
@@ -396,6 +408,16 @@ export default function ImageViewer(props) {
     </SafeAreaView>
   );
 }
+
+/*
+            <Text style={[styles.textWatermark, textStyle]}>
+              {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
+            </Text>
+
+<Text style={[styles.textWatermark, generalStyle]}>
+                    {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
+                  </Text>
+*/
 
 const styles = StyleSheet.create({
   container: {
