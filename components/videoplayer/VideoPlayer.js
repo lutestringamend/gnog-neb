@@ -263,7 +263,7 @@ export default function VideoPlayer(props) {
     if (uri === undefined || uri === null || loading) return;
     const resultVideo =
       Platform.OS === "web" ? "d:/test.mp4" : await getResultPath();
-    const sourceVideo = uri;
+    const sourceVideo = await startDownload();
     //const watermarkFile = await saveWatermarkImage();
     const ffmpegCommand = setFFMPEGCommand(sourceVideo, watermarkImage, resultVideo, "top-left", 0);
     if (Platform.OS === "android") {
@@ -274,7 +274,8 @@ export default function VideoPlayer(props) {
     if (sourceVideo === null || watermarkImage === null) return;
 
     setLoading(true);
-    setError(ffmpegCommand);
+    setSuccess(true);
+    setError("Video sedang diproses...");
 
     try {
       FFmpegKit.execute(ffmpegCommand)
@@ -295,6 +296,7 @@ export default function VideoPlayer(props) {
     } catch (e) {
       console.error(e);
       setLoading(false);
+      setSuccess(false);
       setError(`ffmpeg loading error\n${ffmpegCommand}\n${e.toString()}`);
     }
   };
@@ -321,7 +323,8 @@ export default function VideoPlayer(props) {
 
   const startDownload = async () => {
     if (!loading) {
-      setError(null);
+      setSuccess(true);
+      setError("Download file video...");
       setLoading(true);
       try {
         const fileName = getFileName(uri);
