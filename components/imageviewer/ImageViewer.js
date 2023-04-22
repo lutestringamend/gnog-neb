@@ -75,11 +75,9 @@ export default function ImageViewer(props) {
           })
           .catch((e) => {
             console.error(e);
-            setError(JSON.stringify(e));
+            setError(e.toString());
             setLoading(false);
-            if (Platform.OS === "android") {
-              ToastAndroid.show(`${e?.message}`, ToastAndroid.LONG);
-            }
+            sentryLog(e);
           });
       } catch (e) {
         console.error(e);

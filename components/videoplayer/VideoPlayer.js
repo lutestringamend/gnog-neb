@@ -62,14 +62,35 @@ export default function VideoPlayer(props) {
     const [loading, setLoading] = useState(false);
     const [videoLoading, setVideoLoading] = useState(false);
     const [status, setStatus] = useState({ isLoaded: false });
+    const [watermarkImage, setWatermarkImage] = useState(null);
     const [sharingAvailability, setSharingAvailability] = useState(false);
     const [hidden, setHidden] = useState(false);
 
     useEffect(() => {
+      const captureText = async () => {
+        setLoading(true);
+        imageRef.current
+          .capture()
+          .then((uri) => {
+            console.log(uri);
+            setLoading(false);
+            setWatermarkImage(uri);
+          })
+          .catch((e) => {
+            console.error(e);
+            setError((error) => `${error}\n${e.toString()}`);
+            setLoading(false);
+            sentryLog(e);
+          });
+      };
+
       const checkSharing = async () => {
         const result = await isAvailableAsync();
         if (!result) {
-          setError("Perangkat tidak mengizinkan untuk membagikan file");
+          setError(
+            (error) =>
+              `${error}\nPerangkat tidak mengizinkan untuk membagikan file`
+          );
         }
         setSharingAvailability(result);
       };
@@ -78,6 +99,7 @@ export default function VideoPlayer(props) {
         setError("Tidak ada Uri");
       } else {
         checkSharing();
+        captureText();
       }
     }, [uri]);
 
@@ -179,23 +201,6 @@ export default function VideoPlayer(props) {
 
       await ensureDirExists();
       return `${videoDir}test.mp4`;
-    };
-
-    const captureText = async () => {
-      setLoading(true);
-      imageRef.current
-        .capture()
-        .then((uri) => {
-          console.log(uri);
-          setLoading(false);
-          sharePhotoAsync(uri);
-        })
-        .catch((e) => {
-          console.error(e);
-          setError(e.toString());
-          setLoading(false);
-          sentryLog(e);
-        });
     };
 
     const processVideo = async () => {
@@ -493,13 +498,13 @@ export default function VideoPlayer(props) {
               )}
             </TouchableOpacity>
 
-            {sharingAvailability ? (
+            {sharingAvailability || watermarkImage === null ? (
               <TouchableOpacity
                 style={[
                   videoSize.isLandscape ? styles.buttonCircle : styles.button,
                   { backgroundColor: colors.daclen_reddishbrown },
                 ]}
-                onPress={() => captureText()}
+                onPress={() => sharePhotoAsync(watermarkImage)}
                 disabled={loading || videoLoading}
               >
                 {loading ? (
