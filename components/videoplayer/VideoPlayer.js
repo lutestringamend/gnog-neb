@@ -10,6 +10,7 @@ import {
   Dimensions,
   SafeAreaView,
   Platform,
+  ToastAndroid,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as FileSystem from "expo-file-system";
@@ -19,7 +20,7 @@ import ViewShot from "react-native-view-shot";
 import { isAvailableAsync, shareAsync } from "expo-sharing";
 
 import { colors, staticDimensions } from "../../styles/base";
-import { getFileName } from "../media";
+import { getFileName, setFFMPEGCommand } from "../media";
 import MainHeader from "../main/MainHeader";
 import { useNavigation } from "@react-navigation/native";
 import { WATERMARK_VIDEO } from "../dashboard/constants";
@@ -32,6 +33,7 @@ export default function VideoPlayer(props) {
   let ratio = width / height;
   const video = useRef(null);
   const navigation = useNavigation();
+  const videoDir = `${FileSystem.cacheDirectory}video/`;
 
   /*let screenData = useScreenDimensions();
     const initialVideoSize = {
@@ -52,7 +54,6 @@ export default function VideoPlayer(props) {
         : Dimensions.get("window").width / ratio,
   };
   const [videoSize, setVideoSize] = useState(initialVideoSize);
-
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -165,16 +166,12 @@ export default function VideoPlayer(props) {
     console.error(e);
     setError(
       (error) =>
-        `${
-          error === null ? "" : `${error}\nonCaptureFailure `
-        }${e.toString()}`
+        `${error === null ? "" : `${error}\nonCaptureFailure `}${e.toString()}`
     );
     setWatermarkLoading(false);
   }, []);
 
   const getResultPath = async () => {
-    const videoDir = `${FileSystem.cacheDirectory}video/`;
-
     async function ensureDirExists() {
       try {
         const dirInfo = await FileSystem.getInfoAsync(videoDir);
@@ -197,16 +194,86 @@ export default function VideoPlayer(props) {
     return `${videoDir}test.mp4`;
   };
 
+  const saveWatermarkImage = async () => {
+    if (Platform.OS === "android") {
+      const permissions =
+        await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+      if (permissions.granted) {
+        const base64 = await FileSystem.readAsStringAsync(watermarkImage, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+        const fileName = "daclen_wt.jpg";
+        await FileSystem.StorageAccessFramework.createFileAsync(
+          permissions.directoryUri,
+          fileName,
+          mimeType ? mimeType : "image/jpeg"
+        )
+          .then(async (safUri) => {
+            setError(safUri);
+            try {
+              await FileSystem.writeAsStringAsync(safUri, base64, {
+                encoding: FileSystem.EncodingType.Base64,
+              });
+              const resultUri = `${permissions.directoryUri}/${fileName}`;
+              setError(`Foto watermark disimpan di ${resultUri}`);
+              setSuccess(true);
+              return resultUri;
+            } catch (e) {
+              console.error(e);
+              setError(
+                (error) => error + "\nwriteAsStringAsync catch\n" + e.toString()
+              );
+              setSuccess(false);
+              return null;
+            }
+          })
+          .catch((e) => {
+            console.error(e);
+            setSuccess(false);
+            if (e?.code === "ERR_FILESYSTEM_CANNOT_CREATE_FILE") {
+              setError(
+                "Tidak bisa menyimpan foto di folder sistem. Mohon pilih folder lain."
+              );
+            } else {
+              setError(
+                base64.substring(0, 64) +
+                  "\ncreateFileAsync catch\n" +
+                  e.toString()
+              );
+            }
+            if (Platform.OS === "android") {
+              ToastAndroid.show(
+                base64.substring(0, 64) +
+                  "\ncreateFileAsync catch\n" +
+                  e.toString(),
+                ToastAndroid.LONG
+              );
+            }
+            return null;
+          });
+      } else {
+        setSuccess(false);
+        setError("Anda tidak memberikan izin untuk mengakses penyimpanan");
+      }
+    }
+    return null;
+  };
+
   const processVideo = async () => {
     if (uri === undefined || uri === null || loading) return;
     const resultVideo =
       Platform.OS === "web" ? "d:/test.mp4" : await getResultPath();
     const sourceVideo = uri;
-    if (sourceVideo === null) return;
+    const watermarkFile = await saveWatermarkImage();
+    const ffmpegCommand = setFFMPEGCommand(sourceVideo, watermarkFile, resultVideo, "top-left", 0);
+    if (Platform.OS === "android") {
+      ToastAndroid.show(ffmpegCommand, ToastAndroid.LONG);
+    } else {
+      console.log("command", ffmpegCommand);
+    }
+    if (sourceVideo === null || watermarkFile === null) return;
 
     setLoading(true);
-    const ffmpegCommand = `-i ${sourceVideo} -c:v mpeg4 -y ${resultVideo}`;
-    console.log("command", ffmpegCommand);
     setError(ffmpegCommand);
 
     try {
@@ -282,7 +349,7 @@ export default function VideoPlayer(props) {
           format: "jpg",
           quality: 1,
         }}
-        style={styles.containerViewShot}
+        style={[styles.containerViewShot, { width, height }]}
         captureMode="mount"
         onCapture={onCapture}
         onCaptureFailure={onCaptureFailure}

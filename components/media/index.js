@@ -36,6 +36,35 @@ export const foto = {
   name: "",
 };
 
+export function setFFMPEGCommand(
+  sourceVideo,
+  watermarkFile,
+  resultVideo,
+  flag,
+  padding
+) {
+  let filterComplex = "";
+  switch (flag) {
+    case "bottom-left":
+      filterComplex = `overlay=x=${padding}:y=(main_h-overlay_h-${padding})`;
+      break;
+    case "top-left":
+      filterComplex = `overlay=x=${padding}:y=${padding}`;
+      break;
+    case "top-right":
+      filterComplex = `overlay=x=(main_w-overlay_w-${padding}):y=${padding}`;
+      break;
+    case "center":
+      filterComplex = `overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2`;
+      break;
+    default:
+      filterComplex = `overlay=x=(main_w-overlay_w-${padding}):y=(main_h-overlay_h-${padding})`;
+      break;
+  }
+
+  return `-i ${sourceVideo} -i ${watermarkFile} -filter_complex ${filterComplex}  -c:a -y ${resultVideo}`;
+}
+
 export function clearMediaData() {
   return (dispatch) => {
     console.log("clearMediaData");
@@ -350,7 +379,6 @@ export const pickImage = async () => {
     sentryLog(error);
     return IMAGE_PICKER_ERROR;
   }
-  
 };
 
 /*export const checkAndroidStoragePermission = async () => {
