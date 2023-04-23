@@ -1,6 +1,6 @@
 {
   "cli": {
-    "version": ">= 3.7.2"
+    "version": ">= 0.57.0"
   },
   "build": {
     "amazon-production": {
@@ -16,17 +16,25 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
+      "channel": "dev",
+      "android": {},
       "ios": {
-        "resourceClass": "m1-medium"
+        "resourceClass": "m1-medium",
+        "simulator": "true"
       }
     },
     "preview": {
       "distribution": "internal",
+      "channel": "staging",
+      "android": {
+        "buildType": "apk"
+      },
       "ios": {
         "resourceClass": "m1-medium"
       }
     },
     "production": {
+      "channel": "production",
       "ios": {
         "resourceClass": "m1-medium"
       }
