@@ -60,6 +60,7 @@ import UserRoots from "./components/dashboard/UserRoots";
 import BonusRoot from "./components/dashboard/BonusRoot";
 import SaldoReport from "./components/dashboard/SaldoReport";
 import VideoPlayer from "./components/videoplayer/VideoPlayer";
+import VideoLogs from "./components/videoplayer/VideoLogs";
 
 import { appname } from "./axios/constants";
 import { colors, staticDimensions } from "./styles/base";
@@ -259,6 +260,11 @@ export default function App() {
                 name="VideoPlayerScreen"
                 component={VideoPlayer}
                 options={{ ...defaultOptions, headerShown: false }}
+              />
+              <Stack.Screen
+                name="VideoLogsScreen"
+                component={VideoLogs}
+                options={{ ...defaultOptions, title: "Logs" }}
               />
             </Stack.Navigator>
           </NavigationContainer>

@@ -26,7 +26,12 @@ import { useNavigation } from "@react-navigation/native";
 import { WATERMARK_VIDEO } from "../dashboard/constants";
 //import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 import WatermarkModel from "../media/WatermarkModel";
-import { sharingOptionsJPEG, sharingOptionsMP4 } from "../media/constants";
+import {
+  sharingOptionsJPEG,
+  sharingOptionsMP4,
+  tempffmpegdesc,
+} from "../media/constants";
+import { sentryLog } from "../../sentry";
 
 export default function VideoPlayer(props) {
   const { title, uri, width, height, thumbnail, userId, watermarkData } =
@@ -63,6 +68,8 @@ export default function VideoPlayer(props) {
   const [status, setStatus] = useState({ isLoaded: false });
   const [watermarkImage, setWatermarkImage] = useState(null);
   const [resultUri, setResultUri] = useState(null);
+  const [output, setOutput] = useState(tempffmpegdesc);
+  const [fullLogs, setFullLogs] = useState(null);
   const [sharingAvailability, setSharingAvailability] = useState(false);
 
   useEffect(() => {
@@ -134,12 +141,15 @@ export default function VideoPlayer(props) {
 
   useEffect(() => {
     if (resultUri !== null) {
-      shareAsync(resultUri, sharingOptionsMP4);
+      shareFileAsync(resultUri, sharingOptionsMP4);
     }
   }, [resultUri]);
 
   function changeVideoOrientation(isLandscape) {
-    if (isLandscape === undefined || isLandscape === null) {
+    if (output !== null || error !== null) {
+      navigation.navigate("VideoLogsScreen", {text: error + "\n\n" + output + "\n\n" + fullLogs});
+      return;
+    } else if (isLandscape === undefined || isLandscape === null) {
       return;
     } else if (!videoLoading) {
       setVideoLoading(true);
@@ -172,10 +182,16 @@ export default function VideoPlayer(props) {
 
   const onCaptureFailure = useCallback((e) => {
     console.error(e);
-    setError(
-      (error) =>
-        `${error === null ? "" : `${error}\nonCaptureFailure `}${e.toString()}`
-    );
+    if (Platform.OS === "android") {
+      ToastAndroid(e.toString(), ToastAndroid.LONG);
+    } else {
+      setError(
+        (error) =>
+          `${
+            error === null ? "" : `${error}\nonCaptureFailure `
+          }${e.toString()}`
+      );
+    }
     setWatermarkLoading(false);
   }, []);
 
@@ -270,15 +286,21 @@ export default function VideoPlayer(props) {
   const processVideo = async () => {
     if (uri === undefined || uri === null || loading) return;
     if (resultUri !== null) {
-      shareAsync(resultUri, sharingOptionsMP4);
+      shareFileAsync(resultUri, sharingOptionsMP4);
       return;
     }
-    
+
     const resultVideo =
       Platform.OS === "web" ? "d:/test.mp4" : await getResultPath();
     const sourceVideo = await startDownload();
     //const watermarkFile = await saveWatermarkImage();
-    const ffmpegCommand = setFFMPEGCommand(sourceVideo, watermarkImage, resultVideo, "top-left", 0);
+    const ffmpegCommand = setFFMPEGCommand(
+      sourceVideo,
+      watermarkImage,
+      resultVideo,
+      "top-left",
+      0
+    );
     if (Platform.OS === "android") {
       ToastAndroid.show(ffmpegCommand, ToastAndroid.LONG);
     } else {
@@ -295,37 +317,45 @@ export default function VideoPlayer(props) {
         .then(async (session) => {
           console.log("session", session);
           const returnCode = await session.getReturnCode();
-          const output = await session.getOutput();
+          const sessionOutput = await session.getOutput();
+          const failStackTrace = await session.getFailStackTrace();
+          const logs = await session.getLogs();
           setLoading(false);
+          setFullLogs(sessionOutput);
           if (ReturnCode.isSuccess(returnCode)) {
             setSuccess(true);
-            setError(`Video berhasil disimpan di ${resultVideo}\n${output}`);
+            setError(`Video berhasil disimpan di ${resultVideo}`);
             setResultUri(resultVideo);
           } else if (ReturnCode.isCancel(returnCode)) {
             setSuccess(false);
-            setError(`Pembuatan video dibatalkan\n${output}`);
+            setError(`Pembuatan video dibatalkan ${returnCode.toString()}`);
+            setOutput(logs);
           } else {
             setSuccess(false);
-            setError(`Error memproses video: ${output}`);
-          }  
+            setError(`Error memproses video ${returnCode.toString()}`);
+            setOutput(failStackTrace);
+            navigation.navigate("VideoLogsScreen", {text: failStackTrace + "\n\n" + sessionOutput});
+          }
         })
         .catch((error) => {
           console.error(error);
           setLoading(false);
           setSuccess(false);
-          setError(
-            `ffmpeg process error\n${ffmpegCommand}\n${error.toString()}`
-          );
+          setError("ffmpeg process error");
+          setOutput(`${ffmpegCommand}\n${error.toString()}`);
+          sentryLog(error);
         });
     } catch (e) {
       console.error(e);
       setLoading(false);
       setSuccess(false);
-      setError(`ffmpeg loading error\n${ffmpegCommand}\n${e.toString()}`);
+      setError("ffmpeg loading error");
+      setOutput(`${ffmpegCommand}\n${e.toString()}`);
+      sentryLog(e);
     }
   };
 
-  const shareAsync = async (uri, sharingOptions) => {
+  const shareFileAsync = async (uri, sharingOptions) => {
     if (!sharingAvailability) {
       setError("Perangkat tidak mengizinkan untuk membagikan file");
       return;
@@ -369,30 +399,32 @@ export default function VideoPlayer(props) {
 
   return (
     <SafeAreaView style={[styles.container, { width: videoSize.videoWidth }]}>
-      <ViewShot
-        options={{
-          fileName: "watermarktext",
-          format: "jpg",
-          quality: 1,
-        }}
-        style={[styles.containerViewShot, { width, height }]}
-        captureMode="mount"
-        onCapture={onCapture}
-        onCaptureFailure={onCaptureFailure}
-      >
-        <WatermarkModel
-          watermarkData={watermarkData}
-          ratio={ratio}
-          fontSize={Math.round(16 / ratio)}
-          backgroundColor={colors.daclen_black}
-          color={colors.daclen_orange}
-          paddingHorizontal={3}
-          paddingVertical={3}
-          borderRadius={4}
-          text_x={0}
-          text_y={0}
-        />
-      </ViewShot>
+      {Platform.OS === "web" ? null : (
+        <ViewShot
+          options={{
+            fileName: "watermarktext",
+            format: "jpg",
+            quality: 1,
+          }}
+          style={[styles.containerViewShot, { width, height }]}
+          captureMode="mount"
+          onCapture={onCapture}
+          onCaptureFailure={onCaptureFailure}
+        >
+          <WatermarkModel
+            watermarkData={watermarkData}
+            ratio={ratio}
+            fontSize={Math.round(16 / ratio)}
+            backgroundColor={colors.daclen_black}
+            color={colors.daclen_orange}
+            paddingHorizontal={3}
+            paddingVertical={3}
+            borderRadius={4}
+            text_x={0}
+            text_y={0}
+          />
+        </ViewShot>
+      )}
 
       {!videoSize.isLandscape ? (
         <MainHeader
@@ -453,13 +485,7 @@ export default function VideoPlayer(props) {
           </View>
         ) : null}
 
-        {videoLoading || videoSize.isLandscape === null ? (
-          <ActivityIndicator
-            size="large"
-            color={colors.daclen_orange}
-            style={{ marginVertical: 20, zIndex: 10 }}
-          />
-        ) : (
+        {videoLoading || videoSize.isLandscape === null ? null : (
           <View
             style={[
               styles.video,
@@ -489,7 +515,7 @@ export default function VideoPlayer(props) {
               onPlaybackStatusUpdate={(status) => setStatus(() => status)}
             />
 
-            {watermarkLoading ? (
+            {watermarkLoading && Platform.OS !== "web" ? (
               <ActivityIndicator
                 size="small"
                 color={colors.daclen_graydark}
@@ -519,6 +545,7 @@ export default function VideoPlayer(props) {
               style={[
                 styles.video,
                 {
+                  flex: 1,
                   position: "absolute",
                   width: videoSize.videoWidth,
                   height: videoSize.videoHeight,
@@ -528,7 +555,13 @@ export default function VideoPlayer(props) {
                 },
               ]}
               resizeMode="cover"
-            />
+            >
+              <ActivityIndicator
+                size="large"
+                color={colors.daclen_orange}
+                style={{ zIndex: 10, alignSelf: "center" }}
+              />
+            </ImageBackground>
           </View>
         )}
 
@@ -570,7 +603,7 @@ export default function VideoPlayer(props) {
           >
             <MaterialCommunityIcons name="view-day" size={18} color="white" />
             {videoSize.isLandscape ? null : (
-              <Text style={styles.textButton}>Landscape</Text>
+              <Text style={styles.textButton}>Rotate</Text>
             )}
           </TouchableOpacity>
 
@@ -594,7 +627,7 @@ export default function VideoPlayer(props) {
               <MaterialCommunityIcons name="download" size={18} color="white" />
             )}
             {videoSize.isLandscape ? null : (
-              <Text style={styles.textButton}>Download Video</Text>
+              <Text style={styles.textButton}>Raw</Text>
             )}
           </TouchableOpacity>
 
@@ -604,7 +637,7 @@ export default function VideoPlayer(props) {
                 videoSize.isLandscape ? styles.buttonCircle : styles.button,
                 { backgroundColor: colors.daclen_reddishbrown },
               ]}
-              onPress={() => shareAsync(watermarkImage, sharingOptionsJPEG)}
+              onPress={() => shareFileAsync(watermarkImage, sharingOptionsJPEG)}
               disabled={loading || videoLoading}
             >
               {loading ? (
@@ -623,7 +656,7 @@ export default function VideoPlayer(props) {
                 />
               )}
               {videoSize.isLandscape ? null : (
-                <Text style={styles.textButton}>Save Text</Text>
+                <Text style={styles.textButton}>Text</Text>
               )}
             </TouchableOpacity>
           ) : null}
@@ -652,10 +685,11 @@ export default function VideoPlayer(props) {
               />
             )}
             {videoSize.isLandscape ? null : (
-              <Text style={styles.textButton}>Watermarked</Text>
+              <Text style={styles.textButton}>Full</Text>
             )}
           </TouchableOpacity>
         </View>
+        {userId === 8054 ? <Text style={styles.textUid}>{output}</Text> : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -670,6 +704,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     width: "100%",
+    height: "100%",
     backgroundColor: "white",
   },
   containerViewShot: {
@@ -684,9 +719,10 @@ const styles = StyleSheet.create({
   },
   containerPanelPortrait: {
     width: "100%",
-    marginHorizontal: 20,
-    paddingBottom: staticDimensions.pageBottomPadding,
-    alignItems: "center",
+    marginVertical: 10,
+    marginHorizontal: 6,
+    flexDirection: "row",
+    justifyContent: "center",
   },
   containerPanelLandscape: {
     width: "100%",
@@ -721,14 +757,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    alignSelf: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 32,
+    paddingVertical: 4,
     borderRadius: 4,
-    marginVertical: 10,
+    marginHorizontal: 2,
     backgroundColor: colors.daclen_blue,
   },
   buttonCircle: {
@@ -757,7 +792,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   textButton: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: "bold",
     color: "white",
     marginStart: 6,
@@ -771,5 +806,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_danger,
     textAlign: "center",
     zIndex: 6,
+  },
+  textUid: {
+    fontSize: 10,
+    textAlign: "center",
+    color: colors.daclen_gray,
+    marginHorizontal: 10,
   },
 });
