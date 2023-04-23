@@ -361,7 +361,8 @@ export const pickImage = async () => {
     if (result?.canceled) {
       return null;
     } else if (!result.canceled) {
-      data = processExpoImagePickerUri(result.assets[0]);
+      console.log("result", result);
+      data = processExpoImagePickerUri(result?.uri ? result : result.assets[0]);
       if (Platform.OS === "ios") {
         if (data?.fileSize !== undefined && data?.fileSize !== null) {
           return null;
