@@ -21,6 +21,18 @@ export const watermarkStyle = {
     fontSize: 16,
   };
 
+export const sharingOptionsJPEG = {
+  UTI: "AVFileTypeJPEG",
+  dialogTitle: "Share Watermark",
+  mimeType: "image/jpeg",
+};
+
+export const sharingOptionsMP4 = {
+  UTI: "AVFileTypeMPEG4",
+  dialogTitle: "Share Video",
+  mimeType: "video/mp4",
+}
+
 export const camerafail = "Error dengan kamera: "
 export const cameranopermissionmessage = "Anda tidak memberikan akses ke Kamera"
 export const imagepickerfail = "Error mengambil dari galeri "

@@ -15,7 +15,7 @@ import {
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as FileSystem from "expo-file-system";
 import { Video, ResizeMode } from "expo-av";
-import { FFmpegKit } from "ffmpeg-kit-react-native";
+import { FFmpegKit, ReturnCode } from "ffmpeg-kit-react-native";
 import ViewShot from "react-native-view-shot";
 import { isAvailableAsync, shareAsync } from "expo-sharing";
 
@@ -26,6 +26,7 @@ import { useNavigation } from "@react-navigation/native";
 import { WATERMARK_VIDEO } from "../dashboard/constants";
 //import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 import WatermarkModel from "../media/WatermarkModel";
+import { sharingOptionsJPEG, sharingOptionsMP4 } from "../media/constants";
 
 export default function VideoPlayer(props) {
   const { title, uri, width, height, thumbnail, userId, watermarkData } =
@@ -61,6 +62,7 @@ export default function VideoPlayer(props) {
   const [watermarkLoading, setWatermarkLoading] = useState(true);
   const [status, setStatus] = useState({ isLoaded: false });
   const [watermarkImage, setWatermarkImage] = useState(null);
+  const [resultUri, setResultUri] = useState(null);
   const [sharingAvailability, setSharingAvailability] = useState(false);
 
   useEffect(() => {
@@ -129,6 +131,12 @@ export default function VideoPlayer(props) {
         );
       }*/
   }, [videoSize]);
+
+  useEffect(() => {
+    if (resultUri !== null) {
+      shareAsync(resultUri, sharingOptionsMP4);
+    }
+  }, [resultUri]);
 
   function changeVideoOrientation(isLandscape) {
     if (isLandscape === undefined || isLandscape === null) {
@@ -261,6 +269,11 @@ export default function VideoPlayer(props) {
 
   const processVideo = async () => {
     if (uri === undefined || uri === null || loading) return;
+    if (resultUri !== null) {
+      shareAsync(resultUri, sharingOptionsMP4);
+      return;
+    }
+    
     const resultVideo =
       Platform.OS === "web" ? "d:/test.mp4" : await getResultPath();
     const sourceVideo = await startDownload();
@@ -279,11 +292,22 @@ export default function VideoPlayer(props) {
 
     try {
       FFmpegKit.execute(ffmpegCommand)
-        .then((session) => {
+        .then(async (session) => {
           console.log("session", session);
+          const returnCode = await session.getReturnCode();
+          const output = await session.getOutput();
           setLoading(false);
-          setSuccess(true);
-          setError(`result in ${resultVideo}\n${JSON.stringify(session)}`);
+          if (ReturnCode.isSuccess(returnCode)) {
+            setSuccess(true);
+            setError(`Video berhasil disimpan di ${resultVideo}\n${output}`);
+            setResultUri(resultVideo);
+          } else if (ReturnCode.isCancel(returnCode)) {
+            setSuccess(false);
+            setError(`Pembuatan video dibatalkan\n${output}`);
+          } else {
+            setSuccess(false);
+            setError(`Error memproses video: ${output}`);
+          }  
         })
         .catch((error) => {
           console.error(error);
@@ -301,7 +325,7 @@ export default function VideoPlayer(props) {
     }
   };
 
-  const sharePhotoAsync = async (uri) => {
+  const shareAsync = async (uri, sharingOptions) => {
     if (!sharingAvailability) {
       setError("Perangkat tidak mengizinkan untuk membagikan file");
       return;
@@ -310,11 +334,7 @@ export default function VideoPlayer(props) {
       if (Platform.OS === "android" && userId === 8054) {
         ToastAndroid.show(uri, ToastAndroid.LONG);
       }
-      await shareAsync(uri, {
-        UTI: "JPEG",
-        dialogTitle: "Share Watermark",
-        mimeType: "image/jpeg",
-      });
+      await shareAsync(uri, sharingOptions);
     } catch (e) {
       console.error(e);
       setError(e.toString());
@@ -584,7 +604,7 @@ export default function VideoPlayer(props) {
                 videoSize.isLandscape ? styles.buttonCircle : styles.button,
                 { backgroundColor: colors.daclen_reddishbrown },
               ]}
-              onPress={() => sharePhotoAsync(watermarkImage)}
+              onPress={() => shareAsync(watermarkImage, sharingOptionsJPEG)}
               disabled={loading || videoLoading}
             >
               {loading ? (
