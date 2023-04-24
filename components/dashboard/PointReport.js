@@ -20,6 +20,7 @@ import { getLaporanPoin } from "../../axios/user";
 
 import { colors, staticDimensions } from "../../styles/base";
 import Separator from "../profile/Separator";
+import moment from "moment";
 
 function PointReport(props) {
   const { token, currentUser, points, checkouts, hpv } = props;
@@ -119,11 +120,18 @@ function PointReport(props) {
                           ? currentUser?.name
                           : item?.user_id}
                       </Text>
+
+                      {item?.terakhir_diubah === null ? null : (
+                        <Text style={styles.textDate}>
+                          {moment(item?.terakhir_diubah).format("DD MMMM YYYY")}
+                        </Text>
+                      )}
+
                       {referralData?.length === undefined ||
                       referralData?.length < 1 ||
                       item?.refferal_user_id === undefined ||
                       item?.refferal_user_id === null ? null : (
-                        <Text style={styles.texttReferral}>
+                        <Text style={styles.textReferral}>
                           {"Referral: "}
                           {
                             referralData.find(
@@ -152,18 +160,14 @@ function PointReport(props) {
                           {item?.poin ? item?.poin : "0"}
                         </Text>
                       </View>
-                      {item?.total_poin ? (
-                        <View style={styles.containerPoints}>
-                          <Text
-                            style={[styles.textTotalPoint, { fontSize: 12 }]}
-                          >
-                            Total
-                          </Text>
-                          <Text style={styles.textTotalPoint}>
-                            {item?.total_poin}
-                          </Text>
-                        </View>
-                      ) : null}
+                      <View style={styles.containerPoints}>
+                        <Text style={[styles.textTotalPoint, { fontSize: 12 }]}>
+                          Total
+                        </Text>
+                        <Text style={styles.textTotalPoint}>
+                          {item?.total_poin ? item?.total_poin : "0"}
+                        </Text>
+                      </View>
                     </View>
                   </View>
                   <Separator thickness={2} style={{ marginTop: 10 }} />
@@ -219,17 +223,23 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
     color: colors.daclen_black,
-    marginVertical: 10,
+    marginTop: 10,
   },
-  texttReferral: {
+  textDate: {
     fontSize: 12,
-    fontStyle: "bold",
     color: colors.daclen_gray,
+    marginTop: 2,
+  },
+  textReferral: {
+    fontSize: 14,
+    color: colors.daclen_black,
+    marginTop: 6,
   },
   textCheckout: {
     fontSize: 14,
     fontStyle: "bold",
     color: colors.daclen_blue,
+    marginTop: 2,
   },
   textPoint: {
     fontWeight: "bold",
