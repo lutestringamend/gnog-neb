@@ -13,13 +13,15 @@ import {
   ToastAndroid,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { connect } from "react-redux";
+//import { bindActionCreators } from "redux";
 import * as FileSystem from "expo-file-system";
 import { Video, ResizeMode } from "expo-av";
 import { FFmpegKit, ReturnCode } from "ffmpeg-kit-react-native";
 import ViewShot from "react-native-view-shot";
 import { isAvailableAsync, shareAsync } from "expo-sharing";
 
-import { colors, staticDimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import { getFileName, setFFMPEGCommand } from "../media";
 import MainHeader from "../main/MainHeader";
 import { useNavigation } from "@react-navigation/native";
@@ -33,12 +35,13 @@ import {
 } from "../media/constants";
 import { sentryLog } from "../../sentry";
 
-export default function VideoPlayer(props) {
+function VideoPlayer(props) {
   const { title, uri, width, height, thumbnail, userId, watermarkData } =
     props.route?.params;
   let ratio = width / height;
   const video = useRef(null);
   const navigation = useNavigation();
+  const { watermarkLayout } = props;
   const videoDir = `${FileSystem.cacheDirectory}video/`;
 
   /*let screenData = useScreenDimensions();
@@ -64,6 +67,10 @@ export default function VideoPlayer(props) {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [videoLoading, setVideoLoading] = useState(false);
+  const [watermarkSize, setWatermarkSize] = useState({
+    width,
+    height,
+  });
   const [watermarkLoading, setWatermarkLoading] = useState(true);
   const [status, setStatus] = useState({ isLoaded: false });
   const [watermarkImage, setWatermarkImage] = useState(null);
@@ -145,9 +152,25 @@ export default function VideoPlayer(props) {
     }
   }, [resultUri]);
 
+  useEffect(() => {
+    if (watermarkLayout !== null) {
+      //console.log("mediastate watermarkLayout", watermarkLayout);
+      setWatermarkSize({
+        width: watermarkLayout?.width,
+        height: watermarkLayout?.height,
+      });
+    }
+  }, [watermarkLayout]);
+
+  useEffect(() => {
+    console.log("watermarkSize", watermarkSize);
+  }, [watermarkSize]);
+
   function changeVideoOrientation(isLandscape) {
     if (output !== null || error !== null) {
-      navigation.navigate("VideoLogsScreen", {text: error + "\n\n" + output + "\n\n" + fullLogs});
+      navigation.navigate("VideoLogsScreen", {
+        text: error + "\n\n" + output + "\n\n" + fullLogs,
+      });
       return;
     } else if (isLandscape === undefined || isLandscape === null) {
       return;
@@ -175,7 +198,7 @@ export default function VideoPlayer(props) {
   }
 
   const onCapture = useCallback((uri) => {
-    console.log("watermarkUri", uri);
+    console.log("watermarkUri", uri, "watermarkSize", watermarkSize);
     setWatermarkImage(uri);
     setWatermarkLoading(false);
   }, []);
@@ -335,7 +358,14 @@ export default function VideoPlayer(props) {
             setSuccess(false);
             setError(`Error memproses video ${returnCode.toString()}`);
             setOutput(logs.toString());
-            navigation.navigate("VideoLogsScreen", {text: sessionId.toString() + "\n\n" + logs.toString() + "\n\n" + sessionOutput});
+            navigation.navigate("VideoLogsScreen", {
+              text:
+                sessionId.toString() +
+                "\n\n" +
+                logs.toString() +
+                "\n\n" +
+                sessionOutput,
+            });
           }
         })
         .catch((error) => {
@@ -399,16 +429,20 @@ export default function VideoPlayer(props) {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { width: videoSize.videoWidth }]}>
-      {Platform.OS === "web" ? null : (
+    <SafeAreaView style={styles.container}>
+      {Platform.OS === "ios" ? null : (
         <ViewShot
           options={{
             fileName: "watermarktext",
             format: "jpg",
             quality: 1,
+            handleGLSurfaceViewOnAndroid: true,
           }}
-          style={styles.containerViewShot}
-          captureMode="mount"
+          style={[
+            styles.containerViewShot,
+            { width: watermarkSize.width, height: watermarkSize.height },
+          ]}
+          captureMode="continuous"
           onCapture={onCapture}
           onCaptureFailure={onCaptureFailure}
         >
@@ -423,6 +457,7 @@ export default function VideoPlayer(props) {
             borderRadius={4}
             text_x={0}
             text_y={0}
+            getLayout={true}
           />
         </ViewShot>
       )}
@@ -538,6 +573,7 @@ export default function VideoPlayer(props) {
                 paddingVertical={3}
                 borderRadius={4}
                 style={{ zIndex: 3, opacity: 30 }}
+                getLayout={false}
               />
             )}
 
@@ -552,7 +588,7 @@ export default function VideoPlayer(props) {
                   height: videoSize.videoHeight,
                   zIndex: 3,
                   backgroundColor: colors.daclen_light,
-                  opacity: !status.isLoaded ? 100 : 0,
+                  opacity: !status.isLoaded ? 80 : 0,
                 },
               ]}
               resizeMode="cover"
@@ -704,15 +740,13 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    position: "absolute",
-    top: 0,
-    start: 0,
-    zIndex: 1,
     width: "100%",
-    height: "100%",
     backgroundColor: "white",
   },
   containerViewShot: {
+    position: "absolute",
+    top: 0,
+    start: 0,
     backgroundColor: "transparent",
   },
   containerPanelPortrait: {
@@ -730,12 +764,10 @@ const styles = StyleSheet.create({
     marginEnd: 20,
   },
   containerBodyLandscape: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "flex-end",
   },
   containerBodyPortrait: {
-    flex: 1,
     alignItems: "center",
   },
   containerHeader: {
@@ -812,3 +844,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
 });
+
+const mapStateToProps = (store) => ({
+  watermarkLayout: store.mediaState.watermarkLayout,
+});
+
+/*const mapDispatchProps = (dispatch) =>
+  bindActionCreators(
+    { updateWatermarkLayout },
+    dispatch
+  );*/
+
+export default connect(mapStateToProps, null)(VideoPlayer);

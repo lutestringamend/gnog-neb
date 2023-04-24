@@ -8,6 +8,7 @@ import {
   MEDIA_DOWNLOAD_STATE_CHANGE,
   MEDIA_CLEAR_DATA,
   USER_UPDATE_STATE_CHANGE,
+  MEDIA_WATERMARK_LAYOUT_STATE_CHANGE,
 } from "../../redux/constants";
 import {
   bigmediafileerror,
@@ -69,6 +70,13 @@ export function clearMediaData() {
   return (dispatch) => {
     console.log("clearMediaData");
     dispatch({ type: MEDIA_CLEAR_DATA });
+  };
+}
+
+export function updateWatermarkLayout(data) {
+  return (dispatch) => {
+    console.log("updateWatermarkLayout", data);
+    dispatch({ type: MEDIA_WATERMARK_LAYOUT_STATE_CHANGE, data });
   };
 }
 

@@ -1,21 +1,28 @@
 import React from "react";
 import { Text } from "react-native";
+
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+
+import { updateWatermarkLayout } from ".";
 import { watermarkStyle } from "./constants";
 
-const WatermarkModel = ({
-  watermarkData,
-  style,
-  ratio,
-  text_x,
-  text_y,
-  text_align,
-  paddingVertical,
-  paddingHorizontal,
-  borderRadius,
-  backgroundColor,
-  color,
-  fontSize,
-}) => {
+function WatermarkModel(props) {
+  const {
+    watermarkData,
+    style,
+    ratio,
+    text_x,
+    text_y,
+    text_align,
+    paddingVertical,
+    paddingHorizontal,
+    borderRadius,
+    backgroundColor,
+    color,
+    fontSize,
+    getLayout,
+  } = props;
   let generalStyle = {
     ...watermarkStyle,
     textAlign: text_align ? text_align : watermarkStyle.textAlign,
@@ -39,8 +46,16 @@ const WatermarkModel = ({
       : Math.round(watermarkStyle.fontSize * ratio),
   };
 
+  function sendToParent(e) {
+    if (getLayout) {
+      //console.log("watermarkmodel layout", e);
+      props.updateWatermarkLayout(e);
+    }
+  }
+
   return (
     <Text
+      onLayout={(e) => sendToParent(e.nativeEvent.layout)}
       style={[
         { position: "absolute", fontWeight: "bold" },
         generalStyle,
@@ -50,6 +65,13 @@ const WatermarkModel = ({
       {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
     </Text>
   );
-};
+}
 
-export default WatermarkModel;
+const mapStateToProps = (store) => ({
+  watermarkLayout: store.mediaState.watermarkLayout,
+});
+
+const mapDispatchProps = (dispatch) =>
+  bindActionCreators({ updateWatermarkLayout }, dispatch);
+
+export default connect(mapStateToProps, mapDispatchProps)(WatermarkModel);
