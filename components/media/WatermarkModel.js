@@ -1,5 +1,5 @@
 import React from "react";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -26,8 +26,8 @@ function WatermarkModel(props) {
   let generalStyle = {
     ...watermarkStyle,
     textAlign: text_align ? text_align : watermarkStyle.textAlign,
-    top: text_y ? text_y * ratio : watermarkStyle.top * ratio,
-    start: text_x ? text_x * ratio : watermarkStyle.start * ratio,
+    top: getLayout ? 0 : text_y ? text_y * ratio : watermarkStyle.top * ratio,
+    start: getLayout ? 0 : text_x ? text_x * ratio : watermarkStyle.start * ratio,
     paddingVertical: paddingVertical
       ? paddingVertical * ratio
       : watermarkStyle.paddingVertical * ratio,

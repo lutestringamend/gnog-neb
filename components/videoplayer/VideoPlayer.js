@@ -198,7 +198,11 @@ function VideoPlayer(props) {
   }
 
   const onCapture = useCallback((uri) => {
-    console.log("watermarkUri", uri, "watermarkSize", watermarkSize);
+    if (Platform.OS === "android" && userId === 8054) {
+      ToastAndroid.show(`onCapture ${JSON.stringify(watermarkSize)}`, ToastAndroid.SHORT);
+    } else {
+      console.log("watermarkUri", uri, "watermarkSize", watermarkSize);
+    }
     setWatermarkImage(uri);
     setWatermarkLoading(false);
   }, []);
@@ -437,6 +441,8 @@ function VideoPlayer(props) {
             format: "jpg",
             quality: 1,
             handleGLSurfaceViewOnAndroid: true,
+            width: watermarkSize.width / 2,
+            height: watermarkSize.height / 2,
           }}
           style={[
             styles.containerViewShot,
@@ -448,7 +454,7 @@ function VideoPlayer(props) {
         >
           <WatermarkModel
             watermarkData={watermarkData}
-            ratio={ratio / 2}
+            ratio={ratio}
             fontSize={Math.round(16 / ratio)}
             backgroundColor={colors.daclen_black}
             color={colors.daclen_orange}
