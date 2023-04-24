@@ -318,7 +318,7 @@ export default function VideoPlayer(props) {
           console.log("session", session);
           const returnCode = await session.getReturnCode();
           const sessionOutput = await session.getOutput();
-          const failStackTrace = await session.getFailStackTrace();
+          const sessionId = session.getSessionId();
           const logs = await session.getLogs();
           setLoading(false);
           setFullLogs(sessionOutput);
@@ -333,8 +333,8 @@ export default function VideoPlayer(props) {
           } else {
             setSuccess(false);
             setError(`Error memproses video ${returnCode.toString()}`);
-            setOutput(failStackTrace);
-            navigation.navigate("VideoLogsScreen", {text: failStackTrace + "\n\n" + sessionOutput});
+            setOutput(logs);
+            navigation.navigate("VideoLogsScreen", {text: sessionId + "\n\n" + logs + "\n\n" + sessionOutput});
           }
         })
         .catch((error) => {

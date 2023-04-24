@@ -1,7 +1,6 @@
 import React from "react";
 import { SafeAreaView, ScrollView, Text } from "react-native";
 import { colors, staticDimensions } from "../../styles/base";
-import { lorem } from "./loremipsum";
 
 const VideoLogs = (prop) => {
   return (
@@ -18,7 +17,7 @@ const VideoLogs = (prop) => {
             marginHorizontal: 10,
           }}
         >
-          {prop.route.params?.text ? prop.route.params?.text : lorem}
+          {prop.route.params?.text}
         </Text>
       </ScrollView>
     </SafeAreaView>
