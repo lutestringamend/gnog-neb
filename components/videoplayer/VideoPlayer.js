@@ -40,6 +40,7 @@ function VideoPlayer(props) {
     props.route?.params;
   let ratio = width / height;
   const video = useRef(null);
+  const waterRef = useRef(null);
   const navigation = useNavigation();
   const { watermarkLayout } = props;
   const videoDir = `${FileSystem.cacheDirectory}video/`;
@@ -156,14 +157,27 @@ function VideoPlayer(props) {
     if (watermarkLayout !== null) {
       //console.log("mediastate watermarkLayout", watermarkLayout);
       setWatermarkSize({
-        width: watermarkLayout?.width,
+        width:
+          Platform.OS === "web"
+            ? watermarkLayout?.width
+            : watermarkLayout?.width + 2,
         height: watermarkLayout?.height,
       });
     }
   }, [watermarkLayout]);
 
   useEffect(() => {
-    console.log("watermarkSize", watermarkSize);
+    
+    if (watermarkSize.width < width && watermarkSize.height < height) {
+      console.log("watermarkSize and capturing", watermarkSize);
+      waterRef.current
+        .capture()
+        .then((uri) => onManualCapture(uri))
+        .catch((e) => onManualCaptureFailure(e));
+    } else {
+      console.log("watermarkSize", watermarkSize);
+    }
+    setOutput((output) => `${output}\n${JSON.stringify(watermarkSize)}`);
   }, [watermarkSize]);
 
   function changeVideoOrientation(isLandscape) {
@@ -197,30 +211,31 @@ function VideoPlayer(props) {
     navigation.navigate("MediaKitFiles", { activeTab: WATERMARK_VIDEO });
   }
 
-  const onCapture = useCallback((uri) => {
-    if (Platform.OS === "android" && userId === 8054) {
-      ToastAndroid.show(`onCapture ${JSON.stringify(watermarkSize)}`, ToastAndroid.SHORT);
-    } else {
-      console.log("watermarkUri", uri, "watermarkSize", watermarkSize);
-    }
+  function onManualCapture(uri) {
+    console.log("watermarkUri", uri, "watermarkSize", watermarkSize);
     setWatermarkImage(uri);
     setWatermarkLoading(false);
+  }
+
+  const onCapture = useCallback((uri) => {
+    onManualCapture(uri);
   }, []);
 
-  const onCaptureFailure = useCallback((e) => {
+  function onManualCaptureFailure(e) {
     console.error(e);
     sentryLog(e);
-    if (Platform.OS === "android") {
-      ToastAndroid(e.toString(), ToastAndroid.LONG);
-    } else {
-      setError(
-        (error) =>
-          `${
-            error === null ? "" : `${error}\nonCaptureFailure `
-          }${e.toString()}`
-      );
-    }
+    setError(
+      (error) =>
+        `${
+          error === null ? "" : `${error}\nonCaptureFailure `
+        }`
+    );
+    setOutput((output) => `${output}\n${e.toString()}`);
     setWatermarkLoading(false);
+  }
+
+  const onCaptureFailure = useCallback((e) => {
+    onManualCaptureFailure(e);
   }, []);
 
   const getResultPath = async () => {
@@ -327,7 +342,7 @@ function VideoPlayer(props) {
       watermarkImage,
       resultVideo,
       "top-left",
-      0
+      Math.round(ratio)
     );
     if (Platform.OS === "android") {
       ToastAndroid.show(ffmpegCommand, ToastAndroid.LONG);
@@ -434,21 +449,24 @@ function VideoPlayer(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {Platform.OS === "ios" ? null : (
+      {Platform.OS === "web" ? null : (
         <ViewShot
+          ref={waterRef}
           options={{
-            fileName: "watermarktext",
+            fileName: "daclen_wtext",
             format: "jpg",
             quality: 1,
-            handleGLSurfaceViewOnAndroid: true,
             width: watermarkSize.width / 2,
             height: watermarkSize.height / 2,
           }}
           style={[
             styles.containerViewShot,
-            { width: watermarkSize.width, height: watermarkSize.height },
+            {
+              width: watermarkSize.width,
+              height: watermarkSize.height,
+            },
           ]}
-          captureMode="continuous"
+          captureMode="mount"
           onCapture={onCapture}
           onCaptureFailure={onCaptureFailure}
         >
@@ -578,7 +596,7 @@ function VideoPlayer(props) {
                 paddingHorizontal={3}
                 paddingVertical={3}
                 borderRadius={4}
-                style={{ zIndex: 3, opacity: 30 }}
+                style={{ zIndex: 3 }}
                 getLayout={false}
               />
             )}
@@ -594,7 +612,7 @@ function VideoPlayer(props) {
                   height: videoSize.videoHeight,
                   zIndex: 3,
                   backgroundColor: colors.daclen_light,
-                  opacity: !status.isLoaded ? 80 : 0,
+                  opacity: !status.isLoaded ? 0.8 : 0,
                 },
               ]}
               resizeMode="cover"
@@ -732,7 +750,7 @@ function VideoPlayer(props) {
             )}
           </TouchableOpacity>
         </View>
-        {userId === 8054 ? <Text style={styles.textUid}>{output}</Text> : null}
+        <Text style={styles.textUid}>{output}</Text>
       </ScrollView>
     </SafeAreaView>
   );
