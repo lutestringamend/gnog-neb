@@ -62,7 +62,7 @@ export function setFFMPEGCommand(
       break;
   }
 
-  return `-i ${sourceVideo} -i ${watermarkFile} -filter_complex ${filterComplex}  -c:a mpeg4 ${resultVideo}`;
+  return `-y -i ${sourceVideo} -i ${watermarkFile} -filter_complex "${filterComplex}" -c:a copy ${resultVideo}`;
 }
 
 export function clearMediaData() {

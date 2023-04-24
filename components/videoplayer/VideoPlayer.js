@@ -182,6 +182,7 @@ export default function VideoPlayer(props) {
 
   const onCaptureFailure = useCallback((e) => {
     console.error(e);
+    sentryLog(e);
     if (Platform.OS === "android") {
       ToastAndroid(e.toString(), ToastAndroid.LONG);
     } else {
@@ -321,7 +322,7 @@ export default function VideoPlayer(props) {
           const sessionId = session.getSessionId();
           const logs = await session.getLogs();
           setLoading(false);
-          setFullLogs(sessionOutput);
+          setFullLogs(sessionOutput.toString());
           if (ReturnCode.isSuccess(returnCode)) {
             setSuccess(true);
             setError(`Video berhasil disimpan di ${resultVideo}`);
@@ -333,8 +334,8 @@ export default function VideoPlayer(props) {
           } else {
             setSuccess(false);
             setError(`Error memproses video ${returnCode.toString()}`);
-            setOutput(logs);
-            navigation.navigate("VideoLogsScreen", {text: sessionId + "\n\n" + logs + "\n\n" + sessionOutput});
+            setOutput(logs.toString());
+            navigation.navigate("VideoLogsScreen", {text: sessionId.toString() + "\n\n" + logs.toString() + "\n\n" + sessionOutput});
           }
         })
         .catch((error) => {
@@ -406,14 +407,14 @@ export default function VideoPlayer(props) {
             format: "jpg",
             quality: 1,
           }}
-          style={[styles.containerViewShot, { width, height }]}
+          style={styles.containerViewShot}
           captureMode="mount"
           onCapture={onCapture}
           onCaptureFailure={onCaptureFailure}
         >
           <WatermarkModel
             watermarkData={watermarkData}
-            ratio={ratio}
+            ratio={ratio / 2}
             fontSize={Math.round(16 / ratio)}
             backgroundColor={colors.daclen_black}
             color={colors.daclen_orange}
@@ -703,19 +704,16 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    position: "absolute",
+    top: 0,
+    start: 0,
+    zIndex: 1,
     width: "100%",
     height: "100%",
     backgroundColor: "white",
   },
   containerViewShot: {
-    flex: 1,
     backgroundColor: "transparent",
-    overflow: "visible",
-    position: "absolute",
-    top: 0,
-    start: 0,
-    zIndex: -1,
-    opacity: 100,
   },
   containerPanelPortrait: {
     width: "100%",
