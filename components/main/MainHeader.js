@@ -8,7 +8,7 @@ import {
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, dimensions } from "../../styles/base";
+import { colors } from "../../styles/base";
 
 export default function MainHeader(props) {
   const navigation = useNavigation();
@@ -23,7 +23,7 @@ export default function MainHeader(props) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => backArrow()}>
+      <TouchableOpacity onPress={() => backArrow()} disabled={props?.disabled}>
         <MaterialCommunityIcons
           name={props?.icon}
           size={24}

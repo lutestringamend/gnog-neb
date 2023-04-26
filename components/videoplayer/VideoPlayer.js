@@ -163,21 +163,31 @@ function VideoPlayer(props) {
             : watermarkLayout?.width + 2,
         height: watermarkLayout?.height,
       });
+      setOutput((output) => `${output}\nwatermarkLayout ${JSON.stringify(watermarkLayout)}`);
     }
   }, [watermarkLayout]);
 
   useEffect(() => {
     if (watermarkSize.width < width && watermarkSize.height < height) {
       console.log("watermarkSize and capturing", watermarkSize);
+      setOutput((output) => `${output}\nwatermarkSize and capturing ${JSON.stringify(watermarkSize)}`);
       waterRef.current
         .capture()
         .then((uri) => onManualCapture(uri))
         .catch((e) => onManualCaptureFailure(e));
     } else {
       console.log("watermarkSize", watermarkSize);
+      setOutput((output) => `${output}\nwatermarkSize ${JSON.stringify(watermarkSize)}`);
     }
-    setOutput((output) => `${output}\n${JSON.stringify(watermarkSize)}`);
+    
   }, [watermarkSize]);
+
+  useEffect(() => {
+    setOutput((output) => `${output}\nwatermarkImage ${watermarkImage}`);
+    if (watermarkImage !== null) {
+      setWatermarkLoading(false);
+    }
+  }, [watermarkImage]);
 
   function openFullLogs() {
     navigation.navigate("VideoLogsScreen", {
@@ -212,9 +222,9 @@ function VideoPlayer(props) {
   }
 
   function onManualCapture(uri) {
-    console.log("watermarkUri", uri, "watermarkSize", watermarkSize);
+    //console.log("watermarkUri", uri, "watermarkSize", watermarkSize);
+    setOutput((output) => `${output}\new capture Uri ${uri}`);
     setWatermarkImage(uri);
-    setWatermarkLoading(false);
   }
 
   const onCapture = useCallback((uri) => {
@@ -347,7 +357,7 @@ function VideoPlayer(props) {
     } else {
       console.log("ffmpeg", ffmpegCommand);
     }
-    if (sourceVideo === null || watermarkImage === null) return;
+    if (sourceVideo === null) return;
 
     setLoading(true);
     setSuccess(true);
@@ -489,6 +499,7 @@ function VideoPlayer(props) {
           icon="arrow-left"
           title={title}
           onBackPress={() => onBackPress()}
+          disabled={loading}
         />
       ) : null}
 
@@ -537,6 +548,7 @@ function VideoPlayer(props) {
             <TouchableOpacity
               style={styles.buttonClose}
               onPress={() => onBackPress()}
+              disabled={loading}
             >
               <MaterialCommunityIcons name="close" size={16} color="white" />
             </TouchableOpacity>
@@ -657,7 +669,7 @@ function VideoPlayer(props) {
               videoSize.isLandscape ? styles.buttonCircle : styles.button,
               {
                 backgroundColor:
-                  loading || videoLoading
+                  videoLoading
                     ? colors.daclen_gray
                     : colors.daclen_orange,
               },
@@ -667,7 +679,7 @@ function VideoPlayer(props) {
             }
             disabled={loading || videoLoading}
           >
-            {loading || videoLoading ? (
+            {loading ? (
               <ActivityIndicator
                 size="small"
                 color="white"
