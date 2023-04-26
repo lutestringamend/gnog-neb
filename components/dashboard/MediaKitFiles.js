@@ -136,15 +136,12 @@ function MediaKitFiles(props) {
               icon={watermarkphotoicon}
               onPress={() => setActiveTab(WATERMARK_PHOTO)}
             />
-
-            {currentUser?.id === 8054 ? (
-              <HistoryTabItem
-                activeTab={activeTab}
-                name={WATERMARK_VIDEO}
-                icon={watermarkvideoicon}
-                onPress={() => setActiveTab(WATERMARK_VIDEO)}
-              />
-            ) : null}
+            <HistoryTabItem
+              activeTab={activeTab}
+              name={WATERMARK_VIDEO}
+              icon={watermarkvideoicon}
+              onPress={() => setActiveTab(WATERMARK_VIDEO)}
+            />
           </View>
           {activeTab === WATERMARK_VIDEO ? (
             <WatermarkVideos

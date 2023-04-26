@@ -21,7 +21,7 @@ import { FFmpegKit, ReturnCode } from "ffmpeg-kit-react-native";
 import ViewShot from "react-native-view-shot";
 import { isAvailableAsync, shareAsync } from "expo-sharing";
 
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors } from "../../styles/base";
 import { getFileName, setFFMPEGCommand } from "../media";
 import MainHeader from "../main/MainHeader";
 import { useNavigation } from "@react-navigation/native";
@@ -76,7 +76,7 @@ function VideoPlayer(props) {
   const [status, setStatus] = useState({ isLoaded: false });
   const [watermarkImage, setWatermarkImage] = useState(null);
   const [resultUri, setResultUri] = useState(null);
-  const [output, setOutput] = useState(tempffmpegdesc);
+  const [output, setOutput] = useState("Video processing log");
   const [fullLogs, setFullLogs] = useState(null);
   const [sharingAvailability, setSharingAvailability] = useState(false);
 
@@ -167,7 +167,6 @@ function VideoPlayer(props) {
   }, [watermarkLayout]);
 
   useEffect(() => {
-    
     if (watermarkSize.width < width && watermarkSize.height < height) {
       console.log("watermarkSize and capturing", watermarkSize);
       waterRef.current
@@ -180,13 +179,14 @@ function VideoPlayer(props) {
     setOutput((output) => `${output}\n${JSON.stringify(watermarkSize)}`);
   }, [watermarkSize]);
 
-  function changeVideoOrientation(isLandscape) {
-    if (output !== null || error !== null) {
-      navigation.navigate("VideoLogsScreen", {
-        text: error + "\n\n" + output + "\n\n" + fullLogs,
-      });
-      return;
-    } else if (isLandscape === undefined || isLandscape === null) {
+  function openFullLogs() {
+    navigation.navigate("VideoLogsScreen", {
+      text: error + "\n\n" + output + "\n\n" + fullLogs,
+    });
+  }
+
+  /*function changeVideoOrientation(isLandscape) {
+    if (isLandscape === undefined || isLandscape === null) {
       return;
     } else if (!videoLoading) {
       setVideoLoading(true);
@@ -205,7 +205,7 @@ function VideoPlayer(props) {
         videoHeight: Dimensions.get("window").width / ratio,
       });
     }
-  }
+  }*/
 
   function onBackPress() {
     navigation.navigate("MediaKitFiles", { activeTab: WATERMARK_VIDEO });
@@ -225,10 +225,7 @@ function VideoPlayer(props) {
     console.error(e);
     sentryLog(e);
     setError(
-      (error) =>
-        `${
-          error === null ? "" : `${error}\nonCaptureFailure `
-        }`
+      (error) => `${error === null ? "" : `${error}\nonCaptureFailure `}`
     );
     setOutput((output) => `${output}\n${e.toString()}`);
     setWatermarkLoading(false);
@@ -327,7 +324,8 @@ function VideoPlayer(props) {
   };*/
 
   const processVideo = async () => {
-    if (uri === undefined || uri === null || loading) return;
+    if (uri === undefined || uri === null || watermarkImage === null || loading)
+      return;
     if (resultUri !== null) {
       shareFileAsync(resultUri, sharingOptionsMP4);
       return;
@@ -353,7 +351,7 @@ function VideoPlayer(props) {
 
     setLoading(true);
     setSuccess(true);
-    setError("Video sedang diproses...");
+    setError("Memulai download video dengan watermark...");
 
     try {
       FFmpegKit.execute(ffmpegCommand)
@@ -424,7 +422,7 @@ function VideoPlayer(props) {
   const startDownload = async () => {
     if (!loading) {
       setSuccess(true);
-      setError("Download file video...");
+      setError("Memulai download video tanpa watermark...");
       setLoading(true);
       try {
         const fileName = getFileName(uri);
@@ -440,7 +438,7 @@ function VideoPlayer(props) {
       } catch (e) {
         console.error(e);
         setSuccess(false);
-        setError("downloadAsync catch\n" + e?.message);
+        setError("downloadAsync catch\n" + e.toString());
         setLoading(false);
         return null;
       }
@@ -657,26 +655,19 @@ function VideoPlayer(props) {
           <TouchableOpacity
             style={[
               videoSize.isLandscape ? styles.buttonCircle : styles.button,
-              { backgroundColor: colors.daclen_graydark },
+              {
+                backgroundColor:
+                  loading || videoLoading
+                    ? colors.daclen_gray
+                    : colors.daclen_orange,
+              },
             ]}
-            onPress={() => changeVideoOrientation(!videoSize.isLandscape)}
-            disabled={videoLoading}
-          >
-            <MaterialCommunityIcons name="view-day" size={18} color="white" />
-            {videoSize.isLandscape ? null : (
-              <Text style={styles.textButton}>Rotate</Text>
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              videoSize.isLandscape ? styles.buttonCircle : styles.button,
-              { backgroundColor: colors.daclen_orange },
-            ]}
-            onPress={() => startDownload()}
+            onPress={() =>
+              watermarkImage === null ? startDownload() : processVideo()
+            }
             disabled={loading || videoLoading}
           >
-            {loading ? (
+            {loading || videoLoading ? (
               <ActivityIndicator
                 size="small"
                 color="white"
@@ -685,14 +676,42 @@ function VideoPlayer(props) {
                 }}
               />
             ) : (
-              <MaterialCommunityIcons name="download" size={18} color="white" />
+              <MaterialCommunityIcons
+                name={watermarkImage === null ? "file-download" : "download"}
+                size={18}
+                color="white"
+              />
             )}
             {videoSize.isLandscape ? null : (
-              <Text style={styles.textButton}>Raw</Text>
+              <Text style={styles.textButton}>Download</Text>
             )}
           </TouchableOpacity>
+          {fullLogs === null ? null : (
+          <TouchableOpacity
+            style={[
+              videoSize.isLandscape ? styles.buttonCircle : styles.button,
+              { backgroundColor: colors.daclen_graydark },
+            ]}
+            onPress={() => openFullLogs()}
+            disabled={videoLoading}
+          >
+            <MaterialCommunityIcons name="text-box" size={18} color="white" />
+            {videoSize.isLandscape ? null : (
+              <Text style={styles.textButton}>Full Logs</Text>
+            )}
+          </TouchableOpacity>
+        )}
+        </View>
+        <Text style={styles.textUid}>{output}</Text>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
 
-          {sharingAvailability && watermarkImage !== null ? (
+/*
+
+
+                    {sharingAvailability && watermarkImage !== null ? (
             <TouchableOpacity
               style={[
                 videoSize.isLandscape ? styles.buttonCircle : styles.button,
@@ -749,12 +768,7 @@ function VideoPlayer(props) {
               <Text style={styles.textButton}>Full</Text>
             )}
           </TouchableOpacity>
-        </View>
-        <Text style={styles.textUid}>{output}</Text>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
+*/
 
 const styles = StyleSheet.create({
   container: {
@@ -815,9 +829,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 4,
+    paddingVertical: 10,
     borderRadius: 4,
-    marginHorizontal: 2,
+    marginHorizontal: 10,
     backgroundColor: colors.daclen_blue,
   },
   buttonCircle: {
@@ -846,7 +860,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   textButton: {
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: "bold",
     color: "white",
     marginStart: 6,
