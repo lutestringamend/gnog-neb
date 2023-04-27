@@ -100,11 +100,18 @@ function VideoPlayer(props) {
   }, [uri]);
 
   useEffect(() => {
-    setOutput(
-      (output) =>
-        `${output}\nwatermarkVideos ${JSON.stringify(watermarkVideos)}`
-    );
-    checkRedux();
+    if (watermarkVideos?.length === undefined || watermarkVideos?.length < 1) {
+      setOutput(
+        (output) =>
+          `${output}\nredux array null}`
+      );
+    } else {
+      setOutput(
+        (output) =>
+          `${output}\nredux array ${JSON.stringify(watermarkVideos)}`
+      );
+      checkRedux();
+    }
   }, [watermarkVideos]);
 
   /*useEffect(() => {
@@ -212,7 +219,7 @@ function VideoPlayer(props) {
   useEffect(() => {
     if (rawUri !== null) {
       setOutput((output) => `${output}\nrawUri ${rawUri}`);
-      props.updateWatermarkVideo(uri, rawUri, resultUri);
+      //props.updateWatermarkVideo(uri, rawUri, resultUri);
     }
   }, [rawUri]);
 
@@ -221,16 +228,18 @@ function VideoPlayer(props) {
   }, [status.isLoaded]);
 
   function checkRedux() {
-    if (watermarkVideos?.length !== undefined) {
+    if (watermarkVideos?.length === undefined || watermarkVideos?.length < 1) {
+      //props.updateWatermarkVideo(uri, rawUri, resultUri);
+    } else {
       const check = watermarkVideos.find(({ id }) => id === uri);
       setOutput(
         (output) => `${output}\nwatermarkVideos check ${JSON.stringify(check)}`
       );
       if (check === undefined || check === null) {
-        props.updateWatermarkVideo(uri, rawUri, resultUri);
+        //props.updateWatermarkVideo(uri, rawUri, resultUri);
       } else {
         if (check?.uri === undefined || check?.uri === null) {
-          props.updateWatermarkVideo(uri, rawUri, null);
+          //props.updateWatermarkVideo(uri, rawUri, null);
         } else {
           setResultUri(check?.uri);
         }
@@ -401,11 +410,12 @@ function VideoPlayer(props) {
       Platform.OS === "web" ? "d:/test.mp4" : await getResultPath();
 
 
-    let sourceVideo = rawUri;
+    /*let sourceVideo = rawUri;
     if (rawUri === undefined || rawUri === null) {
       sourceVideo = await startDownload();
       setRawUri(sourceVideo);
-    }
+    }*/
+    const sourceVideo = await startDownload();
 
     //const watermarkFile = await saveWatermarkImage();
     const ffmpegCommand = setFFMPEGCommand(
@@ -423,7 +433,6 @@ function VideoPlayer(props) {
     setOutput(
       (output) => `${output}\nprocessVideo with sourceVideo ${sourceVideo} and result will be in ${resultVideo}`
     );
-    if (sourceVideo === null) return;
 
     setLoading(true);
     setSuccess(true);
@@ -690,7 +699,7 @@ function VideoPlayer(props) {
                   height: videoSize.videoHeight,
                   zIndex: 3,
                   backgroundColor: colors.daclen_light,
-                  opacity: !status.isLoaded ? 0.9 : 0,
+                  opacity: status.isLoaded ? 0 : 0.9,
                 },
               ]}
               resizeMode="cover"
@@ -747,7 +756,6 @@ function VideoPlayer(props) {
                   videoLoading ||
                   !status.isLoaded ||
                   watermarkLoading ||
-                  watermarkImage === null ||
                   (!sharingAvailability && resultUri !== null)
                     ? colors.daclen_gray
                     : colors.daclen_orange,
@@ -759,7 +767,6 @@ function VideoPlayer(props) {
               videoLoading ||
               !status.isLoaded ||
               watermarkLoading ||
-              watermarkImage === null ||
               (!sharingAvailability && resultUri !== null)
             }
           >
@@ -808,9 +815,9 @@ function VideoPlayer(props) {
             </TouchableOpacity>
           )}
         </View>
-        {!videoSize.isLandscape ? (
+        {videoSize.isLandscape ? null : (
           <Text style={styles.textUid}>{output}</Text>
-        ) : null}
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -984,9 +991,10 @@ const styles = StyleSheet.create({
     zIndex: 6,
   },
   textUid: {
-    width: "90%",
     fontSize: 10,
+    width: "95%",
     textAlign: "center",
+    marginHorizontal: 10,
     color: colors.daclen_gray,
   },
 });
