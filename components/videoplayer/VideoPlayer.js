@@ -346,19 +346,21 @@ function VideoPlayer(props) {
           "video/mp4"
         )
           .then(async (safUri) => {
-            setError(safUri);
+            setOutput(
+              (output) => `${output}\nsafUri ${safUri}`
+            );
             try {
               await FileSystem.writeAsStringAsync(safUri, base64, {
                 encoding: FileSystem.EncodingType.Base64,
               });
               const resultUri = `${permissions.directoryUri}/${fileName}`;
-              setError(`Video watermark disimpan di ${resultUri}`);
+              setError((error) => `${error}\nVideo disimpan di ${resultUri}`);
               setSuccess(true);
               setResultUri(resultUri);
               shareFileAsync(resultUri, sharingOptionsMP4);
             } catch (e) {
               console.error(e);
-              setError("Gagal menyimpan video watermark");
+              setError((error) => `${error}\nGagal menyimpan video watermark`);
               setOutput(
                 (output) =>
                   output + "\nwriteAsStringAsync catch\n" + e.toString()
@@ -374,14 +376,12 @@ function VideoPlayer(props) {
             );
             setSuccess(false);
             if (e?.code === "ERR_FILESYSTEM_CANNOT_CREATE_FILE") {
-              setError(
-                "Tidak bisa menyimpan video di folder ini. Mohon pilih folder lain."
-              );
+              setError((error) => `${error}\nTidak bisa menyimpan video di folder ini. Mohon pilih folder lain.`);
               setOutput(
                 (output) => output + "\nERR_FILESYSTEM_CANNOT_CREATE_FILE"
               );
             } else {
-              setError("Gagal menyimpan video watermark");
+              setError((error) => `${error}\nGagal menyimpan video watermark`);
             }
             if (Platform.OS === "android") {
               ToastAndroid.show(e.toString(), ToastAndroid.LONG);
@@ -390,7 +390,7 @@ function VideoPlayer(props) {
           });
       } else {
         setSuccess(false);
-        setError("Anda tidak memberikan izin untuk mengakses penyimpanan");
+        setError((error) => `${error}\nAnda tidak memberikan izin untuk mengakses penyimpanan`);
         setOutput(
           (output) =>
             output +
