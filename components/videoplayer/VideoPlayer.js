@@ -14,7 +14,8 @@ import {
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
-//import { bindActionCreators } from "redux";
+import { bindActionCreators } from "redux";
+
 import * as FileSystem from "expo-file-system";
 import { Video, ResizeMode } from "expo-av";
 import { FFmpegKit, ReturnCode } from "ffmpeg-kit-react-native";
@@ -22,17 +23,13 @@ import ViewShot from "react-native-view-shot";
 import { isAvailableAsync, shareAsync } from "expo-sharing";
 
 import { colors } from "../../styles/base";
-import { getFileName, setFFMPEGCommand } from "../media";
+import { getFileName, setFFMPEGCommand, updateWatermarkVideo } from "../media";
 import MainHeader from "../main/MainHeader";
 import { useNavigation } from "@react-navigation/native";
 import { WATERMARK_VIDEO } from "../dashboard/constants";
 //import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 import WatermarkModel from "../media/WatermarkModel";
-import {
-  sharingOptionsJPEG,
-  sharingOptionsMP4,
-  tempffmpegdesc,
-} from "../media/constants";
+import { sharingOptionsMP4 } from "../media/constants";
 import { sentryLog } from "../../sentry";
 
 function VideoPlayer(props) {
@@ -42,7 +39,7 @@ function VideoPlayer(props) {
   const video = useRef(null);
   const waterRef = useRef(null);
   const navigation = useNavigation();
-  const { watermarkLayout } = props;
+  const { watermarkLayout, watermarkVideos } = props;
   const videoDir = `${FileSystem.cacheDirectory}video/`;
 
   /*let screenData = useScreenDimensions();
@@ -75,6 +72,7 @@ function VideoPlayer(props) {
   const [watermarkLoading, setWatermarkLoading] = useState(true);
   const [status, setStatus] = useState({ isLoaded: false });
   const [watermarkImage, setWatermarkImage] = useState(null);
+  const [rawUri, setRawUri] = useState(null);
   const [resultUri, setResultUri] = useState(null);
   const [output, setOutput] = useState("Video processing log");
   const [fullLogs, setFullLogs] = useState(null);
@@ -100,6 +98,14 @@ function VideoPlayer(props) {
       checkSharing();
     }
   }, [uri]);
+
+  useEffect(() => {
+    setOutput(
+      (output) =>
+        `${output}\nwatermarkVideos ${JSON.stringify(watermarkVideos)}`
+    );
+    checkRedux();
+  }, [watermarkVideos]);
 
   /*useEffect(() => {
       if (
@@ -149,7 +155,9 @@ function VideoPlayer(props) {
 
   useEffect(() => {
     if (resultUri !== null) {
-      shareFileAsync(resultUri, sharingOptionsMP4);
+      //shareFileAsync(resultUri, sharingOptionsMP4);
+      checkRedux();
+      saveWatermarkVideo();
     }
   }, [resultUri]);
 
@@ -163,23 +171,35 @@ function VideoPlayer(props) {
             : watermarkLayout?.width + 2,
         height: watermarkLayout?.height,
       });
-      setOutput((output) => `${output}\nwatermarkLayout ${JSON.stringify(watermarkLayout)}`);
+      setOutput(
+        (output) =>
+          `${output}\nwatermarkLayout ${JSON.stringify(watermarkLayout)}`
+      );
     }
   }, [watermarkLayout]);
 
   useEffect(() => {
     if (watermarkSize.width < width && watermarkSize.height < height) {
       console.log("watermarkSize and capturing", watermarkSize);
-      setOutput((output) => `${output}\nwatermarkSize and capturing ${JSON.stringify(watermarkSize)}`);
-      waterRef.current
+      setOutput(
+        (output) =>
+          `${output}\nwatermarkSize and capturing ${JSON.stringify(
+            watermarkSize
+          )}`
+      );
+      if (!watermarkLoading) {
+        setWatermarkLoading(true);
+        waterRef.current
         .capture()
         .then((uri) => onManualCapture(uri))
         .catch((e) => onManualCaptureFailure(e));
+      }  
     } else {
       console.log("watermarkSize", watermarkSize);
-      setOutput((output) => `${output}\nwatermarkSize ${JSON.stringify(watermarkSize)}`);
+      setOutput(
+        (output) => `${output}\nwatermarkSize ${JSON.stringify(watermarkSize)}`
+      );
     }
-    
   }, [watermarkSize]);
 
   useEffect(() => {
@@ -188,6 +208,36 @@ function VideoPlayer(props) {
       setWatermarkLoading(false);
     }
   }, [watermarkImage]);
+
+  useEffect(() => {
+    if (rawUri !== null) {
+      setOutput((output) => `${output}\nrawUri ${rawUri}`);
+    }
+  }, [rawUri]);
+
+  useEffect(() => {
+    setOutput((output) => `${output}\nvideo isLoaded ${JSON.stringify(status.isLoaded)}`);
+  }, [status.isLoaded]);
+
+  function checkRedux() {
+    if (watermarkVideos?.length !== undefined) {
+      const check = watermarkVideos.find(({ id }) => id === uri);
+      setOutput(
+        (output) => `${output}\nwatermarkVideos check ${JSON.stringify(check)}`
+      );
+      if (check === undefined || check === null) {
+        if (resultUri !== null) {
+          props.updateWatermarkVideo(uri, resultUri);
+        }
+      } else {
+        if (check?.uri === undefined || check?.uri === null) {
+          props.updateWatermarkVideo(uri, null);
+        } else {
+          setResultUri(check?.uri);
+        }
+      }
+    }
+  }
 
   function openFullLogs() {
     navigation.navigate("VideoLogsScreen", {
@@ -223,7 +273,7 @@ function VideoPlayer(props) {
 
   function onManualCapture(uri) {
     //console.log("watermarkUri", uri, "watermarkSize", watermarkSize);
-    setOutput((output) => `${output}\new capture Uri ${uri}`);
+    setOutput((output) => `${output}\nnew capture Uri`);
     setWatermarkImage(uri);
   }
 
@@ -233,11 +283,13 @@ function VideoPlayer(props) {
 
   function onManualCaptureFailure(e) {
     console.error(e);
-    sentryLog(e);
+    if (Platform.OS !== "web") {
+      sentryLog(e);
+    }
     setError(
-      (error) => `${error === null ? "" : `${error}\nonCaptureFailure `}`
+      (error) => `${error === null ? "" : `${error}\nGagal menciptakan watermark`}`
     );
-    setOutput((output) => `${output}\n${e.toString()}`);
+    setOutput((output) => `${output}\nonCaptureFailure ${e.toString()}`);
     setWatermarkLoading(false);
   }
 
@@ -268,19 +320,19 @@ function VideoPlayer(props) {
     return `${videoDir}test.mp4`;
   };
 
-  /*const saveWatermarkImage = async () => {
+  const saveWatermarkVideo = async () => {
     if (Platform.OS === "android") {
       const permissions =
         await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
       if (permissions.granted) {
-        const base64 = await FileSystem.readAsStringAsync(watermarkImage, {
+        const base64 = await FileSystem.readAsStringAsync(uri, {
           encoding: FileSystem.EncodingType.Base64,
         });
-        const fileName = "daclen_wt.jpg";
+        const fileName = getFileName(uri);
         await FileSystem.StorageAccessFramework.createFileAsync(
           permissions.directoryUri,
           fileName,
-          mimeType ? mimeType : "image/jpeg"
+          "video/mp4"
         )
           .then(async (safUri) => {
             setError(safUri);
@@ -289,61 +341,72 @@ function VideoPlayer(props) {
                 encoding: FileSystem.EncodingType.Base64,
               });
               const resultUri = `${permissions.directoryUri}/${fileName}`;
-              setError(`Foto watermark disimpan di ${resultUri}`);
+              setError(`Video watermark disimpan di ${resultUri}`);
               setSuccess(true);
-              return resultUri;
+              setResultUri(resultUri);
             } catch (e) {
               console.error(e);
-              setError(
-                (error) => error + "\nwriteAsStringAsync catch\n" + e.toString()
+              setError("Gagal menyimpan video watermark");
+              setOutput(
+                (output) =>
+                  output + "\nwriteAsStringAsync catch\n" + e.toString()
               );
               setSuccess(false);
-              return null;
             }
           })
           .catch((e) => {
             console.error(e);
+            setOutput(
+              (output) => output + "\ncreateFileAsync catch\n" + e.toString()
+            );
             setSuccess(false);
             if (e?.code === "ERR_FILESYSTEM_CANNOT_CREATE_FILE") {
               setError(
-                "Tidak bisa menyimpan foto di folder sistem. Mohon pilih folder lain."
+                "Tidak bisa menyimpan foto di folder ini. Mohon pilih folder lain."
+              );
+              setOutput(
+                (output) => output + "\nERR_FILESYSTEM_CANNOT_CREATE_FILE"
               );
             } else {
-              setError(
-                base64.substring(0, 64) +
-                  "\ncreateFileAsync catch\n" +
-                  e.toString()
-              );
+              setError("Gagal menyimpan video watermark");
             }
             if (Platform.OS === "android") {
-              ToastAndroid.show(
-                base64.substring(0, 64) +
-                  "\ncreateFileAsync catch\n" +
-                  e.toString(),
-                ToastAndroid.LONG
-              );
+              ToastAndroid.show(e.toString(), ToastAndroid.LONG);
             }
             return null;
           });
       } else {
         setSuccess(false);
         setError("Anda tidak memberikan izin untuk mengakses penyimpanan");
+        setOutput(
+          (output) =>
+            output +
+            "\nFileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync not granted"
+        );
       }
+    } else {
+      shareFileAsync(uri, sharingOptionsMP4);
     }
-    return null;
-  };*/
+  };
 
   const processVideo = async () => {
     if (uri === undefined || uri === null || watermarkImage === null || loading)
       return;
     if (resultUri !== null) {
-      shareFileAsync(resultUri, sharingOptionsMP4);
+      saveWatermarkVideo();
+      //shareFileAsync(resultUri, sharingOptionsMP4);
       return;
     }
 
     const resultVideo =
       Platform.OS === "web" ? "d:/test.mp4" : await getResultPath();
-    const sourceVideo = await startDownload();
+
+    const sourceVideo = rawUri;
+    if (rawUri === null) {
+      sourceVideo = await startDownload();
+      setRawUri(sourceVideo);
+    }
+
     //const watermarkFile = await saveWatermarkImage();
     const ffmpegCommand = setFFMPEGCommand(
       sourceVideo,
@@ -399,16 +462,20 @@ function VideoPlayer(props) {
           console.error(error);
           setLoading(false);
           setSuccess(false);
-          setError("ffmpeg process error");
-          setOutput(`${ffmpegCommand}\n${error.toString()}`);
+          setError("Gagal memproses video dengan watermark");
+          setOutput(
+            (output) => `${output}\n${ffmpegCommand}\nprocessing error`
+          );
+          setFullLogs(error.toString());
           sentryLog(error);
         });
     } catch (e) {
       console.error(e);
       setLoading(false);
       setSuccess(false);
-      setError("ffmpeg loading error");
-      setOutput(`${ffmpegCommand}\n${e.toString()}`);
+      setError("Gagal memproses video dengan watermark");
+      setOutput((output) => `${output}\n${ffmpegCommand}\nprocessing error`);
+      setFullLogs(e.toString());
       sentryLog(e);
     }
   };
@@ -419,13 +486,11 @@ function VideoPlayer(props) {
       return;
     }
     try {
-      if (Platform.OS === "android" && userId === 8054) {
-        ToastAndroid.show(uri, ToastAndroid.LONG);
-      }
       await shareAsync(uri, sharingOptions);
     } catch (e) {
       console.error(e);
-      setError(e.toString());
+      setError("Gagal share file");
+      setOutput((output) => `${output}\nshareAsync error${e.toString()}`);
     }
   };
 
@@ -448,7 +513,8 @@ function VideoPlayer(props) {
       } catch (e) {
         console.error(e);
         setSuccess(false);
-        setError("downloadAsync catch\n" + e.toString());
+        setError("Gagal download video");
+        setOutput((output) => `${output}\ndownloadAsync catch${e.toString()}`);
         setLoading(false);
         return null;
       }
@@ -457,42 +523,40 @@ function VideoPlayer(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {Platform.OS === "web" ? null : (
-        <ViewShot
-          ref={waterRef}
-          options={{
-            fileName: "daclen_wtext",
-            format: "jpg",
-            quality: 1,
-            width: watermarkSize.width / 2,
-            height: watermarkSize.height / 2,
-          }}
-          style={[
-            styles.containerViewShot,
-            {
-              width: watermarkSize.width,
-              height: watermarkSize.height,
-            },
-          ]}
-          captureMode="mount"
-          onCapture={onCapture}
-          onCaptureFailure={onCaptureFailure}
-        >
-          <WatermarkModel
-            watermarkData={watermarkData}
-            ratio={ratio}
-            fontSize={Math.round(16 / ratio)}
-            backgroundColor={colors.daclen_black}
-            color={colors.daclen_orange}
-            paddingHorizontal={3}
-            paddingVertical={3}
-            borderRadius={4}
-            text_x={0}
-            text_y={0}
-            getLayout={true}
-          />
-        </ViewShot>
-      )}
+      <ViewShot
+        ref={waterRef}
+        options={{
+          fileName: "daclen_wtext",
+          format: "jpg",
+          quality: 1,
+          width: watermarkSize.width / 2,
+          height: watermarkSize.height / 2,
+        }}
+        style={[
+          styles.containerViewShot,
+          {
+            width: watermarkSize.width,
+            height: watermarkSize.height,
+          },
+        ]}
+        captureMode="mount"
+        onCapture={onCapture}
+        onCaptureFailure={onCaptureFailure}
+      >
+        <WatermarkModel
+          watermarkData={watermarkData}
+          ratio={ratio}
+          fontSize={Math.round(16 / ratio)}
+          backgroundColor={colors.daclen_black}
+          color={colors.daclen_orange}
+          paddingHorizontal={3}
+          paddingVertical={3}
+          borderRadius={4}
+          text_x={0}
+          text_y={0}
+          getLayout={true}
+        />
+      </ViewShot>
 
       {!videoSize.isLandscape ? (
         <MainHeader
@@ -622,7 +686,7 @@ function VideoPlayer(props) {
                   height: videoSize.videoHeight,
                   zIndex: 3,
                   backgroundColor: colors.daclen_light,
-                  opacity: !status.isLoaded ? 0.8 : 0,
+                  opacity: !status.isLoaded ? 0.9 : 0,
                 },
               ]}
               resizeMode="cover"
@@ -644,13 +708,20 @@ function VideoPlayer(props) {
           }
         >
           <TouchableOpacity
-            style={videoSize.isLandscape ? styles.buttonCircle : styles.button}
+            style={[
+              videoSize.isLandscape ? styles.buttonCircle : styles.button,
+              {
+                backgroundColor: status.isLoaded
+                  ? colors.daclen_blue
+                  : colors.daclen_gray,
+              },
+            ]}
             onPress={() =>
               status.isPlaying
                 ? video.current.pauseAsync()
                 : video.current.playAsync()
             }
-            disabled={videoLoading}
+            disabled={videoLoading || !status.isLoaded}
           >
             <MaterialCommunityIcons
               name={status.isPlaying ? "pause" : "play"}
@@ -669,15 +740,24 @@ function VideoPlayer(props) {
               videoSize.isLandscape ? styles.buttonCircle : styles.button,
               {
                 backgroundColor:
-                  videoLoading
+                  videoLoading ||
+                  !status.isLoaded ||
+                  watermarkLoading ||
+                  watermarkImage === null ||
+                  (!sharingAvailability && resultUri !== null)
                     ? colors.daclen_gray
                     : colors.daclen_orange,
               },
             ]}
-            onPress={() =>
-              watermarkImage === null ? startDownload() : processVideo()
+            onPress={() => processVideo()}
+            disabled={
+              loading ||
+              videoLoading ||
+              !status.isLoaded ||
+              watermarkLoading ||
+              watermarkImage === null ||
+              (!sharingAvailability && resultUri !== null)
             }
-            disabled={loading || videoLoading}
           >
             {loading ? (
               <ActivityIndicator
@@ -689,32 +769,44 @@ function VideoPlayer(props) {
               />
             ) : (
               <MaterialCommunityIcons
-                name={watermarkImage === null ? "file-download" : "download"}
+                name={
+                  resultUri !== null && sharingAvailability
+                    ? "share"
+                    : watermarkLoading || videoLoading
+                    ? "file-download"
+                    : "download"
+                }
                 size={18}
                 color="white"
               />
             )}
             {videoSize.isLandscape ? null : (
-              <Text style={styles.textButton}>Download</Text>
+              <Text style={styles.textButton}>
+                {resultUri === null || !sharingAvailability
+                  ? "Download"
+                  : "Share"}
+              </Text>
             )}
           </TouchableOpacity>
           {fullLogs === null ? null : (
-          <TouchableOpacity
-            style={[
-              videoSize.isLandscape ? styles.buttonCircle : styles.button,
-              { backgroundColor: colors.daclen_graydark },
-            ]}
-            onPress={() => openFullLogs()}
-            disabled={videoLoading}
-          >
-            <MaterialCommunityIcons name="text-box" size={18} color="white" />
-            {videoSize.isLandscape ? null : (
-              <Text style={styles.textButton}>Full Logs</Text>
-            )}
-          </TouchableOpacity>
-        )}
+            <TouchableOpacity
+              style={[
+                videoSize.isLandscape ? styles.buttonCircle : styles.button,
+                { backgroundColor: colors.daclen_graydark },
+              ]}
+              onPress={() => openFullLogs()}
+              disabled={videoLoading}
+            >
+              <MaterialCommunityIcons name="text-box" size={18} color="white" />
+              {videoSize.isLandscape ? null : (
+                <Text style={styles.textButton}>Full Logs</Text>
+              )}
+            </TouchableOpacity>
+          )}
         </View>
-        <Text style={styles.textUid}>{output}</Text>
+        {!videoSize.isLandscape ? (
+          <Text style={styles.textUid}>{output}</Text>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -888,21 +980,19 @@ const styles = StyleSheet.create({
     zIndex: 6,
   },
   textUid: {
+    width: "90%",
     fontSize: 10,
     textAlign: "center",
     color: colors.daclen_gray,
-    marginHorizontal: 10,
   },
 });
 
 const mapStateToProps = (store) => ({
   watermarkLayout: store.mediaState.watermarkLayout,
+  watermarkVideos: store.mediaState.watermarkVideos,
 });
 
-/*const mapDispatchProps = (dispatch) =>
-  bindActionCreators(
-    { updateWatermarkLayout },
-    dispatch
-  );*/
+const mapDispatchProps = (dispatch) =>
+  bindActionCreators({ updateWatermarkVideo }, dispatch);
 
-export default connect(mapStateToProps, null)(VideoPlayer);
+export default connect(mapStateToProps, mapDispatchProps)(VideoPlayer);
