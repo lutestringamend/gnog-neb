@@ -212,6 +212,7 @@ function VideoPlayer(props) {
   useEffect(() => {
     if (rawUri !== null) {
       setOutput((output) => `${output}\nrawUri ${rawUri}`);
+      props.updateWatermarkVideo(uri, rawUri, resultUri);
     }
   }, [rawUri]);
 
@@ -226,12 +227,10 @@ function VideoPlayer(props) {
         (output) => `${output}\nwatermarkVideos check ${JSON.stringify(check)}`
       );
       if (check === undefined || check === null) {
-        if (resultUri !== null) {
-          props.updateWatermarkVideo(uri, resultUri);
-        }
+        props.updateWatermarkVideo(uri, rawUri, resultUri);
       } else {
         if (check?.uri === undefined || check?.uri === null) {
-          props.updateWatermarkVideo(uri, null);
+          props.updateWatermarkVideo(uri, rawUri, null);
         } else {
           setResultUri(check?.uri);
         }
@@ -401,8 +400,9 @@ function VideoPlayer(props) {
     const resultVideo =
       Platform.OS === "web" ? "d:/test.mp4" : await getResultPath();
 
-    const sourceVideo = rawUri;
-    if (rawUri === null) {
+
+    let sourceVideo = rawUri;
+    if (rawUri === undefined || rawUri === null) {
       sourceVideo = await startDownload();
       setRawUri(sourceVideo);
     }
@@ -420,11 +420,14 @@ function VideoPlayer(props) {
     } else {
       console.log("ffmpeg", ffmpegCommand);
     }
+    setOutput(
+      (output) => `${output}\nprocessVideo with sourceVideo ${sourceVideo} and result will be in ${resultVideo}`
+    );
     if (sourceVideo === null) return;
 
     setLoading(true);
     setSuccess(true);
-    setError("Memulai download video dengan watermark...");
+    setError("Memproses video dengan watermark...");
 
     try {
       FFmpegKit.execute(ffmpegCommand)
@@ -497,7 +500,7 @@ function VideoPlayer(props) {
   const startDownload = async () => {
     if (!loading) {
       setSuccess(true);
-      setError("Memulai download video tanpa watermark...");
+      setError("Memulai download video...");
       setLoading(true);
       try {
         const fileName = getFileName(uri);
@@ -507,7 +510,8 @@ function VideoPlayer(props) {
         );
         console.log(result);
         setSuccess(true);
-        setError(`Berhasil didownload ke ${result.uri}`);
+        setOutput((output) => `${output}\ndownloadAsync successful to ${result.uri}`);
+        setError("Video sumber berhasil didownload");
         setLoading(false);
         return result.uri;
       } catch (e) {

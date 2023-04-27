@@ -24,7 +24,7 @@ export const media = (state = initialState, action) => {
       return {
         ...state,
         photoDownload: action.data,
-    };
+      };
     case MEDIA_WATERMARK_LAYOUT_STATE_CHANGE:
       return {
         ...state,
@@ -33,9 +33,25 @@ export const media = (state = initialState, action) => {
     case MEDIA_WATERMARK_VIDEOS_STATE_CHANGE:
       return {
         ...state,
-        watermarkVideos: state.watermarkVideos.map((item) =>
-            item.id === action.id ? { id: action.id, uri: action.data } : item
-          ),
+        watermarkVideos:
+          state.watermarkVideos?.length === undefined ||
+          state.watermarkVideos?.length < 1
+            ? [action.data]
+            : state.watermarkVideos.map((item) =>
+                item.id === action.id
+                  ? {
+                      id: action.id,
+                      rawUri:
+                        action.rawUri === null && item.rawUri !== null
+                          ? item.rawUri
+                          : action.rawUri,
+                      uri:
+                        action.uri === null && item.uri !== null
+                          ? item.uri
+                          : action.uri,
+                    }
+                  : item
+              ),
       };
     case MEDIA_CLEAR_DATA:
       return initialState;

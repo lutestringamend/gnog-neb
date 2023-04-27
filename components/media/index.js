@@ -74,10 +74,11 @@ export function clearMediaData() {
   };
 }
 
-export function updateWatermarkVideo(id, data) {
+export function updateWatermarkVideo(id, rawUri, uri) {
   return (dispatch) => {
-    console.log("updateWatermarkVideo", id, data);
-    dispatch({ type: MEDIA_WATERMARK_VIDEOS_STATE_CHANGE, id, data });
+    const data = { id, rawUri, uri };
+    console.log("updateWatermarkVideo", data);
+    dispatch({ type: MEDIA_WATERMARK_VIDEOS_STATE_CHANGE, id, rawUri, uri });
   };
 }
 
