@@ -22,7 +22,7 @@ import { FFmpegKit, ReturnCode } from "ffmpeg-kit-react-native";
 import ViewShot from "react-native-view-shot";
 import { isAvailableAsync, shareAsync } from "expo-sharing";
 
-import { colors } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 import { getFileName, setFFMPEGCommand, updateWatermarkVideo } from "../media";
 import MainHeader from "../main/MainHeader";
 import { useNavigation } from "@react-navigation/native";
@@ -64,6 +64,7 @@ function VideoPlayer(props) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [captureFailure, setCaptureFailure] = useState(false);
   const [videoLoading, setVideoLoading] = useState(false);
   const [watermarkSize, setWatermarkSize] = useState({
     width,
@@ -75,7 +76,7 @@ function VideoPlayer(props) {
   const [rawUri, setRawUri] = useState(null);
   const [resultUri, setResultUri] = useState(null);
   const [output, setOutput] = useState("Video processing log");
-  const [fullLogs, setFullLogs] = useState(null);
+  const [fullLogs, setFullLogs] = useState(userId === 8054 ? "test" : null);
   const [sharingAvailability, setSharingAvailability] = useState(false);
 
   useEffect(() => {
@@ -101,14 +102,10 @@ function VideoPlayer(props) {
 
   useEffect(() => {
     if (watermarkVideos?.length === undefined || watermarkVideos?.length < 1) {
-      setOutput(
-        (output) =>
-          `${output}\nredux array null}`
-      );
+      setOutput((output) => `${output}\nredux array null}`);
     } else {
       setOutput(
-        (output) =>
-          `${output}\nredux array ${JSON.stringify(watermarkVideos)}`
+        (output) => `${output}\nredux array ${JSON.stringify(watermarkVideos)}`
       );
       checkRedux();
     }
@@ -197,10 +194,10 @@ function VideoPlayer(props) {
       if (!watermarkLoading) {
         setWatermarkLoading(true);
         waterRef.current
-        .capture()
-        .then((uri) => onManualCapture(uri))
-        .catch((e) => onManualCaptureFailure(e));
-      }  
+          .capture()
+          .then((uri) => onManualCapture(uri))
+          .catch((e) => onManualCaptureFailure(e));
+      }
     } else {
       console.log("watermarkSize", watermarkSize);
       setOutput(
@@ -224,7 +221,9 @@ function VideoPlayer(props) {
   }, [rawUri]);
 
   useEffect(() => {
-    setOutput((output) => `${output}\nvideo isLoaded ${JSON.stringify(status.isLoaded)}`);
+    setOutput(
+      (output) => `${output}\nvideo isLoaded ${JSON.stringify(status.isLoaded)}`
+    );
   }, [status.isLoaded]);
 
   function checkRedux() {
@@ -294,9 +293,13 @@ function VideoPlayer(props) {
     if (Platform.OS !== "web") {
       sentryLog(e);
     }
-    setError(
-      (error) => `${error === null ? "" : `${error}\nGagal menciptakan watermark`}`
-    );
+    if (!captureFailure) {
+      setCaptureFailure(true);
+      setError(
+        (error) =>
+          `${error === null ? "" : `${error}\nGagal menciptakan watermark`}`
+      );
+    }
     setOutput((output) => `${output}\nonCaptureFailure ${e.toString()}`);
     setWatermarkLoading(false);
   }
@@ -409,7 +412,6 @@ function VideoPlayer(props) {
     const resultVideo =
       Platform.OS === "web" ? "d:/test.mp4" : await getResultPath();
 
-
     /*let sourceVideo = rawUri;
     if (rawUri === undefined || rawUri === null) {
       sourceVideo = await startDownload();
@@ -431,7 +433,8 @@ function VideoPlayer(props) {
       console.log("ffmpeg", ffmpegCommand);
     }
     setOutput(
-      (output) => `${output}\nprocessVideo with sourceVideo ${sourceVideo} and result will be in ${resultVideo}`
+      (output) =>
+        `${output}\nprocessVideo with sourceVideo ${sourceVideo} and result will be in ${resultVideo}`
     );
 
     setLoading(true);
@@ -519,7 +522,9 @@ function VideoPlayer(props) {
         );
         console.log(result);
         setSuccess(true);
-        setOutput((output) => `${output}\ndownloadAsync successful to ${result.uri}`);
+        setOutput(
+          (output) => `${output}\ndownloadAsync successful to ${result.uri}`
+        );
         setError("Video sumber berhasil didownload");
         setLoading(false);
         return result.uri;
@@ -727,6 +732,7 @@ function VideoPlayer(props) {
                 backgroundColor: status.isLoaded
                   ? colors.daclen_blue
                   : colors.daclen_gray,
+                flex: 1,
               },
             ]}
             onPress={() =>
@@ -759,6 +765,7 @@ function VideoPlayer(props) {
                   (!sharingAvailability && resultUri !== null)
                     ? colors.daclen_gray
                     : colors.daclen_orange,
+                flex: 1,
               },
             ]}
             onPress={() => processVideo()}
@@ -799,22 +806,28 @@ function VideoPlayer(props) {
               </Text>
             )}
           </TouchableOpacity>
-          {fullLogs === null ? null : (
-            <TouchableOpacity
-              style={[
-                videoSize.isLandscape ? styles.buttonCircle : styles.button,
-                { backgroundColor: colors.daclen_graydark },
-              ]}
-              onPress={() => openFullLogs()}
-              disabled={videoLoading}
-            >
-              <MaterialCommunityIcons name="text-box" size={18} color="white" />
-              {videoSize.isLandscape ? null : (
-                <Text style={styles.textButton}>Full Logs</Text>
-              )}
-            </TouchableOpacity>
-          )}
         </View>
+        {fullLogs === null || videoSize.isLandscape ? null : (
+          <TouchableOpacity
+            style={[
+              videoSize.isLandscape ? styles.buttonCircle : styles.button,
+              {
+                backgroundColor:
+                  loading || videoLoading
+                    ? colors.daclen_gray
+                    : colors.daclen_indigo,
+                width: "90%",
+              },
+            ]}
+            onPress={() => openFullLogs()}
+            disabled={videoLoading || loading}
+          >
+            <MaterialCommunityIcons name="text-box" size={18} color="white" />
+            {videoSize.isLandscape ? null : (
+              <Text style={styles.textButton}>Logs</Text>
+            )}
+          </TouchableOpacity>
+        )}
         {videoSize.isLandscape ? null : (
           <Text style={styles.textUid}>{output}</Text>
         )}
@@ -940,7 +953,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -995,6 +1007,8 @@ const styles = StyleSheet.create({
     width: "95%",
     textAlign: "center",
     marginHorizontal: 10,
+    marginTop: 10,
+    paddingBottom: staticDimensions.pageBottomPadding,
     color: colors.daclen_gray,
   },
 });
