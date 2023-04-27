@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.daclenmobile.daclen",
-      "buildNumber": "1",
+      "buildNumber": "2",
       "userInterfaceStyle": "light",
       "requireFullScreen": true,
       "infoPlist": {

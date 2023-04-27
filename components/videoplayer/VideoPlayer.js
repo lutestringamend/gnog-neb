@@ -161,7 +161,7 @@ function VideoPlayer(props) {
     if (resultUri !== null) {
       //shareFileAsync(resultUri, sharingOptionsMP4);
       checkRedux();
-      saveWatermarkVideo();
+      //saveWatermarkVideo();
     }
   }, [resultUri]);
 
@@ -331,12 +331,12 @@ function VideoPlayer(props) {
     return `${videoDir}test.mp4`;
   };
 
-  const saveWatermarkVideo = async () => {
+  const saveWatermarkVideo = async (resultUri) => {
     if (Platform.OS === "android") {
       const permissions =
         await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
       if (permissions.granted) {
-        const base64 = await FileSystem.readAsStringAsync(uri, {
+        const base64 = await FileSystem.readAsStringAsync(resultUri, {
           encoding: FileSystem.EncodingType.Base64,
         });
         const fileName = getFileName(uri);
@@ -355,6 +355,7 @@ function VideoPlayer(props) {
               setError(`Video watermark disimpan di ${resultUri}`);
               setSuccess(true);
               setResultUri(resultUri);
+              shareFileAsync(resultUri, sharingOptionsMP4);
             } catch (e) {
               console.error(e);
               setError("Gagal menyimpan video watermark");
@@ -363,6 +364,7 @@ function VideoPlayer(props) {
                   output + "\nwriteAsStringAsync catch\n" + e.toString()
               );
               setSuccess(false);
+              shareFileAsync(resultUri, sharingOptionsMP4);
             }
           })
           .catch((e) => {
@@ -373,7 +375,7 @@ function VideoPlayer(props) {
             setSuccess(false);
             if (e?.code === "ERR_FILESYSTEM_CANNOT_CREATE_FILE") {
               setError(
-                "Tidak bisa menyimpan foto di folder ini. Mohon pilih folder lain."
+                "Tidak bisa menyimpan video di folder ini. Mohon pilih folder lain."
               );
               setOutput(
                 (output) => output + "\nERR_FILESYSTEM_CANNOT_CREATE_FILE"
@@ -384,7 +386,7 @@ function VideoPlayer(props) {
             if (Platform.OS === "android") {
               ToastAndroid.show(e.toString(), ToastAndroid.LONG);
             }
-            return null;
+            shareFileAsync(resultUri, sharingOptionsMP4);
           });
       } else {
         setSuccess(false);
@@ -394,9 +396,10 @@ function VideoPlayer(props) {
             output +
             "\nFileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync not granted"
         );
+        shareFileAsync(resultUri, sharingOptionsMP4);
       }
     } else {
-      shareFileAsync(uri, sharingOptionsMP4);
+      shareFileAsync(resultUri, sharingOptionsMP4);
     }
   };
 
@@ -404,7 +407,7 @@ function VideoPlayer(props) {
     if (uri === undefined || uri === null || watermarkImage === null || loading)
       return;
     if (resultUri !== null) {
-      saveWatermarkVideo();
+      saveWatermarkVideo(resultUri);
       //shareFileAsync(resultUri, sharingOptionsMP4);
       return;
     }
@@ -453,8 +456,9 @@ function VideoPlayer(props) {
           setFullLogs(sessionOutput.toString());
           if (ReturnCode.isSuccess(returnCode)) {
             setSuccess(true);
-            setError(`Video berhasil disimpan di ${resultVideo}`);
+            setError(`Proses watermark disimpan di ${resultVideo}`);
             setResultUri(resultVideo);
+            saveWatermarkVideo(resultVideo);
           } else if (ReturnCode.isCancel(returnCode)) {
             setSuccess(false);
             setError(`Pembuatan video dibatalkan ${returnCode.toString()}`);
@@ -497,14 +501,15 @@ function VideoPlayer(props) {
 
   const shareFileAsync = async (uri, sharingOptions) => {
     if (!sharingAvailability) {
-      setError("Perangkat tidak mengizinkan untuk membagikan file");
+      setError((error) => `${error}\nPerangkat tidak mengizinkan untuk membagikan file`);
+      setOutput((output) => `${output}\nisSharingAvailableAsync false`);
       return;
     }
     try {
       await shareAsync(uri, sharingOptions);
     } catch (e) {
       console.error(e);
-      setError("Gagal share file");
+      setError((error) => `${error}\nGagal share file`);
       setOutput((output) => `${output}\nshareAsync error${e.toString()}`);
     }
   };
