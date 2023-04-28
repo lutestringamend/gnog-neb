@@ -31,6 +31,7 @@ import { WATERMARK_VIDEO } from "../dashboard/constants";
 import WatermarkModel from "../media/WatermarkModel";
 import { sharingOptionsMP4 } from "../media/constants";
 import { sentryLog } from "../../sentry";
+import { saveToLibraryAsync } from "expo-media-library";
 
 function VideoPlayer(props) {
   const { title, uri, width, height, thumbnail, userId, watermarkData } =
@@ -40,7 +41,8 @@ function VideoPlayer(props) {
   const waterRef = useRef(null);
   const navigation = useNavigation();
   const { watermarkLayout, watermarkVideos } = props;
-  const videoDir = `${FileSystem.cacheDirectory}video/`;
+  const videoDir = FileSystem.documentDirectory;
+  const fileName = getFileName(uri);
 
   /*let screenData = useScreenDimensions();
     const initialVideoSize = {
@@ -159,9 +161,7 @@ function VideoPlayer(props) {
 
   useEffect(() => {
     if (resultUri !== null) {
-      //shareFileAsync(resultUri, sharingOptionsMP4);
       checkRedux();
-      //saveWatermarkVideo();
     }
   }, [resultUri]);
 
@@ -313,25 +313,26 @@ function VideoPlayer(props) {
       try {
         const dirInfo = await FileSystem.getInfoAsync(videoDir);
         if (!dirInfo.exists) {
-          console.log(`creating directory ${videoDir}`);
+          setOutput((output) => `${output}\ncreating directory ${videoDir}`);
           await FileSystem.makeDirectoryAsync(videoDir, {
             intermediates: true,
           });
+        } else {
+          setOutput((output) => `${output}\n${videoDir} exists, saving there`);
         }
       } catch (e) {
         console.error(e);
         setLoading(false);
-        setError(
-          `filesystem getInfoAsync error\n${e?.message}\n${e.toString()}`
-        );
+        setOutput((output) => `${output}\ngetInfoAsync error ${e.toString()}`);
+        setError("Tidak mendapatkan izin penyimpanan");
       }
     }
 
     await ensureDirExists();
-    return `${videoDir}test.mp4`;
+    return `${videoDir}${fileName}`;
   };
 
-  const saveWatermarkVideo = async (resultUri) => {
+  /*const saveWatermarkVideo = async (resultUri) => {
     if (Platform.OS === "android") {
       const permissions =
         await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
@@ -339,7 +340,6 @@ function VideoPlayer(props) {
         const base64 = await FileSystem.readAsStringAsync(resultUri, {
           encoding: FileSystem.EncodingType.Base64,
         });
-        const fileName = getFileName(uri);
         await FileSystem.StorageAccessFramework.createFileAsync(
           permissions.directoryUri,
           fileName,
@@ -354,7 +354,7 @@ function VideoPlayer(props) {
                 encoding: FileSystem.EncodingType.Base64,
               });
               const resultUri = `${permissions.directoryUri}/${fileName}`;
-              setError((error) => `${error}\nVideo disimpan di ${resultUri}`);
+              setError((error) => `Video disimpan di ${resultUri}`);
               setSuccess(true);
               setResultUri(resultUri);
               shareFileAsync(resultUri, sharingOptionsMP4);
@@ -401,28 +401,27 @@ function VideoPlayer(props) {
     } else {
       shareFileAsync(resultUri, sharingOptionsMP4);
     }
-  };
+  };*/
 
   const processVideo = async () => {
     if (uri === undefined || uri === null || watermarkImage === null || loading)
       return;
     if (resultUri !== null) {
-      saveWatermarkVideo(resultUri);
-      //shareFileAsync(resultUri, sharingOptionsMP4);
+      //saveWatermarkVideo(resultUri);
+      shareFileAsync(resultUri, sharingOptionsMP4);
       return;
     }
 
     const resultVideo =
       Platform.OS === "web" ? "d:/test.mp4" : await getResultPath();
 
-    /*let sourceVideo = rawUri;
+    let sourceVideo = rawUri;
     if (rawUri === undefined || rawUri === null) {
       sourceVideo = await startDownload();
       setRawUri(sourceVideo);
-    }*/
-    const sourceVideo = await startDownload();
+    }
+    //const sourceVideo = await startDownload();
 
-    //const watermarkFile = await saveWatermarkImage();
     const ffmpegCommand = setFFMPEGCommand(
       sourceVideo,
       watermarkImage,
@@ -430,11 +429,7 @@ function VideoPlayer(props) {
       "top-left",
       Math.round(ratio)
     );
-    if (Platform.OS === "android") {
-      ToastAndroid.show(ffmpegCommand, ToastAndroid.LONG);
-    } else {
-      console.log("ffmpeg", ffmpegCommand);
-    }
+    console.log("ffmpeg", ffmpegCommand);
     setOutput(
       (output) =>
         `${output}\nprocessVideo with sourceVideo ${sourceVideo} and result will be in ${resultVideo}`
@@ -458,7 +453,8 @@ function VideoPlayer(props) {
             setSuccess(true);
             setError(`Proses watermark disimpan di ${resultVideo}`);
             setResultUri(resultVideo);
-            saveWatermarkVideo(resultVideo);
+            shareFileAsync(resultUri, sharingOptionsMP4);
+            //saveWatermarkVideo(resultVideo);
           } else if (ReturnCode.isCancel(returnCode)) {
             setSuccess(false);
             setError(`Pembuatan video dibatalkan ${returnCode.toString()}`);
@@ -501,7 +497,9 @@ function VideoPlayer(props) {
 
   const shareFileAsync = async (uri, sharingOptions) => {
     if (!sharingAvailability) {
-      setError((error) => `${error}\nPerangkat tidak mengizinkan untuk membagikan file`);
+      setError(
+        (error) => `${error}\nPerangkat tidak mengizinkan untuk membagikan file`
+      );
       setOutput((output) => `${output}\nisSharingAvailableAsync false`);
       return;
     }
@@ -520,10 +518,9 @@ function VideoPlayer(props) {
       setError("Memulai download video...");
       setLoading(true);
       try {
-        const fileName = getFileName(uri);
         const result = await FileSystem.downloadAsync(
           uri,
-          FileSystem.documentDirectory + fileName
+          FileSystem.documentDirectory + "raw_" + fileName
         );
         console.log(result);
         setSuccess(true);
@@ -532,6 +529,11 @@ function VideoPlayer(props) {
         );
         setError("Video sumber berhasil didownload");
         setLoading(false);
+        //debug
+        await saveToLibraryAsync(result.uri);
+        setOutput(
+          (output) => `${output}\nsaveToLibraryAsync successful, check Galery/Camera Roll`
+        );
         return result.uri;
       } catch (e) {
         console.error(e);
@@ -794,7 +796,7 @@ function VideoPlayer(props) {
               <MaterialCommunityIcons
                 name={
                   resultUri !== null && sharingAvailability
-                    ? "share"
+                    ? "share-variant"
                     : watermarkLoading || videoLoading
                     ? "file-download"
                     : "download"
@@ -812,6 +814,7 @@ function VideoPlayer(props) {
             )}
           </TouchableOpacity>
         </View>
+
         {fullLogs === null || videoSize.isLandscape ? null : (
           <TouchableOpacity
             style={[
@@ -828,11 +831,58 @@ function VideoPlayer(props) {
             disabled={videoLoading || loading}
           >
             <MaterialCommunityIcons name="text-box" size={18} color="white" />
-            {videoSize.isLandscape ? null : (
-              <Text style={styles.textButton}>Logs</Text>
-            )}
+            <Text style={styles.textButton}>Logs</Text>
           </TouchableOpacity>
         )}
+
+        {userId === 8054 &&
+        watermarkImage !== null &&
+        !videoSize.isLandscape ? (
+          <TouchableOpacity
+            style={[
+              videoSize.isLandscape ? styles.buttonCircle : styles.button,
+              {
+                backgroundColor:
+                  loading || videoLoading
+                    ? colors.daclen_gray
+                    : colors.daclen_reddishbrown,
+                width: "90%",
+                marginTop: 10,
+              },
+            ]}
+            onPress={() => shareFileAsync(watermarkImage, sharingOptionsMP4)}
+            disabled={loading || videoLoading}
+          >
+            <MaterialCommunityIcons
+              name="content-save"
+              size={18}
+              color="white"
+            />
+            <Text style={styles.textButton}>Share Watermark</Text>
+          </TouchableOpacity>
+        ) : null}
+
+        {userId === 8054 && rawUri !== null && !videoSize.isLandscape ? (
+          <TouchableOpacity
+            style={[
+              videoSize.isLandscape ? styles.buttonCircle : styles.button,
+              {
+                backgroundColor:
+                  loading || videoLoading
+                    ? colors.daclen_gray
+                    : colors.daclen_black,
+                width: "90%",
+                marginTop: 10,
+              },
+            ]}
+            onPress={() => shareFileAsync(rawUri, sharingOptionsMP4)}
+            disabled={loading || videoLoading}
+          >
+            <MaterialCommunityIcons name="share" size={18} color="white" />
+            <Text style={styles.textButton}>Share Raw Video</Text>
+          </TouchableOpacity>
+        ) : null}
+
         {videoSize.isLandscape ? null : (
           <Text style={styles.textUid}>{output}</Text>
         )}
@@ -840,68 +890,6 @@ function VideoPlayer(props) {
     </SafeAreaView>
   );
 }
-
-/*
-
-
-                    {sharingAvailability && watermarkImage !== null ? (
-            <TouchableOpacity
-              style={[
-                videoSize.isLandscape ? styles.buttonCircle : styles.button,
-                { backgroundColor: colors.daclen_reddishbrown },
-              ]}
-              onPress={() => shareFileAsync(watermarkImage, sharingOptionsJPEG)}
-              disabled={loading || videoLoading}
-            >
-              {loading ? (
-                <ActivityIndicator
-                  size="small"
-                  color="white"
-                  style={{
-                    alignSelf: "center",
-                  }}
-                />
-              ) : (
-                <MaterialCommunityIcons
-                  name="content-save"
-                  size={18}
-                  color="white"
-                />
-              )}
-              {videoSize.isLandscape ? null : (
-                <Text style={styles.textButton}>Text</Text>
-              )}
-            </TouchableOpacity>
-          ) : null}
-
-          <TouchableOpacity
-            style={[
-              videoSize.isLandscape ? styles.buttonCircle : styles.button,
-              { backgroundColor: colors.daclen_indigo },
-            ]}
-            onPress={() => processVideo()}
-            disabled={loading || videoLoading}
-          >
-            {loading ? (
-              <ActivityIndicator
-                size="small"
-                color="white"
-                style={{
-                  alignSelf: "center",
-                }}
-              />
-            ) : (
-              <MaterialCommunityIcons
-                name="file-download"
-                size={18}
-                color="white"
-              />
-            )}
-            {videoSize.isLandscape ? null : (
-              <Text style={styles.textButton}>Full</Text>
-            )}
-          </TouchableOpacity>
-*/
 
 const styles = StyleSheet.create({
   container: {
