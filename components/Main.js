@@ -1,17 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { Platform } from "react-native";
-import * as Sentry from "sentry-expo";
+import { Platform, ToastAndroid } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import SplashScreen from "./Splash";
 import TabNavigator from "./bottomnav/TabNavigator";
 import { getProductData, clearData } from "../axios/product";
-import { setNewToken, getCurrentUser, clearUserData, userLogout, disableForceLogout } from "../axios/user";
+import {
+  setNewToken,
+  getCurrentUser,
+  clearUserData,
+  userLogout,
+  disableForceLogout,
+} from "../axios/user";
 import { clearMediaKitData } from "../axios/mediakit";
 import { getObjectAsync, getTokenAsync } from "./asyncstorage";
-import { ASYNC_PRODUCTS_ARRAY_KEY, ASYNC_USER_CURRENTUSER_KEY } from "./asyncstorage/constants";
-
+import { overwriteWatermarkVideos } from "./media";
+import {
+  ASYNC_MEDIA_WATERMARK_VIDEOS_KEY,
+  ASYNC_PRODUCTS_ARRAY_KEY,
+  ASYNC_USER_CURRENTUSER_KEY,
+} from "./asyncstorage/constants";
+import { sentryLog } from "../sentry";
 
 function Main(props) {
   try {
@@ -23,7 +33,7 @@ function Main(props) {
       const readStorageProducts = async () => {
         const storageProducts = await getObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY);
         props.getProductData(storageProducts);
-      }
+      };
 
       if (
         props.products === null ||
@@ -31,7 +41,7 @@ function Main(props) {
         props.products?.length < 1
       ) {
         readStorageProducts();
-      } 
+      }
     }, [props.products]);
 
     useEffect(() => {
@@ -48,16 +58,34 @@ function Main(props) {
       };
 
       const readStorageCurrentUser = async (token) => {
-        if (token === null || token === undefined || token === "" || token === "null") {
+        if (
+          token === null ||
+          token === undefined ||
+          token === "" ||
+          token === "null"
+        ) {
           props.clearUserData();
           props.clearMediaKitData();
           setLogin(false);
         } else {
-          const storageCurrentUser = await getObjectAsync(ASYNC_USER_CURRENTUSER_KEY);
-          props.setNewToken(token, storageCurrentUser);
+          try {
+            const storageCurrentUser = await getObjectAsync(
+              ASYNC_USER_CURRENTUSER_KEY
+            );
+            props.setNewToken(token, storageCurrentUser);
+            const storageWatermarkVideos = await getObjectAsync(
+              ASYNC_MEDIA_WATERMARK_VIDEOS_KEY
+            );
+            props.overwriteWatermarkVideos(storageWatermarkVideos);
+          } catch (e) {
+            console.error(e);
+            if (Platform.OS === "android") {
+              ToastAndroid.show(e.toString(), ToastAndroid.LONG);
+            }
+          }
         }
         setLoadingUserData(false);
-      }
+      };
 
       if (frozen) {
         if (props.token === null && props.currentUser === null) {
@@ -66,24 +94,27 @@ function Main(props) {
       } else {
         //console.log({token: props.token, currentUser: props.currentUser});
 
-        if ((props.token === null || props.token === "") && !loadingUserData && !frozen) {
-           setLoadingUserData(true);
-           readStorageToken();
-         } else if (
-           props.currentUser === null ||
-           props.currentUser?.id === undefined ||
-           props.currentUser?.id === null
-         ) {
-           if (loadingUserData && !frozen) {
-             setLogin(null);
-           } else {
-             setLogin(false);
-           }
-         } else {
-           setLogin(true);
-         }
+        if (
+          (props.token === null || props.token === "") &&
+          !loadingUserData &&
+          !frozen
+        ) {
+          setLoadingUserData(true);
+          readStorageToken();
+        } else if (
+          props.currentUser === null ||
+          props.currentUser?.id === undefined ||
+          props.currentUser?.id === null
+        ) {
+          if (loadingUserData && !frozen) {
+            setLogin(null);
+          } else {
+            setLogin(false);
+          }
+        } else {
+          setLogin(true);
+        }
       }
-
     }, [props.token, props.currentUser]);
 
     useEffect(() => {
@@ -93,7 +124,7 @@ function Main(props) {
         props.clearMediaKitData();
         setLoadingUserData(false);
         setLogin(false);
-      }
+      };
 
       /*const restoreProductData = async () => {
         console.log("restoreProductData");
@@ -108,7 +139,7 @@ function Main(props) {
           uponForceLogout();
         } else {
           setFrozen(true);
-        } 
+        }
       } else {
         if (frozen) {
           setFrozen(false);
@@ -118,23 +149,17 @@ function Main(props) {
 
     if (
       isLogin === null ||
-      loadingUserData || 
+      loadingUserData ||
       props.products === null ||
       props.products?.length === undefined ||
-      props.products?.length < 1 
+      props.products?.length < 1
     ) {
       return <SplashScreen />;
     } else {
       return <TabNavigator login={isLogin} />;
     }
   } catch (error) {
-    console.error(error);
-    if (Platform.OS === "web") {
-      Sentry.Browser.captureException(error);
-    } else {
-      Sentry.Native.captureException(error);
-    }
-
+    sentryLog(error);
     return <SplashScreen errorText={error.message} />;
   }
 }
@@ -150,7 +175,16 @@ const mapStateToProps = (store) => ({
 
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
-    { getProductData, clearData, getCurrentUser, clearUserData, setNewToken, disableForceLogout, clearMediaKitData },
+    {
+      getProductData,
+      clearData,
+      getCurrentUser,
+      clearUserData,
+      setNewToken,
+      overwriteWatermarkVideos,
+      disableForceLogout,
+      clearMediaKitData,
+    },
     dispatch
   );
 

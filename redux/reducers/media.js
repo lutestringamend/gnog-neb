@@ -4,6 +4,7 @@ import {
   MEDIA_CLEAR_DATA,
   MEDIA_WATERMARK_LAYOUT_STATE_CHANGE,
   MEDIA_WATERMARK_VIDEOS_STATE_CHANGE,
+  MEDIA_WATERMARK_VIDEOS_OVERWRITE,
 } from "../constants";
 
 const initialState = {
@@ -29,6 +30,11 @@ export const media = (state = initialState, action) => {
       return {
         ...state,
         watermarkLayout: action.data,
+      };
+    case MEDIA_WATERMARK_VIDEOS_OVERWRITE:
+      return {
+        ...state,
+        watermarkVideos: action.data,
       };
     case MEDIA_WATERMARK_VIDEOS_STATE_CHANGE:
       return {

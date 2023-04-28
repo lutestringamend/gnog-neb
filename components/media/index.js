@@ -10,6 +10,7 @@ import {
   USER_UPDATE_STATE_CHANGE,
   MEDIA_WATERMARK_LAYOUT_STATE_CHANGE,
   MEDIA_WATERMARK_VIDEOS_STATE_CHANGE,
+  MEDIA_WATERMARK_VIDEOS_OVERWRITE,
 } from "../../redux/constants";
 import {
   bigmediafileerror,
@@ -74,11 +75,18 @@ export function clearMediaData() {
   };
 }
 
+export function overwriteWatermarkVideos(data) {
+  return (dispatch) => {
+    console.log("overwriteWatermarkVideos", data);
+    dispatch({ type: MEDIA_WATERMARK_VIDEOS_OVERWRITE, data});
+  };
+}
+
 export function updateWatermarkVideo(id, rawUri, uri) {
   return (dispatch) => {
     const data = { id, rawUri, uri };
     console.log("updateWatermarkVideo", data);
-    dispatch({ type: MEDIA_WATERMARK_VIDEOS_STATE_CHANGE, id, rawUri, uri });
+    dispatch({ type: MEDIA_WATERMARK_VIDEOS_STATE_CHANGE, data, id, rawUri, uri });
   };
 }
 
