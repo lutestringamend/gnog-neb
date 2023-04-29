@@ -53,7 +53,7 @@
         "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"
       ],
       "userInterfaceStyle": "light",
-      "versionCode": 36
+      "versionCode": 37
     },
     "web": {
       "favicon": "./assets/favicon.png"

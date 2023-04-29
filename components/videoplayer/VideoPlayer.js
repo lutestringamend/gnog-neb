@@ -413,7 +413,7 @@ function VideoPlayer(props) {
     if (resultUri !== null) {
       if (sharingAvailability) {
         shareFileAsync(resultUri, sharingOptionsMP4);
-      } 
+      }
       return;
     }
 
@@ -433,11 +433,7 @@ function VideoPlayer(props) {
       "top-left",
       Math.round(ratio)
     );
-    console.log("ffmpeg", ffmpegCommand);
-    setOutput(
-      (output) =>
-        `${output}\nprocessVideo with sourceVideo ${sourceVideo} and result will be in ${resultVideo}`
-    );
+    setOutput((output) => `${output}\nffmpeg ${ffmpegCommand}`);
 
     setLoading(true);
     setSuccess(true);
@@ -456,6 +452,10 @@ function VideoPlayer(props) {
           if (ReturnCode.isSuccess(returnCode)) {
             setSuccess(true);
             setError(`Proses watermark disimpan di ${resultVideo}`);
+            setOutput(
+              (output) =>
+                `${output}\nffmpeg session ${sessionId.toString()} successful returnCode ${returnCode.toString()}`
+            );
             setResultUri(resultVideo);
             //shareFileAsync(resultUri, sharingOptionsMP4);
             saveWatermarkVideo(resultVideo);
@@ -464,16 +464,18 @@ function VideoPlayer(props) {
             setError(`Pembuatan video dibatalkan`);
             setOutput(
               (output) =>
-                `${output}\nffmpeg cancelled returnCode ${returnCode.toString()}`
+                `${output}\nffmpeg session ${sessionId.toString()} cancelled returnCode ${returnCode.toString()}`
             );
           } else {
             setSuccess(false);
             setError(`Error memproses video`);
             setOutput(
               (output) =>
-                `${output}\nffmpeg error returnCode ${returnCode.toString()}`
+                `${output}\nffmpeg session ${sessionId.toString()} error returnCode ${returnCode.toString()}`
             );
-            openFullLogs();
+            navigation.navigate("VideoLogsScreen", {
+              text: `ffmpeg ${ffmpegCommand}\n\nsession ${sessionId.toString()} returnCode ${returnCode.toString()}\n\nsession output:\n\n${sessionOutput}`,
+            });
           }
         })
         .catch((error) => {
@@ -786,7 +788,10 @@ function VideoPlayer(props) {
             ]}
             onPress={() => processVideo()}
             disabled={
-              loading || videoLoading || !status.isLoaded || watermarkImage === null
+              loading ||
+              videoLoading ||
+              !status.isLoaded ||
+              watermarkImage === null
             }
           >
             {watermarkLoading || loading ? (
