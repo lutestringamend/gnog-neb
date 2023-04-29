@@ -450,7 +450,7 @@ function VideoPlayer(props) {
           const returnCode = await session.getReturnCode();
           const sessionOutput = await session.getOutput();
           const sessionId = session.getSessionId();
-          const logs = await session.getLogs();
+          //const logs = await session.getLogs();
           setLoading(false);
           setFullLogs(sessionOutput.toString());
           if (ReturnCode.isSuccess(returnCode)) {
@@ -461,20 +461,19 @@ function VideoPlayer(props) {
             saveWatermarkVideo(resultVideo);
           } else if (ReturnCode.isCancel(returnCode)) {
             setSuccess(false);
-            setError(`Pembuatan video dibatalkan ${returnCode.toString()}`);
-            setOutput(logs);
+            setError(`Pembuatan video dibatalkan`);
+            setOutput(
+              (output) =>
+                `${output}\nffmpeg cancelled returnCode ${returnCode.toString()}`
+            );
           } else {
             setSuccess(false);
-            setError(`Error memproses video ${returnCode.toString()}`);
-            setOutput(logs.toString());
-            navigation.navigate("VideoLogsScreen", {
-              text:
-                sessionId.toString() +
-                "\n\n" +
-                logs.toString() +
-                "\n\n" +
-                sessionOutput,
-            });
+            setError(`Error memproses video`);
+            setOutput(
+              (output) =>
+                `${output}\nffmpeg error returnCode ${returnCode.toString()}`
+            );
+            openFullLogs();
           }
         })
         .catch((error) => {
@@ -564,7 +563,7 @@ function VideoPlayer(props) {
       <ViewShot
         ref={waterRef}
         options={{
-          fileName: "daclen_wtext",
+          fileName: "wtext",
           format: "jpg",
           quality: 1,
           width: watermarkSize.width / (Platform.OS === "ios" ? 4 : 2),
@@ -1012,7 +1011,6 @@ const styles = StyleSheet.create({
   textUid: {
     fontSize: 10,
     width: "95%",
-    textAlign: "center",
     marginHorizontal: 10,
     marginTop: 10,
     paddingBottom: staticDimensions.pageBottomPadding,

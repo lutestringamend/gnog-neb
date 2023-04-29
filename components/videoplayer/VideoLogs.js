@@ -11,7 +11,7 @@ const VideoLogs = (prop) => {
         <Text
           style={{
             fontSize: 10,
-            textAlign: "center",
+            width: "95%",
             color: colors.daclen_gray,
             marginVertical: 10,
             marginHorizontal: 10,
