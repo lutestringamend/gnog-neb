@@ -39,13 +39,17 @@ export const foto = {
   name: "",
 };
 
-export function setFFMPEGCommand(
+export function setBasicFFMPEGCommand(
   sourceVideo,
   watermarkFile,
   resultVideo,
-  flag,
-  padding
+  filter,
+  codec
 ) {
+  return `-y -i ${sourceVideo} -i ${watermarkFile} ${filter} ${codec} ${resultVideo}`;
+}
+
+export function setFilterFFMPEG(flag, padding) {
   let filterComplex = "";
   switch (flag) {
     case "bottom-left":
@@ -64,8 +68,24 @@ export function setFFMPEGCommand(
       filterComplex = `overlay=x=(main_w-overlay_w-${padding}):y=(main_h-overlay_h-${padding})`;
       break;
   }
+  return `-filter_complex "${filterComplex}"`;
+}
 
-  return `-y -i ${sourceVideo} -i ${watermarkFile} -filter_complex "${filterComplex}" ${resultVideo}`;
+export function setFFMPEGCommand(
+  sourceVideo,
+  watermarkFile,
+  resultVideo,
+  flag,
+  padding,
+  codec
+) {
+  return setBasicFFMPEGCommand(
+    sourceVideo,
+    watermarkFile,
+    resultVideo,
+    setFilterFFMPEG(flag, padding),
+    codec
+  );
 }
 
 export function clearMediaData() {
@@ -78,7 +98,7 @@ export function clearMediaData() {
 export function overwriteWatermarkVideos(data) {
   return (dispatch) => {
     console.log("overwriteWatermarkVideos", data);
-    dispatch({ type: MEDIA_WATERMARK_VIDEOS_OVERWRITE, data});
+    dispatch({ type: MEDIA_WATERMARK_VIDEOS_OVERWRITE, data });
   };
 }
 
@@ -86,7 +106,13 @@ export function updateWatermarkVideo(id, rawUri, uri) {
   return (dispatch) => {
     const data = { id, rawUri, uri };
     console.log("updateWatermarkVideo", data);
-    dispatch({ type: MEDIA_WATERMARK_VIDEOS_STATE_CHANGE, data, id, rawUri, uri });
+    dispatch({
+      type: MEDIA_WATERMARK_VIDEOS_STATE_CHANGE,
+      data,
+      id,
+      rawUri,
+      uri,
+    });
   };
 }
 

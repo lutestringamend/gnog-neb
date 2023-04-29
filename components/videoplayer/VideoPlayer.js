@@ -11,6 +11,7 @@ import {
   SafeAreaView,
   Platform,
   ToastAndroid,
+  TextInput,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
@@ -24,7 +25,13 @@ import ViewShot from "react-native-view-shot";
 import { isAvailableAsync, shareAsync } from "expo-sharing";
 
 import { colors, staticDimensions } from "../../styles/base";
-import { getFileName, setFFMPEGCommand, updateWatermarkVideo } from "../media";
+import {
+  getFileName,
+  setBasicFFMPEGCommand,
+  setFFMPEGCommand,
+  setFilterFFMPEG,
+  updateWatermarkVideo,
+} from "../media";
 import MainHeader from "../main/MainHeader";
 import { useNavigation } from "@react-navigation/native";
 import { WATERMARK_VIDEO } from "../dashboard/constants";
@@ -81,10 +88,16 @@ function VideoPlayer(props) {
   const [watermarkImage, setWatermarkImage] = useState(null);
   const [rawUri, setRawUri] = useState(null);
   const [resultUri, setResultUri] = useState(null);
-  const [output, setOutput] = useState("Video processing log");
+  const [output, setOutput] = useState("VIDEO PROCESSING LOGS");
   const [fullLogs, setFullLogs] = useState(userId === 8054 ? "test" : null);
   const [sharingAvailability, setSharingAvailability] = useState(false);
   const [updateStorage, setUpdateStorage] = useState(false);
+
+  //debugging ffmpeg
+  const [customFilter, setCustomFilter] = useState(
+    setFilterFFMPEG("top-left", Math.round(ratio))
+  );
+  const [customCodec, setCustomCodec] = useState("");
 
   useEffect(() => {
     const checkSharing = async () => {
@@ -246,6 +259,14 @@ function VideoPlayer(props) {
       (output) => `${output}\nvideo isLoaded ${JSON.stringify(status.isLoaded)}`
     );
   }, [status.isLoaded]);
+
+  function resetResultUri() {
+    setResultUri(null);
+    setOutput("resultUri reset");
+    setFullLogs(null);
+    setUpdateStorage(true);
+    postMessage.updateWatermarkVideo(uri, rawUri, null);
+  }
 
   function updateReduxRawUri() {
     try {
@@ -426,13 +447,23 @@ function VideoPlayer(props) {
     }
     //const sourceVideo = await startDownload();
 
-    const ffmpegCommand = setFFMPEGCommand(
-      sourceVideo,
-      watermarkImage,
-      resultVideo,
-      "top-left",
-      Math.round(ratio)
-    );
+    const ffmpegCommand =
+      userId === 8054
+        ? setBasicFFMPEGCommand(
+            sourceVideo,
+            watermarkImage,
+            resultVideo,
+            customFilter,
+            customCodec
+          )
+        : setFFMPEGCommand(
+            sourceVideo,
+            watermarkImage,
+            resultVideo,
+            "top-left",
+            Math.round(ratio),
+            ""
+          );
     setOutput((output) => `${output}\nffmpeg ${ffmpegCommand}`);
 
     setLoading(true);
@@ -833,6 +864,46 @@ function VideoPlayer(props) {
           </TouchableOpacity>
         </View>
 
+        {userId === 8054 && !videoSize.isLandscape ? (
+          <TextInput
+            style={styles.textInput}
+            value={customFilter}
+            onChangeText={(text) => setCustomFilter((customFilter) => text)}
+          />
+        ) : null}
+
+        {userId === 8054 && !videoSize.isLandscape ? (
+          <TextInput
+            style={styles.textInput}
+            placeholder="codec"
+            value={customCodec}
+            onChangeText={(text) => setCustomCodec((customCodec) => text)}
+          />
+        ) : null}
+
+        {userId === 8054 && !videoSize.isLandscape ? (
+          <Text
+            style={[
+              styles.textUid,
+              {
+                fontWeight: "bold",
+                color: colors.daclen_red,
+                fontSize: 12,
+                marginVertical: 10,
+                paddingBottom: 0,
+              },
+            ]}
+          >
+            {setBasicFFMPEGCommand(
+              "%RAWURI%",
+              "%WTEXT%",
+              "%RESULT%",
+              customFilter,
+              customCodec
+            )}
+          </Text>
+        ) : null}
+
         {fullLogs === null || videoSize.isLandscape ? null : (
           <TouchableOpacity
             style={[
@@ -898,6 +969,30 @@ function VideoPlayer(props) {
           >
             <MaterialCommunityIcons name="share" size={18} color="white" />
             <Text style={styles.textButton}>Share Raw Video</Text>
+          </TouchableOpacity>
+        ) : null}
+
+        {userId === 8054 &&
+        rawUri !== null &&
+        watermarkImage !== null &&
+        !videoSize.isLandscape ? (
+          <TouchableOpacity
+            style={[
+              videoSize.isLandscape ? styles.buttonCircle : styles.button,
+              {
+                backgroundColor:
+                  loading || videoLoading
+                    ? colors.daclen_gray
+                    : colors.daclen_cyan,
+                width: "90%",
+                marginTop: 10,
+              },
+            ]}
+            onPress={() => resetResultUri()}
+            disabled={loading || videoLoading}
+          >
+            <MaterialCommunityIcons name="restore" size={18} color="white" />
+            <Text style={styles.textButton}>Reset</Text>
           </TouchableOpacity>
         ) : null}
 
@@ -1015,11 +1110,20 @@ const styles = StyleSheet.create({
   },
   textUid: {
     fontSize: 10,
-    width: "95%",
+    width: "90%",
     marginHorizontal: 10,
     marginTop: 10,
     paddingBottom: staticDimensions.pageBottomPadding,
     color: colors.daclen_gray,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: colors.daclen_gray,
+    borderRadius: 4,
+    padding: 10,
+    width: "90%",
+    marginVertical: 4,
+    fontSize: 14,
   },
 });
 
