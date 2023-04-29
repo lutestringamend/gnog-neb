@@ -191,10 +191,7 @@ function VideoPlayer(props) {
     if (watermarkLayout !== null) {
       //console.log("mediastate watermarkLayout", watermarkLayout);
       setWatermarkSize({
-        width:
-          Platform.OS === "web"
-            ? watermarkLayout?.width
-            : watermarkLayout?.width + 2,
+        width: watermarkLayout?.width + 1,
         height: watermarkLayout?.height,
       });
       setOutput(
@@ -570,8 +567,8 @@ function VideoPlayer(props) {
           fileName: "daclen_wtext",
           format: "jpg",
           quality: 1,
-          width: watermarkSize.width / 2,
-          height: watermarkSize.height / 2,
+          width: watermarkSize.width / (Platform.OS === "ios" ? 4 : 2),
+          height: watermarkSize.height / (Platform.OS === "ios" ? 4 : 2),
         }}
         style={[
           styles.containerViewShot,
@@ -923,7 +920,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     start: 0,
-    backgroundColor: "transparent",
+    backgroundColor: colors.daclen_black,
   },
   containerPanelPortrait: {
     width: "100%",
