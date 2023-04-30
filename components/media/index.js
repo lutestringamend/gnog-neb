@@ -43,10 +43,9 @@ export function setBasicFFMPEGCommand(
   sourceVideo,
   watermarkFile,
   resultVideo,
-  filter,
-  codec
+  filter
 ) {
-  return `-y -i ${sourceVideo} -i ${watermarkFile} ${filter} ${codec} ${resultVideo}`;
+  return `-y -i ${sourceVideo} -i ${watermarkFile} ${filter} ${resultVideo}`;
 }
 
 export function setFilterFFMPEG(flag, padding) {
@@ -76,15 +75,13 @@ export function setFFMPEGCommand(
   watermarkFile,
   resultVideo,
   flag,
-  padding,
-  codec
+  padding
 ) {
   return setBasicFFMPEGCommand(
     sourceVideo,
     watermarkFile,
     resultVideo,
-    setFilterFFMPEG(flag, padding),
-    codec
+    setFilterFFMPEG(flag, padding)
   );
 }
 

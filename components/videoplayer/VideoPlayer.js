@@ -97,7 +97,6 @@ function VideoPlayer(props) {
   const [customFilter, setCustomFilter] = useState(
     setFilterFFMPEG("top-left", Math.round(ratio))
   );
-  const [customCodec, setCustomCodec] = useState("");
 
   useEffect(() => {
     const checkSharing = async () => {
@@ -225,7 +224,9 @@ function VideoPlayer(props) {
             watermarkSize
           )}`
       );
-      if (!watermarkLoading) {
+      if (Platform.OS === "web") {
+        setWatermarkLoading(false);
+      } else if (!watermarkLoading) {
         setWatermarkLoading(true);
         waterRef.current
           .capture()
@@ -269,6 +270,10 @@ function VideoPlayer(props) {
   }
 
   function updateReduxRawUri() {
+    if (watermarkVideos?.length === undefined || watermarkVideos?.length < 1) {
+      return;
+    }
+
     try {
       const check = watermarkVideos.find(({ id }) => id === uri);
       if (check === undefined || check === null) {
@@ -295,6 +300,10 @@ function VideoPlayer(props) {
   }
 
   function checkRedux() {
+    if (watermarkVideos?.length === undefined || watermarkVideos?.length < 1) {
+      return;
+    }
+
     try {
       const check = watermarkVideos.find(({ id }) => id === uri);
       setOutput(
@@ -453,16 +462,14 @@ function VideoPlayer(props) {
             sourceVideo,
             watermarkImage,
             resultVideo,
-            customFilter,
-            customCodec
+            customFilter
           )
         : setFFMPEGCommand(
             sourceVideo,
             watermarkImage,
             resultVideo,
             "top-left",
-            Math.round(ratio),
-            ""
+            Math.round(ratio)
           );
     setOutput((output) => `${output}\nffmpeg ${ffmpegCommand}`);
 
@@ -591,6 +598,11 @@ function VideoPlayer(props) {
     );
   };
 
+  const handleFilterChange = (e) => {
+    e.preventDefault();
+    setCustomFilter(e.target.value);
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ViewShot
@@ -609,7 +621,7 @@ function VideoPlayer(props) {
             height: watermarkSize.height,
           },
         ]}
-        captureMode="mount"
+        captureMode={Platform.OS === "web" ? "" : "mount"}
         onCapture={onCapture}
         onCaptureFailure={onCaptureFailure}
       >
@@ -868,16 +880,7 @@ function VideoPlayer(props) {
           <TextInput
             style={styles.textInput}
             value={customFilter}
-            onChangeText={(text) => setCustomFilter((customFilter) => text)}
-          />
-        ) : null}
-
-        {userId === 8054 && !videoSize.isLandscape ? (
-          <TextInput
-            style={styles.textInput}
-            placeholder="codec"
-            value={customCodec}
-            onChangeText={(text) => setCustomCodec((customCodec) => text)}
+            onChange={handleFilterChange}
           />
         ) : null}
 
@@ -887,7 +890,7 @@ function VideoPlayer(props) {
               styles.textUid,
               {
                 fontWeight: "bold",
-                color: colors.daclen_red,
+                color: colors.daclen_graydark,
                 fontSize: 12,
                 marginVertical: 10,
                 paddingBottom: 0,
@@ -898,8 +901,7 @@ function VideoPlayer(props) {
               "%RAWURI%",
               "%WTEXT%",
               "%RESULT%",
-              customFilter,
-              customCodec
+              customFilter
             )}
           </Text>
         ) : null}
