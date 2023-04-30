@@ -266,7 +266,7 @@ function VideoPlayer(props) {
     setOutput("resultUri reset");
     setFullLogs(null);
     setUpdateStorage(true);
-    postMessage.updateWatermarkVideo(uri, rawUri, null);
+    props.updateWatermarkVideo(uri, rawUri, null);
   }
 
   function updateReduxRawUri() {

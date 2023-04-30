@@ -53,7 +53,7 @@
         "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"
       ],
       "userInterfaceStyle": "light",
-      "versionCode": 38
+      "versionCode": 39
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -89,7 +89,7 @@
       [
         "@config-plugins/ffmpeg-kit-react-native",
         {
-          "package": "video"
+          "package": "full-gpl"
         }
       ],
       [
