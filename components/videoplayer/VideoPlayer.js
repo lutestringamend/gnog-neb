@@ -195,6 +195,7 @@ function VideoPlayer(props) {
 
   useEffect(() => {
     if (resultUri !== null) {
+      setUpdateStorage(true);
       props.updateWatermarkVideo(uri, rawUri, resultUri);
     }
   }, [resultUri]);
@@ -880,7 +881,7 @@ function VideoPlayer(props) {
           <TextInput
             style={styles.textInput}
             value={customFilter}
-            onChange={handleFilterChange}
+            onChangeText={(text) => setCustomFilter((customFilter) => text)}
           />
         ) : null}
 
