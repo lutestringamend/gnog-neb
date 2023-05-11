@@ -12,7 +12,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { postKeranjang, deleteKeranjang } from "../../axios/cart";
+import { postKeranjang, deleteKeranjang, clearCartError } from "../../axios/cart";
 import { colors } from "../../styles/base";
 
 import { MAXIMUM_ITEM_PER_PRODUCT } from "../../redux/constants";
@@ -21,7 +21,7 @@ function Cart(props) {
   const [loading, setLoading] = useState(false);
   const [item, setItem] = useState(null);
   const [itemSize, setItemSize] = useState(0);
-  const { cart, token, produk_id, iconSize, textSize } = props;
+  const { cart, token, produk_id, iconSize, textSize, cartError } = props;
 
   useEffect(() => {
     setLoading(true);
@@ -41,6 +41,15 @@ function Cart(props) {
     }
     //setLoading(false);
   }, [item]);
+
+  useEffect(() => {
+    if (loading) {
+      console.log("cartError", cart);
+      setLoading(false);
+    } else {
+      props.clearCartError();
+    }
+  }, [cartError]);
 
   const modifyCart = (isAdd) => {
     if (loading) {
@@ -137,6 +146,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   cart: store.userState.cart,
+  cartError: store.userState.cartError,
 });
 
 const mapDispatchProps = (dispatch) =>
@@ -144,6 +154,7 @@ const mapDispatchProps = (dispatch) =>
     {
       postKeranjang,
       deleteKeranjang,
+      clearCartError,
     },
     dispatch
   );

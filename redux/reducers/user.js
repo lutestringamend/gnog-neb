@@ -25,6 +25,7 @@ import {
   USER_HPV_STATE_CHANGE,
   USER_POINTS_STATE_CHANGE,
   USER_SYARAT_ROOT_STATE_CHANGE,
+  USER_CART_STATE_ERROR,
 } from "../constants";
 
 import { mainhttp } from "../../axios/constants";
@@ -37,6 +38,7 @@ export const initialState = {
   syaratRoot: [],
   forceLogout: false,
   cart: null,
+  cartError: null,
   currentAddress: null,
   masterkurir: [],
   couriers: [],
@@ -127,6 +129,11 @@ export const user = (state = initialState, action) => {
       return {
         ...state,
         cart: action.data,
+      };
+    case USER_CART_STATE_ERROR:
+      return {
+        ...state,
+        cartError: action.data,
       };
     case USER_CART_ITEM_STATE_CHANGE:
       return {

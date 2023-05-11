@@ -1,4 +1,5 @@
 import Axios from "../index";
+import { sentryLog } from "../../sentry";
 import {
   getkeranjang,
   clearkeranjang,
@@ -9,8 +10,16 @@ import {
 import {
   USER_CART_STATE_CHANGE,
   USER_CART_ITEM_STATE_CHANGE,
-  USER_CHECKOUT_STATE_CHANGE
+  USER_CHECKOUT_STATE_CHANGE,
+  USER_CART_STATE_ERROR
 } from "../../redux/constants";
+
+export function clearCartError() {
+  return (dispatch) => {
+    console.log("clearCartError");
+    dispatch({ type: USER_CART_STATE_ERROR, data: null });
+  }
+}
 
 export function storeCheckout(token, checkoutJson) {
   return (dispatch) => {
@@ -27,12 +36,13 @@ export function storeCheckout(token, checkoutJson) {
         console.log({ checkoutJson, config });
         const data = response.data;
         let clearCart = true;
-        if (data.snap_token === undefined || data.snap_token === null) clearCart = false;
+        if (data?.snap_token === undefined || data?.snap_token === null) clearCart = false;
         console.log(data)
         dispatch({ type: USER_CHECKOUT_STATE_CHANGE, data, clearCart })
       })
       .catch((error) => {
         console.log(error);
+        sentryLog(error);
       });
   };
 }
@@ -55,8 +65,10 @@ export function deleteKeranjang(token, produk_id, itemSize) {
       .then((response) => {
         console.log("deleteKeranjang with params and header:");
         console.log({ params, config });
-        const data = response.data.data;
-        if (data) {
+        const data = response.data?.data;
+        if (data === undefined) {
+          dispatch({ type: USER_CART_STATE_ERROR, data: "API response undefined" });
+        } else {
           if (itemSize > 1 && produk_id > 0) {
             dispatch(postKeranjang(token, produk_id, itemSize - 1));
           } else {
@@ -70,6 +82,8 @@ export function deleteKeranjang(token, produk_id, itemSize) {
       })
       .catch((error) => {
         console.log(error);
+        sentryLog(error);
+        dispatch({ type: USER_CART_STATE_ERROR, data: error.toString() });
       });
   };
 }
@@ -97,13 +111,18 @@ export function postKeranjang(token, produk_id, itemSize) {
       .then((response) => {
         console.log("postKeranjang with params and header:");
         console.log({ params, config });
-        const data = response.data.data;
-        if (data !== undefined) {
+        const data = response.data?.data;
+
+        if (data === undefined) {
+          dispatch({ type: USER_CART_STATE_ERROR, data: "API response undefined" });
+        } else {
           dispatch({ type: USER_CART_STATE_CHANGE, data });
         }
       })
       .catch((error) => {
         console.log(error);
+        sentryLog(error);
+        dispatch({ type: USER_CART_STATE_ERROR, data: error.toString() });
       });
   };
 }
@@ -121,13 +140,17 @@ export function clearKeranjang(token) {
       .then((response) => {
         console.log("clearKeranjang with header:");
         console.log(config);
-        const data = response.data.data;
-        if (data) {
+        const data = response.data?.data;
+        if (data === undefined) {
+          dispatch({ type: USER_CART_STATE_ERROR, data: "API response undefined" });
+        } else {
           dispatch({ type: USER_CART_STATE_CHANGE, data: null });
         }
       })
       .catch((error) => {
         console.log(error);
+        sentryLog(error);
+        dispatch({ type: USER_CART_STATE_ERROR, data: error.toString() });
       });
   };
 }
@@ -145,12 +168,16 @@ export function getKeranjang(token) {
       .then((response) => {
         console.log("getKeranjang with header");
         const data = response.data.data;
-        if (data !== undefined) {
+        if (data === undefined) {
+          dispatch({ type: USER_CART_STATE_ERROR, data: "API response undefined" });
+        } else {
           dispatch({ type: USER_CART_STATE_CHANGE, data });
         }
       })
       .catch((error) => {
         console.log(error);
+        sentryLog(error);
+        dispatch({ type: USER_CART_STATE_ERROR, data: error.toString() });
       });
   };
 }

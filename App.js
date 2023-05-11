@@ -2,6 +2,7 @@ import React from "react";
 import { Platform, SafeAreaView } from "react-native";
 import * as Sentry from "sentry-expo";
 import { StatusBar } from "expo-status-bar";
+import { useTheme } from "react-native-paper";
 import * as NavigationBar from "expo-navigation-bar";
 
 import { Provider } from "react-redux";
@@ -75,6 +76,11 @@ export default function App() {
   });
 
   try {
+    const theme = useTheme();
+    theme.colors.primary = colors.daclen_black;
+    theme.colors.primaryContainer = colors.daclen_black;
+    theme.colors.secondaryContainer = "transparent";
+
     setCustomView(customViewProps);
     setCustomTextInput(customTextInputProps);
     setCustomText(customTextProps);
