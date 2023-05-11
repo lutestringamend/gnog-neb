@@ -12,7 +12,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { postKeranjang, deleteKeranjang, clearCartError } from "../../axios/cart";
+import { postKeranjang, deleteKeranjang } from "../../axios/cart";
 import { colors } from "../../styles/base";
 
 import { MAXIMUM_ITEM_PER_PRODUCT } from "../../redux/constants";
@@ -46,9 +46,10 @@ function Cart(props) {
     if (loading) {
       console.log("cartError", cart);
       setLoading(false);
-    } else {
+    } 
+    /*else {
       props.clearCartError();
-    }
+    }*/
   }, [cartError]);
 
   const modifyCart = (isAdd) => {
@@ -154,7 +155,6 @@ const mapDispatchProps = (dispatch) =>
     {
       postKeranjang,
       deleteKeranjang,
-      clearCartError,
     },
     dispatch
   );

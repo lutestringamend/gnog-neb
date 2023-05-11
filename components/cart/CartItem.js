@@ -28,7 +28,7 @@ export default function CartItem(props) {
           onClick={() => openProduct(props?.item?.id)}
           contentFit="contain"
           placeholder={blurhash}
-          transition={1000}
+          transition={0}
         />
 
         <View style={styles.containerProductHeader}>

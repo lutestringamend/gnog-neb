@@ -41,7 +41,7 @@ export default function ShopItem(props) {
             onClick={() => openProduct()}
             contentFit="cover"
             placeholder={blurhash}
-            transition={1000}
+            transition={0}
           />
           <Text style={styles.text}>{nama}</Text>
           <Text style={styles.textPrice}>Rp {harga_currency}</Text>

@@ -61,7 +61,7 @@ const WatermarkVideos = ({ videos, watermarkData, userId }) => {
                 source={item?.thumbnail}
                 contentFit="cover"
                 placeholder={blurhash}
-                transition={1000}
+                transition={0}
               />
             </TouchableHighlight>
           )}

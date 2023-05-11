@@ -73,7 +73,7 @@ function Banner(props) {
                   alt={item?.judul}
                   contentFit="contain"
                   placeholder={blurhash}
-                  transition={1000}
+                  transition={0}
                 />
               </TouchableOpacity>
             </View>

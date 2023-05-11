@@ -60,7 +60,7 @@ const WatermarkPhotos = ({ photos, watermarkData, userId }) => {
                 source={item?.foto}
                 contentFit="cover"
                 placeholder={blurhash}
-                transition={1000}
+                transition={0}
               />
             </TouchableHighlight>
           )}

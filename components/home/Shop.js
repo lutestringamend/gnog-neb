@@ -11,8 +11,12 @@ import {
 
 import { connect } from "react-redux";
 
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, dimensions } from "../../styles/base";
 import ShopItem from "./ShopItem";
+import Search from "./Search";
+import { getObjectAsync } from "../asyncstorage";
+import { ASYNC_PRODUCTS_ARRAY_KEY } from "../asyncstorage/constants";
+import ShopPages from "./ShopPages";
 
 function Shop(props) {
   const [products, setProducts] = useState([]);
@@ -23,34 +27,95 @@ function Shop(props) {
     if (props.products?.length === undefined || props?.products?.length < 1) {
       setLoading(true);
     } else {
-      if (props.products?.length !== products.length) {
+      /*if (props.products?.length !== products.length) {
         setCategory("");
         setProducts(props.products);
-      }
+      }*/
       setLoading(false);
     }
   }, [props.products]);
 
   useEffect(() => {
-    if (category === "") {
-      setProducts(props.products);
+    //console.log("searchFilter", props.searchFilter);
+    if (
+      (category === null || category === "") &&
+      (props.searchFilter === null || props.searchFilter === "")
+    ) {
+      setProducts([]);
     } else {
-      console.log("filtering category to " + category);
-      let filteredProducts = [];
+      setLoading(true);
+      filterStorageProductsCategory();
+    }
+  }, [props.searchFilter]);
 
-      for (let i = 0; i < props.products?.length; i++) {
-        const check = props.products[i]?.tag_produk.find(
+  useEffect(() => {
+    if (
+      (category === null || category === "") &&
+      (props.searchFilter === null || props.searchFilter === "")
+    ) {
+      setProducts([]);
+    } else {
+      setLoading(true);
+      filterStorageProductsCategory();
+    }
+  }, [category]);
+
+  const getStorageProducts = async () => {
+    const storageProducts = await getObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY);
+    if (
+      storageProducts === undefined ||
+      storageProducts === null ||
+      storageProducts?.length === undefined ||
+      storageProducts?.length < 1
+    ) {
+      console.log("storage products is null!");
+      return null;
+    } else {
+      console.log(
+        `reading storageProducts of ${storageProducts?.length} with category ${category}`
+      );
+      return storageProducts;
+    }
+  };
+
+  const filterStorageProductsCategory = async () => {
+    const storageProducts = await getStorageProducts();
+    if (storageProducts === null) {
+      return;
+    }
+
+    let filteredProducts = [];
+    for (let i = 0; i < storageProducts.length; i++) {
+      let isIncluded = true;
+
+      if (category !== null && category !== "") {
+        const check = storageProducts[i]?.tag_produk.find(
           ({ nama }) => nama === category
         );
-        if (check !== undefined) {
-          filteredProducts.push(props.products[i]);
+        if (check === undefined) {
+          isIncluded = false;
         }
       }
 
-      console.log(filteredProducts);
-      setProducts(filteredProducts);
+      if (props.searchFilter !== null && props.searchFilter !== "") {
+        if (
+          !storageProducts[i]?.nama
+            .toLowerCase()
+            .includes(props.searchFilter.toLowerCase())
+        ) {
+          isIncluded = false;
+        }
+      }
+
+      if (isIncluded) {
+        filteredProducts.push(storageProducts[i]);
+      }
     }
-  }, [category]);
+
+    //console.log(filteredProducts);
+    setProducts(filteredProducts);
+    setLoading(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -86,6 +151,8 @@ function Shop(props) {
         </View>
       </View>
 
+      <Search />
+
       <View style={styles.containerFlatlist}>
         {loading ? (
           <ActivityIndicator
@@ -93,7 +160,13 @@ function Shop(props) {
             color={colors.daclen_orange}
             style={{ alignSelf: "center", marginVertical: 20 }}
           />
-        ) : products.length < 1 ? (
+        ) : category === "" && props.products.length < 1 ? (
+          <Text style={styles.textUid}>Tidak ada produk tersedia</Text>
+        ) : props.searchFilter !== null && products.length < 1 ? (
+          <Text style={styles.textUid}>
+            Tidak menemukan produk dari kata pencarian "{props.searchFilter}"
+          </Text>
+        ) : category !== "" && products.length < 1 ? (
           <Text style={styles.textUid}>
             Tidak ada produk tersedia di kategori ini
           </Text>
@@ -101,7 +174,11 @@ function Shop(props) {
           <FlatList
             numColumns={2}
             horizontal={false}
-            data={products}
+            data={
+              products?.length === undefined || products?.length < 1
+                ? props.products
+                : products
+            }
             renderItem={({ item }) => (
               <ShopItem
                 id={item?.id}
@@ -112,6 +189,15 @@ function Shop(props) {
             )}
           />
         )}
+
+        <View
+          style={[
+            styles.containerCounter,
+            { opacity: products?.length < 1 ? 1 : 0 },
+          ]}
+        >
+          <ShopPages disabled={products?.length > 0} />
+        </View>
       </View>
     </View>
   );
@@ -121,7 +207,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "flex-start",
-    paddingBottom: staticDimensions.pageBottomPadding,
+    paddingBottom: dimensions.fullHeight / 3,
   },
   containerHorizontal: {
     flexDirection: "row",
@@ -143,6 +229,11 @@ const styles = StyleSheet.create({
   containerFlatlist: {
     flex: 1,
     marginHorizontal: 5,
+  },
+  containerCounter: {
+    marginTop: 10,
+    marginEnd: 10,
+    alignSelf: "flex-end",
   },
   textHeader: {
     flex: 1,
@@ -166,6 +257,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   products: store.productState.products,
   productItems: store.productState.productItems,
+  searchFilter: store.productState.searchFilter,
   token: store.userState.token,
   cart: store.userState.cart,
 });

@@ -65,7 +65,7 @@ export default function Header(props) {
                 alt={props.nama_lengkap}
                 contentFit="contain"
                 placeholder={blurhash}
-                transition={1000}
+                transition={0}
               />
             </View>
 

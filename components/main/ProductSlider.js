@@ -90,7 +90,7 @@ function ProductSlider(props) {
               source={mainPhoto}
               contentFit="contain"
               placeholder={blurhash}
-              transition={1000}
+              transition={0}
             />
           </TouchableHighlight>
         )}
@@ -110,7 +110,7 @@ function ProductSlider(props) {
                     source={item?.img}
                     contentFit="contain"
                     placeholder={blurhash}
-                    transition={1000}
+                    transition={0}
                   />
                 </TouchableHighlight>
               )}

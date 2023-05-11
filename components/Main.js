@@ -21,18 +21,19 @@ import {
   ASYNC_PRODUCTS_ARRAY_KEY,
   ASYNC_USER_CURRENTUSER_KEY,
 } from "./asyncstorage/constants";
+import { clearCartError } from "../axios/cart";
 import { sentryLog } from "../sentry";
 
 function Main(props) {
   try {
-    const [isLogin, setLogin] = useState(null);
+    const [isLogin, setLogin] = useState(false);
     const [loadingUserData, setLoadingUserData] = useState(false);
     const [frozen, setFrozen] = useState(false);
 
     useEffect(() => {
       const readStorageProducts = async () => {
         const storageProducts = await getObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY);
-        props.getProductData(storageProducts);
+        props.getProductData(storageProducts, 0);
       };
 
       if (
@@ -41,8 +42,15 @@ function Main(props) {
         props.products?.length < 1
       ) {
         readStorageProducts();
+      } else {
+        props.clearCartError();
+        console.log("redux products", props.products);
       }
     }, [props.products]);
+
+    useEffect(() => {
+      console.log("redux products maxIndex", props.maxIndex);
+    }, [props.maxIndex]);
 
     useEffect(() => {
       const readStorageToken = async () => {
@@ -52,7 +60,7 @@ function Main(props) {
           setLoadingUserData(false);
           setLogin(false);
         } else {
-          setLogin(null);
+          //setLogin(null);
           readStorageCurrentUser(storageToken);
         }
       };
@@ -107,7 +115,7 @@ function Main(props) {
           props.currentUser?.id === null
         ) {
           if (loadingUserData && !frozen) {
-            setLogin(null);
+            //setLogin(null);
           } else {
             setLogin(false);
           }
@@ -120,6 +128,7 @@ function Main(props) {
     useEffect(() => {
       const uponForceLogout = async () => {
         await userLogout();
+        props.setNewToken(null, null);
         props.clearUserData(true);
         props.clearMediaKitData();
         setLoadingUserData(false);
@@ -148,7 +157,6 @@ function Main(props) {
     }, [props.forceLogout, frozen]);
 
     if (
-      isLogin === null ||
       loadingUserData ||
       props.products === null ||
       props.products?.length === undefined ||
@@ -169,6 +177,7 @@ const mapStateToProps = (store) => ({
   currentUser: store.userState.currentUser,
   forceLogout: store.userState.forceLogout,
   products: store.productState.products,
+  maxIndex: store.productState.maxIndex,
   loginToken: store.userState.loginToken,
   registerToken: store.userState.registerToken,
 });
@@ -184,6 +193,7 @@ const mapDispatchProps = (dispatch) =>
       overwriteWatermarkVideos,
       disableForceLogout,
       clearMediaKitData,
+      clearCartError,
     },
     dispatch
   );

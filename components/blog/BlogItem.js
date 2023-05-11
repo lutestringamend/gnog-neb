@@ -45,7 +45,7 @@ function BlogItem(props) {
               onClick={() => openItem(props?.id)}
               contentFit="cover"
               placeholder={blurhash}
-              transition={1000}
+              transition={0}
             />
 
             <View style={styles.containerDescVertical}>

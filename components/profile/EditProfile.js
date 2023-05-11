@@ -271,7 +271,7 @@ function EditProfile(props) {
               alt={user?.nama_lengkap}
               contentFit="cover"
               placeholder={blurhash}
-              transition={1000}
+              transition={0}
             />
             <View style={styles.containerEdit}>
               <MaterialCommunityIcons

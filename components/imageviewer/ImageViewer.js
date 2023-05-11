@@ -331,7 +331,7 @@ export default function ImageViewer(props) {
               ]}
               contentFit="contain"
               placeholder={blurhash}
-              transition={1000}
+              transition={0}
             />
           </View>
         ) : (
@@ -355,7 +355,7 @@ export default function ImageViewer(props) {
                   }}
                   contentFit="cover"
                   placeholder={blurhash}
-                  transition={1000}
+                  transition={0}
                 />
                   <WatermarkModel
                     watermarkData={watermarkData}

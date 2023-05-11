@@ -1,6 +1,5 @@
 import Axios from "../index";
 import { Linking, Platform, ToastAndroid } from "react-native";
-import * as Sentry from "sentry-expo";
 
 import {
   getcurrentuser,
@@ -57,16 +56,17 @@ import {
 } from "../../components/asyncstorage";
 import { ASYNC_USER_CURRENTUSER_KEY } from "../../components/asyncstorage/constants";
 import { MAXIMUM_FILE_SIZE_IN_BYTES } from "../../components/media/constants";
+import { sentryLog } from "../../sentry";
 
 export const resetPassword = () => {
   Linking.openURL(resetpassword);
-}
+};
 
 export const userLogout = async () => {
-  /*console.log("storage token and currentUser to be made null");
+  console.log("storage token and currentUser to be made null");
   await setTokenAsync(null);
-  await setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, null);*/
-  await clearStorage();
+  await setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, null);
+  //await clearStorage();
 };
 
 export function enableForceLogout() {
@@ -94,7 +94,7 @@ export function clearUserData(forceLogout) {
 export function clearSyaratRoot() {
   return (dispatch) => {
     dispatch({ type: USER_SYARAT_ROOT_STATE_CHANGE, data: [] });
-  }
+  };
 }
 
 export function getSyaratRoot(token) {
@@ -286,7 +286,7 @@ export function getOTP(id, token, nomor_telp) {
   };
 }
 
- /*const file = dataURLtoFile(uri);
+/*const file = dataURLtoFile(uri);
           formData.append("foto", file);
           method = "base64 to file";
           console.log("convert base64 to file", file);
@@ -295,124 +295,115 @@ export function getOTP(id, token, nomor_telp) {
             return data;
           },*/
 
-
-
 export function updateUserPhoto(id, token, uri) {
   try {
     return (dispatch) => {
       let formData = new FormData();
-        let type = getMimeType(uri);
-        let name = getProfilePictureName(id, type, uri);
-        let method = "";
-        
-        if (Platform.OS === "web") {
-          const fileSize = calculateBase64SizeInBytes(uri);
-          if (fileSize >= MAXIMUM_FILE_SIZE_IN_BYTES) {
-            dispatch(sendProfilePhotoUnusable(true));
-            dispatch(clearMediaData());
-            return;
-          }
+      let type = getMimeType(uri);
+      let name = getProfilePictureName(id, type, uri);
+      let method = "";
 
-          let blob = DataURIToBlob(uri);
-          formData.append("foto", blob, name);
-          method = "uri to blob";
-          console.log("sending blob", name, type, blob);
-        } else {
-         
-          let foto = {
-            name,
-            type,
-            uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
-          };
-          formData.append("foto", foto);
-          method = "using object";
+      if (Platform.OS === "web") {
+        const fileSize = calculateBase64SizeInBytes(uri);
+        if (fileSize >= MAXIMUM_FILE_SIZE_IN_BYTES) {
+          dispatch(sendProfilePhotoUnusable(true));
+          dispatch(clearMediaData());
+          return;
         }
 
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          },
+        let blob = DataURIToBlob(uri);
+        formData.append("foto", blob, name);
+        method = "uri to blob";
+        console.log("sending blob", name, type, blob);
+      } else {
+        let foto = {
+          name,
+          type,
+          uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
         };
+        formData.append("foto", foto);
+        method = "using object";
+      }
 
-        const url = updateuserphoto + "/" + id.toString();
-        if (Platform.OS === "android" && id === 8054) {
-          ToastAndroid.show(`updateUserPhoto ${url}\nname: ${name}\nuri: ${uri}\ntype: ${type}`, ToastAndroid.LONG);
-        } else {
-          console.log("updateUserPhoto " + url + " with formData and header");
-          console.log({ config, formData });
-        }
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      };
 
-        Axios.post(url, formData, config)
-          .then((response) => {
-            const data = response.data;
-            console.log(data);
-            /*if (Platform.OS === "android" && id === 8054) {
+      const url = updateuserphoto + "/" + id.toString();
+      if (Platform.OS === "android" && id === 8054) {
+        ToastAndroid.show(
+          `updateUserPhoto ${url}\nname: ${name}\nuri: ${uri}\ntype: ${type}`,
+          ToastAndroid.LONG
+        );
+      } else {
+        console.log("updateUserPhoto " + url + " with formData and header");
+        console.log({ config, formData });
+      }
+
+      Axios.post(url, formData, config)
+        .then((response) => {
+          const data = response.data;
+          console.log(data);
+          /*if (Platform.OS === "android" && id === 8054) {
               ToastAndroid.show(`response is ${JSON.stringify(data)}`);
             }*/
-            if (data?.session === "success") {
-              dispatch({ type: USER_UPDATE_STATE_CHANGE, data: data });
-              dispatch(getCurrentUser(token));
-            } else if (data?.errors !== undefined) {
-              if (data?.errors?.foto !== undefined) {
-                dispatch({
-                  type: USER_UPDATE_STATE_CHANGE,
-                  data: {
-                    session: "photoError",
-                    message:
-                      JSON.stringify(data?.errors?.foto)
-                  },
-                });
-              } else {
-                dispatch({
-                  type: USER_UPDATE_STATE_CHANGE,
-                  data: {
-                    session: "photoError",
-                    message: JSON.stringify(data?.errors),
-                  },
-                });
-              }
+          if (data?.session === "success") {
+            dispatch({ type: USER_UPDATE_STATE_CHANGE, data: data });
+            dispatch(getCurrentUser(token));
+          } else if (data?.errors !== undefined) {
+            if (data?.errors?.foto !== undefined) {
+              dispatch({
+                type: USER_UPDATE_STATE_CHANGE,
+                data: {
+                  session: "photoError",
+                  message: JSON.stringify(data?.errors?.foto),
+                },
+              });
             } else {
               dispatch({
                 type: USER_UPDATE_STATE_CHANGE,
                 data: {
                   session: "photoError",
-                  message: JSON.stringify(data),
+                  message: JSON.stringify(data?.errors),
                 },
               });
             }
-            dispatch(clearMediaData());
-          })
-          .catch((error) => {
-            console.error(error);
-            if (Platform.OS === "web") {
-              Sentry.Browser.captureException(error);
-            } else {
-              Sentry.Native.captureException(error);
-            }
+          } else {
             dispatch({
               type: USER_UPDATE_STATE_CHANGE,
               data: {
                 session: "photoError",
-                message: JSON.stringify({
-                  MAINMESSAGE: error.message,
-                  CONFIG: JSON.stringify(config),
-                  METHOD: method,
-                  URI: uri,
-                  TYPE: type,
-                  FORMDATA: JSON.stringify(formData),
-                }),
+                message: JSON.stringify(data),
               },
             });
+          }
+          dispatch(clearMediaData());
+        })
+        .catch((error) => {
+          console.error(error);
+          sentryLog(error);
+          dispatch({
+            type: USER_UPDATE_STATE_CHANGE,
+            data: {
+              session: "photoError",
+              message: JSON.stringify({
+                MAINMESSAGE: error.message,
+                CONFIG: JSON.stringify(config),
+                METHOD: method,
+                URI: uri,
+                TYPE: type,
+                FORMDATA: JSON.stringify(formData),
+              }),
+            },
           });
+        });
     };
   } catch (error) {
     console.error(error);
-    if (Platform.OS === "web") {
-      Sentry.Browser.captureException(error);
-    } else {
-      Sentry.Native.captureException(error);
-    }
+    sentryLog(error);
     return (dispatch) => {
       dispatch({
         type: USER_UPDATE_STATE_CHANGE,
@@ -491,11 +482,7 @@ export function updateUserData(id, userData, address, token) {
     };
   } catch (error) {
     console.error(error);
-    if (Platform.OS === "web") {
-      Sentry.Browser.captureException(error);
-    } else {
-      Sentry.Native.captureException(error);
-    }
+    sentryLog(error);
     return (dispatch) => {
       dispatch({
         type: USER_UPDATE_STATE_CHANGE,
@@ -680,40 +667,58 @@ export function getCurrentUser(token, storageCurrentUser) {
       },
     };
 
+    console.log("getCurrentUser with header", config);
     Axios.get(getcurrentuser, config)
       .then((response) => {
-        console.log("getCurrentUser with header");
-        const data = response.data.data;
-        dispatch({ type: USER_STATE_CHANGE, data });
-        dispatch({ type: USER_ADDRESS_STATE_CHANGE, data });
-        dispatch({ type: HISTORY_CLEAR_DATA });
-        dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
-        dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });
-        setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, data);
-      })
-
-      .catch((error) => {
-        console.log("getcurrentuser error", error);
-        dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
-        dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });
-        if (storageCurrentUser !== null && storageCurrentUser !== undefined) {
-          dispatch({ type: USER_STATE_CHANGE, data: storageCurrentUser });
-          dispatch({
-            type: USER_ADDRESS_STATE_CHANGE,
-            data: storageCurrentUser,
-          });
-        } else {
-          dispatch({ type: USER_STATE_CHANGE, data: null });
-          dispatch({ type: USER_ADDRESS_STATE_CHANGE, data: null });
+        const data = response.data?.data;
+        if (data === undefined || data === null) {
+          console.log("getCurrentUser response data is null");
+          dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
+          dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });
           dispatch({ type: HISTORY_CLEAR_DATA });
+          readStorageCurrentUser(dispatch, storageCurrentUser);
+        } else {
+          dispatch({ type: USER_STATE_CHANGE, data });
+          dispatch({ type: USER_ADDRESS_STATE_CHANGE, data });
+          dispatch({ type: HISTORY_CLEAR_DATA });
+          dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
+          dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });
+          setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, data);
         }
+      })
+      .catch((error) => {
+        console.log("getcurrentuser error", error.toString());
+        sentryLog(error);
+        dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
+        dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });
+        dispatch({ type: HISTORY_CLEAR_DATA });
+        readStorageCurrentUser(dispatch, storageCurrentUser);
       });
   };
 }
 
+function readStorageCurrentUser(dispatch, storageCurrentUser) {
+  if (storageCurrentUser === undefined || storageCurrentUser === null) {
+    console.log("storage currentUser also null");
+    dispatch({ type: USER_STATE_CHANGE, data: null });
+    dispatch({ type: USER_ADDRESS_STATE_CHANGE, data: null });
+  } else {
+    console.log("reading from storage currentUser");
+    dispatch({ type: USER_STATE_CHANGE, data: storageCurrentUser });
+    dispatch({
+      type: USER_ADDRESS_STATE_CHANGE,
+      data: storageCurrentUser,
+    });
+  }
+}
+
 export function setNewToken(token, storageCurrentUser) {
   return (dispatch) => {
-    if (token !== null && token !== undefined) {
+    if (token === undefined || token === null) {
+      console.log("redux token set to null");
+      dispatch({ type: USER_TOKEN_STATE_CHANGE, token: null });
+    } else {
+      console.log("redux token set to new", token);
       dispatch({ type: USER_TOKEN_STATE_CHANGE, token });
       dispatch(getCurrentUser(token, storageCurrentUser));
       dispatch(getKeranjang(token));
