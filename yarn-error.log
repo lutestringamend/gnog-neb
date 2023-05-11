@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/bin/yarnpkg add expo-image@~1.0.0
+  /usr/local/bin/node /usr/local/bin/yarnpkg add expo-image-picker@~14.1.1 expo-media-library@~15.2.3
 
 PATH: 
   /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin
@@ -49,6 +49,7 @@ npm manifest:
       "expo-dev-client": "~2.2.1",
       "expo-device": "~5.2.1",
       "expo-file-system": "~15.2.2",
+      "expo-image": "~1.0.0",
       "expo-image-picker": "~13.3.1",
       "expo-media-library": "~15.0.0",
       "expo-navigation-bar": "~2.1.1",
@@ -5003,6 +5004,11 @@ Lockfile:
       "@expo/config-plugins" "~5.0.0"
       expo-image-loader "~3.2.0"
       uuid "7.0.2"
+  
+  expo-image@~1.0.0:
+    version "1.0.0"
+    resolved "https://registry.npmjs.org/expo-image/-/expo-image-1.0.0.tgz"
+    integrity sha512-A1amVExKhBa/eRXuceauYtPkf9izeje5AbxEWL09tgK91rf3GSIZXM5PSDGlIM0s7dpCV+Iet2jhwcFUfWaZrw==
   
   expo-json-utils@~0.5.0:
     version "0.5.1"

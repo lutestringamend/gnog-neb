@@ -113,7 +113,7 @@ export default function App() {
         <StatusBar
           backgroundColor={colors.daclen_black}
           translucent={true}
-          style="light"
+          style="dark"
         />
         <Provider store={store}>
           <NavigationContainer>
