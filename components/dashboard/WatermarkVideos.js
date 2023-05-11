@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   View,
   FlatList,
   TouchableHighlight,
-  Image,
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
+import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, blurhash, staticDimensions } from "../../styles/base";
 
 const WatermarkVideos = ({ videos, watermarkData, userId }) => {
   const navigation = useNavigation();
@@ -56,7 +56,13 @@ const WatermarkVideos = ({ videos, watermarkData, userId }) => {
               underlayColor={colors.daclen_orange}
               style={styles.containerImage}
             >
-              <Image style={styles.imageList} source={{ uri: item?.thumbnail }} resizeMode="cover" />
+              <Image
+                style={styles.imageList}
+                source={item?.thumbnail}
+                contentFit="cover"
+                placeholder={blurhash}
+                transition={1000}
+              />
             </TouchableHighlight>
           )}
         />

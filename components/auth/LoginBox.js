@@ -12,7 +12,7 @@ import TextInputPassword from "./TextInputPassword";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { setAuthData } from "../../axios/user";
+import { resetPassword, setAuthData } from "../../axios/user";
 import { colors } from "../../styles/base";
 
 function LoginBox(props) {
@@ -35,7 +35,7 @@ function LoginBox(props) {
         style={styles.textInput}
         onChangeText={(password) => props.setAuthData({...props.authData, password })}
       />
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => resetPassword()}>
         <Text style={styles.textChange}>Lupa Password?</Text>
       </TouchableOpacity>
     </View>

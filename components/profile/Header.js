@@ -3,13 +3,13 @@ import {
   StyleSheet,
   View,
   Text,
-  Image,
   TouchableOpacity,
 } from "react-native";
+import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, dimensions } from "../../styles/base";
+import { colors, blurhash } from "../../styles/base";
 import Separator from "./Separator";
 import { useState } from "react";
 
@@ -59,10 +59,13 @@ export default function Header(props) {
                 style={styles.image}
                 source={
                   props?.foto !== ""
-                    ? { uri: props?.foto }
+                    ? props?.foto
                     : require("../../assets/user.png")
                 }
                 alt={props.nama_lengkap}
+                contentFit="contain"
+                placeholder={blurhash}
+                transition={1000}
               />
             </View>
 

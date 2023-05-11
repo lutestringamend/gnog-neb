@@ -1,5 +1,5 @@
 import Axios from "../index";
-import { Platform, ToastAndroid } from "react-native";
+import { Linking, Platform, ToastAndroid } from "react-native";
 import * as Sentry from "sentry-expo";
 
 import {
@@ -16,6 +16,7 @@ import {
   gethpv,
   laporanpoinuser,
   getsyaratroot,
+  resetpassword,
 } from "../constants";
 import { getKeranjang } from "../cart";
 import { initialState } from "../../redux/reducers/user";
@@ -56,6 +57,10 @@ import {
 } from "../../components/asyncstorage";
 import { ASYNC_USER_CURRENTUSER_KEY } from "../../components/asyncstorage/constants";
 import { MAXIMUM_FILE_SIZE_IN_BYTES } from "../../components/media/constants";
+
+export const resetPassword = () => {
+  Linking.openURL(resetpassword);
+}
 
 export const userLogout = async () => {
   /*console.log("storage token and currentUser to be made null");

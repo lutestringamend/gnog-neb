@@ -4,16 +4,16 @@ import {
   StyleSheet,
   View,
   TouchableHighlight,
-  Image,
   FlatList,
   Dimensions,
   Platform,
   ToastAndroid,
 } from "react-native";
+import { Image } from "expo-image";
 //import { ImageSlider } from "react-native-image-slider-banner";
 
 import { connect } from "react-redux";
-import { colors } from "../../styles/base";
+import { colors, blurhash } from "../../styles/base";
 import { dimensions } from "../../styles/base";
 
 function ProductSlider(props) {
@@ -87,7 +87,10 @@ function ProductSlider(props) {
                   height: dimensions.fullWidth,
                 },
               ]}
-              source={{ uri: mainPhoto }}
+              source={mainPhoto}
+              contentFit="contain"
+              placeholder={blurhash}
+              transition={1000}
             />
           </TouchableHighlight>
         )}
@@ -102,7 +105,13 @@ function ProductSlider(props) {
                   onPress={() => openPhoto(item.img)}
                   underlayColor={colors.daclen_orange}
                 >
-                  <Image style={styles.imageList} source={{ uri: item?.img }} />
+                  <Image
+                    style={styles.imageList}
+                    source={item?.img}
+                    contentFit="contain"
+                    placeholder={blurhash}
+                    transition={1000}
+                  />
                 </TouchableHighlight>
               )}
             />

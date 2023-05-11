@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Image,
   ActivityIndicator,
   SafeAreaView,
   View,
@@ -12,13 +11,14 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+import { Image } from "expo-image";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import ViewShot from "react-native-view-shot";
 import * as FileSystem from "expo-file-system";
 import { shareAsync, isAvailableAsync } from "expo-sharing";
 
-import { colors, staticDimensions, dimensions } from "../../styles/base";
+import { colors, staticDimensions, dimensions, blurhash } from "../../styles/base";
 import { getFileName } from "../media";
 import WatermarkModel from "../media/WatermarkModel";
 import { sentryLog } from "../../sentry";
@@ -324,12 +324,14 @@ export default function ImageViewer(props) {
         {watermarkData === null || watermarkData === undefined ? (
           <View style={[styles.containerImage, { width: productPhotoWidth }]}>
             <Image
-              source={{ uri }}
-              resizeMode="contain"
+              source={uri}
               style={[
                 styles.image,
                 { width: productPhotoWidth, height: productPhotoWidth },
               ]}
+              contentFit="contain"
+              placeholder={blurhash}
+              transition={1000}
             />
           </View>
         ) : (
@@ -341,15 +343,20 @@ export default function ImageViewer(props) {
                 color={colors.daclen_orange}
               />
             ) : (
-              <View style={styles.containerImagePreview}>
-                <ImageBackground
-                  source={{ uri }}
+              <View style={[styles.containerImagePreview, {width: productPhotoWidth,
+                height: productPhotoHeight,}]}>
+                <Image
+                  source={uri}
                   style={{
                     width: productPhotoWidth,
                     height: productPhotoHeight,
+                    position: "absolute",
+                    zIndex: 0
                   }}
-                  resizeMode="cover"
-                >
+                  contentFit="cover"
+                  placeholder={blurhash}
+                  transition={1000}
+                />
                   <WatermarkModel
                     watermarkData={watermarkData}
                     ratio={1}
@@ -359,7 +366,7 @@ export default function ImageViewer(props) {
                     color={font?.color?.warna}
                     fontSize={Math.round(fontSize / ratio)}
                   />
-                </ImageBackground>
+
               </View>
             )}
           </View>

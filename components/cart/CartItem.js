@@ -1,9 +1,10 @@
 import React from "react";
-import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Image } from 'expo-image';
 
 import Cart from "./Cart";
 import Separator from "../profile/Separator";
-import { colors } from "../../styles/base";
+import { colors, blurhash } from "../../styles/base";
 
 export default function CartItem(props) {
   const openProduct = (id) => {
@@ -23,8 +24,11 @@ export default function CartItem(props) {
       <View style={styles.containerItem}>
         <Image
           style={styles.image}
-          source={{ uri: props?.item?.foto_url }}
+          source={props?.item?.foto_url}
           onClick={() => openProduct(props?.item?.id)}
+          contentFit="contain"
+          placeholder={blurhash}
+          transition={1000}
         />
 
         <View style={styles.containerProductHeader}>

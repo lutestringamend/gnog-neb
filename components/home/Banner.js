@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
-  Image,
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
+import { Image } from "expo-image";
 
 import { useNavigation } from "@react-navigation/native";
 
@@ -16,7 +16,7 @@ import { bindActionCreators } from "redux";
 import { getBannerTiga } from "../../axios/home";
 
 import { webregister, webshop } from "../../axios/constants";
-import { colors } from "../../styles/base";
+import { colors, blurhash } from "../../styles/base";
 
 function Banner(props) {
   const { banners } = props;
@@ -69,8 +69,11 @@ function Banner(props) {
               <TouchableOpacity onPress={() => openItem(item?.link)}>
                 <Image
                   style={styles.imageBanner}
-                  source={{ uri: item?.foto }}
+                  source={item?.foto}
                   alt={item?.judul}
+                  contentFit="contain"
+                  placeholder={blurhash}
+                  transition={1000}
                 />
               </TouchableOpacity>
             </View>

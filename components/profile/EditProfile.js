@@ -6,10 +6,10 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
-  Image,
   ScrollView,
   Platform,
 } from "react-native";
+import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import RBSheet from "react-native-raw-bottom-sheet";
 import RadioGroup from "react-native-radio-buttons-group";
@@ -34,7 +34,7 @@ import {
   genderchoices,
   birthdateplaceholder,
 } from "./constants";
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, blurhash, staticDimensions } from "../../styles/base";
 import { intiialPermissions, checkMediaPermissions } from "../media";
 import BSMedia from "../bottomsheets/BSMedia";
 
@@ -263,12 +263,15 @@ function EditProfile(props) {
               source={
                 props.profilePicture !== null &&
                 props.profilePicture !== undefined
-                  ? { uri: props.profilePicture }
+                  ? props.profilePicture
                   : props.currentUser?.detail_user?.foto !== ""
-                  ? { uri: props.currentUser?.detail_user?.foto }
+                  ? props.currentUser?.detail_user?.foto
                   : require("../../assets/user.png")
               }
               alt={user?.nama_lengkap}
+              contentFit="cover"
+              placeholder={blurhash}
+              transition={1000}
             />
             <View style={styles.containerEdit}>
               <MaterialCommunityIcons

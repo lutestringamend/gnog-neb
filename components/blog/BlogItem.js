@@ -4,14 +4,14 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Image,
   FlatList,
   ActivityIndicator,
   ScrollView
 } from "react-native";
+import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import RenderHTML from "react-native-render-html";
-import { colors, staticDimensions, dimensions } from "../../styles/base";
+import { colors, staticDimensions, dimensions, blurhash } from "../../styles/base";
 
 
 function BlogItem(props) {
@@ -41,8 +41,11 @@ function BlogItem(props) {
           >
             <Image
               style={styles.image}
-              source={{ uri: props?.foto_url }}
+              source={props?.foto_url}
               onClick={() => openItem(props?.id)}
+              contentFit="cover"
+              placeholder={blurhash}
+              transition={1000}
             />
 
             <View style={styles.containerDescVertical}>

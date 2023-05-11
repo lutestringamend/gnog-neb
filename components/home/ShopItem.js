@@ -4,13 +4,13 @@ import {
   View,
   TouchableOpacity,
   Text,
-  Image,
   ActivityIndicator,
 } from "react-native";
+import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 
 import Cart from "../cart/Cart";
-import { colors } from "../../styles/base";
+import { colors, blurhash } from "../../styles/base";
 
 export default function ShopItem(props) {
   const { id, nama, harga_currency, foto_url } = props;
@@ -37,8 +37,11 @@ export default function ShopItem(props) {
         <TouchableOpacity onPress={() => openProduct()}>
           <Image
             style={styles.image}
-            source={{ uri: foto_url }}
+            source={foto_url}
             onClick={() => openProduct()}
+            contentFit="cover"
+            placeholder={blurhash}
+            transition={1000}
           />
           <Text style={styles.text}>{nama}</Text>
           <Text style={styles.textPrice}>Rp {harga_currency}</Text>
@@ -74,9 +77,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   image: {
-    width: 100,
-    aspectRatio: 1 / 1,
-    padding: 5,
+    width: 120,
+    height: 120,
+    padding: 2,
     alignSelf: "center",
   },
   textPrice: {
