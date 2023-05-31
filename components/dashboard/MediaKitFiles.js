@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-  Platform,
-  StyleSheet,
+StyleSheet,
   SafeAreaView,
   ScrollView,
   Text,
@@ -11,13 +10,12 @@ import {
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
-import * as Sentry from "sentry-expo";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { getMediaKitPhotos } from "../../axios/mediakit";
 
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 import { privacypolicy } from "../profile/constants";
 import { ErrorView } from "../webview/WebviewChild";
 import HistoryTabItem from "../history/HistoryTabItem";
@@ -31,6 +29,7 @@ import {
 } from "./constants";
 import WatermarkPhotos from "./WatermarkPhotos";
 import WatermarkVideos from "./WatermarkVideos";
+import { sentryLog } from "../../sentry";
 
 function MediaKitFiles(props) {
   try {
@@ -117,14 +116,6 @@ function MediaKitFiles(props) {
                     setWatermarkData({ ...watermarkData, phone })
                   }
                 />
-                <Text style={styles.textCompulsory}>Link Referral*</Text>
-                <TextInput
-                  value={watermarkData?.url}
-                  style={styles.textInput}
-                  onChangeText={(url) =>
-                    setWatermarkData({ ...watermarkData, url })
-                  }
-                />
               </View>
             </View>
           ) : null}
@@ -161,11 +152,7 @@ function MediaKitFiles(props) {
     );
   } catch (error) {
     console.error(error);
-    if (Platform.OS === "web") {
-      Sentry.Browser.captureException(error);
-    } else {
-      Sentry.Native.captureException(error);
-    }
+    sentryLog(error);
 
     return (
       <SafeAreaView style={styles.container}>
@@ -177,6 +164,17 @@ function MediaKitFiles(props) {
     );
   }
 }
+
+/*
+<Text style={styles.textCompulsory}>Link Referral*</Text>
+                <TextInput
+                  value={watermarkData?.url}
+                  style={styles.textInput}
+                  onChangeText={(url) =>
+                    setWatermarkData({ ...watermarkData, url })
+                  }
+                />
+*/
 
 const styles = StyleSheet.create({
   container: {

@@ -10,8 +10,8 @@ export const MAXIMUM_FILE_SIZE_IN_BYTES = 2048000
 export const DEFAULT_ANDROID_CAMERA_RATIO = "4:3"
 
 export const watermarkStyle = {
-    paddingVertical: 1,
-    paddingHorizontal: 2,
+    paddingVertical: 2,
+    paddingHorizontal: 6,
     borderRadius: 1,
     textAlign: "left",
     top: 1,

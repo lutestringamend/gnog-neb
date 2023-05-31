@@ -51,7 +51,7 @@ export const dashboardbrowser = "Buka Dashboard Web";
 export const userverified = "Terverifikasi";
 export const notverified = "Belum Terverifikasi";
 export const emailnotverified = "Email Belum Terverifikasi";
-export const phonenotverified = "Nomor Telepon Belum Terverifikasi";
+export const phonenotverified = "No Telp Belum Terverifikasi";
 
 export const hpvtitle = "Home Point Value";
 export const rpvtitle = "Root Point Value";

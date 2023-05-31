@@ -17,6 +17,8 @@ import { colors } from "../../styles/base";
 import { getObjectAsync } from "../asyncstorage";
 import { ASYNC_PRODUCTS_ARRAY_KEY } from "../asyncstorage/constants";
 
+import { getCurrentUser } from "../../axios/user";
+
 function ShopPages(props) {
   const [loading, setLoading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -42,6 +44,8 @@ function ShopPages(props) {
       const storageProducts = await getObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY);
       props.getStorageProductData(storageProducts, currentIndex - 1);
       setCurrentIndex((currentIndex) => currentIndex - 1);
+    } else {
+      props.getCurrentUser("abc","abc");
     }
   };
 
@@ -68,14 +72,14 @@ function ShopPages(props) {
           />
         ) : (
           <Text style={styles.textCart}>
-            {`${currentIndex + 1} / ${props.maxIndex + 1}`}
+            {`${currentIndex + 1} / ${props.maxIndex}`}
           </Text>
         )}
       </View>
 
       <TouchableOpacity
         onPress={() => nextPage()}
-        disabled={loading || props?.disabled}
+        disabled={loading || props?.disabled || currentIndex + 1 === props.maxIndex}
       >
         <MaterialCommunityIcons
           name="chevron-right"
@@ -128,6 +132,7 @@ const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
       getStorageProductData,
+      getCurrentUser,
     },
     dispatch
   );

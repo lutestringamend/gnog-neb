@@ -109,6 +109,8 @@ export default function ImageViewer(props) {
     if (title !== null && title !== undefined && title !== "") {
       props.navigation.setOptions({ title });
     }
+
+    console.log("ImageViewer route params", props.route.params);
   }, [uri]);
 
   const sharePhotoAsync = async (uri) => {
@@ -256,6 +258,8 @@ export default function ImageViewer(props) {
               text_y={text_y / ratio}
               color={font?.color?.warna}
               fontSize={Math.round(fontSize / ratio)}
+              paddingHorizontal={1}
+              paddingVertical={1}
             />
           </ImageBackground>
         </ViewShot>
@@ -365,6 +369,8 @@ export default function ImageViewer(props) {
                     text_y={text_y / ratio}
                     color={font?.color?.warna}
                     fontSize={Math.round(fontSize / ratio)}
+                    paddingHorizontal={1}
+                    paddingVertical={1}
                   />
 
               </View>

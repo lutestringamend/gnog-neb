@@ -28,10 +28,10 @@ function WatermarkModel(props) {
     textAlign: text_align ? text_align : watermarkStyle.textAlign,
     top: getLayout ? 0 : text_y ? text_y * ratio : watermarkStyle.top * ratio,
     start: getLayout ? 0 : text_x ? text_x * ratio : watermarkStyle.start * ratio,
-    paddingVertical: paddingVertical
+    paddingVertical: getLayout
       ? paddingVertical * ratio
       : watermarkStyle.paddingVertical * ratio,
-    paddingHorizontal: paddingHorizontal
+    paddingHorizontal: getLayout
       ? paddingHorizontal * ratio
       : watermarkStyle.paddingHorizontal * ratio,
     borderRadius: borderRadius
@@ -62,7 +62,7 @@ function WatermarkModel(props) {
         style ? style : null,
       ]}
     >
-      {`${watermarkData?.name}\n${watermarkData?.phone}\n${watermarkData?.url}`}
+      {`${watermarkData?.name}\n${watermarkData?.phone}`}
     </Text>
   );
 }

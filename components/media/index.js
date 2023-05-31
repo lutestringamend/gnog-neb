@@ -278,7 +278,7 @@ export function sendProfilePhotoCameraFail(message) {
       type: USER_UPDATE_STATE_CHANGE,
       data: {
         session: "photoError",
-        message: `${camerafail}${message}`,
+        message: `${camerafail}${message ? message : ""}`,
       },
     });
   };
@@ -291,7 +291,7 @@ export function sendProfilePhotoImagePickerFail(message) {
       type: USER_UPDATE_STATE_CHANGE,
       data: {
         session: "photoError",
-        message: `${imagepickerfail}${message}`,
+        message: `${imagepickerfail}${message ? message : ""}`,
       },
     });
   };

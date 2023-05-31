@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { colors } from "../../styles/base";
-import { emailnotverified } from "../dashboard/constants";
+import { phonenotverified } from "../dashboard/constants";
 import { userverified } from "../dashboard/constants";
 
 export default function BSUserRoot(props) {
@@ -31,13 +31,13 @@ export default function BSUserRoot(props) {
             style={[
               styles.textVerification,
               {
-                backgroundColor: props?.data?.email_verified_at
+                backgroundColor: props?.data?.nomor_telp_verified_at
                   ? colors.daclen_green
                   : colors.daclen_red,
               },
             ]}
           >
-            {props?.data?.email_verified_at ? userverified : emailnotverified}
+            {props?.data?.nomor_telp_verified_at ? userverified : phonenotverified}
           </Text>
           <Text style={styles.text}>
             RPV: {props?.data?.rpv ? props?.data?.rpv : "0"}
@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_light,
   },
   containerInfo: {
+    flex: 1,
     backgroundColor: colors.daclen_light,
     marginStart: 20,
   },
@@ -133,12 +134,12 @@ const styles = StyleSheet.create({
     color: colors.daclen_gray,
   },
   textVerification: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
     color: colors.daclen_light,
     backgroundColor: colors.daclen_lightgrey,
     paddingVertical: 4,
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     marginVertical: 10,
   },
   textName: {

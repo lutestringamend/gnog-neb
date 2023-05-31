@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Sentry from "sentry-expo";
 import { ASYNC_USER_TOKEN_KEY } from "./constants";
+import { sentryLog } from "../../sentry";
 
 export const checkStorageKeys = async () => {
   const keys = await AsyncStorage.getAllKeys();
@@ -22,7 +22,7 @@ export const setTokenAsync = async (token) => {
       token === null ||
       token === undefined
     ) {
-      await AsyncStorage.setItem(ASYNC_USER_TOKEN_KEY, null);
+      //await AsyncStorage.setItem(ASYNC_USER_TOKEN_KEY, null);
       await AsyncStorage.removeItem(ASYNC_USER_TOKEN_KEY);
       console.log(`asyncstorage ${ASYNC_USER_TOKEN_KEY} set to null and removed`);
     } else {
@@ -31,11 +31,7 @@ export const setTokenAsync = async (token) => {
     }
   } catch (error) {
     console.error(error);
-    if (Platform.OS === "web") {
-      Sentry.Browser.captureException(error);
-    } else {
-      Sentry.Native.captureException(error);
-    }
+    sentryLog(error);
   }
 };
 
@@ -54,11 +50,7 @@ export const getTokenAsync = async () => {
     }
   } catch (error) {
     console.error(error);
-    if (Platform.OS === "web") {
-      Sentry.Browser.captureException(error);
-    } else {
-      Sentry.Native.captureException(error);
-    }
+    sentryLog(error);
   }
   console.log(`asyncstorage ${ASYNC_USER_TOKEN_KEY} is null`);
   return null;
@@ -67,8 +59,8 @@ export const getTokenAsync = async () => {
 export const setObjectAsync = async (key, object) => {
   //console.log(`setObjectAsync ${key}`);
   try {
-    if (object === null || object === undefined) {
-      await AsyncStorage.setItem(key, null);
+    if (object === undefined || object === null) {
+      //await AsyncStorage.setItem(key, null);
       await AsyncStorage.removeItem(key);
       console.log(`asyncstorage ${key} set to null and removed`);
     } else {
@@ -78,11 +70,7 @@ export const setObjectAsync = async (key, object) => {
     }
   } catch (error) {
     console.error(error);
-    if (Platform.OS === "web") {
-      Sentry.Browser.captureException(error);
-    } else {
-      Sentry.Native.captureException(error);
-    }
+    sentryLog(error);
   }
 };
 
@@ -101,11 +89,7 @@ export const getObjectAsync = async (key) => {
     }
   } catch (error) {
     console.error(error);
-    if (Platform.OS === "web") {
-      Sentry.Browser.captureException(error);
-    } else {
-      Sentry.Native.captureException(error);
-    }
+    sentryLog(error);
   }
   console.log(`asyncstorage ${key} is null`);
   return null;

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   View,
   FlatList,
@@ -14,11 +14,11 @@ import { colors, blurhash, staticDimensions } from "../../styles/base";
 const WatermarkPhotos = ({ photos, watermarkData, userId }) => {
   const navigation = useNavigation();
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (photos?.length > 0) {
       console.log({ photos });
     }
-  }, [photos]);
+  }, [photos]);*/
 
   function openPhoto(item) {
     navigation.navigate("ImageViewer", {

@@ -12,6 +12,7 @@ import {
 import { getObjectAsync, setObjectAsync } from "../../components/asyncstorage";
 import { ASYNC_PRODUCTS_ARRAY_KEY } from "../../components/asyncstorage/constants";
 import { productpaginationnumber } from "../constants/index";
+import { sentryLog } from "../../sentry";
 
 export function clearProductData() {
   return (dispatch) => {
@@ -50,7 +51,7 @@ export function getProductData(storageProducts, paginationIndex) {
           } else {
             dispatch({
               type: PRODUCT_MAX_INDEX_STATE_CHANGE,
-              data: Math.floor(products?.length / productpaginationnumber),
+              data: Math.ceil(products?.length / productpaginationnumber),
             });
             dispatch({
               type: PRODUCTS_DATA_STATE_CHANGE,
@@ -64,7 +65,8 @@ export function getProductData(storageProducts, paginationIndex) {
         
       })
       .catch((error) => {
-        console.log("getProductData error", error);
+        console.log("getProductData error", error.toJSON());
+        sentryLog(error);
         readStorageProductData(dispatch, storageProducts, paginationIndex);
       });
   };
@@ -145,8 +147,8 @@ export function showProduct(id) {
         dispatch({ type: PRODUCT_ITEM_DATA_STATE_CHANGE, data });
       })
       .catch((error) => {
-        console.log(`showProduct ${id} is error`);
-        console.log(error);
+        console.log(`showProduct ${id} is error`, error.toJSON());
+        sentryLog(error);
       });
   };
 }

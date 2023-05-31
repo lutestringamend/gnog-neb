@@ -687,7 +687,7 @@ export function getCurrentUser(token, storageCurrentUser) {
         }
       })
       .catch((error) => {
-        console.log("getcurrentuser error", error.toString());
+        console.log("getcurrentuser error", error.toJSON());
         sentryLog(error);
         dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
         dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });

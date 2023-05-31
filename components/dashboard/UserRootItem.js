@@ -9,13 +9,19 @@ export function VerticalLine({ style }) {
   return <View style={[styles.verticalLine, style]} />;
 }
 
-const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified, onPress }) => {
-  
+const UserRootItem = ({
+  userData,
+  isCurrentUser,
+  isLastItem,
+  isVerified,
+  isCurrentVerified,
+  onPress,
+}) => {
   function userPress() {
     let message = `${userData?.name}`;
-    if (userData?.email_verified_at === null) {
+    /*if (userData?.email_verified_at === null) {
       message += `\n${emailnotverified}`;
-    }
+    }*/
     if (userData?.nomor_telp_verified_at === null) {
       message += `\n${phonenotverified}`;
     }
@@ -29,9 +35,27 @@ const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified, onPress
   return (
     <View style={styles.container}>
       {isCurrentUser ? null : (
-        <VerticalLine style={{ height: isLastItem ? "51%" : "100%" }} />
+        <VerticalLine
+          style={{
+            height: isLastItem ? "51%" : "100%",
+            backgroundColor: isCurrentVerified
+              ? colors.daclen_green
+              : colors.daclen_red,
+          }}
+        />
       )}
-      {isCurrentUser ? null : <View style={styles.horizontalLine} />}
+      {isCurrentUser ? null : (
+        <View
+          style={[
+            styles.horizontalLine,
+            {
+              backgroundColor: isVerified
+                ? colors.daclen_green
+                : colors.daclen_red,
+            },
+          ]}
+        />
+      )}
 
       <TouchableHighlight
         onPress={() => userPress()}
@@ -50,9 +74,7 @@ const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified, onPress
           style={[
             styles.containerMain,
             {
-              borderColor: isVerified
-                ? colors.daclen_red
-                : colors.daclen_lightgrey,
+              borderColor: isVerified ? colors.daclen_green : colors.daclen_red,
               borderRadius: 6,
               borderBottomStartRadius: isCurrentUser ? 0 : 6,
               borderWidth: isCurrentUser ? 2 : 1,
@@ -65,8 +87,8 @@ const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified, onPress
               styles.containerHeader,
               {
                 backgroundColor: isVerified
-                  ? colors.daclen_red
-                  : colors.daclen_lightgrey,
+                  ? colors.daclen_green
+                  : colors.daclen_red,
                 borderTopStartRadius: 6,
                 borderTopEndRadius: 6,
               },
@@ -75,28 +97,12 @@ const UserRootItem = ({ userData, isCurrentUser, isLastItem, isVerified, onPress
             <MaterialCommunityIcons
               name={isVerified ? "account-check" : "account-remove"}
               size={14}
-              color={isVerified ? colors.daclen_light : colors.daclen_gray}
+              color={colors.daclen_light}
             />
-            <Text
-              style={[
-                styles.textHeader,
-                {
-                  color: isVerified ? colors.daclen_light : colors.daclen_gray,
-                },
-              ]}
-            >
-              {userData?.name}
-            </Text>
+            <Text style={styles.textHeader}>{userData?.name}</Text>
           </View>
           <View style={styles.containerValue}>
-            <Text
-              style={[
-                styles.text,
-                {
-                  color: isVerified ? colors.daclen_black : colors.daclen_gray,
-                },
-              ]}
-            >
+            <Text style={styles.text}>
               {userData?.rpv ? userData?.rpv : "0"}
             </Text>
           </View>
@@ -127,7 +133,6 @@ const styles = StyleSheet.create({
   horizontalLine: {
     width: 24,
     height: 2,
-    backgroundColor: colors.daclen_red,
   },
   containerHeader: {
     flexDirection: "row",
@@ -146,11 +151,13 @@ const styles = StyleSheet.create({
   textHeader: {
     fontSize: 14,
     fontWeight: "bold",
+    color: colors.daclen_light,
     marginStart: 6,
     overflow: "hidden",
   },
   text: {
     fontSize: 16,
+    color: colors.daclen_graydark,
     backgroundColor: "transparent",
   },
 });

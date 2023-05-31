@@ -1,12 +1,14 @@
 import React from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
-import { Image } from 'expo-image';
+import { Image } from "expo-image";
+import { useNavigation } from "@react-navigation/native";
 
 import Cart from "./Cart";
 import Separator from "../profile/Separator";
 import { colors, blurhash } from "../../styles/base";
 
 export default function CartItem(props) {
+  const navigation = useNavigation();
   const openProduct = (id) => {
     navigation.navigate("Product", { id });
   };
@@ -22,14 +24,19 @@ export default function CartItem(props) {
   return (
     <View>
       <View style={styles.containerItem}>
-        <Image
-          style={styles.image}
-          source={props?.item?.foto_url}
-          onClick={() => openProduct(props?.item?.id)}
-          contentFit="contain"
-          placeholder={blurhash}
-          transition={0}
-        />
+        <TouchableOpacity
+          style={styles.containerImage}
+          onPress={() => openProduct(props?.item?.id)}
+        >
+          <Image
+            style={styles.image}
+            source={props?.item?.foto_url}
+            onClick={() => openProduct(props?.item?.id)}
+            contentFit="contain"
+            placeholder={blurhash}
+            transition={0}
+          />
+        </TouchableOpacity>
 
         <View style={styles.containerProductHeader}>
           <TouchableOpacity
@@ -67,13 +74,18 @@ const styles = StyleSheet.create({
     marginStart: 20,
   },
   containerHorizontal: {
+    backgroundColor: "transparent",
     flexDirection: "row",
     marginBottom: 10,
   },
+  containerImage: {
+    backgroundColor: "transparent",
+  },
   image: {
-    width: 40,
-    height: 40,
+    width: 60,
+    height: 60,
     aspectRatio: 1 / 1,
+    backgroundColor: "transparent",
     alignSelf: "center",
   },
   textProduct: {

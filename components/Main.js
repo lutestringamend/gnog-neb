@@ -49,7 +49,9 @@ function Main(props) {
     }, [props.products]);
 
     useEffect(() => {
-      console.log("redux products maxIndex", props.maxIndex);
+      if (props.maxIndex > 0) {
+        console.log("redux products maxIndex", props.maxIndex);
+      }
     }, [props.maxIndex]);
 
     useEffect(() => {

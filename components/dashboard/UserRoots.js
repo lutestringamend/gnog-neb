@@ -18,28 +18,36 @@ import UserRootHeaderItem from "./UserRootHeaderItem";
 import { notverified, userverified } from "./constants";
 
 function checkVerification(userData) {
-  if (userData?.email_verified_at !== null) {
-    return true;
-  } else {
+  if (
+    userData?.nomor_telp_verified_at === undefined ||
+    userData?.nomor_telp_verified_at === null ||
+    userData?.nomor_telp_verified_at === ""
+  ) {
     return false;
+  } else {
+    return true;
   }
 }
 
 const UserRoots = (props) => {
   const [numRoots, setNumRoots] = useState(0);
   const [numVerified, setNumVerified] = useState(0);
-  const [popupUser, setPopupUser] = useState({name: null});
+  const [popupUser, setPopupUser] = useState({ name: null });
   const { currentUser, hpv } = props;
   const rbSheet = useRef();
 
   useEffect(() => {
-    if (hpv?.data?.children?.length === undefined || hpv?.data?.children?.length < 1) {
+    if (
+      hpv?.data?.children?.length === undefined ||
+      hpv?.data?.children?.length < 1
+    ) {
       setNumRoots(0);
       setNumVerified(0);
     } else {
       setNumRoots(hpv?.data?.children?.length);
-      for (let i = 0; i < hpv?.children?.length; i++) {
-        if (checkVerification(hpv?.children[i])) {
+      console.log("hpv children", hpv?.data?.children);
+      for (let i = 0; i < hpv?.data?.children?.length; i++) {
+        if (checkVerification(hpv?.data?.children[i])) {
           setNumVerified((n) => n + 1);
         }
       }
@@ -88,7 +96,16 @@ const UserRoots = (props) => {
             isVerified={checkVerification(currentUser)}
           />
           <View style={styles.containerFlatlist}>
-            {numRoots > 0 ? <VerticalLine style={{ height: 32 }} /> : null}
+            {numRoots > 0 ? (
+              <VerticalLine
+                style={{
+                  height: 32,
+                  backgroundColor: checkVerification(currentUser)
+                    ? colors.daclen_green
+                    : colors.daclen_red,
+                }}
+              />
+            ) : null}
             {numRoots > 0 && (
               <FlatList
                 numColumns={1}
@@ -100,6 +117,7 @@ const UserRoots = (props) => {
                     onPress={() => openUserPopup(item)}
                     isCurrentUser={false}
                     isLastItem={index >= numRoots - 1}
+                    isCurrentVerified={checkVerification(currentUser)}
                     isVerified={checkVerification(item)}
                   />
                 )}
@@ -108,11 +126,7 @@ const UserRoots = (props) => {
           </View>
         </View>
       </ScrollView>
-      <RBSheet
-        ref={rbSheet}
-        openDuration={250}
-        height={300}
-      >
+      <RBSheet ref={rbSheet} openDuration={250} height={300}>
         <BSUserRoot
           title="Detail User"
           data={popupUser}
