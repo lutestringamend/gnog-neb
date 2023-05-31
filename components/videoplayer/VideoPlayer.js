@@ -37,7 +37,7 @@ import { useNavigation } from "@react-navigation/native";
 import { WATERMARK_VIDEO } from "../dashboard/constants";
 //import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 import WatermarkModel from "../media/WatermarkModel";
-import { sharingOptionsMP4 } from "../media/constants";
+import { defaultffmpegcodec, sharingOptionsMP4 } from "../media/constants";
 import { sentryLog } from "../../sentry";
 import { setObjectAsync } from "../asyncstorage";
 import { ASYNC_MEDIA_WATERMARK_VIDEOS_KEY } from "../asyncstorage/constants";
@@ -95,7 +95,7 @@ function VideoPlayer(props) {
 
   //debugging ffmpeg
   const [customFilter, setCustomFilter] = useState(
-    setFilterFFMPEG("top-left", Math.round(ratio))
+    `${setFilterFFMPEG("top-left", Math.round(ratio))} ${defaultffmpegcodec}`
   );
 
   useEffect(() => {
@@ -262,13 +262,13 @@ function VideoPlayer(props) {
     );
   }, [status.isLoaded]);
 
-  function resetResultUri() {
+  const resetResultUri = async () => {
     setResultUri(null);
     setOutput("resultUri reset");
     setFullLogs(null);
     setUpdateStorage(true);
     props.updateWatermarkVideo(uri, rawUri, null);
-  }
+  };
 
   function updateReduxRawUri() {
     if (watermarkVideos?.length === undefined || watermarkVideos?.length < 1) {
@@ -602,7 +602,7 @@ function VideoPlayer(props) {
   const handleFilterChange = (e) => {
     e.preventDefault();
     setCustomFilter(e.target.value);
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -978,6 +978,8 @@ function VideoPlayer(props) {
         {userId === 8054 &&
         rawUri !== null &&
         watermarkImage !== null &&
+        !loading &&
+        !videoLoading &&
         !videoSize.isLandscape ? (
           <TouchableOpacity
             style={[
@@ -992,7 +994,6 @@ function VideoPlayer(props) {
               },
             ]}
             onPress={() => resetResultUri()}
-            disabled={loading || videoLoading}
           >
             <MaterialCommunityIcons name="restore" size={18} color="white" />
             <Text style={styles.textButton}>Reset</Text>
