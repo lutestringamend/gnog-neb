@@ -118,6 +118,18 @@ export default function ImageViewer(props) {
     console.log("ImageViewer route params", props.route.params);
   }, [uri]);
 
+  //debug
+  useEffect(() => {
+    if (transformedImage === null) {
+      return;
+    }
+    let uriText = transformedImage;
+    if (uriText?.length > 50) {
+      uriText = uriText.substring(0,47) + "..."
+    }
+    setError(uriText);
+  }, [transformedImage]);
+
   const sharePhotoAsync = async (uri) => {
     if (!sharingAvailability) {
       setError("Perangkat tidak mengizinkan untuk membagikan file");
@@ -247,19 +259,18 @@ export default function ImageViewer(props) {
           options={{ fileName: "watermarkphoto", format: "jpg", quality: 1 }}
           style={[styles.containerLargeImage, { width, height }]}
         >
-          <Image
-            source={uri}
-            style={{
-              width,
-              height,
-              position: "absolute",
-              top: 0,
-              start: 0,
-            }}
-            contentFit="contain"
-            placeholder={null}
-            transition={0}
-          />
+          <WatermarkModel
+              watermarkData={watermarkData}
+              ratio={ratio}
+              text_align={text_align}
+              text_x={text_x / ratio}
+              text_y={text_y / ratio}
+              color={font?.color?.warna}
+              fontSize={Math.round(fontSize / ratio)}
+              paddingHorizontal={1}
+              paddingVertical={1}
+            />
+          
           
         </ViewShot>
       )}
@@ -405,12 +416,12 @@ const styles = StyleSheet.create({
   },
   containerLargeImage: {
     flex: 1,
-    backgroundColor: "transparent",
+    backgroundColor: "white",
     overflow: "visible",
     position: "absolute",
     top: 0,
     start: 0,
-    zIndex: 0,
+    zIndex: -1,
     opacity: 100,
   },
   containerImage: {
