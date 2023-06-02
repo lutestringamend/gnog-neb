@@ -87,6 +87,12 @@
       ],
       "sentry-expo",
       [
+        "@config-plugins/ffmpeg-kit-react-native",
+        {
+          "package": "min-gpl"
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "android": {

@@ -264,7 +264,6 @@ export default function ImageViewer(props) {
             style={{
               width,
               height,
-              backgroundColor: "white",
             }}
             resizeMode="cover"
           >

@@ -1,9 +1,4 @@
-      [
-        "@config-plugins/ffmpeg-kit-react-native",
-        {
-          "package": "min-gpl"
-        }
-      ],
+
 
       <ImageBackground
             source={{ uri }}
