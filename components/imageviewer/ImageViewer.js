@@ -247,17 +247,20 @@ export default function ImageViewer(props) {
           options={{ fileName: "watermarkphoto", format: "jpg", quality: 1 }}
           style={[styles.containerLargeImage, { width, height }]}
         >
-          <WatermarkModel
-              watermarkData={watermarkData}
-              ratio={ratio}
-              text_align={text_align}
-              text_x={text_x / ratio}
-              text_y={text_y / ratio}
-              color={font?.color?.warna}
-              fontSize={Math.round(fontSize / ratio)}
-              paddingHorizontal={1}
-              paddingVertical={1}
-            />
+          <Image
+            source={uri}
+            style={{
+              width,
+              height,
+              position: "absolute",
+              top: 0,
+              start: 0,
+            }}
+            contentFit="contain"
+            placeholder={null}
+            transition={0}
+          />
+          
         </ViewShot>
       )}
 
