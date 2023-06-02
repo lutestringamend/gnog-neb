@@ -2,8 +2,13 @@ import { Platform } from "react-native";
 import * as Sentry from "sentry-expo";
 
 export function sentryLog(e) {
-  let status = e.toJSON()?.status;
-  console.log("error status", status);
+  try {
+    let status = e.toJSON()?.status;
+    console.log("error status", status);
+  } catch (err) {
+
+  }
+  
   if (Platform.OS === "web") {
     Sentry.Browser.captureException(e);
   } else {

@@ -69,36 +69,13 @@ export default function ImageViewer(props) {
   const imageRef = useRef();
 
   useEffect(() => {
-    const transformImage = async () => {
-      try {
-        imageRef.current
-          .capture()
-          .then((uri) => {
-            console.log(uri);
-            setTransformedImage(uri);
-            setLoading(false);
-          })
-          .catch((e) => {
-            console.error(e);
-            setError(e.toString());
-            setLoading(false);
-            sentryLog(e);
-          });
-      } catch (e) {
-        console.error(e);
-        setError(JSON.stringify(e));
-        setLoading(false);
-        sentryLog(e);
-      }
-    };
-
     const checkSharing = async () => {
       const result = await isAvailableAsync();
       if (!result) {
         setError("Perangkat tidak mengizinkan untuk membagikan file");
       } else {
         setLoading(true);
-        transformImage();
+        //transformImage();
       }
       setSharingAvailability(result);
     };
@@ -129,6 +106,29 @@ export default function ImageViewer(props) {
     }
     setError(uriText);
   }, [transformedImage]);
+
+  const transformImage = async () => {
+    try {
+      imageRef.current
+        .capture()
+        .then((uri) => {
+          console.log(uri);
+          setTransformedImage(uri);
+          setLoading(false);
+        })
+        .catch((e) => {
+          console.error(e);
+          setError(e.toString());
+          setLoading(false);
+          sentryLog(e);
+        });
+    } catch (e) {
+      console.error(e);
+      setError(e.toString());
+      setLoading(false);
+      sentryLog(e);
+    }
+  };
 
   const sharePhotoAsync = async (uri) => {
     if (!sharingAvailability) {
@@ -171,7 +171,7 @@ export default function ImageViewer(props) {
               console.error(e);
               setError(
                 (error) =>
-                  error + "\nwriteAsStringAsync catch\n" + JSON.stringify(e)
+                  error + "\nwriteAsStringAsync catch\n" + e.toString()
               );
               setSuccess(false);
             }
@@ -187,7 +187,7 @@ export default function ImageViewer(props) {
               setError(
                 base64.substring(0, 64) +
                   "\ncreateFileAsync catch\n" +
-                  JSON.stringify(e)
+                  e.toString()
               );
             }
             if (Platform.OS === "android") {
@@ -259,15 +259,21 @@ export default function ImageViewer(props) {
           options={{ fileName: "watermarkphoto", format: "jpg", quality: 1 }}
           style={[styles.containerLargeImage, { width, height }]}
         >
-          <ImageBackground
-            source={{ uri }}
+          <Image
+            source={uri}
             style={{
               width,
               height,
+              position: "absolute",
+              top: 0,
+              start: 0,
             }}
-            resizeMode="cover"
-          >
-            <WatermarkModel
+            contentFit="contain"
+            placeholder={null}
+            transition={0}
+            onLoadEnd={() => transformImage()}
+          />
+          <WatermarkModel
               watermarkData={watermarkData}
               ratio={ratio}
               text_align={text_align}
@@ -278,10 +284,6 @@ export default function ImageViewer(props) {
               paddingHorizontal={1}
               paddingVertical={1}
             />
-          </ImageBackground>
-          
-          
-          
         </ViewShot>
       )}
 
