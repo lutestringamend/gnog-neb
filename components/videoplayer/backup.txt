@@ -5,6 +5,17 @@
         }
       ],
 
+      <ImageBackground
+            source={{ uri }}
+            style={{
+              width,
+              height,
+            }}
+            resizeMode="cover"
+          >
+            
+          </ImageBackground>
+
       <WatermarkModel
               watermarkData={watermarkData}
               ratio={ratio}

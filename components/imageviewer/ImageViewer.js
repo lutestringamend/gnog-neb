@@ -247,15 +247,7 @@ export default function ImageViewer(props) {
           options={{ fileName: "watermarkphoto", format: "jpg", quality: 1 }}
           style={[styles.containerLargeImage, { width, height }]}
         >
-          <ImageBackground
-            source={{ uri }}
-            style={{
-              width,
-              height,
-            }}
-            resizeMode="cover"
-          >
-            <WatermarkModel
+          <WatermarkModel
               watermarkData={watermarkData}
               ratio={ratio}
               text_align={text_align}
@@ -266,7 +258,6 @@ export default function ImageViewer(props) {
               paddingHorizontal={1}
               paddingVertical={1}
             />
-          </ImageBackground>
         </ViewShot>
       )}
 
@@ -416,7 +407,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     start: 0,
-    zIndex: -1,
+    zIndex: 0,
     opacity: 100,
   },
   containerImage: {
