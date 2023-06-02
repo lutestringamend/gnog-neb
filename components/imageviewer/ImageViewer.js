@@ -7,7 +7,6 @@ import {
   Text,
   Platform,
   ToastAndroid,
-  ImageBackground,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
@@ -96,7 +95,7 @@ export default function ImageViewer(props) {
   }, [uri]);
 
   //debug
-  useEffect(() => {
+  /*useEffect(() => {
     if (transformedImage === null) {
       return;
     }
@@ -105,7 +104,7 @@ export default function ImageViewer(props) {
       uriText = uriText.substring(0,47) + "..."
     }
     setError(uriText);
-  }, [transformedImage]);
+  }, [transformedImage]);*/
 
   const transformImage = async () => {
     try {
