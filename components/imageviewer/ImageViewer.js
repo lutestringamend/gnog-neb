@@ -249,19 +249,8 @@ export default function ImageViewer(props) {
               height,
             }}
             resizeMode="cover"
-          >
-            <WatermarkModel
-              watermarkData={watermarkData}
-              ratio={ratio}
-              text_align={text_align}
-              text_x={text_x / ratio}
-              text_y={text_y / ratio}
-              color={font?.color?.warna}
-              fontSize={Math.round(fontSize / ratio)}
-              paddingHorizontal={1}
-              paddingVertical={1}
-            />
-          </ImageBackground>
+          />
+
         </ViewShot>
       )}
 
