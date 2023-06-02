@@ -18,7 +18,12 @@ import ViewShot from "react-native-view-shot";
 import * as FileSystem from "expo-file-system";
 import { shareAsync, isAvailableAsync } from "expo-sharing";
 
-import { colors, staticDimensions, dimensions, blurhash } from "../../styles/base";
+import {
+  colors,
+  staticDimensions,
+  dimensions,
+  blurhash,
+} from "../../styles/base";
 import { getFileName } from "../media";
 import WatermarkModel from "../media/WatermarkModel";
 import { sentryLog } from "../../sentry";
@@ -249,8 +254,19 @@ export default function ImageViewer(props) {
               height,
             }}
             resizeMode="cover"
-          />
-
+          >
+            <WatermarkModel
+              watermarkData={watermarkData}
+              ratio={ratio}
+              text_align={text_align}
+              text_x={text_x / ratio}
+              text_y={text_y / ratio}
+              color={font?.color?.warna}
+              fontSize={Math.round(fontSize / ratio)}
+              paddingHorizontal={1}
+              paddingVertical={1}
+            />
+          </ImageBackground>
         </ViewShot>
       )}
 
@@ -336,32 +352,35 @@ export default function ImageViewer(props) {
                 color={colors.daclen_orange}
               />
             ) : (
-              <View style={[styles.containerImagePreview, {width: productPhotoWidth,
-                height: productPhotoHeight,}]}>
+              <View
+                style={[
+                  styles.containerImagePreview,
+                  { width: productPhotoWidth, height: productPhotoHeight },
+                ]}
+              >
                 <Image
                   source={uri}
                   style={{
                     width: productPhotoWidth,
                     height: productPhotoHeight,
                     position: "absolute",
-                    zIndex: 0
+                    zIndex: 0,
                   }}
                   contentFit="cover"
                   placeholder={blurhash}
                   transition={0}
                 />
-                  <WatermarkModel
-                    watermarkData={watermarkData}
-                    ratio={1}
-                    text_align={text_align}
-                    text_x={text_x / ratio}
-                    text_y={text_y / ratio}
-                    color={font?.color?.warna}
-                    fontSize={Math.round(fontSize / ratio)}
-                    paddingHorizontal={1}
-                    paddingVertical={1}
-                  />
-
+                <WatermarkModel
+                  watermarkData={watermarkData}
+                  ratio={1}
+                  text_align={text_align}
+                  text_x={text_x / ratio}
+                  text_y={text_y / ratio}
+                  color={font?.color?.warna}
+                  fontSize={Math.round(fontSize / ratio)}
+                  paddingHorizontal={1}
+                  paddingVertical={1}
+                />
               </View>
             )}
           </View>
