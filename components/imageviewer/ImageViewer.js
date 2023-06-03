@@ -26,6 +26,7 @@ import {
 import { getFileName } from "../media";
 import WatermarkModel from "../media/WatermarkModel";
 import { sentryLog } from "../../sentry";
+import { sharingOptionsJPEG } from "../media/constants";
 
 export default function ImageViewer(props) {
   let {
@@ -136,7 +137,10 @@ export default function ImageViewer(props) {
     }
 
     try {
-      await shareAsync(uri, sharingOptions);
+      await shareAsync(
+        uri,
+        Platform.OS === "ios" ? sharingOptionsJPEG : sharingOptions
+      );
     } catch (e) {
       console.error(e);
       setError(e?.message);
@@ -169,8 +173,7 @@ export default function ImageViewer(props) {
             } catch (e) {
               console.error(e);
               setError(
-                (error) =>
-                  error + "\nwriteAsStringAsync catch\n" + e.toString()
+                (error) => error + "\nwriteAsStringAsync catch\n" + e.toString()
               );
               setSuccess(false);
             }
@@ -273,16 +276,16 @@ export default function ImageViewer(props) {
             onLoadEnd={() => transformImage()}
           />
           <WatermarkModel
-              watermarkData={watermarkData}
-              ratio={ratio}
-              text_align={text_align}
-              text_x={text_x / ratio}
-              text_y={text_y / ratio}
-              color={font?.color?.warna}
-              fontSize={Math.round(fontSize / ratio)}
-              paddingHorizontal={1}
-              paddingVertical={1}
-            />
+            watermarkData={watermarkData}
+            ratio={ratio}
+            text_align={text_align}
+            text_x={text_x / ratio}
+            text_y={text_y / ratio}
+            color={font?.color?.warna}
+            fontSize={Math.round(fontSize / ratio)}
+            paddingHorizontal={1}
+            paddingVertical={1}
+          />
         </ViewShot>
       )}
 
