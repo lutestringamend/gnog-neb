@@ -22,14 +22,14 @@ export const watermarkStyle = {
   };
 
 export const sharingOptionsJPEG = {
-  UTI: "AVFileTypeJPEG",
-  dialogTitle: "Share Watermark",
+  UTI: "image/jpeg",
+  dialogTitle: "Share Foto Daclen",
   mimeType: "image/jpeg",
 };
 
 export const sharingOptionsMP4 = {
   UTI: "AVFileTypeMPEG4",
-  dialogTitle: "Share Video",
+  dialogTitle: "Share Video Daclen",
   mimeType: "video/mp4",
 }
 

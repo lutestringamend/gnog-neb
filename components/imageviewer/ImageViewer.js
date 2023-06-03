@@ -51,12 +51,6 @@ export default function ImageViewer(props) {
       : font?.size?.ukuran
     : 16;
 
-  const sharingOptions = {
-    UTI: "JPEG",
-    dialogTitle: "Share Foto Daclen",
-    mimeType: "image/jpeg",
-  };
-
   //const [productPhotoHeight, setProductPhotoHeight] = useState(0);
   const productPhotoHeight = isSquare ? productPhotoWidth : height / ratio;
   const [loading, setLoading] = useState(false);
@@ -137,10 +131,7 @@ export default function ImageViewer(props) {
     }
 
     try {
-      await shareAsync(
-        uri,
-        Platform.OS === "ios" ? sharingOptionsJPEG : sharingOptions
-      );
+      await shareAsync(uri, sharingOptionsJPEG);
     } catch (e) {
       console.error(e);
       setError(e?.message);
