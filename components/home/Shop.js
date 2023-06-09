@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   StyleSheet,
   View,
@@ -19,69 +19,56 @@ import { ASYNC_PRODUCTS_ARRAY_KEY } from "../asyncstorage/constants";
 import ShopPages from "./ShopPages";
 
 function Shop(props) {
-  const [products, setProducts] = useState([]);
+  const [storageProducts, setStorageProducts] = useState(null);
   const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (props.products?.length === undefined || props?.products?.length < 1) {
-      setLoading(true);
+  const products = useMemo(() => {
+    if (
+      (category === null || category === "") &&
+      (props.searchFilter === null || props.searchFilter === "")
+    ) {
+      return [];
     } else {
-      /*if (props.products?.length !== products.length) {
-        setCategory("");
-        setProducts(props.products);
-      }*/
+      return filterStorageProductsCategory();
+    }
+  }, [category, props.searchFilter]);
+
+  useEffect(() => {
+    if (
+      props.products?.length === undefined ||
+      props?.products?.length < 1 ||
+      storageProducts === undefined ||
+      storageProducts === null
+    ) {
+      setLoading(true);
+      getStorageProducts();
+    } else {
       setLoading(false);
     }
-  }, [props.products]);
+  }, [props.products, storageProducts]);
 
-  useEffect(() => {
-    //console.log("searchFilter", props.searchFilter);
+  async function getStorageProducts() {
+    const asyncProducts = await getObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY);
     if (
-      (category === null || category === "") &&
-      (props.searchFilter === null || props.searchFilter === "")
+      asyncProducts === undefined ||
+      asyncProducts === null ||
+      asyncProducts?.length === undefined ||
+      asyncProducts?.length < 1
     ) {
-      setProducts([]);
-    } else {
-      setLoading(true);
-      filterStorageProductsCategory();
-    }
-  }, [props.searchFilter]);
-
-  useEffect(() => {
-    if (
-      (category === null || category === "") &&
-      (props.searchFilter === null || props.searchFilter === "")
-    ) {
-      setProducts([]);
-    } else {
-      setLoading(true);
-      filterStorageProductsCategory();
-    }
-  }, [category]);
-
-  const getStorageProducts = async () => {
-    const storageProducts = await getObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY);
-    if (
-      storageProducts === undefined ||
-      storageProducts === null ||
-      storageProducts?.length === undefined ||
-      storageProducts?.length < 1
-    ) {
-      console.log("storage products is null!");
-      return null;
+      console.log("asyncProducts is null!");
+      setStorageProducts(null);
     } else {
       console.log(
-        `reading storageProducts of ${storageProducts?.length} with category ${category}`
+        `reading asyncProducts of ${asyncProducts?.length} with category ${category}`
       );
-      return storageProducts;
+      setStorageProducts(asyncProducts);
     }
-  };
+  }
 
-  const filterStorageProductsCategory = async () => {
-    const storageProducts = await getStorageProducts();
-    if (storageProducts === null) {
-      return;
+  function filterStorageProductsCategory() {
+    if (storageProducts === undefined || storageProducts === null) {
+      return [];
     }
 
     let filteredProducts = [];
@@ -112,40 +99,79 @@ function Shop(props) {
       }
     }
 
-    //console.log(filteredProducts);
-    setProducts(filteredProducts);
-    setLoading(false);
-  };
+    //console.log("filteredProducts", filteredProducts);
+    if (loading) {
+      setLoading(false);
+    }
+    return filteredProducts;
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.containerHorizontal}>
-        <Text style={styles.textHeader}>
+        <Text
+          style={[
+            styles.textHeader,
+            {
+              color: category === "" ? colors.daclen_black : colors.daclen_blue,
+            },
+          ]}
+        >
           {category ? category : "Semua Produk"}
         </Text>
         <View style={styles.containerCategory}>
           <TouchableOpacity onPress={() => setCategory("")}>
             <Image
               source={require("../../assets/all.png")}
-              style={styles.image}
+              style={[
+                styles.image,
+                {
+                  backgroundColor:
+                    category === "" ? colors.daclen_light : "transparent",
+                },
+              ]}
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setCategory("Slingbag")}>
             <Image
               source={require("../../assets/slingbag.png")}
-              style={styles.image}
+              style={[
+                styles.image,
+                {
+                  backgroundColor:
+                    category === "Slingbag"
+                      ? colors.daclen_cyan
+                      : "transparent",
+                },
+              ]}
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setCategory("Backpack")}>
             <Image
               source={require("../../assets/backpack.png")}
-              style={styles.image}
+              style={[
+                styles.image,
+                {
+                  backgroundColor:
+                    category === "Backpack"
+                      ? colors.daclen_cyan
+                      : "transparent",
+                },
+              ]}
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setCategory("Waistbag")}>
             <Image
               source={require("../../assets/waistbag.png")}
-              style={styles.image}
+              style={[
+                styles.image,
+                {
+                  backgroundColor:
+                    category === "Waistbag"
+                      ? colors.daclen_cyan
+                      : "transparent",
+                },
+              ]}
             />
           </TouchableOpacity>
         </View>
@@ -196,7 +222,10 @@ function Shop(props) {
             { opacity: products?.length < 1 ? 1 : 0 },
           ]}
         >
-          <ShopPages disabled={products?.length > 0} />
+          <ShopPages
+            disabled={products?.length > 0}
+            storageProducts={storageProducts}
+          />
         </View>
       </View>
     </View>
@@ -242,8 +271,10 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   image: {
-    width: 24,
-    height: 24,
+    width: 28,
+    height: 28,
+    padding: 2,
+    borderRadius: 10,
     marginHorizontal: 6,
   },
   textUid: {

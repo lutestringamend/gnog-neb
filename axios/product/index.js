@@ -61,11 +61,10 @@ export function getProductData(storageProducts, paginationIndex) {
               ),
             });
           }
-        }
-        
+        } 
       })
       .catch((error) => {
-        console.log("getProductData error", error.toJSON());
+        console.log("getProductData error", error.toString());
         sentryLog(error);
         readStorageProductData(dispatch, storageProducts, paginationIndex);
       });
@@ -147,7 +146,7 @@ export function showProduct(id) {
         dispatch({ type: PRODUCT_ITEM_DATA_STATE_CHANGE, data });
       })
       .catch((error) => {
-        console.log(`showProduct ${id} is error`, error.toJSON());
+        console.log(`showProduct ${id} is error`, error.toString());
         sentryLog(error);
       });
   };

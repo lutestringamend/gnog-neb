@@ -660,6 +660,10 @@ export function login(email, password) {
 
 export function getCurrentUser(token, storageCurrentUser) {
   return (dispatch) => {
+    if (token === undefined || token === null || token === "") {
+      return;
+    }
+    
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -687,7 +691,7 @@ export function getCurrentUser(token, storageCurrentUser) {
         }
       })
       .catch((error) => {
-        console.log("getcurrentuser error", error.toJSON());
+        console.log("getcurrentuser error", error.toString());
         sentryLog(error);
         dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
         dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });

@@ -102,6 +102,10 @@ export default function ImageViewer(props) {
   }, [transformedImage]);*/
 
   const transformImage = async () => {
+    if (Platform.OS === "web") {
+      setError("ViewShot not available on Web");
+      return;
+    }
     try {
       imageRef.current
         .capture()

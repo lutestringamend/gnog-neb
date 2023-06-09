@@ -55,4 +55,4 @@ export const webcatalog = "https://daclen.com/home/katalog"
 export const webdashboard = "https://daclen.com/admin/dashboard"
 export const webmediakit = "https://daclen.com/home/media-kit"
 export const webcheckout = "https://daclen.com/admin/checkout";
-export const commissionpointpdf = "https://www.daclen.com/pdf/komisi-dan-point/Point-dan-Komisi.pdf"
+export const commissionpointpdf = "https://daclen.com/pdf/komisi-dan-point/Skema%20Bonus.pdf"
