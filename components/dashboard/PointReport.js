@@ -9,6 +9,9 @@ import {
   ActivityIndicator,
   ScrollView,
   RefreshControl,
+  Linking,
+  Platform,
+  ToastAndroid,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
@@ -16,22 +19,39 @@ import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { getLaporanPoin } from "../../axios/user";
+import { getLaporanPoin, clearAuthError } from "../../axios/user";
 
 import { colors, staticDimensions } from "../../styles/base";
 import Separator from "../profile/Separator";
 import moment from "moment";
+import { ErrorView } from "../webview/WebviewChild";
+import { weblaporanpoin } from "../../axios/constants";
 
 function PointReport(props) {
-  const { token, currentUser, points, checkouts, hpv } = props;
+  const { token, currentUser, points, checkouts, hpv, authError } = props;
   const [loading, setLoading] = useState(false);
   const [referralData, setReferralData] = useState([]);
+  const [error, setError] = useState(null);
   const navigation = useNavigation();
 
   useEffect(() => {
     refreshPage();
-    //console.log("checkouts", checkouts);
   }, [token, points]);
+
+  useEffect(() => {
+    if (loading && points === null) {
+      setError(authError);
+      setLoading(false);
+    }
+  }, [authError]);
+
+  useEffect(() => {
+    if (error === null) {
+      return;
+    } else if (Platform.OS === "android") {
+      ToastAndroid.show(error, ToastAndroid.SHORT);
+    }
+  }, [error]);
 
   useEffect(() => {
     if (hpv?.data?.children?.length !== undefined) {
@@ -51,6 +71,7 @@ function PointReport(props) {
   }, [hpv]);
 
   function refreshPage() {
+    props.clearAuthError();
     if (points === null && token !== null && currentUser?.id !== undefined) {
       props.getLaporanPoin(currentUser?.id, token);
       setLoading(true);
@@ -70,6 +91,10 @@ function PointReport(props) {
     }
   }
 
+  function onOpenExternalLink() {
+    Linking.openURL(weblaporanpoin);
+  }
+
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -84,7 +109,12 @@ function PointReport(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {token && currentUser?.id ? (
+      {error ? (
+        <ErrorView
+          error="Mohon membuka website Daclen untuk membaca Laporan Poin"
+          onOpenExternalLink={() => onOpenExternalLink()}
+        />
+      ) : token && currentUser?.id ? (
         <ScrollView
           style={styles.containerFlatlist}
           refreshControl={
@@ -287,12 +317,14 @@ const mapStateToProps = (store) => ({
   checkouts: store.historyState.checkouts,
   points: store.userState.points,
   hpv: store.userState.hpv,
+  authError: store.userState.authError,
 });
 
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
       getLaporanPoin,
+      clearAuthError,
     },
     dispatch
   );

@@ -114,7 +114,7 @@ export function getSyaratRoot(token) {
       })
       .catch((error) => {
         console.log(error);
-        //dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: error?.message });
+        dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: error?.toString() });
       });
   };
 }
@@ -137,7 +137,7 @@ export function getLaporanPoin(id, token) {
       })
       .catch((error) => {
         console.log(error);
-        //dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: error?.message });
+        dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: error.toString() });
       });
   };
 }

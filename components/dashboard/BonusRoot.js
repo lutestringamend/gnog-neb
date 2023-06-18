@@ -9,13 +9,20 @@ import {
   ActivityIndicator,
   ScrollView,
   RefreshControl,
+  Platform,
+  ToastAndroid,
+  Linking,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { getSyaratRoot, clearSyaratRoot } from "../../axios/user";
+import {
+  getSyaratRoot,
+  clearSyaratRoot,
+  clearAuthError,
+} from "../../axios/user";
 
 import { colors, staticDimensions } from "../../styles/base";
 import HistoryTabItem from "../history/HistoryTabItem";
@@ -28,15 +35,19 @@ import {
   rpvtitle,
 } from "./constants";
 import BonusRootItem, { VerticalLine } from "./BonusRootItem";
+import { ErrorView } from "../webview/WebviewChild";
+import { websyaratbonus } from "../../axios/constants";
 
 function BonusRoot(props) {
-  const { token, syaratRoot } = props;
+  const { token, syaratRoot, authError } = props;
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState(null);
   const [rootTree, setRootTree] = useState([]);
+  const [error, setError] = useState(null);
   const navigation = useNavigation();
 
   useEffect(() => {
+    props.clearAuthError();
     if (
       (syaratRoot?.length === undefined || syaratRoot?.length < 1) &&
       token !== null
@@ -45,10 +56,28 @@ function BonusRoot(props) {
       props.getSyaratRoot(token);
     } else {
       setLoading(false);
-      setActiveTab((activeTab) => activeTab === null ? 0 : activeTab);
+      setActiveTab((activeTab) => (activeTab === null ? 0 : activeTab));
       //console.log("syaratRoot", syaratRoot);
     }
   }, [token, syaratRoot]);
+
+  useEffect(() => {
+    if (
+      loading &&
+      (syaratRoot?.length === undefined || syaratRoot?.length < 1)
+    ) {
+      setError(authError);
+      setLoading(false);
+    }
+  }, [authError]);
+
+  useEffect(() => {
+    if (error === null) {
+      return;
+    } else if (Platform.OS === "android") {
+      ToastAndroid.show(error, ToastAndroid.SHORT);
+    }
+  }, [error]);
 
   useEffect(() => {
     if (activeTab === null) {
@@ -83,21 +112,24 @@ function BonusRoot(props) {
     props.clearSyaratRoot();
   }
 
-  if (loading) {
-    return (
-      <SafeAreaView style={styles.container}>
+  function onOpenExternalLink() {
+    Linking.openURL(websyaratbonus);
+  }
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {loading ? (
         <ActivityIndicator
           size="large"
           color={colors.daclen_orange}
           style={{ alignSelf: "center", marginVertical: 20 }}
         />
-      </SafeAreaView>
-    );
-  }
-
-  return (
-    <SafeAreaView style={styles.container}>
-      {syaratRoot?.length === undefined || syaratRoot?.length < 1 ? null : (
+      ) : error ? (
+        <ErrorView
+          error="Mohon membuka website Daclen untuk membaca Syarat Bonus"
+          onOpenExternalLink={() => onOpenExternalLink()}
+        />
+      ) : syaratRoot?.length === undefined || syaratRoot?.length < 1 ? null : (
         <View style={styles.tabView}>
           <FlatList
             horizontal={true}
@@ -168,7 +200,9 @@ function BonusRoot(props) {
                   { color: bonusrootlevelcolors[activeTab] },
                 ]}
               >
-                {syaratRoot[activeTab]?.bonus_1 ? syaratRoot[activeTab]?.bonus_1 : "0"}
+                {syaratRoot[activeTab]?.bonus_1
+                  ? syaratRoot[activeTab]?.bonus_1
+                  : "0"}
                 {" %"}
               </Text>
             </View>
@@ -180,7 +214,9 @@ function BonusRoot(props) {
                   { color: bonusrootlevelcolors[activeTab] },
                 ]}
               >
-                {syaratRoot[activeTab]?.bonus_2 ? syaratRoot[activeTab]?.bonus_2 : "0"}
+                {syaratRoot[activeTab]?.bonus_2
+                  ? syaratRoot[activeTab]?.bonus_2
+                  : "0"}
                 {" %"}
               </Text>
             </View>
@@ -401,6 +437,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   syaratRoot: store.userState.syaratRoot,
+  authError: store.userState.authError,
 });
 
 const mapDispatchProps = (dispatch) =>
@@ -408,6 +445,7 @@ const mapDispatchProps = (dispatch) =>
     {
       getSyaratRoot,
       clearSyaratRoot,
+      clearAuthError,
     },
     dispatch
   );
