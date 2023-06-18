@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Platform, ToastAndroid } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 

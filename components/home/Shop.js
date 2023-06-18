@@ -30,7 +30,8 @@ function Shop(props) {
     ) {
       return [];
     } else {
-      return filterStorageProductsCategory();
+      let newArray = filterStorageProductsCategory();
+      return newArray;
     }
   }, [category, props.searchFilter]);
 

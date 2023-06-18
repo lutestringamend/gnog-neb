@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-StyleSheet,
+  StyleSheet,
   SafeAreaView,
   ScrollView,
   Text,
@@ -13,7 +13,10 @@ import { useNavigation } from "@react-navigation/native";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { getMediaKitPhotos } from "../../axios/mediakit";
+import {
+  getMediaKitPhotos,
+  clearMediaKitPhotosError,
+} from "../../axios/mediakit";
 
 import { colors, staticDimensions } from "../../styles/base";
 import { privacypolicy } from "../profile/constants";
@@ -33,11 +36,15 @@ import { sentryLog } from "../../sentry";
 
 function MediaKitFiles(props) {
   try {
-    const [activeTab, setActiveTab] = useState(props.route.params?.activeTab ? props.route.params?.activeTab : WATERMARK_PHOTO);
+    const [activeTab, setActiveTab] = useState(
+      props.route.params?.activeTab
+        ? props.route.params?.activeTab
+        : WATERMARK_PHOTO
+    );
     const [expand, setExpand] = useState(false);
-    const [error, setError] = useState(null);
+    const [photoLoading, setPhotoLoading] = useState(false);
     const [loading, setLoading] = useState(false);
-    const { currentUser } = props;
+    const { currentUser, photoError } = props;
     const navigation = useNavigation();
 
     const [watermarkData, setWatermarkData] = useState({
@@ -53,9 +60,30 @@ function MediaKitFiles(props) {
         props.mediaKitPhotos?.length === undefined ||
         props.mediaKitPhotos?.length < 1
       ) {
-        props.getMediaKitPhotos();
+        props.clearMediaKitPhotosError();
+        if (!photoLoading) {
+          setPhotoLoading(true);
+          props.getMediaKitPhotos();
+        } 
+      } else {
+        if (photoLoading) {
+          setPhotoLoading(false);
+        }
       }
     }, [props.mediaKitPhotos]);
+
+    useEffect(() => {
+      if (photoError === null) {
+        return;
+      }
+      if (
+        photoLoading &&
+        (props.mediaKitPhotos?.length === undefined ||
+          props.mediaKitPhotos?.length < 1)
+      ) {
+        setPhotoLoading(false);
+      }
+    }, [photoError]);
 
     return (
       <SafeAreaView style={styles.container}>
@@ -144,6 +172,8 @@ function MediaKitFiles(props) {
             <WatermarkPhotos
               watermarkData={watermarkData}
               userId={currentUser?.id}
+              loading={photoLoading}
+              error={photoError}
               photos={props.mediaKitPhotos}
             />
           )}
@@ -151,9 +181,7 @@ function MediaKitFiles(props) {
       </SafeAreaView>
     );
   } catch (error) {
-    console.error(error);
     sentryLog(error);
-
     return (
       <SafeAreaView style={styles.container}>
         <ErrorView
@@ -262,9 +290,10 @@ const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
   mediaKitPhotos: store.mediaKitState.photos,
+  photoError: store.mediaKitState.photoError,
 });
 
 const mapDispatchProps = (dispatch) =>
-  bindActionCreators({ getMediaKitPhotos }, dispatch);
+  bindActionCreators({ getMediaKitPhotos, clearMediaKitPhotosError }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchProps)(MediaKitFiles);
