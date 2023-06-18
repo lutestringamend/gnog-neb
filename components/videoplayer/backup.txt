@@ -1,3 +1,12 @@
+import React from 'react'
+import { SafeAreaView, Text } from 'react-native'
+
+export default function VideoPlayer() {
+  return (
+    <SafeAreaView><Text>VideoPlayer</Text></SafeAreaView>
+  )
+}
+
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   View,
