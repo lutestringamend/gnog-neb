@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingTop: 10,
     paddingBottom: 20,
+    backgroundColor: "transparent",
   },
   text: {
     color: colors.daclen_blue,

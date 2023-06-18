@@ -8,6 +8,7 @@ import {
   View,
   Image,
   Linking,
+  ActivityIndicator,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -38,20 +39,26 @@ function DashboardMain(props) {
     isError: false,
   });
 
-  const [popupDetail, setPopupDetail] = useState({title: null});
+  const [popupDetail, setPopupDetail] = useState({ title: null });
   const navigation = useNavigation();
   const rbSheet = useRef();
   const { currentUser, token, hpv } = props;
 
   useEffect(() => {
-    if (token !== null) {
-      if (hpv === null) {
-        props.getHPV(currentUser?.id, token);
-      } else {
-        console.log({ hpv });
-      }
+    if (
+      token === null ||
+      currentUser === null ||
+      currentUser?.id === undefined ||
+      currentUser?.id === null
+    ) {
+      return;
     }
-  }, [token, hpv]);
+    if (hpv === null) {
+      props.getHPV(currentUser?.id, token);
+    } else {
+      console.log({ hpv });
+    }
+  }, [token, currentUser, hpv]);
 
   useEffect(() => {
     if (popupDetail?.title !== null) {
@@ -108,14 +115,12 @@ function DashboardMain(props) {
             {message?.text}
           </Text>
         ) : null}
-        <TouchableOpacity onPress={() => Linking.openURL(webdashboard)} style={styles.buttonLogin}>
-        <MaterialCommunityIcons name="web" size={16} color="white" />
-          <Text
-            style={styles.textLogin}
-          >
-            
-            {dashboardbrowser}
-          </Text>
+        <TouchableOpacity
+          onPress={() => Linking.openURL(webdashboard)}
+          style={styles.buttonLogin}
+        >
+          <MaterialCommunityIcons name="web" size={16} color="white" />
+          <Text style={styles.textLogin}>{dashboardbrowser}</Text>
         </TouchableOpacity>
         {currentUser?.nomor_telp_verified_at === null ? (
           <View style={styles.containerVerification}>
@@ -140,6 +145,12 @@ function DashboardMain(props) {
               </TouchableOpacity>
             </View>
           </View>
+        ) : hpv === null || hpv?.data === undefined ? (
+          <ActivityIndicator
+            size="large"
+            color={colors.daclen_light}
+            style={styles.spinner}
+          />
         ) : (
           <Main
             poin_user={currentUser?.poin_user}
@@ -150,7 +161,11 @@ function DashboardMain(props) {
           />
         )}
       </ScrollView>
-      <RBSheet ref={rbSheet} openDuration={250} height={popupDetail?.height ? popupDetail?.height : 370}>
+      <RBSheet
+        ref={rbSheet}
+        openDuration={250}
+        height={popupDetail?.height ? popupDetail?.height : 370}
+      >
         <BSDashboard
           data={popupDetail}
           closeThis={() => rbSheet.current.close()}
@@ -247,6 +262,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     color: colors.daclen_light,
     textAlign: "center",
+  },
+  spinner: {
+    marginVertical: 20,
   },
 });
 

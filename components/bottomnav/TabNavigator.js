@@ -13,6 +13,7 @@ import TabBarIcon from "./TabBarIcon";
 const Tab = createMaterialBottomTabNavigator();
 
 export default function TabNavigator(props) {
+  const { login, token, currentUser } = props;
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -43,28 +44,35 @@ export default function TabNavigator(props) {
     >
       <Tab.Screen
         name="Home"
-        component={props?.login ? DashboardMain : HomeScreen}
+        key="Home"
+        component={
+          token === null ||
+          currentUser === null ||
+          currentUser?.id === undefined
+            ? HomeScreen
+            : DashboardMain
+        }
         navigation={props.navigation}
         options={{
           headerShown: false,
           title: "Beranda",
           tabBarColor: bottomNav.activeColor,
-          tabBarIcon: ({ focused }) =>
-            props?.login ? (
-              <TabBarIcon
-                title="Beranda"
-                iconName="view-dashboard"
-                focused={focused}
-              />
-            ) : (
-              <TabBarIcon title="Beranda" iconName="home" focused={focused} />
-            ),
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon
+              title="Beranda"
+              iconName={login ? "view-dashboard" : "home"}
+              focused={focused}
+            />
+          ),
         }}
       />
 
-      {props?.login ? (
+{token === null ||
+      currentUser === null ||
+      currentUser?.id === undefined ? null : (
         <Tab.Screen
           name="Belanja"
+          key="Shop"
           component={HomeScreen}
           navigation={props.navigation}
           options={{
@@ -81,10 +89,11 @@ export default function TabNavigator(props) {
             ),
           }}
         />
-      ) : null}
+      )}
 
       <Tab.Screen
         name="HistoryTab"
+        key="History"
         component={HistoryScreen}
         navigation={props.navigation}
         options={{
@@ -98,6 +107,7 @@ export default function TabNavigator(props) {
       />
       <Tab.Screen
         name="BlogFeed"
+        key="Blog"
         component={BlogScreen}
         navigation={props.navigation}
         options={{
@@ -115,6 +125,7 @@ export default function TabNavigator(props) {
       />
       <Tab.Screen
         name="Profile"
+        key="Profile"
         component={ProfileScreen}
         listeners={({ navigation }) => ({
           tabPress: (event) => {

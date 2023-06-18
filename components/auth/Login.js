@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
   containerBox: {
     position: "absolute",
     width: "90%",
-    backgroundColor: colors.daclen_light,
+    backgroundColor: "white",
     borderColor: colors.daclen_gray,
     borderWidth: 2,
     borderRadius: 5,

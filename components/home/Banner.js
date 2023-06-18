@@ -64,10 +64,11 @@ function Banner(props) {
           numColumns={3}
           horizontal={false}
           data={banners}
-          renderItem={({ item }) => (
-            <View style={styles.containerItem}>
+          renderItem={({ item, index }) => (
+            <View style={styles.containerItem} key={index}>
               <TouchableOpacity onPress={() => openItem(item?.link)}>
                 <Image
+                  key={index}
                   style={styles.imageBanner}
                   source={item?.foto}
                   alt={item?.judul}

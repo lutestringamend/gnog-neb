@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
+  TouchableHighlight,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 //import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -77,16 +78,17 @@ function CheckoutBox(props) {
           style={styles.closeIcon}
         />
       ) : (
-        <TouchableOpacity
+        <TouchableHighlight
           onPress={() => proceedClear()}
           style={styles.closeIcon}
+          underlayColor={colors.daclen_orange}
         >
           <MaterialCommunityIcons
             name="close-circle"
             size={32}
             color={colors.daclen_light}
           />
-        </TouchableOpacity>
+        </TouchableHighlight>
       )}
 
       <Text style={styles.textHeader}>Ringkasan</Text>
@@ -163,12 +165,12 @@ const styles = StyleSheet.create({
   },
   closeIcon: {
     position: "absolute",
-    end: 0,
-    top: 0,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    end: 12,
+    top: 10,
     elevation: 10,
+    borderRadius: 16,
     alignSelf: "center",
+    backgroundColor: "transparent",
   },
   textHeader: {
     color: colors.daclen_light,

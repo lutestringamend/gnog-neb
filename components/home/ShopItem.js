@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import {
   StyleSheet,
   View,
@@ -12,8 +12,8 @@ import { useNavigation } from "@react-navigation/native";
 import Cart from "../cart/Cart";
 import { colors, blurhash } from "../../styles/base";
 
-export default function ShopItem(props) {
-  const { id, nama, harga_currency, foto_url } = props;
+const ShopItem = (props) => {
+  const { id, nama, harga_currency, foto_url, key } = props;
   const navigation = useNavigation();
 
   const openProduct = () => {
@@ -26,7 +26,7 @@ export default function ShopItem(props) {
     */
 
   return (
-    <View style={styles.containerItem}>
+    <View style={styles.containerItem} key={id}>
       {nama === "" || nama === null || nama === undefined ? (
         <ActivityIndicator
           size="small"
@@ -36,6 +36,7 @@ export default function ShopItem(props) {
       ) : (
         <TouchableOpacity onPress={() => openProduct()}>
           <Image
+            key={id}
             style={styles.image}
             source={foto_url}
             onClick={() => openProduct()}
@@ -91,3 +92,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
+export default memo(ShopItem)

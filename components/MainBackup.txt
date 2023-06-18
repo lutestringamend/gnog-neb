@@ -29,7 +29,6 @@ function Main(props) {
     const [isLogin, setLogin] = useState(false);
     const [loadingUserData, setLoadingUserData] = useState(false);
     const [frozen, setFrozen] = useState(false);
-    const { token, currentUser } = props;
 
     useEffect(() => {
       const readStorageProducts = async () => {
@@ -58,12 +57,8 @@ function Main(props) {
     useEffect(() => {
       const readStorageToken = async () => {
         const storageToken = await getTokenAsync();
-        if (
-          storageToken === undefined ||
-          storageToken === null ||
-          storageToken === ""
-        ) {
-          console.log("storageToken null", storageToken);
+        if (storageToken === null || storageToken === undefined) {
+          console.log("all tokens null");
           setLoadingUserData(false);
           setLogin(false);
         } else {
@@ -73,7 +68,12 @@ function Main(props) {
       };
 
       const readStorageCurrentUser = async (token) => {
-        if (token === null || token === undefined || token === "") {
+        if (
+          token === null ||
+          token === undefined ||
+          token === "" ||
+          token === "null"
+        ) {
           props.clearUserData();
           props.clearMediaKitData();
           setLogin(false);
@@ -89,26 +89,33 @@ function Main(props) {
             props.overwriteWatermarkVideos(storageWatermarkVideos);
           } catch (e) {
             console.error(e);
-            sentryLog(e);
+            if (Platform.OS === "android") {
+              ToastAndroid.show(e.toString(), ToastAndroid.LONG);
+            }
           }
         }
         setLoadingUserData(false);
       };
 
       if (frozen) {
-        if (
-          (token === null || token === "") &&
-          (currentUser === null || currentUser?.id === undefined)
-        ) {
+        if (props.token === null && props.currentUser === null) {
           props.disableForceLogout();
         }
       } else {
         //console.log({token: props.token, currentUser: props.currentUser});
 
-        if ((token === null || token === "") && !loadingUserData && !frozen) {
+        if (
+          (props.token === null || props.token === "") &&
+          !loadingUserData &&
+          !frozen
+        ) {
           setLoadingUserData(true);
           readStorageToken();
-        } else if (currentUser === null || currentUser?.id === undefined) {
+        } else if (
+          props.currentUser === null ||
+          props.currentUser?.id === undefined ||
+          props.currentUser?.id === null
+        ) {
           if (loadingUserData && !frozen) {
             //setLogin(null);
           } else {
@@ -118,7 +125,7 @@ function Main(props) {
           setLogin(true);
         }
       }
-    }, [token, currentUser]);
+    }, [props.token, props.currentUser]);
 
     useEffect(() => {
       const uponForceLogout = async () => {
@@ -160,12 +167,16 @@ function Main(props) {
       return <SplashScreen />;
     } else {
       return (
-        <TabNavigator login={isLogin} token={token} currentUser={currentUser} />
+        <TabNavigator
+          login={isLogin}
+          token={props.token}
+          currentUser={props.currentUser}
+        />
       );
     }
   } catch (error) {
     sentryLog(error);
-    return <SplashScreen errorText={error.toString()} />;
+    return <SplashScreen errorText={error.message} />;
   }
 }
 

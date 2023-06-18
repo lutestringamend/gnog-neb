@@ -8,6 +8,7 @@ import { bindActionCreators } from "redux";
 
 import { getSliderContent } from "../../axios/home";
 import { colors } from "../../styles/base";
+import { sentryLog } from "../../sentry";
 
 function Slider(props) {
   const { sliders } = props;
@@ -17,67 +18,72 @@ function Slider(props) {
   const windowWidth = Dimensions.get("window").width;
   const aspectRatio = 1625 / 650;
 
-  useEffect(() => {
-    if ((sliders === null || sliders.length < 1) && !loading) {
-      props.getSliderContent();
-      setLoading(true);
-      setPhotos([]);
-    } else {
-      setLoading(false);
-      const data = [
-        ...new Set(
-          sliders
-            .map(({ foto, foto_small, produk_id }) => ({
-              img: foto === "" || foto === null ? foto_small : foto,
-              id: produk_id,
-            }))
-            .flat(1)
-        ),
-      ];
-      setPhotos(data);
-      //console.log(data);
-    }
-  }, [sliders]);
+  try {
+    useEffect(() => {
+      if ((sliders === null || sliders.length < 1) && !loading) {
+        props.getSliderContent();
+        setLoading(true);
+        setPhotos([]);
+      } else {
+        setLoading(false);
+        const data = [
+          ...new Set(
+            sliders
+              .map(({ foto, foto_small, produk_id }) => ({
+                img: foto === "" || foto === null ? foto_small : foto,
+                id: produk_id,
+              }))
+              .flat(1)
+          ),
+        ];
+        setPhotos(data);
+        //console.log(data);
+      }
+    }, [sliders]);
 
-  const openProduct = (id) => {
-    console.log(id);
-    if (id !== null && id !== undefined) {
-      navigation.navigate("Product", { id });
-    }
-  };
+    const openProduct = (id) => {
+      console.log(id);
+      if (id !== null && id !== undefined) {
+        navigation.navigate("Product", { id });
+      }
+    };
 
-  return (
-    <View style={{ width: windowWidth }}>
-      {loading ? (
-        <ActivityIndicator
-          size="small"
-          style={{ alignSelf: "center", marginVertical: 20 }}
-          color={colors.daclen_gray}
-        />
-      ) : sliders?.length > 0 ? (
-        <ImageSlider
-          data={photos}
-          autoPlay={true}
-          preview={false}
-          caroselImageContainerStyle={{
-            aspectRatio,
-            backgroundColor: colors.daclen_light,
-          }}
-          caroselImageStyle={{
-            width: windowWidth,
-            height: windowWidth / aspectRatio,
-            resizeMode: "contain",
-          }}
-          indicatorContainerStyle={{ bottom: 10 }}
-          activeIndicatorStyle={{ backgroundColor: colors.daclen_orange }}
-          inActiveIndicatorStyle={{ backgroundColor: colors.daclen_light }}
-          timer={2000}
-          onClick={(item) => openProduct(item?.id)}
-          style={{ margin: 0, padding: 0, width: "100%" }}
-        />
-      ) : null}
-    </View>
-  );
+    return (
+      <View style={{ width: windowWidth }}>
+        {loading ? (
+          <ActivityIndicator
+            size="small"
+            style={{ alignSelf: "center", marginVertical: 20 }}
+            color={colors.daclen_gray}
+          />
+        ) : sliders?.length > 0 ? (
+          <ImageSlider
+            data={photos}
+            autoPlay={true}
+            preview={false}
+            caroselImageContainerStyle={{
+              aspectRatio,
+              backgroundColor: colors.daclen_light,
+            }}
+            caroselImageStyle={{
+              width: windowWidth,
+              height: windowWidth / aspectRatio,
+              resizeMode: "contain",
+            }}
+            indicatorContainerStyle={{ bottom: 10 }}
+            activeIndicatorStyle={{ backgroundColor: colors.daclen_orange }}
+            inActiveIndicatorStyle={{ backgroundColor: colors.daclen_light }}
+            timer={2000}
+            onClick={(item) => openProduct(item?.id)}
+            style={{ margin: 0, padding: 0, width: "100%" }}
+          />
+        ) : null}
+      </View>
+    );
+  } catch (e) {
+    sentryLog(e);
+    return null;
+  }
 }
 
 const mapStateToProps = (store) => ({

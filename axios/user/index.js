@@ -144,6 +144,10 @@ export function getLaporanPoin(id, token) {
 
 export function getHPV(id, token) {
   return (dispatch) => {
+    if (id === undefined || id === null || token === undefined || token === null) {
+      return;
+    }
+
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -160,6 +164,7 @@ export function getHPV(id, token) {
       })
       .catch((error) => {
         console.log(error);
+        sentryLog(error);
         //dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: error?.message });
       });
   };
@@ -671,7 +676,7 @@ export function getCurrentUser(token, storageCurrentUser) {
       },
     };
 
-    console.log("getCurrentUser with header", config);
+    console.log(`getCurrentUser token ${token}`);
     Axios.get(getcurrentuser, config)
       .then((response) => {
         const data = response.data?.data;
@@ -680,7 +685,12 @@ export function getCurrentUser(token, storageCurrentUser) {
           dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
           dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });
           dispatch({ type: HISTORY_CLEAR_DATA });
-          readStorageCurrentUser(dispatch, storageCurrentUser);
+          try {
+            readStorageCurrentUser(dispatch, storageCurrentUser);
+          } catch (e) {
+            console.error(e);
+            sentryLog(e);
+          }
         } else {
           dispatch({ type: USER_STATE_CHANGE, data });
           dispatch({ type: USER_ADDRESS_STATE_CHANGE, data });
@@ -691,7 +701,7 @@ export function getCurrentUser(token, storageCurrentUser) {
         }
       })
       .catch((error) => {
-        console.log("getcurrentuser error", error.toString());
+        console.log("getcurrentuser error");
         sentryLog(error);
         dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
         dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });
@@ -718,7 +728,7 @@ function readStorageCurrentUser(dispatch, storageCurrentUser) {
 
 export function setNewToken(token, storageCurrentUser) {
   return (dispatch) => {
-    if (token === undefined || token === null) {
+    if (token === undefined || token === null || token === "") {
       console.log("redux token set to null");
       dispatch({ type: USER_TOKEN_STATE_CHANGE, token: null });
     } else {

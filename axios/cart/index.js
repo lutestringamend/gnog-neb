@@ -157,6 +157,9 @@ export function clearKeranjang(token) {
 
 export function getKeranjang(token) {
   return (dispatch) => {
+    if (token === undefined || token === null || token === ""){
+      return;
+    }
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,

@@ -65,6 +65,7 @@ import VideoLogs from "./components/videoplayer/VideoLogs";
 
 import { appname } from "./axios/constants";
 import { colors, staticDimensions } from "./styles/base";
+import { sentryLog } from "./sentry";
 
 const Stack = createStackNavigator();
 
@@ -260,7 +261,7 @@ export default function App() {
               <Stack.Screen
                 name="SaldoReportScreen"
                 component={SaldoReport}
-                options={{ ...defaultOptions, title: "Syarat Bonus Root" }}
+                options={{ ...defaultOptions, title: "Laporan Saldo" }}
               />
               <Stack.Screen
                 name="VideoPlayerScreen"
@@ -279,12 +280,7 @@ export default function App() {
     );
   } catch (error) {
     console.error(error);
-    if (Platform.OS === "web") {
-      Sentry.Browser.captureException(error);
-    } else {
-      Sentry.Native.captureException(error);
-    }
-
+    sentryLog(error);
     return <SplashScreen errorText={error.message} />;
   }
 }

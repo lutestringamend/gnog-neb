@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   StyleSheet,
   View,
@@ -39,7 +39,7 @@ import {
   tncicon,
 } from "./constants";
 import { commissionpointpdf, webmediakit } from "../../axios/constants";
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 
 import MainHeader from "../main/MainHeader";
 import Header from "./Header";
@@ -47,34 +47,36 @@ import ProfileMenuItem from "./ProfileMenuItem";
 import BSPopup from "../bottomsheets/BSPopup";
 import { openWhatsapp } from "../whatsapp/Whatsapp";
 import { adminWA, adminWAtemplate } from "./constants";
-//import { setObjectAsync, setTokenAsync } from "../asyncstorage";
-//import { ASYNC_USER_CURRENTUSER_KEY } from "../asyncstorage/constants";
 
 function Profile(props) {
   const { currentUser, token } = props;
   const appVersion = `Versi ${packageJson?.version}`;
   const rbSheet = useRef();
 
+  useEffect(() => {
+    if (token === null || currentUser === null || currentUser?.id === undefined) {
+      rbSheet.current.close();
+    }
+  }, [currentUser, token]);
+
   const userLogOut = async () => {
     props.enableForceLogout();
   };
-  
 
   return (
     <SafeAreaView style={styles.container}>
       <MainHeader icon="account-circle" title="Profil Pengguna" />
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.containerVertical}
+      >
         <Header
           token={token}
-          username={currentUser?.name}
-          foto={currentUser?.detail_user?.foto}
-          nama_lengkap={currentUser?.detail_user?.nama_lengkap}
-          email={currentUser?.email}
-          nomor_telp={currentUser?.nomor_telp}
+          currentUser={currentUser}
           thickness={3}
         />
 
-        {token && (
+        {currentUser === null || currentUser?.id === undefined ? null : (
           <View>
             <ProfileMenuItem
               text={addressmenu}
@@ -141,37 +143,32 @@ function Profile(props) {
           thickness={2}
         />
 
-        <ProfileMenuItem
-          text={faq}
-          icon={faqicon}
-          screen="FAQ"
-          thickness={3}
-        />
+        <ProfileMenuItem text={faq} icon={faqicon} screen="FAQ" thickness={3} />
 
-        {token && (
-          <View>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => rbSheet.current.open()}
-            >
-              <Text style={styles.textButton}>Logout</Text>
-            </TouchableOpacity>
-            <RBSheet ref={rbSheet} openDuration={250} height={350}>
-              <BSPopup
-                title={logouttitle}
-                text={logouttext}
-                buttonPositive={logoutbuttonpositive}
-                buttonPositiveColor={colors.daclen_danger}
-                buttonNegative={logoutbuttonnegative}
-                buttonNegativeColor={colors.daclen_gray}
-                icon="logout"
-                closeThis={() => rbSheet.current.close()}
-                onPress={() => userLogOut()}
-              />
-            </RBSheet>
-          </View>
+        {token === null ||
+        currentUser === null ||
+        currentUser?.id === undefined ? null : (
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => rbSheet.current.open()}
+          >
+            <Text style={styles.textButton}>Logout</Text>
+          </TouchableOpacity>
         )}
       </ScrollView>
+      <RBSheet ref={rbSheet} openDuration={250} height={350}>
+        <BSPopup
+          title={logouttitle}
+          text={logouttext}
+          buttonPositive={logoutbuttonpositive}
+          buttonPositiveColor={colors.daclen_danger}
+          buttonNegative={logoutbuttonnegative}
+          buttonNegativeColor={colors.daclen_gray}
+          icon="logout"
+          closeThis={() => rbSheet.current.close()}
+          onPress={() => userLogOut()}
+        />
+      </RBSheet>
     </SafeAreaView>
   );
 }
@@ -180,11 +177,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
+    backgroundColor: "white",
   },
   scrollView: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "transparent",
     paddingBottom: staticDimensions.pageBottomPadding,
+  },
+  containerVertical: {
+    backgroundColor: "transparent",
   },
   button: {
     alignItems: "center",

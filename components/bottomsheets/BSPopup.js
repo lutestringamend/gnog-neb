@@ -138,10 +138,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_black,
   },
   button: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 12,
     paddingHorizontal: 32,
+    marginHorizontal: 4,
     borderRadius: 4,
     elevation: 3,
     backgroundColor: colors.daclen_black,
@@ -161,5 +163,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.daclen_gray,
     textAlign: "center",
+    marginHorizontal: 10,
   },
 });

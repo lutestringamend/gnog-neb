@@ -3,36 +3,36 @@ import {
   StyleSheet,
   ActivityIndicator,
   SafeAreaView,
-  Platform,
   View,
   Text,
   TouchableOpacity,
   Linking,
   ScrollView,
 } from "react-native";
-import * as Sentry from "sentry-expo";
 
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import RenderHTML from "react-native-render-html";
 //import { WebView } from "react-native-webview";
 
 import { colors, staticDimensions, dimensions } from "../../styles/base";
 import MainHeader from "../main/MainHeader";
+import { sentryLog } from "../../sentry";
 
 export function ErrorView(props) {
   return (
-    <View>
+    <View style={styles.containerVertical}>
+      <Text style={styles.textError}>{props?.error}</Text>
       {props?.onOpenExternalLink && (
-        <TouchableOpacity onPress={props?.onOpenExternalLink}>
-          <Text style={styles.textLink}>Buka di Browser</Text>
+        <TouchableOpacity onPress={props?.onOpenExternalLink} style={styles.button}>
+          <MaterialCommunityIcons name="web" size={16} color="white" />
+          <Text style={styles.textButton}>Buka di Browser</Text>
         </TouchableOpacity>
       )}
-      <Text style={styles.textError}>{props?.error}</Text>
     </View>
   );
 }
 
 function WebviewChild(props) {
-
   try {
     function openExternalLink() {
       if (props?.url !== null && props?.url !== undefined) {
@@ -72,12 +72,7 @@ function WebviewChild(props) {
     );
   } catch (error) {
     console.error(error);
-    if (Platform.OS === "web") {
-      Sentry.Browser.captureException(error);
-    } else {
-      Sentry.Native.captureException(error);
-    }
-
+    sentryLog(error);
     return (
       <SafeAreaView style={styles.container}>
         {props?.title && <MainHeader title={props?.title} icon="arrow-left" />}
@@ -112,6 +107,9 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "white",
   },
+  containerVertical: {
+    backgroundColor: "transparent",
+  },
   scrollView: {
     paddingHorizontal: 12,
     paddingTop: 12,
@@ -126,23 +124,30 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
   },
+  button: {
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    marginHorizontal: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    backgroundColor: colors.daclen_orange,
+  },
+  textButton: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "white",
+    marginStart: 4,
+    backgroundColor: "transparent",
+  },
   textError: {
     fontSize: 14,
     fontWeight: "bold",
     padding: 20,
     color: colors.daclen_danger,
     textAlign: "center",
-  },
-  textLink: {
-    color: colors.daclen_lightgrey,
-    textAlign: "center",
-    fontSize: 16,
-    fontWeight: "bold",
-    padding: 10,
-    backgroundColor: colors.daclen_blue,
-    borderRadius: 5,
-    marginVertical: 20,
-    marginHorizontal: 10,
   },
   textDaclen: {
     color: colors.daclen_light,

@@ -1,54 +1,70 @@
-import React, { useEffect } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors, blurhash } from "../../styles/base";
 import Separator from "./Separator";
-import { useState } from "react";
+import { ProfileHeaderUserData } from "./constants";
 
 export default function Header(props) {
-  const [username, setUsername] = useState("");
+  const [login, setLogin] = useState(false);
+  const [userData, setUserData] = useState(ProfileHeaderUserData);
   const navigation = useNavigation();
+  const { token, currentUser } = props;
 
   useEffect(() => {
-    if (props?.token !== undefined && props?.token !== null) {
-      setUsername(props?.username);
+    if (
+      token === null ||
+      currentUser === null ||
+      currentUser?.id === undefined
+    ) {
+      if (login) {
+        setUserData(ProfileHeaderUserData);
+        setLogin(false);
+      }
+    } else {
+      if (!login) {
+        let username = currentUser?.username;
+        let displayName =
+          currentUser?.detail_user === undefined ||
+          currentUser?.detail_user === null ||
+          currentUser?.detail_user?.nama_lengkap === undefined
+            ? username
+            : currentUser?.detail_user?.nama_lengkap;
+        let photo =
+          currentUser?.detail_user === undefined ||
+          currentUser?.detail_user === null ||
+          currentUser?.detail_user?.foto === undefined
+            ? null
+            : currentUser?.detail_user?.foto;
+        setUserData({
+          username,
+          displayName,
+          photo,
+        });
+        setLogin(true);
+      }
     }
-    console.log({ token: props?.token, username: props?.username });
-  }, [props?.token]);
+  }, [token, currentUser]);
 
   const openScreen = () => {
-    if (props?.token !== undefined && props?.token !== null) {
+    if (login) {
       navigation.navigate("EditProfile");
     }
   };
 
   const openLogin = () => {
-    if (props?.token === undefined || props?.token === null) {
-      console.log("going login with prev username " + username);
-      navigation.navigate("Login", { username });
+    if (!login) {
+      console.log(`login prev username ${userData?.username}`);
+      navigation.navigate("Login", { username: userData?.username });
     }
   };
 
   return (
-    <View>
-      {props?.token === undefined || props?.token === null ? (
-        <View style={styles.containerLogin}>
-          <Text style={[styles.text, { textAlign: "center", width: "100%" }]}>
-            Login / Register untuk berbelanja dengan Daclen
-          </Text>
-          <TouchableOpacity style={styles.button} onPress={() => openLogin()}>
-            <Text style={styles.textButton}>Login / Register</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
+    <View style={{ backgroundColor: "transparent" }}>
+      {login ? (
         <TouchableOpacity
           onPress={() => openScreen()}
           style={styles.containerTouchable}
@@ -56,13 +72,14 @@ export default function Header(props) {
           <View style={styles.container}>
             <View style={styles.containerPhoto}>
               <Image
+                key="userImage"
                 style={styles.image}
                 source={
-                  props?.foto !== ""
-                    ? props?.foto
+                  userData?.photo
+                    ? userData?.photo
                     : require("../../assets/user.png")
                 }
-                alt={props.nama_lengkap}
+                alt={userData?.username}
                 contentFit="contain"
                 placeholder={blurhash}
                 transition={0}
@@ -70,11 +87,13 @@ export default function Header(props) {
             </View>
 
             <View style={styles.containerVertical}>
-              <Text style={styles.textName}>
-                {props?.nama_lengkap ? props?.nama_lengkap : props?.username}
-              </Text>
-              <Text style={styles.text}>{props?.email}</Text>
-              <Text style={styles.text}>{props?.nomor_telp}</Text>
+              <Text style={styles.textName}>{userData?.displayName}</Text>
+              {currentUser?.email ? (
+                <Text style={styles.text}>{currentUser?.email}</Text>
+              ) : null}
+              {currentUser?.nomor_telp ? (
+                <Text style={styles.text}>{currentUser?.nomor_telp}</Text>
+              ) : null}
             </View>
           </View>
           <MaterialCommunityIcons
@@ -84,6 +103,15 @@ export default function Header(props) {
             style={styles.arrow}
           />
         </TouchableOpacity>
+      ) : (
+        <View style={styles.containerLogin}>
+          <Text style={[styles.text, { textAlign: "center", width: "100%" }]}>
+            Login / Register untuk berbelanja dengan Daclen
+          </Text>
+          <TouchableOpacity style={styles.button} onPress={() => openLogin()}>
+            <Text style={styles.textButton}>Login / Register</Text>
+          </TouchableOpacity>
+        </View>
       )}
 
       <Separator thickness={props?.thickness} />
@@ -103,6 +131,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginVertical: 20,
     marginHorizontal: 10,
+    alignItems: "center",
   },
   containerVertical: {
     marginHorizontal: 10,

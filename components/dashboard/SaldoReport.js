@@ -1,18 +1,22 @@
 import React from "react";
-import { SafeAreaView, Text } from "react-native";
-import { colors } from "../../styles/base";
+import { Linking, SafeAreaView } from "react-native";
+//import { colors } from "../../styles/base";
+import { ErrorView } from "../webview/WebviewChild";
+import { websaldo } from "../../axios/constants";
 
 const SaldoReport = () => {
   return (
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: colors.daclen_reddishbrown,
-        justifyContent: "center",
-        alignItems: "center",
+        width: "100%",
+        backgroundColor: "white",
       }}
     >
-      <Text style={{ color: colors.daclen_light }}>SALDO REPORT</Text>
+      <ErrorView
+          error="Mohon membuka website Daclen untuk membaca Laporan Saldo"
+          onOpenExternalLink={() => Linking.openURL(websaldo)}
+        />
     </SafeAreaView>
   );
 };
