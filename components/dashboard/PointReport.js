@@ -29,18 +29,28 @@ import { weblaporanpoin } from "../../axios/constants";
 
 function PointReport(props) {
   const { token, currentUser, points, checkouts, hpv, authError } = props;
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [referralData, setReferralData] = useState([]);
   const [error, setError] = useState(null);
   const navigation = useNavigation();
+
+  useEffect(() => {
+    props.clearAuthError();
+  }, []);
 
   useEffect(() => {
     refreshPage();
   }, [token, points]);
 
   useEffect(() => {
+    if (authError === null) {
+      if (error !== null) {
+        setError(null);
+      }
+      return;
+    }
+    setError(authError);
     if (loading && points === null) {
-      setError(authError);
       setLoading(false);
     }
   }, [authError]);
@@ -71,7 +81,6 @@ function PointReport(props) {
   }, [hpv]);
 
   function refreshPage() {
-    props.clearAuthError();
     if (points === null && token !== null && currentUser?.id !== undefined) {
       props.getLaporanPoin(currentUser?.id, token);
       setLoading(true);
@@ -95,26 +104,26 @@ function PointReport(props) {
     Linking.openURL(weblaporanpoin);
   }
 
-  if (loading) {
-    return (
-      <SafeAreaView style={styles.container}>
+  return (
+    <SafeAreaView style={styles.container}>
+      {loading ? (
         <ActivityIndicator
           size="large"
           color={colors.daclen_orange}
           style={{ alignSelf: "center", marginVertical: 20 }}
         />
-      </SafeAreaView>
-    );
-  }
-
-  return (
-    <SafeAreaView style={styles.container}>
-      {error ? (
+      ) : error ? (
         <ErrorView
           error="Mohon membuka website Daclen untuk membaca Laporan Poin"
           onOpenExternalLink={() => onOpenExternalLink()}
         />
-      ) : token && currentUser?.id ? (
+      ) : token === null || currentUser?.id === undefined ? (
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <Text style={styles.textUid}>
+            Anda harus Login / Register untuk mengecek riwayat pengumpulan poin
+          </Text>
+        </TouchableOpacity>
+      ) : (
         <ScrollView
           style={styles.containerFlatlist}
           refreshControl={
@@ -206,12 +215,6 @@ function PointReport(props) {
             />
           )}
         </ScrollView>
-      ) : (
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.textUid}>
-            Anda harus Login / Register untuk mengecek riwayat pengumpulan poin
-          </Text>
-        </TouchableOpacity>
       )}
     </SafeAreaView>
   );

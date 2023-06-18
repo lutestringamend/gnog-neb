@@ -40,7 +40,7 @@ import { websyaratbonus } from "../../axios/constants";
 
 function BonusRoot(props) {
   const { token, syaratRoot, authError } = props;
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(null);
   const [rootTree, setRootTree] = useState([]);
   const [error, setError] = useState(null);
@@ -48,6 +48,9 @@ function BonusRoot(props) {
 
   useEffect(() => {
     props.clearAuthError();
+  }, []);
+
+  useEffect(() => {
     if (
       (syaratRoot?.length === undefined || syaratRoot?.length < 1) &&
       token !== null
@@ -62,11 +65,17 @@ function BonusRoot(props) {
   }, [token, syaratRoot]);
 
   useEffect(() => {
+    if (authError === null) {
+      if (error !== null) {
+        setError(null);
+      }
+      return;
+    }
+    setError(authError);
     if (
       loading &&
       (syaratRoot?.length === undefined || syaratRoot?.length < 1)
     ) {
-      setError(authError);
       setLoading(false);
     }
   }, [authError]);
@@ -124,192 +133,188 @@ function BonusRoot(props) {
           color={colors.daclen_orange}
           style={{ alignSelf: "center", marginVertical: 20 }}
         />
-      ) : error ? (
+      ) : token === null || activeTab === null ? (
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <Text style={styles.textUid}>
+            Anda harus Login / Register untuk membaca Syarat Bonus Root
+          </Text>
+        </TouchableOpacity>
+      ) : syaratRoot?.length === undefined || syaratRoot?.length < 1 ? (
         <ErrorView
           error="Mohon membuka website Daclen untuk membaca Syarat Bonus"
           onOpenExternalLink={() => onOpenExternalLink()}
         />
-      ) : syaratRoot?.length === undefined || syaratRoot?.length < 1 ? null : (
-        <View style={styles.tabView}>
-          <FlatList
-            horizontal={true}
-            data={syaratRoot}
-            style={styles.containerFlatlist}
-            renderItem={({ item, index }) => (
-              <HistoryTabItem
-                activeTab={activeTab}
-                name={index}
-                title={item?.level}
-                style={styles.containerTabItem}
-                backgroundColor={bonusrootlevelcolors[index]}
-                selectedColor={colors.daclen_blue}
-                marginEnd={10}
-                icon="account-multiple"
-                onPress={() => setActiveTab(index)}
-              />
-            )}
-          />
-        </View>
-      )}
-
-      {token === null ||
-      activeTab === null ||
-      syaratRoot?.length === undefined ||
-      syaratRoot?.length < 1 ? (
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.textUid}>
-            Anda harus Login / Register untuk melihat syarat bonus root
-          </Text>
-        </TouchableOpacity>
       ) : (
-        <ScrollView
-          style={styles.containerFlatlist}
-          refreshControl={
-            <RefreshControl
-              refreshing={loading}
-              onRefresh={() => refreshPage()}
-            />
-          }
-        >
-          <View style={styles.containerTable}>
-            <Text
-              style={[
-                styles.textTableHeader,
-                { color: bonusrootlevelcolors[activeTab] },
-              ]}
-            >
-              Syarat Bonus Root Level {syaratRoot[activeTab]?.level}
-            </Text>
-            <View style={styles.containerSpec}>
-              <Text style={styles.textSpecHeader}>{pvtitle}</Text>
-              <Text
-                style={[
-                  styles.textSpec,
-                  { color: bonusrootlevelcolors[activeTab] },
-                ]}
-              >
-                {syaratRoot[activeTab]?.pv}
-              </Text>
-            </View>
-
-            <View style={styles.containerSpec}>
-              <Text style={styles.textSpecHeader}>{bonusfirstroot}</Text>
-              <Text
-                style={[
-                  styles.textSpec,
-                  { color: bonusrootlevelcolors[activeTab] },
-                ]}
-              >
-                {syaratRoot[activeTab]?.bonus_1
-                  ? syaratRoot[activeTab]?.bonus_1
-                  : "0"}
-                {" %"}
-              </Text>
-            </View>
-            <View style={styles.containerSpec}>
-              <Text style={styles.textSpecHeader}>{bonussecondroot}</Text>
-              <Text
-                style={[
-                  styles.textSpec,
-                  { color: bonusrootlevelcolors[activeTab] },
-                ]}
-              >
-                {syaratRoot[activeTab]?.bonus_2
-                  ? syaratRoot[activeTab]?.bonus_2
-                  : "0"}
-                {" %"}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.containerMain}>
-            <BonusRootItem
-              isParent={true}
-              title={hpvtitle}
-              content={syaratRoot[activeTab]?.hpv}
-              color={bonusrootlevelcolors[activeTab]}
-              isLastItem={false}
-              onPress={() => console.log(rootTree)}
-            />
-            <View style={styles.containerFlatlistTree}>
-              {syaratRoot[activeTab]?.rpv?.length > 0 ? (
-                <VerticalLine
-                  style={{
-                    height: 32,
-                    backgroundColor: bonusrootlevelcolors[activeTab],
-                  }}
+        <View style={styles.container}>
+          <View style={styles.tabView}>
+            <FlatList
+              horizontal={true}
+              data={syaratRoot}
+              style={styles.containerFlatlist}
+              renderItem={({ item, index }) => (
+                <HistoryTabItem
+                  activeTab={activeTab}
+                  name={index}
+                  title={item?.level}
+                  style={styles.containerTabItem}
+                  backgroundColor={bonusrootlevelcolors[index]}
+                  selectedColor={colors.daclen_blue}
+                  marginEnd={10}
+                  icon="account-multiple"
+                  onPress={() => setActiveTab(index)}
                 />
-              ) : null}
-              {rootTree?.length === undefined || rootTree?.length < 1 ? (
-                <ActivityIndicator
-                  size="large"
-                  color={colors.daclen_gray}
-                  style={{ alignSelf: "center", marginVertical: 20 }}
-                />
-              ) : (
-                rootTree.map((level) => (
-                  <View key={level?.key} style={styles.containerRootChildren}>
-                    <View style={styles.containerRootHeader}>
-                      <VerticalLine
-                        style={{
-                          height:
-                            level?.key >= rootTree?.length ? "52%" : "100%",
-                          backgroundColor: bonusrootlevelcolors[activeTab],
-                        }}
-                      />
-                      <View
-                        style={[
-                          styles.horizontalLine,
-                          {
-                            backgroundColor: bonusrootlevelcolors[activeTab],
-                          },
-                        ]}
-                      />
-                      <Text
-                        style={[
-                          styles.textRootHeader,
-                          {
-                            backgroundColor: bonusrootlevelcolors[activeTab],
-                          },
-                        ]}
-                      >
-                        Level {level?.key}
-                      </Text>
-                    </View>
-                    <View style={styles.containerRootContent}>
-                      <VerticalLine
-                        style={{
-                          height: "100%",
-                          backgroundColor:
-                            level?.key >= rootTree?.length
-                              ? "white"
-                              : bonusrootlevelcolors[activeTab],
-                        }}
-                      />
-                      <FlatList
-                        numColumns={1}
-                        horizontal={false}
-                        style={styles.containerFlatlistChildren}
-                        data={level?.levelChildren}
-                        renderItem={({ item, index }) => (
-                          <BonusRootItem
-                            isParent={false}
-                            title={rpvtitle}
-                            content={item?.rpv}
-                            isLastItem={
-                              index >= level?.levelChildren?.length - 1
-                            }
-                            color={bonusrootlevelcolors[activeTab]}
-                          />
-                        )}
-                      />
-                    </View>
-                  </View>
-                ))
               )}
-            </View>
+            />
           </View>
-        </ScrollView>
+          <ScrollView
+            style={styles.containerFlatlist}
+            refreshControl={
+              <RefreshControl
+                refreshing={loading}
+                onRefresh={() => refreshPage()}
+              />
+            }
+          >
+            <View style={styles.containerTable}>
+              <Text
+                style={[
+                  styles.textTableHeader,
+                  { color: bonusrootlevelcolors[activeTab] },
+                ]}
+              >
+                Syarat Bonus Root Level {syaratRoot[activeTab]?.level}
+              </Text>
+              <View style={styles.containerSpec}>
+                <Text style={styles.textSpecHeader}>{pvtitle}</Text>
+                <Text
+                  style={[
+                    styles.textSpec,
+                    { color: bonusrootlevelcolors[activeTab] },
+                  ]}
+                >
+                  {syaratRoot[activeTab]?.pv}
+                </Text>
+              </View>
+
+              <View style={styles.containerSpec}>
+                <Text style={styles.textSpecHeader}>{bonusfirstroot}</Text>
+                <Text
+                  style={[
+                    styles.textSpec,
+                    { color: bonusrootlevelcolors[activeTab] },
+                  ]}
+                >
+                  {syaratRoot[activeTab]?.bonus_1
+                    ? syaratRoot[activeTab]?.bonus_1
+                    : "0"}
+                  {" %"}
+                </Text>
+              </View>
+              <View style={styles.containerSpec}>
+                <Text style={styles.textSpecHeader}>{bonussecondroot}</Text>
+                <Text
+                  style={[
+                    styles.textSpec,
+                    { color: bonusrootlevelcolors[activeTab] },
+                  ]}
+                >
+                  {syaratRoot[activeTab]?.bonus_2
+                    ? syaratRoot[activeTab]?.bonus_2
+                    : "0"}
+                  {" %"}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.containerMain}>
+              <BonusRootItem
+                isParent={true}
+                title={hpvtitle}
+                content={syaratRoot[activeTab]?.hpv}
+                color={bonusrootlevelcolors[activeTab]}
+                isLastItem={false}
+                onPress={() => console.log(rootTree)}
+              />
+              <View style={styles.containerFlatlistTree}>
+                {syaratRoot[activeTab]?.rpv?.length > 0 ? (
+                  <VerticalLine
+                    style={{
+                      height: 32,
+                      backgroundColor: bonusrootlevelcolors[activeTab],
+                    }}
+                  />
+                ) : null}
+                {rootTree?.length === undefined || rootTree?.length < 1 ? (
+                  <ActivityIndicator
+                    size="large"
+                    color={colors.daclen_gray}
+                    style={{ alignSelf: "center", marginVertical: 20 }}
+                  />
+                ) : (
+                  rootTree.map((level) => (
+                    <View key={level?.key} style={styles.containerRootChildren}>
+                      <View style={styles.containerRootHeader}>
+                        <VerticalLine
+                          style={{
+                            height:
+                              level?.key >= rootTree?.length ? "52%" : "100%",
+                            backgroundColor: bonusrootlevelcolors[activeTab],
+                          }}
+                        />
+                        <View
+                          style={[
+                            styles.horizontalLine,
+                            {
+                              backgroundColor: bonusrootlevelcolors[activeTab],
+                            },
+                          ]}
+                        />
+                        <Text
+                          style={[
+                            styles.textRootHeader,
+                            {
+                              backgroundColor: bonusrootlevelcolors[activeTab],
+                            },
+                          ]}
+                        >
+                          Level {level?.key}
+                        </Text>
+                      </View>
+                      <View style={styles.containerRootContent}>
+                        <VerticalLine
+                          style={{
+                            height: "100%",
+                            backgroundColor:
+                              level?.key >= rootTree?.length
+                                ? "white"
+                                : bonusrootlevelcolors[activeTab],
+                          }}
+                        />
+                        <FlatList
+                          numColumns={1}
+                          horizontal={false}
+                          style={styles.containerFlatlistChildren}
+                          data={level?.levelChildren}
+                          renderItem={({ item, index }) => (
+                            <BonusRootItem
+                              isParent={false}
+                              title={rpvtitle}
+                              content={item?.rpv}
+                              isLastItem={
+                                index >= level?.levelChildren?.length - 1
+                              }
+                              color={bonusrootlevelcolors[activeTab]}
+                            />
+                          )}
+                        />
+                      </View>
+                    </View>
+                  ))
+                )}
+              </View>
+            </View>
+          </ScrollView>
+        </View>
       )}
     </SafeAreaView>
   );
