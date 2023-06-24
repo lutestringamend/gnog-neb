@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
-  FlatList,
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
 
 import { useNavigation } from "@react-navigation/native";
@@ -60,7 +60,7 @@ function Banner(props) {
           color={colors.daclen_gray}
         />
       ) : banners?.length > 0 ? (
-        <FlatList
+        <FlashList
           numColumns={3}
           horizontal={false}
           data={banners}
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   containerItem: {
-    flex: 1 / 3,
+    flex: 1,
     paddingHorizontal: 2,
     backgroundColor: colors.daclen_light,
   },

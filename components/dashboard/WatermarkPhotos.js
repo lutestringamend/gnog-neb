@@ -1,13 +1,13 @@
 import React, { Suspense } from "react";
 import {
   View,
-  FlatList,
   TouchableHighlight,
   StyleSheet,
   Text,
   ActivityIndicator,
   Linking,
 } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 
@@ -59,7 +59,8 @@ const WatermarkPhotos = ({ photos, watermarkData, userId, loading, error }) => {
             />
           }
         >
-          <FlatList
+          <FlashList
+            estimatedItemSize={50}
             horizontal={false}
             numColumns={3}
             data={photos}
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   containerImage: {
-    flex: 1 / 3,
+    flex: 1,
     backgroundColor: colors.daclen_light,
     borderWidth: 0.5,
     borderColor: colors.daclen_lightgrey,

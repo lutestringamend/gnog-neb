@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
+  SafeAreaView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import RBSheet from "react-native-raw-bottom-sheet";
@@ -211,6 +212,7 @@ function FillAddress(props) {
   }
 
   function updateUserAddressData() {
+    setSuccess(false);
     if (address?.nama_depan === "") {
       setError("Nama Depan harus diisi");
     } else if (address?.alamat === "") {
@@ -228,26 +230,16 @@ function FillAddress(props) {
       props.token !== null &&
       props.currentUser?.id !== undefined
     ) {
+      setSuccess(true);
       setLoading(true);
       props.updateUserAddressData(props.currentUser, address, props.token);
     }
   }
 
   return (
-    <View style={styles.container}>
-      {error ? (
-        <Text
-          style={[
-            styles.textError,
-            success && { backgroundColor: colors.daclen_green },
-          ]}
-        >
-          {error}
-        </Text>
-      ) : null}
-
+    <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <View style={styles.containerLogo}>
+        <View style={styles.container}>
           <Image
             source={require("../../assets/alamat.png")}
             style={styles.logo}
@@ -272,6 +264,22 @@ function FillAddress(props) {
             <Text style={styles.textChange}>Baca {privacypolicy}</Text>
           </TouchableOpacity>
         </View>
+        {loading ? (
+        <ActivityIndicator
+          size="small"
+          color={colors.daclen_orange}
+          style={{ alignSelf: "center", marginVertical: 20 }}
+        />
+      ) : error ? (
+        <Text
+          style={[
+            styles.textError,
+            success && { backgroundColor: colors.daclen_green },
+          ]}
+        >
+          {error}
+        </Text>
+      ) : null}
         <Text style={styles.textCompulsory}>Nama depan*</Text>
         <TextInput
           value={address?.nama_depan}
@@ -337,24 +345,24 @@ function FillAddress(props) {
           onChangeText={(nomor_telp) => setAddress({ ...address, nomor_telp })}
         />
 
-        {loading ? (
-          <ActivityIndicator
-            size="large"
-            color={colors.daclen_orange}
-            style={{ alignSelf: "center", marginVertical: 20 }}
-          />
-        ) : (
-          <TouchableOpacity
-            onPress={() => updateUserAddressData()}
-            style={[
-              styles.button,
-              loading && { backgroundColor: colors.daclen_gray },
-            ]}
-            disabled={loading}
-          >
+        <TouchableOpacity
+          onPress={() => updateUserAddressData()}
+          style={[
+            styles.button,
+            loading && { backgroundColor: colors.daclen_gray },
+          ]}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator
+              size="small"
+              color={colors.daclen_light}
+              style={{ alignSelf: "center" }}
+            />
+          ) : (
             <Text style={styles.textButton}>Simpan Alamat</Text>
-          </TouchableOpacity>
-        )}
+          )}
+        </TouchableOpacity>
       </ScrollView>
       <RBSheet ref={rbSheet} openDuration={250} height={400}>
         <BSContainer
@@ -364,7 +372,7 @@ function FillAddress(props) {
           onPress={(item) => getBSValue(item)}
         />
       </RBSheet>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -385,7 +393,6 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    marginHorizontal: 20,
     paddingTop: 10,
     paddingBottom: staticDimensions.pageBottomPadding,
   },
@@ -394,6 +401,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   text: {
+    marginHorizontal: 20,
     color: colors.daclen_gray,
     fontSize: 12,
     fontWeight: "bold",
@@ -402,6 +410,7 @@ const styles = StyleSheet.create({
     color: colors.daclen_orange,
     fontSize: 12,
     fontWeight: "bold",
+    marginHorizontal: 20,
   },
   textChange: {
     color: colors.daclen_blue,
@@ -409,10 +418,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginVertical: 4,
+    marginHorizontal: 20,
   },
   textInput: {
     borderWidth: 1,
     borderColor: colors.daclen_gray,
+    marginHorizontal: 20,
     borderRadius: 4,
     padding: 10,
     marginTop: 2,
@@ -424,6 +435,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 12,
     paddingHorizontal: 32,
+    marginHorizontal: 20,
     borderRadius: 4,
     marginTop: 20,
     marginBottom: 32,

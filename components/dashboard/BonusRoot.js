@@ -4,7 +4,6 @@ import {
   StyleSheet,
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
@@ -12,6 +11,7 @@ import {
   Platform,
   ToastAndroid,
   Linking,
+  FlatList,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
   },
   containerFlatlist: {
     width: "100%",
-    backgroundColor: "white",
+    backgroundColor: "transparent",
   },
   containerMain: {
     flex: 1,
@@ -345,11 +345,11 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   containerFlatlistTree: {
-    backgroundColor: "white",
+    backgroundColor: "transparent",
     justifyContent: "flex-start",
   },
   containerFlatlistChildren: {
-    backgroundColor: "white",
+    backgroundColor: "transparent",
     marginHorizontal: 10,
     paddingBottom: 20,
   },

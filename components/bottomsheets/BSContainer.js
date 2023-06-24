@@ -1,8 +1,9 @@
 import React from "react";
 import { StyleSheet, View, Text, FlatList, TouchableOpacity } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-import { colors, dimensions } from "../../styles/base";
+import { colors } from "../../styles/base";
 import BSListItem from "./BSListItem";
 
 export default function BSContainer(props) {
@@ -21,8 +22,9 @@ export default function BSContainer(props) {
         </TouchableOpacity>
       </View>
       {listSize > 0 && (
-        <FlatList
-          style={styles.containerFlatlist}
+        <FlashList
+          estimatedItemSize={20}
+          contentContainerStyle={styles.containerFlatlist}
           numColumns={1}
           horizontal={false}
           data={props?.list}

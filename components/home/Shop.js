@@ -3,12 +3,11 @@ import {
   StyleSheet,
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   Image,
   ActivityIndicator,
 } from "react-native";
-
+import { FlashList } from "@shopify/flash-list";
 import { connect } from "react-redux";
 
 import { colors, dimensions } from "../../styles/base";
@@ -17,6 +16,7 @@ import Search from "./Search";
 import { getObjectAsync } from "../asyncstorage";
 import { ASYNC_PRODUCTS_ARRAY_KEY } from "../asyncstorage/constants";
 import ShopPages from "./ShopPages";
+import { productpaginationnumber } from "../../axios/constants";
 
 function Shop(props) {
   const [storageProducts, setStorageProducts] = useState(null);
@@ -198,7 +198,8 @@ function Shop(props) {
             Tidak ada produk tersedia di kategori ini
           </Text>
         ) : (
-          <FlatList
+          <FlashList
+            estimatedItemSize={productpaginationnumber}
             numColumns={2}
             horizontal={false}
             data={

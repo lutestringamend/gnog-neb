@@ -4,12 +4,12 @@ import {
   StyleSheet,
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
   RefreshControl,
 } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
@@ -88,7 +88,8 @@ function Delivery(props) {
               Anda belum memiliki riwayat Pengiriman
             </Text>
           ) : (
-            <FlatList
+            <FlashList
+              estimatedItemSize={10}
               numColumns={1}
               horizontal={false}
               data={deliveries}

@@ -4,12 +4,12 @@ import {
   StyleSheet,
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
   RefreshControl,
 } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
@@ -90,11 +90,12 @@ function Checkout(props) {
               Anda belum memiliki riwayat Checkout
             </Text>
           ) : (
-            <FlatList
+            <FlashList
+              estimatedItemSize={10}
               numColumns={1}
               horizontal={false}
               data={checkouts}
-              style={{ paddingBottom: 100 }}
+              contentContainerStyle={{ paddingBottom: 100 }}
               renderItem={({ item }) => (
                 <View style={{ width: "100%" }}>
                   <View style={styles.containerItem}>

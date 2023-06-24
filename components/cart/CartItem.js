@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
@@ -7,7 +7,7 @@ import Cart from "./Cart";
 import Separator from "../profile/Separator";
 import { colors, blurhash } from "../../styles/base";
 
-export default function CartItem(props) {
+const CartItem = (props) => {
   const navigation = useNavigation();
   const openProduct = (id) => {
     navigation.navigate("Product", { id });
@@ -103,3 +103,5 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
 });
+
+export default memo(CartItem)

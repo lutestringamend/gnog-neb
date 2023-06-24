@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import {
   View,
-  FlatList,
   TouchableHighlight,
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 
@@ -46,7 +46,8 @@ const WatermarkVideos = ({ videos, watermarkData, userId }) => {
           style={{ alignSelf: "center", marginVertical: 20 }}
         />
       ) : (
-        <FlatList
+        <FlashList
+          estimatedItemSize={12}
           horizontal={false}
           numColumns={3}
           data={videos}
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   containerImage: {
-    flex: 1 / 3,
+    flex: 1,
     backgroundColor: colors.daclen_light,
     borderWidth: 0.5,
     borderColor: colors.daclen_lightgrey,

@@ -114,7 +114,10 @@ export function getSyaratRoot(token) {
       })
       .catch((error) => {
         console.log(error);
-        dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: error?.toString() });
+        dispatch({
+          type: USER_AUTH_ERROR_STATE_CHANGE,
+          data: error?.toString(),
+        });
       });
   };
 }
@@ -137,14 +140,22 @@ export function getLaporanPoin(id, token) {
       })
       .catch((error) => {
         console.log(error);
-        dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: error.toString() });
+        dispatch({
+          type: USER_AUTH_ERROR_STATE_CHANGE,
+          data: error.toString(),
+        });
       });
   };
 }
 
 export function getHPV(id, token) {
   return (dispatch) => {
-    if (id === undefined || id === null || token === undefined || token === null) {
+    if (
+      id === undefined ||
+      id === null ||
+      token === undefined ||
+      token === null
+    ) {
       return;
     }
 
@@ -426,7 +437,7 @@ export function updateUserPhoto(id, token, uri) {
   }
 }
 
-export function updateUserData(id, userData, address, token) {
+export function updateUserData(id, userData, address, token, currentUser) {
   try {
     return (dispatch) => {
       const config = {
@@ -475,6 +486,31 @@ export function updateUserData(id, userData, address, token) {
             }
           } else {
             dispatch({ type: USER_UPDATE_STATE_CHANGE, data: data });
+            if (
+              currentUser === undefined ||
+              currentUser === null ||
+              currentUser?.detail_user === undefined ||
+              currentUser?.detail_user === null
+            ) {
+              return;
+            }
+            dispatch({
+              type: USER_STATE_CHANGE,
+              data: {
+                ...currentUser,
+                nomor_telp: params?.nomor_telp
+                  ? params?.nomor_telp
+                  : currentUser?.nomor_telp,
+                email: params?.email ? params?.email : currentUser?.email,
+                detail_user: {
+                  ...currentUser?.detail_user,
+                  ...params,
+                  foto: currentUser?.detail_user?.foto
+                    ? currentUser?.detail_user?.foto
+                    : null,
+                },
+              },
+            });
           }
         })
         .catch((error) => {
@@ -668,7 +704,7 @@ export function getCurrentUser(token, storageCurrentUser) {
     if (token === undefined || token === null || token === "") {
       return;
     }
-    
+
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,

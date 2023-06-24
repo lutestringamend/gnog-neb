@@ -56,10 +56,10 @@ const ShopItem = (props) => {
 
 const styles = StyleSheet.create({
   containerItem: {
-    flex: 1 / 2,
+    flex: 1,
     justifyContent: "space-between",
     paddingVertical: 20,
-    paddingHorizontal: 20,
+    paddingHorizontal: 14,
     borderRadius: 6,
     borderColor: colors.daclen_gray,
     borderWidth: 0.5,
@@ -74,7 +74,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.daclen_black,
     marginTop: 10,
-    marginHorizontal: 10,
+    textAlignVertical: "center",
+    height: 32,
     textAlign: "center",
   },
   image: {

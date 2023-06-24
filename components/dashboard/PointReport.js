@@ -4,7 +4,6 @@ import {
   StyleSheet,
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
@@ -13,6 +12,7 @@ import {
   Platform,
   ToastAndroid,
 } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
@@ -138,11 +138,12 @@ function PointReport(props) {
               Anda belum memiliki riwayat pengumpulan poin
             </Text>
           ) : (
-            <FlatList
+            <FlashList
+              estimatedItemSize={10}
               numColumns={1}
               horizontal={false}
               data={points?.data}
-              style={{ paddingBottom: staticDimensions.pageBottomPadding }}
+              contentContainerStyle={{ paddingBottom: staticDimensions.pageBottomPadding }}
               renderItem={({ item }) => (
                 <View style={{ width: "100%" }}>
                   <View style={styles.containerItem}>

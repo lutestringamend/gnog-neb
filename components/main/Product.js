@@ -4,11 +4,11 @@ import {
   StyleSheet,
   View,
   Text,
-  FlatList,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 //import { MaterialCommunityIcons } from '@expo/vector-icons';
 import RBSheet from "react-native-raw-bottom-sheet";
@@ -88,7 +88,8 @@ function Product(props, { navigation }) {
             {product?.tag_produk?.length > 0 && (
               <View style={styles.containerCategory}>
                 <Text style={styles.textCategory}>Kategori</Text>
-                <FlatList
+                <FlashList
+                  estimatedItemSize={4}
                   horizontal={true}
                   data={product?.tag_produk}
                   renderItem={({ item }) => (
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
     paddingEnd: 20,
   },
   textTag: {
-    fontSize: 12,
+    fontSize: 10,
     paddingHorizontal: 10,
     paddingVertical: 6,
     textAlign: "center",
@@ -248,7 +249,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     marginVertical: 2,
     marginEnd: 8,
-    flex: 1 / 3,
+    flex: 1,
   },
   textUid: {
     fontSize: 12,

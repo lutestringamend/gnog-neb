@@ -1,20 +1,18 @@
-import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
   TouchableHighlight,
-  FlatList,
-  Dimensions,
-  Platform,
-  ToastAndroid,
 } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
+import { useNavigation } from "@react-navigation/native";
 //import { ImageSlider } from "react-native-image-slider-banner";
 
 import { connect } from "react-redux";
 import { colors, blurhash } from "../../styles/base";
 import { dimensions } from "../../styles/base";
+import { sentryLog } from "../../sentry";
 
 function ProductSlider(props) {
   try {
@@ -97,7 +95,8 @@ function ProductSlider(props) {
 
         {photos?.length > 1 ? (
           <View style={styles.containerFlatlist}>
-            <FlatList
+            <FlashList
+              estimatedItemSize={10}
               horizontal={true}
               data={photos}
               renderItem={({ item }) => (
@@ -121,10 +120,8 @@ function ProductSlider(props) {
     );
   } catch (e) {
     console.error(e);
-    if (Platform.OS === "android") {
-      ToastAndroid.show(e?.message, ToastAndroid.LONG);
-    }
-    return <View style={styles.container} />;
+    sentryLog(e);
+    return null;
   }
 }
 

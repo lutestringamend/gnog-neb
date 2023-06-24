@@ -57,7 +57,7 @@ function EditProfile(props) {
     const initiatePermission = async () => {
       let newPermissions = await checkMediaPermissions();
       setPermissions(newPermissions);
-    }
+    };
     props.clearMediaData();
     if (permissions === intiialPermissions) {
       initiatePermission();
@@ -69,7 +69,7 @@ function EditProfile(props) {
   }, [permissions]);
 
   useEffect(() => {
-    //console.log(props.currentUser);
+    console.log("EditProfile currentUser", props.currentUser);
     if (props.currentUser !== null && props.currentUser !== undefined) {
       setLoading(true);
       setUser({
@@ -106,8 +106,12 @@ function EditProfile(props) {
     //debug purposes
     if (props.currentUser?.id === 8054 && props.profilePicture !== null) {
       let uri = Platform.OS === "web" ? "base64" : props.profilePicture;
-      let type =  getMimeType(props.profilePicture);
-      let name =  getProfilePictureName(props.currentUser?.id, type, props.profilePicture);
+      let type = getMimeType(props.profilePicture);
+      let name = getProfilePictureName(
+        props.currentUser?.id,
+        type,
+        props.profilePicture
+      );
       setError(`uri ${uri}\ntype ${type}\nname ${name}`);
     }
   }, [props.profilePicture]);
@@ -197,7 +201,12 @@ function EditProfile(props) {
       setError("Email harus diisi");
     } else if (user?.nomor_rekening === "") {
       setError("Nomor Rekening harus diisi");
-    } else if (user?.bank_id === "" || user?.bank_name === "" || user?.bank_id === null || user?.bank_name === null) {
+    } else if (
+      user?.bank_id === "" ||
+      user?.bank_name === "" ||
+      user?.bank_id === null ||
+      user?.bank_name === null
+    ) {
       setError("Nama Bank harus dipilih");
     } else if (user?.nomor_telp === "") {
       setError("Nomor Telepon harus diisi");
@@ -211,7 +220,8 @@ function EditProfile(props) {
         props.currentUser?.id,
         user,
         props.currentAddress,
-        props.token
+        props.token,
+        props.currentUser
       );
       if (
         props.profilePicture !== null &&
@@ -236,14 +246,7 @@ function EditProfile(props) {
     return (
       <View style={styles.container}>
         <ScrollView style={styles.scrollView}>
-        {loading ? (
-          <ActivityIndicator
-            size="large"
-            color={colors.daclen_orange}
-            style={{ alignSelf: "center", marginVertical: 20 }}
-          />
-        ) : (
-          error && (
+          {error ? (
             <Text
               style={[
                 styles.textError,
@@ -252,8 +255,7 @@ function EditProfile(props) {
             >
               {error}
             </Text>
-          )
-        )}
+          ) : null}
           <TouchableOpacity
             style={styles.containerPhoto}
             onPress={() => rbSheetMedia.current.open()}
@@ -411,7 +413,15 @@ function EditProfile(props) {
             ]}
             disabled={loading}
           >
-            <Text style={styles.textButton}>Simpan Profil</Text>
+            {loading ? (
+              <ActivityIndicator
+                size="small"
+                color={colors.daclen_light}
+                style={{ alignSelf: "center" }}
+              />
+            ) : (
+              <Text style={styles.textButton}>Simpan Profil</Text>
+            )}
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate("DeleteAccount")}

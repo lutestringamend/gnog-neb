@@ -4,10 +4,10 @@ import {
   View,
   Text,
   TouchableOpacity,
-  FlatList,
   ActivityIndicator,
   ScrollView
 } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import RenderHTML from "react-native-render-html";
@@ -51,11 +51,12 @@ function BlogItem(props) {
             <View style={styles.containerDescVertical}>
               <View style={styles.containerDescHorizontal}>
                 {props?.tag_blog?.length > 0 && (
-                  <FlatList
-                    numColumns={3}
+                  <FlashList
+                    estimatedItemSize={4}
+                    numColumns={2}
                     horizontal={false}
                     data={props?.tag_blog}
-                    style={styles.containerFlatlist}
+                    contentContainerStyle={styles.containerFlatlist}
                     renderItem={({ item }) => <Text style={styles.textCategory}>{item?.nama}</Text>}
                   />
                 )}
@@ -93,7 +94,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     padding: 4,
   },
   containerFlatlist: {
@@ -130,16 +130,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   textCategory: {
-    fontSize: 12,
+    fontSize: 10,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    textAlign: 'center',
+    textAlign: "center",
     fontWeight: "bold",
     backgroundColor: colors.daclen_green,
     color: colors.daclen_light,
     borderRadius: 2,
     marginVertical: 2,
-    marginEnd: 8,
+    marginEnd: 2,
   },
   image: {
     width: "100%",

@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
+import React, { memo, useEffect } from "react";
 import {
   StyleSheet,
-  FlatList,
   SafeAreaView,
   ActivityIndicator,
 } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -30,7 +30,8 @@ function FAQ(props) {
   return (
     <SafeAreaView style={styles.container}>
       {props.faq?.length > 0 ? (
-        <FlatList
+        <FlashList
+          estimatedItemSize={10}
           numColumns={1}
           horizontal={false}
           data={props.faq}
@@ -70,4 +71,4 @@ const mapDispatchProps = (dispatch) =>
     dispatch
   );
 
-export default connect(mapStateToProps, mapDispatchProps)(FAQ);
+export default memo(connect(mapStateToProps, mapDispatchProps)(FAQ));

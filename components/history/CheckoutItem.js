@@ -4,11 +4,11 @@ import {
   StyleSheet,
   View,
   Text,
-  FlatList,
   ActivityIndicator,
   ScrollView,
   RefreshControl,
 } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import { useNavigation } from "@react-navigation/native";
 
 import { connect } from "react-redux";
@@ -149,7 +149,8 @@ function CheckoutItem(props) {
               {checkout.keranjang?.produk?.length < 1 ? (
                 <Text style={styles.textUid}>Tidak ada Checkout</Text>
               ) : (
-                <FlatList
+                <FlashList
+                  estimatedItemSize={10}
                   numColumns={1}
                   horizontal={false}
                   data={checkout.keranjang?.produk}
