@@ -508,6 +508,11 @@ export function updateUserData(id, userData, address, token, currentUser) {
                   foto: currentUser?.detail_user?.foto
                     ? currentUser?.detail_user?.foto
                     : null,
+                  bank: {
+                    ...currentUser?.detail_user?.bank,
+                    id: params?.bank_id,
+                    nama: params?.bank_name,
+                  },
                 },
               },
             });
@@ -542,7 +547,6 @@ export function getBank(token) {
       },
     };
 
-    console.log("getBank with header");
     Axios.get(getbank, config)
       .then((response) => {
         let data = [];
@@ -552,6 +556,7 @@ export function getBank(token) {
           }
         }
         //console.log(data);
+        console.log("getBank with header", data);
         dispatch({ type: USER_BANKS_STATE_CHANGE, data });
       })
       .catch((error) => {
@@ -712,7 +717,6 @@ export function getCurrentUser(token, storageCurrentUser) {
       },
     };
 
-    console.log(`getCurrentUser token ${token}`);
     Axios.get(getcurrentuser, config)
       .then((response) => {
         const data = response.data?.data;
@@ -728,6 +732,7 @@ export function getCurrentUser(token, storageCurrentUser) {
             sentryLog(e);
           }
         } else {
+          console.log(`getCurrentUser token ${token}`, data);
           dispatch({ type: USER_STATE_CHANGE, data });
           dispatch({ type: USER_ADDRESS_STATE_CHANGE, data });
           dispatch({ type: HISTORY_CLEAR_DATA });

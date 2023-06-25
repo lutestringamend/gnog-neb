@@ -45,6 +45,7 @@ function EditProfile(props) {
   const [success, setSuccess] = useState(false);
   const [bottomList, setBottomList] = useState([]);
   const [genderArray, setGenderArray] = useState(genderchoices);
+  const [bankName, setBankName] = useState("");
 
   const navigation = useNavigation();
   const rbSheet = useRef();
@@ -69,9 +70,11 @@ function EditProfile(props) {
   }, [permissions]);
 
   useEffect(() => {
-    console.log("EditProfile currentUser", props.currentUser);
-    if (props.currentUser !== null && props.currentUser !== undefined) {
-      setLoading(true);
+    if (props.currentUser === undefined || props.currentUser === null || props.currentUser?.id === undefined) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
       setUser({
         nama_lengkap: props.currentUser?.detail_user?.nama_lengkap,
         email: props.currentUser?.email,
@@ -92,8 +95,17 @@ function EditProfile(props) {
             : { ...item, selected: false }
         )
       );
-    } else {
-      setLoading(false);
+    console.log("EditProfile currentUser", props.currentUser);
+    let newBankId = props.currentUser?.detail_user?.bank?.id;
+    if (props.banks?.length === undefined || props.banks?.length < 1 || newBankId === undefined || newBankId === null) {
+      setBankName(props.currentUser?.detail_user?.bank?.nama);
+      return;
+    }
+    for (let bank of props.banks) {
+      if (bank?.id === newBankId) {
+        setBankName(bank?.nama);
+        return;
+      }
     }
   }, [props.currentUser]);
 
@@ -180,15 +192,18 @@ function EditProfile(props) {
 
   function getBSValue(item) {
     if (
-      item?.id !== null &&
-      item?.id !== undefined &&
-      item?.id !== user?.bank_id
+      !(item?.id === undefined ||
+      item?.id === null ||
+      item?.nama === undefined ||
+      item?.nama === null ||
+      item?.id == user?.bank_id)
     ) {
       setUser({
         ...user,
         bank_id: item?.id,
         bank_name: item?.nama,
       });
+      setBankName(item?.nama)
     }
     //console.log(JSON.stringify(item));
     rbSheet.current.close();
@@ -376,7 +391,7 @@ function EditProfile(props) {
           <BSTextInput
             disabled={loading}
             onPress={() => openBottomSheet()}
-            value={user?.bank_name}
+            value={bankName}
             style={styles.textInput}
           />
 

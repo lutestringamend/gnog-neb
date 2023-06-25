@@ -6,9 +6,9 @@ import {
   Text,
   View,
   TextInput,
+  Image,
   TouchableOpacity,
 } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
 import { connect } from "react-redux";
@@ -64,7 +64,7 @@ function MediaKitFiles(props) {
         if (!photoLoading) {
           setPhotoLoading(true);
           props.getMediaKitPhotos();
-        } 
+        }
       } else {
         if (photoLoading) {
           setPhotoLoading(false);
@@ -90,20 +90,11 @@ function MediaKitFiles(props) {
         <ScrollView style={styles.scrollView}>
           <TouchableOpacity onPress={() => setExpand(!expand)}>
             <View style={styles.containerHeader}>
-              <Text style={styles.textHeader}>Informasi Watermark</Text>
-              {expand ? (
-                <MaterialCommunityIcons
-                  name="chevron-up"
-                  size={24}
-                  color={colors.daclen_light}
-                />
-              ) : (
-                <MaterialCommunityIcons
-                  name="chevron-down"
-                  size={24}
-                  color={colors.daclen_light}
-                />
-              )}
+              <Text style={styles.textHeader}>Pengaturan Watermark</Text>
+              <Image
+                source={require("../../assets/gear.png")}
+                style={styles.gear}
+              />
             </View>
           </TouchableOpacity>
           {expand ? (
@@ -244,6 +235,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 10,
+  },
+  gear: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
+    width: 20,
+    height: 20,
   },
   text: {
     color: colors.daclen_gray,
