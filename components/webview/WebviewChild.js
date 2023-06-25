@@ -21,9 +21,14 @@ import { sentryLog } from "../../sentry";
 export function ErrorView(props) {
   return (
     <View style={styles.containerVertical}>
-      <Text style={styles.textError}>{props?.error}</Text>
+      {props?.error ? (
+        <Text style={styles.textError}>{props?.error}</Text>
+      ) : null}
       {props?.onOpenExternalLink && (
-        <TouchableOpacity onPress={props?.onOpenExternalLink} style={styles.button}>
+        <TouchableOpacity
+          onPress={props?.onOpenExternalLink}
+          style={styles.button}
+        >
           <MaterialCommunityIcons name="web" size={16} color="white" />
           <Text style={styles.textButton}>Buka di Browser</Text>
         </TouchableOpacity>
@@ -51,9 +56,9 @@ function WebviewChild(props) {
           </TouchableOpacity>
         )}
         <ScrollView style={styles.scrollView}>
-          { props?.content === "" ||
-            props?.content === null ||
-            props?.content === undefined ? (
+          {props?.content === "" ||
+          props?.content === null ||
+          props?.content === undefined ? (
             <ActivityIndicator
               size="large"
               color={colors.daclen_orange}
@@ -62,7 +67,9 @@ function WebviewChild(props) {
           ) : (
             <RenderHTML
               style={styles.containerHTML}
-              contentWidth={dimensions.fullWidth - staticDimensions.webviewWidthMargin}
+              contentWidth={
+                dimensions.fullWidth - staticDimensions.webviewWidthMargin
+              }
               source={{ html: props?.content }}
               enableExperimentalMarginCollapsing={true}
             />
@@ -128,6 +135,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
+    marginVertical: 20,
     marginHorizontal: 10,
     paddingVertical: 12,
     paddingHorizontal: 32,

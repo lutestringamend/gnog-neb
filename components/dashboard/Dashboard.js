@@ -9,6 +9,7 @@ import {
   Image,
   Linking,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -40,6 +41,7 @@ function DashboardMain(props) {
   });
 
   const [popupDetail, setPopupDetail] = useState({ title: null });
+  const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
   const rbSheet = useRef();
   const { currentUser, token, hpv } = props;
@@ -53,12 +55,21 @@ function DashboardMain(props) {
     ) {
       return;
     }
-    if (hpv === null) {
-      props.getHPV(currentUser?.id, token);
+  }, [token, currentUser]);
+
+  useEffect(() => {
+    if (hpv === undefined || hpv === null || hpv?.data === undefined) {
+      fetchHPV();
+    } else if (hpv?.data === null) {
+      setMessage({
+        text: "Mohon cek koneksi Internet Anda",
+        isError: true,
+      });
     } else {
-      console.log({ hpv });
+      setRefreshing(false);
+      console.log("redux HPV", hpv);
     }
-  }, [token, currentUser, hpv]);
+  }, [hpv]);
 
   useEffect(() => {
     if (popupDetail?.title !== null) {
@@ -66,6 +77,10 @@ function DashboardMain(props) {
     }
     //console.log("popupDetail", popupDetail);
   }, [popupDetail]);
+
+  function fetchHPV() {
+    props.getHPV(currentUser?.id, token);
+  }
 
   function buttonPress(title) {
     if (title !== null && title === popupDetail?.title) {
@@ -96,7 +111,15 @@ function DashboardMain(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+        style={styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => fetchHPV()}
+          />
+        }
+      >
         <Header
           username={currentUser?.name}
           onMessageChange={(m) => setMessage(m)}

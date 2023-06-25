@@ -176,6 +176,9 @@ export function getHPV(id, token) {
       .catch((error) => {
         console.log(error);
         sentryLog(error);
+        dispatch({ type: USER_HPV_STATE_CHANGE, data: {
+          data: null,
+        } });
         //dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: error?.message });
       });
   };

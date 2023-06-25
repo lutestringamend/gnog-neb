@@ -25,14 +25,14 @@ export default function Main(props) {
       <View style={styles.containerHorizontal}>
         <MainItem
           title={poinuserpopup.title}
-          content={poin_user?.poin}
+          content={poin_user?.poin ? poin_user?.poin : 0}
           color={colors.daclen_light}
           icon={poinuserpopup.icon}
           onButtonPress={(e) => props?.onButtonPress(e)}
         />
         <MainItem
           title={poinuserhpvpopup.title}
-          content={poin_user?.hpv}
+          content={poin_user?.hpv ? poin_user?.hpv : 0}
           color={colors.daclen_red}
           icon={poinuserhpvpopup.icon}
           onButtonPress={(e) => props?.onButtonPress(e)}
@@ -41,14 +41,16 @@ export default function Main(props) {
       <View style={styles.containerHorizontal}>
         <MainItem
           title={poinusertotalpopup.title}
-          content={poin_user?.total}
+          content={poin_user?.total ? poin_user?.total : 0}
           color={colors.daclen_blue}
           icon={poinusertotalpopup.icon}
           onButtonPress={(e) => props?.onButtonPress(e)}
         />
         <MainItem
           title={komisiuserpopup.title}
-          content={`Rp ${komisi_user?.total_currency}`}
+          content={`Rp ${
+            komisi_user?.total_currency ? komisi_user?.total_currency : 0
+          }`}
           color={colors.daclen_yellow}
           fontSize={16}
           icon={komisiuserpopup.icon}
@@ -58,7 +60,7 @@ export default function Main(props) {
       <View style={styles.containerHorizontal}>
         <MainItem
           title={bonusrootpopup.title}
-          content={bonus_level_user?.total}
+          content={bonus_level_user?.total ? bonus_level_user?.total : 0}
           color={colors.daclen_teal}
           icon={bonusrootpopup.icon}
           onButtonPress={(e) => props?.onButtonPress(e)}
@@ -91,7 +93,6 @@ export default function Main(props) {
           <MaterialCommunityIcons name="hand-coin" size={18} color="white" />
           <Text style={styles.textButton}>Laporan Poin</Text>
         </TouchableOpacity>
-        
 
         <TouchableOpacity
           onPress={() => navigation.navigate("BonusRootScreen")}
