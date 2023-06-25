@@ -62,11 +62,15 @@ function DashboardMain(props) {
       fetchHPV();
     } else if (hpv?.data === null) {
       setMessage({
-        text: "Mohon cek koneksi Internet Anda",
+        text: null,
         isError: true,
       });
     } else {
       setRefreshing(false);
+      setMessage({
+        text: "Mohon cek koneksi Internet Anda",
+        isError: false,
+      });
       console.log("redux HPV", hpv);
     }
   }, [hpv]);
