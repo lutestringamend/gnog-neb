@@ -71,26 +71,30 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: "bold",
+    width: 140,
     fontSize: 14,
     color: colors.daclen_black,
     marginTop: 10,
     textAlignVertical: "center",
-    height: 32,
+    height: 48,
     textAlign: "center",
+    alignSelf: "center",
   },
   image: {
     width: 120,
     height: 120,
-    padding: 2,
     alignSelf: "center",
+    backgroundColor: "center",
   },
   textPrice: {
     fontSize: 14,
-    marginTop: 4,
+    width: 120,
+    marginTop: 8,
     marginBottom: 20,
     color: colors.daclen_orange,
     marginHorizontal: 10,
     textAlign: "center",
+    alignSelf: "center",
   },
 });
 

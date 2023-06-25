@@ -260,8 +260,7 @@ function EditProfile(props) {
   try {
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.scrollView}>
-          {error ? (
+        {error ? (
             <Text
               style={[
                 styles.textError,
@@ -271,6 +270,7 @@ function EditProfile(props) {
               {error}
             </Text>
           ) : null}
+        <ScrollView style={styles.scrollView}>
           <TouchableOpacity
             style={styles.containerPhoto}
             onPress={() => rbSheetMedia.current.open()}
