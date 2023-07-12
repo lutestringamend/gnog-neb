@@ -6,8 +6,9 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicator,
+  FlatList,
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
+//import { FlashList } from "@shopify/flash-list";
 import { connect } from "react-redux";
 
 import { colors, dimensions } from "../../styles/base";
@@ -198,7 +199,7 @@ function Shop(props) {
             Tidak ada produk tersedia di kategori ini
           </Text>
         ) : (
-          <FlashList
+          <FlatList
             estimatedItemSize={productpaginationnumber}
             numColumns={2}
             horizontal={false}

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Daclen",
     "slug": "daclen",
-    "version": "1.1.84",
+    "version": "1.1.85",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
     "userInterfaceStyle": "light",
@@ -53,7 +53,7 @@
         "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"
       ],
       "userInterfaceStyle": "light",
-      "versionCode": 47
+      "versionCode": 48
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -85,35 +85,7 @@
           "initialOrientation": "PORTRAIT"
         }
       ],
-      "sentry-expo",
-      [
-        "@config-plugins/ffmpeg-kit-react-native",
-        {
-          "package": "min-gpl"
-        }
-      ],
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "compileSdkVersion": 31,
-            "targetSdkVersion": 31,
-            "minSdkVersion": 24,
-            "buildToolsVersion": "31.0.0",
-            "packagingOptions": {
-              "pickFirst": [
-                "lib/arm64-v8a/libc++_shared.so",
-                "lib/armeabi-v7a/libc++_shared.so",
-                "lib/x86/libc++_shared.so",
-                "lib/x86_64/libc++_shared.so"
-              ]
-            }
-          },
-          "ios": {
-            "deploymentTarget": "13.0"
-          }
-        }
-      ]
+      "sentry-expo"
     ],
     "hooks": {
       "postPublish": [

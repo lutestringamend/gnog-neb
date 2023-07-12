@@ -5,14 +5,18 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import RenderHTML from "react-native-render-html";
-import { colors, staticDimensions, dimensions, blurhash } from "../../styles/base";
-
+import {
+  colors,
+  staticDimensions,
+  dimensions,
+  blurhash,
+} from "../../styles/base";
 
 function BlogItem(props) {
   const [content, setContent] = useState("");
@@ -45,7 +49,7 @@ function BlogItem(props) {
               onClick={() => openItem(props?.id)}
               contentFit="cover"
               placeholder={blurhash}
-              transition={0}
+              transition={100}
             />
 
             <View style={styles.containerDescVertical}>
@@ -57,7 +61,9 @@ function BlogItem(props) {
                     horizontal={false}
                     data={props?.tag_blog}
                     contentContainerStyle={styles.containerFlatlist}
-                    renderItem={({ item }) => <Text style={styles.textCategory}>{item?.nama}</Text>}
+                    renderItem={({ item }) => (
+                      <Text style={styles.textCategory}>{item?.nama}</Text>
+                    )}
                   />
                 )}
                 <Text style={styles.textDate}>{props?.created_at}</Text>
@@ -65,7 +71,9 @@ function BlogItem(props) {
               <Text style={styles.textTitle}>{props?.judul}</Text>
               <RenderHTML
                 style={styles.textDesc}
-                contentWidth={dimensions.fullWidth - staticDimensions.blogTextWidthMargin}
+                contentWidth={
+                  dimensions.fullWidth - staticDimensions.blogTextWidthMargin
+                }
                 source={{ html: content }}
               />
             </View>
@@ -73,10 +81,10 @@ function BlogItem(props) {
         </ScrollView>
       ) : (
         <ActivityIndicator
-              size="large"
-              color={colors.daclen_orange}
-              style={{ alignSelf: "center", marginVertical: 20 }}
-            />
+          size="large"
+          color={colors.daclen_orange}
+          style={{ alignSelf: "center", marginVertical: 20 }}
+        />
       )}
     </View>
   );
@@ -113,7 +121,7 @@ const styles = StyleSheet.create({
     marginVertical: 6,
   },
   textDate: {
-    alignSelf: 'center',
+    alignSelf: "center",
     fontSize: 12,
     color: colors.daclen_gray,
   },

@@ -6,8 +6,9 @@ import {
   Text,
   ActivityIndicator,
   RefreshControl,
+  FlatList
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
+//import { FlashList } from "@shopify/flash-list";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -16,7 +17,7 @@ import { getBlog } from "../../axios/blog";
 import { finalblognumber } from "../../axios/constants";
 import MainHeader from "../main/MainHeader";
 import BlogItem from "./BlogItem";
-import { colors, dimensions } from "../../styles/base";
+import { colors } from "../../styles/base";
 
 function BlogFeed(props) {
   const { blogs, pageNumber } = props;
@@ -61,7 +62,7 @@ function BlogFeed(props) {
         />
       ) : blogs?.length > 0 ? (
         <View style={styles.containerFlatlist}>
-          <FlashList
+          <FlatList
             estimatedItemSize={100}
             numColumns={1}
             horizontal={false}
