@@ -169,16 +169,28 @@ function Checkout(props) {
     } else {
       let newCourierChoices = [];
       for (let i = 0; i < masterkurir.length; i++) {
-        if (masterkurir[i] !== null && masterkurir[i].isDipakai) {
+        if (
+          masterkurir[i] !== null &&
+          masterkurir[i]?.isDipakai &&
+          masterkurir[i]?.nama !== "Custom" &&
+          masterkurir[i]?.slug !== "custom"
+        ) {
+          let label = masterkurir[i]?.nama;
+          try {
+            label = masterkurir[i].nama.split(" ")[0];
+          } catch (e) {
+            console.error(e);
+          }
+
           newCourierChoices.push({
             id: masterkurir[i].id.toString(),
-            label: masterkurir[i].nama,
+            label,
             value: masterkurir[i].slug,
           });
         }
       }
       setCourierChoices(newCourierChoices);
-      console.log(newCourierChoices);
+      console.log("newCourierChoices", newCourierChoices);
     }
   }, [masterkurir]);
 
@@ -211,7 +223,7 @@ function Checkout(props) {
           });
         }
         setCourierServices(newCourierServices);
-        console.log(newCourierServices);
+        console.log("newCourierServices", newCourierServices);
       } catch (e) {
         console.log(e);
       }

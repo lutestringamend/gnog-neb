@@ -6,10 +6,11 @@ import { colors } from "../../styles/base";
 
 export default function SocialsItem(props) {
   const openLink = () => {
-    console.log("opening " + props?.link);
-    if (props?.link !== undefined && props?.link !== null) {
-      Linking.openURL(props?.link);
+    if (props?.link === undefined || props?.link === null || props?.link === "") {
+      returnl
     }
+    console.log("opening " + props?.link);
+    Linking.openURL(props?.link);
   };
 
   let imageSource = null;

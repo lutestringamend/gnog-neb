@@ -1,6 +1,6 @@
 {
   "name": "daclen",
-  "version": "1.1.85",
+  "version": "1.1.86",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
