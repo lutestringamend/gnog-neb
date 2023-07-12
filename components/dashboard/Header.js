@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Image,
-  Platform,
-  Text,
-} from "react-native";
+import { StyleSheet, View, TouchableOpacity, Image, Text } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
@@ -38,22 +31,21 @@ export default function Header(props) {
         />
       </TouchableOpacity>
 
-      {Platform.OS === "web" && (
-        <TouchableOpacity
-          onPress={() => openLogin()}
-          style={styles.containerUser}
-        >
-          <Text style={styles.textLogin}>
-            {username ? username : "Login/Register"}
-          </Text>
-          <MaterialCommunityIcons
-            name="account-circle"
-            size={20}
-            color={colors.daclen_yellow}
-            style={styles.iconLogin}
-          />
-        </TouchableOpacity>
-      )}
+      <Text style={styles.text}>Referral</Text>
+      <TouchableOpacity
+        onPress={() => openLogin()}
+        style={styles.containerUser}
+      >
+        <Text style={styles.textLogin}>
+          {username ? username : "Login/Register"}
+        </Text>
+        <MaterialCommunityIcons
+          name="account-circle"
+          size={20}
+          color={colors.daclen_yellow}
+          style={styles.iconLogin}
+        />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -65,7 +57,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_black,
   },
   containerLogo: {
-    marginStart: 14,
+    marginHorizontal: 14,
     marginVertical: 12,
     flex: 1,
     alignSelf: "center",
@@ -94,5 +86,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     color: colors.daclen_yellow,
+  },
+  text: {
+    fontSize: 12,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginEnd: 6,
+    color: colors.daclen_lightgrey,
   },
 });
