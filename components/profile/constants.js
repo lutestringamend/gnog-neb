@@ -8,6 +8,7 @@ export const privacypolicy = "Kebijakan Privasi";
 export const aboutapp = "Tentang Daclen";
 export const faq = "Frequently Asked Questions";
 export const selectbank = "Pilih Nama Bank";
+export const blogscroll = "Blog";
 
 export const addressmenuicon = "pin";
 export const changepasswordicon = "form-textbox-password";
@@ -18,6 +19,7 @@ export const tncicon = "text-box-check";
 export const privacypolicyicon = "security";
 export const aboutappicon = "information";
 export const faqicon = "chat-question";
+export const blogicon = "book-open-outline";
 
 export const logouttitle = "Anda ingin logout?";
 export const logouttext = "Tekan tombol logout untuk keluar";

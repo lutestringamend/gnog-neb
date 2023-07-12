@@ -10,7 +10,11 @@ import {
   Linking,
   ActivityIndicator,
   RefreshControl,
+  Platform,
+  ToastAndroid,
 } from "react-native";
+import * as Clipboard from "expo-clipboard";
+//import * as Sharing from "expo-sharing";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { connect } from "react-redux";
@@ -22,17 +26,21 @@ import RBSheet from "react-native-raw-bottom-sheet";
 import Header from "./Header";
 import { colors } from "../../styles/base";
 import Main from "./Main";
-import { webdashboard } from "../../axios/constants";
+import { personalwebsiteurl, webdashboard } from "../../axios/constants";
 import { useNavigation } from "@react-navigation/native";
 import BSDashboard from "../bottomsheets/BSDashboard";
 import {
   bonusrootpopup,
   dashboardbrowser,
   komisiuserpopup,
+  linkcopied,
+  personalwebsite,
   poinuserhpvpopup,
   poinuserpopup,
   poinusertotalpopup,
 } from "./constants";
+import { referralWAtemplate, sharereferral } from "../profile/constants";
+import { openWhatsapp } from "../whatsapp/Whatsapp";
 
 function DashboardMain(props) {
   const [message, setMessage] = useState({
@@ -82,6 +90,50 @@ function DashboardMain(props) {
     //console.log("popupDetail", popupDetail);
   }, [popupDetail]);
 
+  /*useEffect(() => {
+    const checkSharingAsync = async () => {
+      const isAvailable = await Sharing.isAvailableAsync();
+      setSharingAvailable(isAvailable);
+      console.log({ isAvailable });
+    };
+
+    if (username === null || username === undefined) {
+      setReferral(null);
+    } else {
+      setReferral(`${webreferral}${username}`);
+    }
+
+    if (Platform.OS === "web") {
+      setSharingAvailable(true);
+    } else {
+      checkSharingAsync();
+    }
+  }, [username]);
+
+  useEffect(() => {
+    if (referral?.length > 34) {
+      setReferralText(referral.substring(0, 30) + "...");
+    } else {
+      setReferralText(referral);
+    }
+  }, [referral]);*/
+
+  /*const openShareDialogAsync = async () => {
+    setLoading(true);
+    try {
+      await Sharing.shareAsync(`https://${referral}`, {
+        dialogTitle: sharingdialogtitle,
+      })
+    } catch (e) {
+      console.error(e);
+      props?.onMessageChange({
+        text: e.message,
+        isError: true,
+      });
+    }
+    setLoading(false);
+  };*/
+
   function fetchHPV() {
     props.getHPV(currentUser?.id, token);
   }
@@ -113,6 +165,57 @@ function DashboardMain(props) {
     }
   }
 
+  function openPersonalWebsite() {
+    if (
+      currentUser?.name === undefined ||
+      currentUser?.name === null ||
+      currentUser?.name === ""
+    ) {
+      return;
+    }
+    try {
+      Linking.openURL(`${personalwebsiteurl}${currentUser?.name}`);
+    } catch (e) {
+      console.error(e);
+      setMessage({
+        text: e.toString(),
+        isError: true,
+      });
+    }
+  }
+
+  const sharePersonalWebsite = async () => {
+    if (
+      currentUser?.name === undefined ||
+      currentUser?.name === null ||
+      currentUser?.name === ""
+    ) {
+      return;
+    }
+
+    try {
+      let fullLink = `${referralWAtemplate}${personalwebsiteurl}${currentUser?.name}`;
+      await Clipboard.setStringAsync(fullLink);
+      if (Platform.OS === "android") {
+        ToastAndroid.show(
+          `${personalwebsiteurl}${currentUser?.name}\n${linkcopied}`,
+          ToastAndroid.SHORT
+        );
+      }
+      /*setMessage({
+        text: linkcopied,
+        isError: false,
+      });*/
+      openWhatsapp(null, fullLink);
+    } catch (e) {
+      console.error(e);
+      setMessage({
+        text: e.toString(),
+        isError: true,
+      });
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -142,13 +245,27 @@ function DashboardMain(props) {
             {message?.text}
           </Text>
         ) : null}
-        <TouchableOpacity
-          onPress={() => Linking.openURL(webdashboard)}
-          style={styles.buttonLogin}
-        >
-          <MaterialCommunityIcons name="web" size={16} color="white" />
-          <Text style={styles.textLogin}>{dashboardbrowser}</Text>
-        </TouchableOpacity>
+        <View style={styles.containerHorizontal}>
+          <TouchableOpacity
+            onPress={() => openPersonalWebsite()}
+            style={styles.buttonLogin}
+          >
+            <MaterialCommunityIcons
+              name="web"
+              size={20}
+              color={colors.daclen_light}
+              style={styles.iconWeb}
+            />
+            <Text style={styles.textLogin}>{personalwebsite}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.containerReferral}
+            onPress={() => sharePersonalWebsite()}
+          >
+            <Text style={styles.textReferral}>SHARE</Text>
+          </TouchableOpacity>
+        </View>
+
         {currentUser?.nomor_telp_verified_at === null ? (
           <View style={styles.containerVerification}>
             <View style={styles.containerLogo}>
@@ -213,6 +330,12 @@ const styles = StyleSheet.create({
     height: "100%",
     backgroundColor: colors.daclen_black,
   },
+  containerHorizontal: {
+    backgroundColor: "transparent",
+    width: "100%",
+    flexDirection: "row",
+    marginBottom: 10,
+  },
   containerVerification: {
     flex: 1,
     marginHorizontal: 10,
@@ -222,6 +345,13 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingBottom: 20,
     backgroundColor: "white",
+    alignItems: "center",
+  },
+  containerReferral: {
+    flexDirection: "row",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    backgroundColor: colors.daclen_blue,
     alignItems: "center",
   },
   containerContent: {
@@ -248,10 +378,18 @@ const styles = StyleSheet.create({
     elevation: 3,
     backgroundColor: colors.daclen_orange,
   },
+  textReferral: {
+    color: colors.daclen_light,
+    fontWeight: "bold",
+    fontSize: 12,
+    textAlign: "center",
+  },
   textButton: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "white",
+    marginVertical: 12,
+    color: colors.daclen_light,
+    textAlignVertical: "center",
     marginStart: 6,
   },
   textHeader: {
@@ -267,20 +405,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   buttonLogin: {
-    width: "100%",
+    flex: 1,
     flexDirection: "row",
-    justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.daclen_graydark,
-    padding: 10,
-    marginBottom: 10,
+    backgroundColor: colors.daclen_orange,
   },
   textLogin: {
     color: colors.daclen_light,
-    marginStart: 10,
-    textAlign: "center",
-    fontSize: 16,
+    textAlignVertical: "center",
+    alignSelf: "center",
+    fontSize: 14,
     fontWeight: "bold",
+    marginStart: 4,
+    marginEnd: 12,
   },
   textError: {
     fontSize: 14,
@@ -292,6 +429,12 @@ const styles = StyleSheet.create({
   },
   spinner: {
     marginVertical: 20,
+  },
+  iconWeb: {
+    marginStart: 12,
+    marginVertical: 12,
+    alignSelf: "center",
+    backgroundColor: "transparent",
   },
 });
 

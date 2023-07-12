@@ -53,7 +53,7 @@ function BlogFeed(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <MainHeader title="Blog" icon="book-open-outline" />
+      <MainHeader title="Blog" icon="arrow-left" />
       {loading ? (
         <ActivityIndicator
           size="large"

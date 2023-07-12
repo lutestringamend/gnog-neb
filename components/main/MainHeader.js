@@ -14,8 +14,9 @@ export default function MainHeader(props) {
   const navigation = useNavigation();
 
   function backArrow() {
-    if (props?.onBackPress === null || props?.onBackPress === undefined) {
-      navigation.navigate("Main");
+    if (props?.onBackPress === undefined || props?.onBackPress === null) {
+      //navigation.navigate("Main");
+      navigation.goBack();
     } else {
       props?.onBackPress();
     }

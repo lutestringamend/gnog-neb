@@ -8,7 +8,6 @@ import {
   Text,
 } from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
-
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
@@ -19,6 +18,8 @@ import {
   aboutappicon,
   addressmenu,
   addressmenuicon,
+  blogicon,
+  blogscroll,
   changepassword,
   changepasswordicon,
   commissionpoint,
@@ -31,14 +32,12 @@ import {
   logoutbuttonpositive,
   logouttext,
   logouttitle,
-  mediakit,
-  mediakiticon,
   privacypolicy,
   privacypolicyicon,
   tnc,
   tncicon,
 } from "./constants";
-import { commissionpointpdf, webmediakit } from "../../axios/constants";
+import { commissionpointpdf } from "../../axios/constants";
 import { colors, staticDimensions } from "../../styles/base";
 
 import MainHeader from "../main/MainHeader";
@@ -111,12 +110,10 @@ function Profile(props) {
         />
 
         <ProfileMenuItem
-          text={mediakit}
-          icon={mediakiticon}
-          screen="Webview"
+          text={blogscroll}
+          icon={blogicon}
+          screen="BlogFeed"
           thickness={2}
-          webKey="mediakit"
-          url={webmediakit}
         />
 
         <ProfileMenuItem

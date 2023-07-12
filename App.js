@@ -37,6 +37,7 @@ import SplashScreen from "./components/Splash";
 import HistoryCheckoutScreen from "./components/history/Checkout";
 import CheckoutItemScreen from "./components/history/CheckoutItem";
 import DeliveryItemScreen from "./components/history/DeliveryItem";
+import BlogFeedScreen from "./components/blog/BlogFeed";
 import BlogScreen from "./components/blog/Blog";
 import ProductScreen from "./components/main/Product";
 
@@ -180,6 +181,11 @@ export default function App() {
                 name="DeliveryItem"
                 component={DeliveryItemScreen}
                 options={{ ...defaultOptions, title: "Info Pengiriman" }}
+              />
+              <Stack.Screen
+                name="BlogFeed"
+                component={BlogFeedScreen}
+                options={{ ...defaultOptions, headerShown: false }}
               />
               <Stack.Screen
                 name="Blog"

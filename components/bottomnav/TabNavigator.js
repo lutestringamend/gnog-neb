@@ -67,7 +67,7 @@ export default function TabNavigator(props) {
         }}
       />
 
-{token === null ||
+      {token === null ||
       currentUser === null ||
       currentUser?.id === undefined ? null : (
         <Tab.Screen
@@ -91,38 +91,29 @@ export default function TabNavigator(props) {
         />
       )}
 
-      <Tab.Screen
-        name="HistoryTab"
-        key="History"
-        component={HistoryScreen}
-        navigation={props.navigation}
-        options={{
-          headerShown: true,
-          title: "Riwayat",
-          tabBarColor: bottomNav.activeColor,
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon title="Riwayat" iconName="history" focused={focused} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="BlogFeed"
-        key="Blog"
-        component={BlogScreen}
-        navigation={props.navigation}
-        options={{
-          headerShown: true,
-          title: "Blog",
-          tabBarColor: bottomNav.activeColor,
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon
-              title="Blog"
-              iconName="book-open-outline"
-              focused={focused}
-            />
-          ),
-        }}
-      />
+      {token === null ||
+      currentUser === null ||
+      currentUser?.id === undefined ? null : (
+        <Tab.Screen
+          name="HistoryTab"
+          key="History"
+          component={HistoryScreen}
+          navigation={props.navigation}
+          options={{
+            headerShown: true,
+            title: "Riwayat",
+            tabBarColor: bottomNav.activeColor,
+            tabBarIcon: ({ focused }) => (
+              <TabBarIcon
+                title="Riwayat"
+                iconName="history"
+                focused={focused}
+              />
+            ),
+          }}
+        />
+      )}
+
       <Tab.Screen
         name="Profile"
         key="Profile"
@@ -149,3 +140,24 @@ export default function TabNavigator(props) {
     </Tab.Navigator>
   );
 }
+
+/*
+<Tab.Screen
+        name="BlogFeed"
+        key="Blog"
+        component={BlogScreen}
+        navigation={props.navigation}
+        options={{
+          headerShown: true,
+          title: "Blog",
+          tabBarColor: bottomNav.activeColor,
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon
+              title="Blog"
+              iconName="book-open-outline"
+              focused={focused}
+            />
+          ),
+        }}
+      />
+*/

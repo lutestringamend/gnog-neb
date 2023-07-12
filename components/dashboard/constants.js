@@ -59,6 +59,7 @@ export const rpvshort = "RPV";
 export const pvtitle = "Poin Penjualan Bulanan";
 export const bonusfirstroot = "Bonus Keuntungan Root Pertama";
 export const bonussecondroot = "Bonus Keuntungan Root Kedua";
+export const personalwebsite = "Buka Personal Website"
 
 export const bonusrootlevelcolors = [
   colors.daclen_green,
@@ -72,7 +73,7 @@ export const WATERMARK_VIDEO = "Video Promosi";
 export const watermarkphotoicon = "image";
 export const watermarkvideoicon = "video-box";
 
-export const linkcopied = "Link tersimpan ke Clipboard";
+export const linkcopied = "Tersimpan ke Clipboard";
 export const sharingdialogtitle = "Bagikan Link Referral";
 
 export const tempvideoarray = [
