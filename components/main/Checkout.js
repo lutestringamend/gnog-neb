@@ -392,9 +392,17 @@ function Checkout(props) {
             style={{ alignSelf: "center", marginVertical: 20 }}
           />
         ) : (
-          <View style={[styles.container, { paddingBottom: staticDimensions.pageBottomPadding }]}>
+          <View
+            style={[
+              styles.container,
+              { paddingBottom: staticDimensions.pageBottomPadding },
+            ]}
+          >
             <View style={styles.containerFlatlist}>
-              {cart.length < 1 ? (
+              {cart === undefined ||
+              cart === null ||
+              cart?.length === undefined ||
+              cart?.length < 1 ? (
                 <Text style={styles.textUid}>Tidak ada Checkout</Text>
               ) : (
                 <FlashList

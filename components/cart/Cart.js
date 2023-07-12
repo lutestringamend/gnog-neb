@@ -80,7 +80,7 @@ function Cart(props) {
       <TouchableOpacity onPress={() => modifyCart(false)}>
         <MaterialCommunityIcons
           name="minus"
-          size={iconSize ? iconSize : 18}
+          size={iconSize ? iconSize : 16}
           style={styles.cartIcon}
           disabled={loading}
           color={colors.daclen_gray}
@@ -95,7 +95,7 @@ function Cart(props) {
             style={{ alignSelf: "center" }}
           />
         ) : (
-          <Text style={[styles.textCart, { fontSize: textSize ? textSize : 18 }]}>
+          <Text style={[styles.textCart, { fontSize: textSize ? textSize : 16 }]}>
           {itemSize}
           </Text>
         )}
@@ -104,7 +104,7 @@ function Cart(props) {
       <TouchableOpacity onPress={() => modifyCart(true)}>
         <MaterialCommunityIcons
           name="plus"
-          size={iconSize ? iconSize : 18}
+          size={iconSize ? iconSize : 16}
           style={styles.cartIcon}
           disabled={loading}
           color={colors.daclen_gray}
@@ -116,28 +116,32 @@ function Cart(props) {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: "transparent",
     flexDirection: "row",
     alignItems: "center",
     elevation: 6,
   },
   cartIcon: {
+    backgroundColor: "transparent",
     borderWidth: 0.5,
     borderColor: colors.daclen_gray,
-    borderRadius: 4,
+    borderRadius: 6,
     alignSelf: "center",
     padding: 6,
   },
   containerNumber: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderColor: colors.daclen_gray,
+    backgroundColor: "transparent",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderColor: colors.daclen_graydark,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderRadius: 4,
+    borderRadius: 6,
     justifyContent: "center",
     alignItems: "center",
   },
   textCart: {
+    backgroundColor: "transparent",  
     fontWeight: "bold",
     color: colors.daclen_graydark,
     textAlign: "center",
