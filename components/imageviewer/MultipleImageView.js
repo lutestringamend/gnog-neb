@@ -90,10 +90,12 @@ export default function MultipleImageView(props) {
       return;
     }
 
-    imageRefs.current[0] = createRef();
-    imageRefs.current = photos.map(
+    for (let i = 0; i < photos.length; i++) {
+      imageRefs.current[i] = createRef();
+    }
+    /*imageRefs.current = photos.map(
       (ref, index) => (imageRefs.current[index] = createRef())
-    );
+    );*/
 
     if (
       sharingAvailability === undefined ||
@@ -110,6 +112,7 @@ export default function MultipleImageView(props) {
 
   useEffect(() => {
     //let tiSize = transformedImages.length;
+    addLogs(`tiSize ${tiSize} transformedImages ${transformedImages.length}`);
     if (
       photos === undefined ||
       photos === null ||
@@ -119,7 +122,6 @@ export default function MultipleImageView(props) {
     ) {
       return;
     }
-    addLogs(`transformedImages ${transformedImages.length}`);
     if (tiSize === photos?.length) {
       let imgTags = null;
       for (let img of transformedImages) {
@@ -133,7 +135,7 @@ export default function MultipleImageView(props) {
         .replace("#IMGTAGS#", imgTags);
       setHtml(html);
     }
-  }, [transformedImages, tiSize]);
+  }, [tiSize]);
 
   useEffect(() => {
     if (html === null) {
@@ -145,6 +147,7 @@ export default function MultipleImageView(props) {
 
   useEffect(() => {
     console.log("imageRefs", imageRefs);
+    addLogs(`imageRefs ${JSON.stringify(imageRefs)}`);
   }, [imageRefs]);
 
   const addError = (text) => {
@@ -163,6 +166,7 @@ export default function MultipleImageView(props) {
         ...transformedImages,
         temporaryimgurl,
       ]);
+      setTiSize((tiSize) => tiSize + 1);
       return;
     }
     try {
@@ -177,14 +181,14 @@ export default function MultipleImageView(props) {
         })
         .catch((e) => {
           console.error(e);
-          addError(`index ${index} ${e.toString()}`);
+          addError(`capture catch index ${index} ${e.toString()}`);
           setTiSize((tiSize) => tiSize + 1);
           sentryLog(e);
         });
     } catch (e) {
       console.error(e);
-      addError(`index ${index} ${e.toString()}`);
-      ssetTiSize((tiSize) => tiSize + 1);
+      addError(`capture fail index ${index} ${e.toString()}`);
+      setTiSize((tiSize) => tiSize + 1);
       sentryLog(e);
     }
   };
