@@ -16,13 +16,12 @@ import ViewShot from "react-native-view-shot";
 import { useNavigation } from "@react-navigation/native";
 import * as Print from "expo-print";
 import * as FileSystem from "expo-file-system";
-import { shareAsync, isAvailableAsync } from "expo-sharing";
+import { shareAsync } from "expo-sharing";
 
 import { colors, staticDimensions, dimensions } from "../../styles/base";
-import { getFileName } from "../media";
 import WatermarkModel from "../media/WatermarkModel";
 import { sentryLog } from "../../sentry";
-import { sharingOptionsJPEG } from "../media/constants";
+import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import {
   filePrintOptions,
   multiplephotoshtml,
@@ -31,9 +30,10 @@ import {
   pdfpagewidth,
   temporaryimgurl,
 } from "./constants";
+import { ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../asyncstorage/constants";
 
 export default function MultipleImageView(props) {
-  const { title, photos, watermarkData, sharingAvailability } =
+  const { title, photos, watermarkData, sharingAvailability, userId } =
     props.route.params;
 
   const productPhotoWidth =
@@ -73,7 +73,6 @@ export default function MultipleImageView(props) {
   const [tiSize, setTiSize] = useState(0);
   const [transformedImages, setTransformedImages] = useState([]);
   const [html, setHtml] = useState(null);
-  const [downloadUri, setDownloadUri] = useState(null);
   const navigation = useNavigation();
 
   const imageRefs = useRef([]);
@@ -101,8 +100,8 @@ export default function MultipleImageView(props) {
       }
     }
     setPageDimensions({
-      width: width + staticDimensions.productPhotoWidthMargin,
-      height: height + staticDimensions.productPhotoWidthMargin,
+      width: width + (staticDimensions.productPhotoWidthMargin * 6),
+      height: height + (staticDimensions.productPhotoWidthMargin * 10),
     });
     /*imageRefs.current = photos.map(
       (ref, index) => (imageRefs.current[index] = createRef())
@@ -115,9 +114,10 @@ export default function MultipleImageView(props) {
     ) {
       addError("Perangkat tidak mengizinkan untuk membagikan file");
     }
+    addLogs(`sharingAvailability ${sharingAvailability}`);
 
     if (title !== null && title !== undefined && title !== "") {
-      props.navigation.setOptions({ title });
+      props.navigation.setOptions({ title: `Download ${title}` });
     }
   }, []);
 
@@ -219,11 +219,12 @@ export default function MultipleImageView(props) {
       html,
     });
     console.log("printToFileAsync", result);
-    addLogs(JSON.stringify(result));
+    addLogs(`printToFileAsync ${JSON.stringify(result)}`);
     if (result?.uri) {
       await save(result?.uri);
     } else {
       addError("uri is null");
+      saveUriToAsyncStorage(result?.uri);
     }
     setLoading(false);
   };
@@ -243,13 +244,13 @@ export default function MultipleImageView(props) {
           "application/pdf"
         )
           .then(async (safUri) => {
-            setError(safUri);
+            addLogs(`after save uri ${safUri}`);
             try {
               await FileSystem.writeAsStringAsync(safUri, base64, {
                 encoding: FileSystem.EncodingType.Base64,
               });
               addLogs("PDF berhasil disimpan dan siap dibagikan");
-              sharePhotoAsync(safUri);
+              saveUriToAsyncStorage(safUri);
             } catch (e) {
               console.error(e);
               addError("\nwriteAsStringAsync catch\n" + e.toString());
@@ -275,23 +276,54 @@ export default function MultipleImageView(props) {
       }
     } else {
       addLogs("PDF siap dibagikan");
-      sharePhotoAsync(uri);
+      shareFileAsync(uri);
     }
   };
 
-  const sharePhotoAsync = async (uri) => {
-    if (sharingAvailability) {
-      await shareAsync(uri, {
+  const saveUriToAsyncStorage = async (uri) => {
+    const storagePdfPhotos = await getObjectAsync(
+      ASYNC_WATERMARK_PHOTOS_PDF_KEY
+    );
+    let newArray = [];
+    if (
+      !(
+        storagePdfPhotos === undefined ||
+        storagePdfPhotos === null ||
+        storagePdfPhotos?.length === undefined ||
+        storagePdfPhotos?.length < 1
+      )
+    ) {
+      for (let pp of storagePdfPhotos) {
+        if (!(pp?.title === title && pp?.userId === userId)) {
+          newArray(pp);
+        }
+      }
+    }
+    newArray.push({
+      title,
+      userId,
+      uri: uri ? uri : null,
+    })
+    await setObjectAsync(ASYNC_WATERMARK_PHOTOS_PDF_KEY, newArray);
+    addLogs(`new asyncStorage pdfphotos\n${JSON.stringify(newArray)}`);
+    setLoading(false);
+    shareFileAsync(uri);
+  }
+
+  const shareFileAsync = async (uri) => {
+    try {
+      let result = await shareAsync(uri, {
         UTI: ".pdf",
         mimeType: "application/pdf",
       });
+      addLogs(`shareAsync ${JSON.stringify(result)}`);
+    } catch (e) {
+      console.error(e);
+      addError(e.toString());
     }
   };
 
-  /*
-
-
-  const startDownload = async (useWatermark) => {
+  /*const startDownload = async (useWatermark) => {
     if (!loading) {
       if (downloadUri === null) {
         setError(null);
@@ -318,7 +350,7 @@ export default function MultipleImageView(props) {
         } else {
           try {
             //save(transformedImage);
-            sharePhotoAsync(transformedImage);
+            shareFileAsync(transformedImage);
           } catch (e) {
             console.error(e);
             setSuccess(false);
@@ -327,7 +359,7 @@ export default function MultipleImageView(props) {
         }
         setLoading(false);
       } else {
-        sharePhotoAsync(downloadUri);
+        shareFileAsync(downloadUri);
       }
     }
   };*/

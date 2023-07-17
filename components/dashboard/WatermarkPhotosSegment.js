@@ -6,16 +6,20 @@ import {
   Text,
   ActivityIndicator,
   TouchableOpacity,
+  Platform,
+  ToastAndroid,
 } from "react-native";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
+import { shareAsync } from "expo-sharing";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, blurhash, staticDimensions } from "../../styles/base";
-import { webfotowatermark } from "../../axios/constants";
+import { colors, blurhash } from "../../styles/base";
 import { sentryLog } from "../../sentry";
+import { getObjectAsync, setObjectAsync } from "../asyncstorage";
+import { ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../asyncstorage/constants";
 
 const WatermarkPhotosSegment = ({
   title,
@@ -26,6 +30,7 @@ const WatermarkPhotosSegment = ({
   sharingAvailability,
 }) => {
   const [expanded, setExpanded] = useState(isExpanded ? isExpanded : false);
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
 
   function openPhoto(item) {
@@ -42,21 +47,65 @@ const WatermarkPhotosSegment = ({
       font: item?.font,
       watermarkData,
       userId,
-      sharingAvailability
+      sharingAvailability,
     });
   }
 
-  const prepareDownloadAll = () => {
+  const prepareDownloadAll = async () => {
+    setLoading(true);
+    const storagePdfPhotos = await getObjectAsync(
+      ASYNC_WATERMARK_PHOTOS_PDF_KEY
+    );
+    console.log("storagePdfPhotos", storagePdfPhotos);
+    if (
+      !(
+        storagePdfPhotos === undefined ||
+        storagePdfPhotos === null ||
+        storagePdfPhotos?.length === undefined ||
+        storagePdfPhotos?.length < 1
+      )
+    ) {
+      for (let pp of storagePdfPhotos) {
+        if (pp?.title === title && pp?.userId === userId) {
+          setLoading(false);
+          shareFileAsync(pp?.uri);
+          return;
+        }
+      }
+    }
+    openMultipleImageView();
+  };
+
+  const shareFileAsync = async (uri) => {
+    if (sharingAvailability) {
+      try {
+        await shareAsync(uri, {
+          UTI: ".pdf",
+          mimeType: "application/pdf",
+        });
+        return;
+      } catch (e) {
+        console.error(e);
+        if (Platform.OS === "android") {
+          ToastAndroid.show(e.toString(), ToastAndroid.LONG);
+        }
+      }
+    }
+    openMultipleImageView(); 
+  };
+
+  const openMultipleImageView = () => {
     const params = {
-      title: `Download ${title}`,
+      title,
       photos,
       isSquare: false,
       watermarkData,
       userId,
-      sharingAvailability
+      sharingAvailability,
     };
     console.log("MultipleImageView", params);
     navigation.navigate("MultipleImageView", params);
+    setLoading(false);
   };
 
   try {
@@ -67,16 +116,31 @@ const WatermarkPhotosSegment = ({
           onPress={() => setExpanded((expanded) => !expanded)}
         >
           <Text style={styles.textHeader}>{title}</Text>
-          {expanded && !(photos?.length === undefined || photos?.length < 1 || watermarkData === undefined || watermarkData === null) ? (
+          {expanded &&
+          !(
+            photos?.length === undefined ||
+            photos?.length < 1 ||
+            watermarkData === undefined ||
+            watermarkData === null
+          ) ? (
             <TouchableOpacity
               onPress={() => prepareDownloadAll()}
               style={styles.button}
             >
-              <MaterialCommunityIcons
-                name="file-download"
-                size={16}
-                color="white"
-              />
+              {loading ? (
+                <ActivityIndicator
+                  size="small"
+                  color="white"
+                  style={styles.spinner}
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="file-download"
+                  size={16}
+                  color="white"
+                />
+              )}
+
               <Text style={styles.textButton}>Download All</Text>
             </TouchableOpacity>
           ) : null}
@@ -192,6 +256,11 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginStart: 12,
     backgroundColor: "transparent",
+  },
+  spinner: {
+    alignSelf: "center",
+    width: 16,
+    height: 16,
   },
 });
 

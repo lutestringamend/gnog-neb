@@ -55,7 +55,7 @@ import {
   setObjectAsync,
   setTokenAsync,
 } from "../../components/asyncstorage";
-import { ASYNC_HISTORY_CHECKOUT_KEY, ASYNC_HISTORY_DELIVERY_KEY, ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, ASYNC_USER_CURRENTUSER_KEY } from "../../components/asyncstorage/constants";
+import { ASYNC_HISTORY_CHECKOUT_KEY, ASYNC_HISTORY_DELIVERY_KEY, ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, ASYNC_USER_CURRENTUSER_KEY, ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../../components/asyncstorage/constants";
 import { MAXIMUM_FILE_SIZE_IN_BYTES } from "../../components/media/constants";
 import { sentryLog } from "../../sentry";
 
@@ -70,6 +70,7 @@ export const userLogout = async () => {
   await setObjectAsync(ASYNC_HISTORY_CHECKOUT_KEY, null);
   await setObjectAsync(ASYNC_HISTORY_DELIVERY_KEY, null);
   await setObjectAsync(ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, null);
+  await setObjectAsync(ASYNC_WATERMARK_PHOTOS_PDF_KEY, null);
   setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, null);
   //await clearStorage();
 };
