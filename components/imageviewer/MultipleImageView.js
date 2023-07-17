@@ -18,12 +18,7 @@ import * as Print from "expo-print";
 import * as FileSystem from "expo-file-system";
 import { shareAsync, isAvailableAsync } from "expo-sharing";
 
-import {
-  colors,
-  staticDimensions,
-  dimensions,
-  blurhash,
-} from "../../styles/base";
+import { colors, staticDimensions, dimensions } from "../../styles/base";
 import { getFileName } from "../media";
 import WatermarkModel from "../media/WatermarkModel";
 import { sentryLog } from "../../sentry";
@@ -32,6 +27,8 @@ import {
   filePrintOptions,
   multiplephotoshtml,
   multiplephotosimgtag,
+  pdfpageheight,
+  pdfpagewidth,
   temporaryimgurl,
 } from "./constants";
 
@@ -69,6 +66,10 @@ export default function MultipleImageView(props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [logs, setLogs] = useState(null);
+  const [pageDimensions, setPageDimensions] = useState({
+    width: 0,
+    height: 0,
+  });
   const [tiSize, setTiSize] = useState(0);
   const [transformedImages, setTransformedImages] = useState([]);
   const [html, setHtml] = useState(null);
@@ -90,9 +91,19 @@ export default function MultipleImageView(props) {
       return;
     }
 
+    let width = pdfpagewidth;
+    let height = pdfpageheight;
     for (let i = 0; i < photos.length; i++) {
       imageRefs.current[i] = createRef();
+      if (photos[i]?.width > width || photos[i]?.height > height) {
+        width = photos[i]?.width;
+        height = photos[i]?.height;
+      }
     }
+    setPageDimensions({
+      width: width + staticDimensions.productPhotoWidthMargin,
+      height: height + staticDimensions.productPhotoWidthMargin,
+    });
     /*imageRefs.current = photos.map(
       (ref, index) => (imageRefs.current[index] = createRef())
     );*/
@@ -111,6 +122,13 @@ export default function MultipleImageView(props) {
   }, []);
 
   useEffect(() => {
+    if (pageDimensions?.width <= 0 || pageDimensions?.height <= 0) {
+      return;
+    }
+    addLogs(`pageDimensions set ${JSON.stringify(pageDimensions)}`);
+  }, [pageDimensions]);
+
+  useEffect(() => {
     //let tiSize = transformedImages.length;
     addLogs(`tiSize ${tiSize} transformedImages ${transformedImages.length}`);
     if (
@@ -125,10 +143,10 @@ export default function MultipleImageView(props) {
     if (tiSize === photos?.length) {
       let imgTags = null;
       for (let img of transformedImages) {
-        imgTags = `${imgTags ? imgTags : ""}${multiplephotosimgtag.replace(
-          "#URI#",
-          img
-        )}`;
+        imgTags = `${imgTags ? imgTags : ""}${multiplephotosimgtag
+          .replace("#URI#", img)
+          .replace("#WIDTH#", pageDimensions?.width)
+          .replace("#HEIGHT#", pageDimensions?.height)}`;
       }
       let html = multiplephotoshtml
         .replace("#TITLE#", title)
@@ -141,7 +159,7 @@ export default function MultipleImageView(props) {
     if (html === null) {
       return;
     }
-    addLogs(`\n\nHTML generated\n${html}`);
+    addLogs(`\n\nHTML generated`);
     printToFile();
   }, [html]);
 
@@ -195,7 +213,11 @@ export default function MultipleImageView(props) {
 
   const printToFile = async () => {
     // On iOS/android prints the given html. On web prints the HTML from the current page.
-    const result = await Print.printToFileAsync({ ...filePrintOptions, html });
+    const result = await Print.printToFileAsync({
+      ...filePrintOptions,
+      ...pageDimensions,
+      html,
+    });
     console.log("printToFileAsync", result);
     addLogs(JSON.stringify(result));
     if (sharingAvailability && result?.uri) {
@@ -336,7 +358,9 @@ export default function MultipleImageView(props) {
         {photos === undefined ||
         photos === null ||
         photos?.length === undefined ||
-        photos?.length < 1
+        photos?.length < 1 ||
+        pageDimensions?.width <= 0 ||
+        pageDimensions?.height <= 0
           ? null
           : photos.map(
               ({ id, foto, width, height, text_x, text_y, font }, index) => (
@@ -349,7 +373,7 @@ export default function MultipleImageView(props) {
                     fileName: `daclenwatermarkfoto_${id.toString()}`,
                     format: "jpg",
                     quality: 1,
-                    result: "base64",
+                    result: "data-uri",
                   }}
                   style={[styles.containerLargeImage, { width, height }]}
                 >
@@ -386,13 +410,21 @@ export default function MultipleImageView(props) {
       >
         {error ? <Text style={styles.textError}>{error}</Text> : null}
         {loading ? (
-          <ActivityIndicator
-            size="large"
-            color={colors.daclen_black}
-            style={styles.spinner}
-          />
-        ) : null}
-        <Text style={styles.textLogs}>{logs}</Text>
+          <View style={styles.containerLoading}>
+            <ActivityIndicator
+              size="large"
+              color={colors.daclen_black}
+              style={styles.spinner}
+            />
+            <Text style={styles.textLoading}>
+              {`Menyimpan ${
+                tiSize <= 0 ? "foto" : `${tiSize} foto`
+              } menjadi file PDF...`}
+            </Text>
+          </View>
+        ) : (
+          <Text style={styles.textLogs}>{logs}</Text>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -409,7 +441,13 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: "transparent",
+  },
+  containerLoading: {
+    flex: 1,
+    width: "100%",
+    justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "transparent",
     zIndex: 1,
   },
   containerInside: {
@@ -464,11 +502,12 @@ const styles = StyleSheet.create({
     margin: 20,
     color: colors.daclen_gray,
   },
-  textButton: {
-    fontSize: 16,
+  textLoading: {
+    fontSize: 14,
     fontWeight: "bold",
-    marginStart: 10,
-    color: "white",
+    textAlign: "center",
+    backgroundColor: "transparent",
+    color: colors.daclen_black,
   },
   textError: {
     width: "100%",
