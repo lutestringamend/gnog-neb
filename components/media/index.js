@@ -406,18 +406,18 @@ export const pickImage = async () => {
       allowsMultipleSelection: false,
     });
 
-    if (result?.canceled) {
+    if (result?.cancelled) {
       return null;
-    } else if (!result.canceled) {
+    } else if (!result.cancelled) {
       console.log("result", result);
       data = processExpoImagePickerUri(result?.uri ? result : result.assets[0]);
-      if (Platform.OS === "ios") {
+      /*if (Platform.OS === "ios") {
         if (data?.fileSize !== undefined && data?.fileSize !== null) {
           return null;
         } else if (data?.fileSize >= MAXIMUM_FILE_SIZE_IN_BYTES) {
           return FILE_OVERSIZE;
         }
-      }
+      }*/
       console.log(data);
       return data?.uri;
     } else {

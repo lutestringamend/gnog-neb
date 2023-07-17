@@ -83,7 +83,6 @@ const WatermarkPhotosSegment = ({
 
   const shareFileAsync = async () => {
     if (sharingAvailability) {
-      setLoading(true);
       try {
         await shareAsync(savedUri, {
           UTI: ".pdf",
@@ -95,7 +94,6 @@ const WatermarkPhotosSegment = ({
         if (Platform.OS === "android") {
           ToastAndroid.show(e.toString(), ToastAndroid.LONG);
         }
-        setLoading(false);
       }
     }
   };
@@ -126,21 +124,12 @@ const WatermarkPhotosSegment = ({
             <TouchableOpacity
               onPress={() => shareFileAsync()}
               style={[styles.button, { backgroundColor: colors.daclen_blue }]}
-              disabled={loading}
             >
-              {loading ? (
-                <ActivityIndicator
-                  size="small"
-                  color="white"
-                  style={styles.spinner}
-                />
-              ) : (
-                <MaterialCommunityIcons
-                  name="share-all"
-                  size={16}
-                  color="white"
-                />
-              )}
+              <MaterialCommunityIcons
+                name="share-all"
+                size={16}
+                color="white"
+              />
 
               <Text style={styles.textButton}>Share</Text>
             </TouchableOpacity>
@@ -155,12 +144,21 @@ const WatermarkPhotosSegment = ({
             <TouchableOpacity
               onPress={() => openMultipleImageView()}
               style={styles.button}
+              disabled={loading}
             >
-              <MaterialCommunityIcons
-                name="file-download"
-                size={16}
-                color="white"
-              />
+              {loading ? (
+                <ActivityIndicator
+                  size="small"
+                  color="white"
+                  style={styles.spinner}
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="file-download"
+                  size={16}
+                  color="white"
+                />
+              )}
 
               <Text style={styles.textButton}>Download</Text>
             </TouchableOpacity>

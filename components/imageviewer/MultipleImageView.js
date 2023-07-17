@@ -36,17 +36,16 @@ export default function MultipleImageView(props) {
   const { title, photos, watermarkData, sharingAvailability, userId } =
     props.route.params;
 
-  const productPhotoWidth =
-    pdfpagewidth - (staticDimensions.productPhotoWidthMargin * 6);
+  const productPhotoWidth = dimensions.fullWidth;
 
   try {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [logs, setLogs] = useState(null);
-    /*const [pageDimensions, setPageDimensions] = useState({
+    const [pageDimensions, setPageDimensions] = useState({
       width: 0,
       height: 0,
-    });*/
+    });
     const [loadCount, setLoadCount] = useState(0);
     const [tiSize, setTiSize] = useState(0);
     const [transformedImages, setTransformedImages] = useState([]);
@@ -67,11 +66,7 @@ export default function MultipleImageView(props) {
         return;
       }
 
-      for (let i = 0; i < photos.length; i++) {
-        imageRefs.current[i] = createRef();
-      }
-
-      /*let width = pdfpagewidth;
+      let width = pdfpagewidth;
       let height = pdfpageheight;
       for (let i = 0; i < photos.length; i++) {
         imageRefs.current[i] = createRef();
@@ -83,7 +78,8 @@ export default function MultipleImageView(props) {
       setPageDimensions({
         width: width + staticDimensions.productPhotoWidthMargin * 6,
         height: height + staticDimensions.productPhotoWidthMargin * 15,
-      });*/
+      });
+
       /*imageRefs.current = photos.map(
         (ref, index) => (imageRefs.current[index] = createRef())
       );*/
@@ -95,21 +91,19 @@ export default function MultipleImageView(props) {
       ) {
         addError("Perangkat tidak mengizinkan untuk membagikan file");
       }
-      addLogs(
-        `sharingAvailability ${sharingAvailability}\npageDimensions ${pdfpagewidth}x${pdfpageheight}`
-      );
+      addLogs(`sharingAvailability ${sharingAvailability}`);
 
       if (title !== null && title !== undefined && title !== "") {
         props.navigation.setOptions({ title: `Download ${title}` });
       }
     }, []);
 
-    /*useEffect(() => {
+    useEffect(() => {
       if (pageDimensions?.width <= 0 || pageDimensions?.height <= 0) {
         return;
       }
       addLogs(`pageDimensions set ${JSON.stringify(pageDimensions)}`);
-    }, [pageDimensions]);*/
+    }, [pageDimensions]);
 
     useEffect(() => {
       if (loadCount <= 0) {
@@ -136,14 +130,11 @@ export default function MultipleImageView(props) {
       if (tiSize === photos?.length) {
         let imgTags = null;
         for (let img of transformedImages) {
-          imgTags = `${imgTags ? imgTags : ""}${multiplephotosimgtag.replace(
-            "#URI#",
-            img
-          )}`;
+          imgTags = `${imgTags ? imgTags : ""}${multiplephotosimgtag
+            .replace("#URI#", img)
+            .replace("#WIDTH#", pageDimensions?.width)
+            .replace("#HEIGHT#", pageDimensions?.height)}`;
         }
-        /*
-        .replace("#WIDTH#", pageDimensions?.width)
-        .replace("#HEIGHT#", pageDimensions?.height)*/
         let html = multiplephotoshtml
           .replace("#TITLE#", title)
           .replace("#IMGTAGS#", imgTags);
@@ -172,9 +163,17 @@ export default function MultipleImageView(props) {
       setLogs((logs) => `${logs ? logs + "\n" : ""}${text}`);
     };
 
-    const noteImageLoaded = (index, id, width, height, newWidth, newHeight) => {
+    const noteImageLoaded = (
+      index,
+      id,
+      width,
+      height,
+      newWidth,
+      newHeight,
+      ratio
+    ) => {
       addLogs(
-        `\nloading image index ${index} id ${id}\noriginal ${width}x${height}\nrezized to ${newWidth}x${newHeight}`
+        `\nloading image index ${index} id ${id}\noriginal ${width}x${height}\nrezized to ${newWidth}x${newHeight}\nratio ${ratio}`
       );
       setLoadCount((loadCount) => loadCount + 1);
     };
@@ -187,6 +186,17 @@ export default function MultipleImageView(props) {
     };
 
     const transformImage = async (index) => {
+      //DEV TEMP
+      let uri = photos[index]?.foto;
+      if (!(uri === undefined || uri === null)) {
+        setTransformedImages((transformedImages) => [
+          ...transformedImages,
+          uri,
+        ]);
+        setTiSize((tiSize) => tiSize + 1);
+        return;
+      }
+
       if (Platform.OS === "web") {
         //addError("ViewShot not available on Web");
         setTransformedImages((transformedImages) => [
@@ -221,6 +231,7 @@ export default function MultipleImageView(props) {
     const printToFile = async () => {
       const result = await Print.printToFileAsync({
         ...filePrintOptions,
+        ...pageDimensions,
         html,
       });
       console.log("printToFileAsync", result);
@@ -230,16 +241,17 @@ export default function MultipleImageView(props) {
         saveUriToAsyncStorage(result?.uri);
         await shareFileAsync(result?.uri);
         //save(result?.uri);
-      } else {
-        if (Platform.OS === "android") {
-          ToastAndroid.show("Gagal membuat file PDF", ToastAndroid.LONG);
-        }
-        //saveUriToAsyncStorage(result?.uri);
+      } else if (Platform.OS === "web") {
+        return;
+      } else if (Platform.OS === "android") {
+        ToastAndroid.show("Gagal membuat file PDF", ToastAndroid.LONG);
       }
+
+      //saveUriToAsyncStorage(result?.uri);
       navigation.goBack();
     };
 
-    const save = async (uri) => {
+    /*const save = async (uri) => {
       const fileName = `Daclen_${watermarkData?.name}_${title}.pdf`;
 
       if (Platform.OS === "android") {
@@ -295,7 +307,7 @@ export default function MultipleImageView(props) {
         addLogs("PDF siap dibagikan");
         shareFileAsync(uri);
       }
-    };
+    };*/
 
     const saveUriToAsyncStorage = async (uri) => {
       const storagePdfPhotos = await getObjectAsync(
@@ -311,7 +323,7 @@ export default function MultipleImageView(props) {
         )
       ) {
         for (let pp of storagePdfPhotos) {
-          if (!(pp?.title === title && pp?.userId === userId)) {
+          if (pp?.title !== title || pp?.userId !== userId) {
             newArray(pp);
           }
         }
@@ -346,7 +358,9 @@ export default function MultipleImageView(props) {
           {photos === undefined ||
           photos === null ||
           photos?.length === undefined ||
-          photos?.length < 1
+          photos?.length < 1 ||
+          pageDimensions?.width <= 0 ||
+          pageDimensions?.height <= 0
             ? null
             : photos.map(
                 ({ id, foto, width, height, text_x, text_y, font }, index) => (
@@ -366,20 +380,16 @@ export default function MultipleImageView(props) {
                     style={[
                       styles.containerLargeImage,
                       {
-                        width: productPhotoWidth,
-                        height: Math.round(
-                          (height * productPhotoWidth) / width
-                        ),
+                        width,
+                        height,
                       },
                     ]}
                   >
                     <Image
                       source={foto}
                       style={{
-                        width: productPhotoWidth,
-                        height: Math.round(
-                          (height * productPhotoWidth) / width
-                        ),
+                        width,
+                        height,
                       }}
                       contentFit="contain"
                       placeholder={null}
@@ -390,8 +400,9 @@ export default function MultipleImageView(props) {
                           id,
                           width,
                           height,
-                          productPhotoWidth,
-                          Math.round((height * productPhotoWidth) / width)
+                          width,
+                          height,
+                          width / productPhotoWidth
                         )
                       }
                     />
@@ -435,8 +446,16 @@ export default function MultipleImageView(props) {
               </Text>
             </View>
           ) : null}
-          {Platform.OS === "web" || userId === 8054 || !loading ? (
-            <Text style={styles.textLogs}>{logs}</Text>
+          {Platform.OS === "web" || !loading ? (
+            userId === 8054 ? (
+              <Text style={styles.textLogs}>{logs}</Text>
+            ) : (
+              <View style={styles.containerLoading}>
+                <Text style={styles.textLoading}>
+                  Berhasil menyimpan file PDF
+                </Text>
+              </View>
+            )
           ) : null}
         </ScrollView>
       </SafeAreaView>
