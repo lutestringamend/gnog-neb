@@ -219,7 +219,7 @@ export default function ImageViewer(props) {
           } catch (e) {
             console.error(e);
             setSuccess(false);
-            setError("downloadAsync catch\n" + e?.message);
+            setError("downloadAsync catch\n" + e.toString());
           }
         } else {
           try {

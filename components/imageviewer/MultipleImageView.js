@@ -101,7 +101,7 @@ export default function MultipleImageView(props) {
     }
     setPageDimensions({
       width: width + (staticDimensions.productPhotoWidthMargin * 6),
-      height: height + (staticDimensions.productPhotoWidthMargin * 10),
+      height: height + (staticDimensions.productPhotoWidthMargin * 15),
     });
     /*imageRefs.current = photos.map(
       (ref, index) => (imageRefs.current[index] = createRef())
@@ -220,21 +220,23 @@ export default function MultipleImageView(props) {
     });
     console.log("printToFileAsync", result);
     addLogs(`printToFileAsync ${JSON.stringify(result)}`);
+    setLoading(false);
     if (result?.uri) {
       await save(result?.uri);
     } else {
       addError("uri is null");
       saveUriToAsyncStorage(result?.uri);
     }
-    setLoading(false);
   };
 
   const save = async (uri) => {
+    const fileName = `Daclen_${title}_${userId}.pdf`;
+    
     if (Platform.OS === "android") {
       const permissions =
         await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
       if (permissions.granted) {
-        const fileName = `Daclen_${title}.pdf`;
+
         const base64 = await FileSystem.readAsStringAsync(uri, {
           encoding: FileSystem.EncodingType.Base64,
         });
@@ -250,7 +252,7 @@ export default function MultipleImageView(props) {
                 encoding: FileSystem.EncodingType.Base64,
               });
               addLogs("PDF berhasil disimpan dan siap dibagikan");
-              saveUriToAsyncStorage(safUri);
+              saveUriToAsyncStorage(uri);
             } catch (e) {
               console.error(e);
               addError("\nwriteAsStringAsync catch\n" + e.toString());
@@ -306,7 +308,6 @@ export default function MultipleImageView(props) {
     })
     await setObjectAsync(ASYNC_WATERMARK_PHOTOS_PDF_KEY, newArray);
     addLogs(`new asyncStorage pdfphotos\n${JSON.stringify(newArray)}`);
-    setLoading(false);
     shareFileAsync(uri);
   }
 
@@ -322,47 +323,6 @@ export default function MultipleImageView(props) {
       addError(e.toString());
     }
   };
-
-  /*const startDownload = async (useWatermark) => {
-    if (!loading) {
-      if (downloadUri === null) {
-        setError(null);
-        setLoading(true);
-        if (
-          transformedImage === null ||
-          transformedImage === "" ||
-          !useWatermark
-        ) {
-          try {
-            const fileName = getFileName(props.route.params?.uri);
-            const result = await FileSystem.downloadAsync(
-              transformedImage ? transformedImage : uri,
-              FileSystem.documentDirectory + fileName
-            );
-            console.log(result);
-            setDownloadUri(result.uri, result.headers["Content-Type"]);
-            save(result.uri);
-          } catch (e) {
-            console.error(e);
-            setSuccess(false);
-            setError("downloadAsync catch\n" + e?.message);
-          }
-        } else {
-          try {
-            //save(transformedImage);
-            shareFileAsync(transformedImage);
-          } catch (e) {
-            console.error(e);
-            setSuccess(false);
-            setError("transformedImage catch\n" + e?.message);
-          }
-        }
-        setLoading(false);
-      } else {
-        shareFileAsync(downloadUri);
-      }
-    }
-  };*/
 
   return (
     <SafeAreaView style={styles.container}>
