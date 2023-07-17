@@ -36,7 +36,8 @@ import {
 } from "./constants";
 
 export default function MultipleImageView(props) {
-  let { title, photos, watermarkData } = props.route.params;
+  const { title, photos, watermarkData, sharingAvailability } =
+    props.route.params;
 
   const productPhotoWidth =
     dimensions.fullWidth - staticDimensions.productPhotoWidthMargin;
@@ -71,20 +72,11 @@ export default function MultipleImageView(props) {
   const [transformedImages, setTransformedImages] = useState([]);
   const [html, setHtml] = useState(null);
   const [downloadUri, setDownloadUri] = useState(null);
-  const [sharingAvailability, setSharingAvailability] = useState(false);
   const navigation = useNavigation();
 
   const imageRefs = useRef([]);
 
   useEffect(() => {
-    const checkSharing = async () => {
-      const result = await isAvailableAsync();
-      if (!result) {
-        addError("Perangkat tidak mengizinkan untuk membagikan file");
-      }
-      setSharingAvailability(result);
-    };
-
     if (
       photos === undefined ||
       photos === null ||
@@ -97,10 +89,18 @@ export default function MultipleImageView(props) {
       return;
     }
 
+    if (
+      sharingAvailability === undefined ||
+      sharingAvailability === null ||
+      !sharingAvailability
+    ) {
+      setError("Perangkat tidak mengizinkan untuk membagikan file");
+    }
+
     imageRefs.current = photos.map(
       (ref, index) => (imageRefs.current[index] = createRef())
     );
-    checkSharing();
+
     if (title !== null && title !== undefined && title !== "") {
       props.navigation.setOptions({ title });
     }
@@ -342,6 +342,7 @@ export default function MultipleImageView(props) {
                     fileName: `daclenwatermarkfoto_${id.toString()}`,
                     format: "jpg",
                     quality: 1,
+                    result: "base64",
                   }}
                   style={[styles.containerLargeImage, { width, height }]}
                 >

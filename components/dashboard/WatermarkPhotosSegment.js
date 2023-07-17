@@ -23,6 +23,7 @@ const WatermarkPhotosSegment = ({
   watermarkData,
   userId,
   isExpanded,
+  sharingAvailability,
 }) => {
   const [expanded, setExpanded] = useState(isExpanded ? isExpanded : false);
   const navigation = useNavigation();
@@ -41,6 +42,7 @@ const WatermarkPhotosSegment = ({
       font: item?.font,
       watermarkData,
       userId,
+      sharingAvailability
     });
   }
 
@@ -51,6 +53,7 @@ const WatermarkPhotosSegment = ({
       isSquare: false,
       watermarkData,
       userId,
+      sharingAvailability
     };
     console.log("MultipleImageView", params);
     navigation.navigate("MultipleImageView", params);

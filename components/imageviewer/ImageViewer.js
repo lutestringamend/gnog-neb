@@ -29,7 +29,7 @@ import { sentryLog } from "../../sentry";
 import { sharingOptionsJPEG } from "../media/constants";
 
 export default function ImageViewer(props) {
-  let {
+  const {
     id,
     title,
     uri,
@@ -41,6 +41,7 @@ export default function ImageViewer(props) {
     text_x,
     text_y,
     font,
+    sharingAvailability,
   } = props.route.params;
 
   let productPhotoWidth =
@@ -59,28 +60,16 @@ export default function ImageViewer(props) {
   const [success, setSuccess] = useState(false);
   const [transformedImage, setTransformedImage] = useState(null);
   const [downloadUri, setDownloadUri] = useState(null);
-  const [sharingAvailability, setSharingAvailability] = useState(false);
 
   const imageRef = useRef();
 
   useEffect(() => {
-    const checkSharing = async () => {
-      const result = await isAvailableAsync();
-      if (!result) {
-        setError("Perangkat tidak mengizinkan untuk membagikan file");
-      } else {
-        setLoading(true);
-        //transformImage();
-      }
-      setSharingAvailability(result);
-    };
-
     if (
-      watermarkData !== undefined &&
-      watermarkData !== null &&
-      (uri !== null) & (uri !== undefined)
+      sharingAvailability === undefined ||
+      sharingAvailability === null ||
+      !sharingAvailability
     ) {
-      checkSharing();
+      setError("Perangkat tidak mengizinkan untuk membagikan file");
     }
 
     if (title !== null && title !== undefined && title !== "") {
@@ -254,7 +243,11 @@ export default function ImageViewer(props) {
       {watermarkData === undefined || watermarkData === null ? null : (
         <ViewShot
           ref={imageRef}
-          options={{ fileName: `daclenwatermarkfoto_${id.toString()}`, format: "jpg", quality: 1 }}
+          options={{
+            fileName: `daclenwatermarkfoto_${id.toString()}`,
+            format: "jpg",
+            quality: 1,
+          }}
           style={[styles.containerLargeImage, { width, height }]}
         >
           <Image

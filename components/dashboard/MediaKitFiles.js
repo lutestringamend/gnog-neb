@@ -8,10 +8,13 @@ import {
   TextInput,
   Image,
   TouchableOpacity,
+  Platform,
+  ToastAndroid,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { isAvailableAsync } from "expo-sharing";
 
 import {
   getMediaKitPhotos,
@@ -47,6 +50,7 @@ function MediaKitFiles(props) {
     const [expand, setExpand] = useState(false);
     const [photoLoading, setPhotoLoading] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [sharingAvailability, setSharingAvailability] = useState(null);
     const { currentUser, photoError } = props;
     const navigation = useNavigation();
 
@@ -58,9 +62,18 @@ function MediaKitFiles(props) {
         : "",
     });
 
-    /*useEffect(() => {
-      props.clearMediaKitData();
-    }, []);*/
+    useEffect(() => {
+      const checkSharing = async () => {
+        const result = await isAvailableAsync();
+        if (!result && Platform.OS === "android") {
+          ToastAndroid.show("Perangkat tidak mengizinkan sharing file", ToastAndroid.LONG);
+        }
+        console.log("sharingAvailability", result);
+        setSharingAvailability(result);
+      };
+      checkSharing();
+      //props.clearMediaKitData();
+    }, []);
 
     useEffect(() => {
       if (props.mediaKitPhotos === undefined || props.mediaKitPhotos === null) {
@@ -169,6 +182,7 @@ function MediaKitFiles(props) {
               userId={currentUser?.id}
               loading={photoLoading}
               error={photoError}
+              sharingAvailability={sharingAvailability}
               photos={props.mediaKitPhotos}
             />
           )}

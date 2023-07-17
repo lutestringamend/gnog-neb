@@ -13,7 +13,7 @@ import { ErrorView } from "../webview/WebviewChild";
 import WatermarkPhotosSegment from "./WatermarkPhotosSegment";
 import { sentryLog } from "../../sentry";
 
-const WatermarkPhotos = ({ photos, watermarkData, userId, loading, error }) => {
+const WatermarkPhotos = ({ photos, watermarkData, userId, loading, error, sharingAvailability }) => {
   try {
     return (
       <View style={styles.container}>
@@ -22,7 +22,7 @@ const WatermarkPhotos = ({ photos, watermarkData, userId, loading, error }) => {
             error="Mohon membuka website Daclen untuk melihat foto Media Kit"
             onOpenExternalLink={() => Linking.openURL(webfotowatermark)}
           />
-        ) : loading ? (
+        ) : loading || sharingAvailability === undefined || sharingAvailability === null ? (
           <ActivityIndicator
             size="large"
             color={colors.daclen_orange}
@@ -42,6 +42,7 @@ const WatermarkPhotos = ({ photos, watermarkData, userId, loading, error }) => {
                 photos={photos[keyName]}
                 watermarkData={watermarkData}
                 userId={userId}
+                sharingAvailability={sharingAvailability}
               />
             ))
         )}
