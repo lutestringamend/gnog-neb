@@ -164,7 +164,7 @@ export default function ImageViewer(props) {
             }
           })
           .catch((e) => {
-            console.error(e);
+            sentryLog(e);
             setSuccess(false);
             if (e?.code === "ERR_FILESYSTEM_CANNOT_CREATE_FILE") {
               setError(
@@ -177,14 +177,14 @@ export default function ImageViewer(props) {
                   e.toString()
               );
             }
-            if (Platform.OS === "android") {
+            /*if (Platform.OS === "android") {
               ToastAndroid.show(
                 base64.substring(0, 64) +
                   "\ncreateFileAsync catch\n" +
                   e.toString(),
                 ToastAndroid.LONG
               );
-            }
+            }*/
           });
       } else {
         setSuccess(false);

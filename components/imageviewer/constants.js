@@ -1,6 +1,6 @@
 export const pdfpagewidth = 612;
 export const pdfpageheight = 792;
-export const multiplephotosimgtag = `<div align="center" style="top: 50%; left: 50%; transform: translate(-50%, -50%) ;width: #WIDTH# ; height: #HEIGHT# ;"><img src="#URI#" /></div>`;
+export const multiplephotosimgtag = `<div align="center" style="width: #WIDTH# ; height: #HEIGHT# ;"><img src="#URI#" /></div>`;
 export const multiplephotoshtml = `
 <html>
   <head>

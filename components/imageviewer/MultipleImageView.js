@@ -113,7 +113,7 @@ export default function MultipleImageView(props) {
       sharingAvailability === null ||
       !sharingAvailability
     ) {
-      setError("Perangkat tidak mengizinkan untuk membagikan file");
+      addError("Perangkat tidak mengizinkan untuk membagikan file");
     }
 
     if (title !== null && title !== undefined && title !== "") {
@@ -163,10 +163,10 @@ export default function MultipleImageView(props) {
     printToFile();
   }, [html]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     console.log("imageRefs", imageRefs);
     addLogs(`imageRefs ${JSON.stringify(imageRefs)}`);
-  }, [imageRefs]);
+  }, [imageRefs]);*/
 
   const addError = (text) => {
     setError((error) => `${error ? error + "\n" : ""}${text}`);
@@ -220,45 +220,27 @@ export default function MultipleImageView(props) {
     });
     console.log("printToFileAsync", result);
     addLogs(JSON.stringify(result));
-    if (sharingAvailability && result?.uri) {
-      await shareAsync(result?.uri, {
-        UTI: ".pdf",
-        mimeType: "application/pdf",
-      });
+    if (result?.uri) {
+      await save(result?.uri);
+    } else {
+      addError("uri is null");
     }
     setLoading(false);
   };
 
-  /*
-
-
-  const sharePhotoAsync = async (uri) => {
-    if (!sharingAvailability) {
-      setError("Perangkat tidak mengizinkan untuk membagikan file");
-      return;
-    }
-
-    try {
-      await shareAsync(uri, sharingOptionsJPEG);
-    } catch (e) {
-      console.error(e);
-      setError(e?.message);
-    }
-  };
-
-  const save = async (uri, mimeType) => {
+  const save = async (uri) => {
     if (Platform.OS === "android") {
       const permissions =
         await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
       if (permissions.granted) {
-        const fileName = getFileName(props.route.params?.uri);
+        const fileName = `Daclen_${title}.pdf`;
         const base64 = await FileSystem.readAsStringAsync(uri, {
           encoding: FileSystem.EncodingType.Base64,
         });
         await FileSystem.StorageAccessFramework.createFileAsync(
           permissions.directoryUri,
           fileName,
-          mimeType ? mimeType : "image/jpeg"
+          "application/pdf"
         )
           .then(async (safUri) => {
             setError(safUri);
@@ -266,50 +248,48 @@ export default function MultipleImageView(props) {
               await FileSystem.writeAsStringAsync(safUri, base64, {
                 encoding: FileSystem.EncodingType.Base64,
               });
-              setError("Foto berhasil disimpan dan siap dibagikan");
-              setSuccess(true);
+              addLogs("PDF berhasil disimpan dan siap dibagikan");
               sharePhotoAsync(safUri);
             } catch (e) {
               console.error(e);
-              setError(
-                (error) => error + "\nwriteAsStringAsync catch\n" + e.toString()
-              );
-              setSuccess(false);
+              addError("\nwriteAsStringAsync catch\n" + e.toString());
             }
           })
           .catch((e) => {
-            console.error(e);
+            sentryLog(e);
             setSuccess(false);
             if (e?.code === "ERR_FILESYSTEM_CANNOT_CREATE_FILE") {
-              setError(
+              addError(
                 "Tidak bisa menyimpan foto di folder sistem. Mohon pilih folder lain."
               );
             } else {
-              setError(
+              addError(
                 base64.substring(0, 64) +
                   "\ncreateFileAsync catch\n" +
                   e.toString()
               );
             }
-            if (Platform.OS === "android") {
-              ToastAndroid.show(
-                base64.substring(0, 64) +
-                  "\ncreateFileAsync catch\n" +
-                  e.toString(),
-                ToastAndroid.LONG
-              );
-            }
           });
       } else {
-        setSuccess(false);
-        setError("Anda tidak memberikan izin untuk mengakses penyimpanan");
+        addError("Anda tidak memberikan izin untuk mengakses penyimpanan");
       }
     } else {
-      setSuccess(true);
-      setError("Foto siap dibagikan");
+      addLogs("PDF siap dibagikan");
       sharePhotoAsync(uri);
     }
   };
+
+  const sharePhotoAsync = async (uri) => {
+    if (sharingAvailability) {
+      await shareAsync(uri, {
+        UTI: ".pdf",
+        mimeType: "application/pdf",
+      });
+    }
+  };
+
+  /*
+
 
   const startDownload = async (useWatermark) => {
     if (!loading) {
