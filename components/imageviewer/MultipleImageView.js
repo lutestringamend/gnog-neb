@@ -14,6 +14,7 @@ import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import ViewShot from "react-native-view-shot";
 import { useNavigation } from "@react-navigation/native";
+import * as Print from "expo-print";
 import * as FileSystem from "expo-file-system";
 import { shareAsync, isAvailableAsync } from "expo-sharing";
 
@@ -27,7 +28,11 @@ import { getFileName } from "../media";
 import WatermarkModel from "../media/WatermarkModel";
 import { sentryLog } from "../../sentry";
 import { sharingOptionsJPEG } from "../media/constants";
-import { multiplephotoshtml, multiplephotosimgtag } from "./constants";
+import {
+  multiplephotoshtml,
+  multiplephotosimgtag,
+  temporaryimgurl,
+} from "./constants";
 
 export default function MultipleImageView(props) {
   let { title, photos, watermarkData } = props.route.params;
@@ -62,7 +67,7 @@ export default function MultipleImageView(props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [logs, setLogs] = useState(null);
-  const [transformedImages, setTransformedImages] = useState({});
+  const [transformedImages, setTransformedImages] = useState([]);
   const [html, setHtml] = useState(null);
   const [downloadUri, setDownloadUri] = useState(null);
   const [sharingAvailability, setSharingAvailability] = useState(false);
@@ -101,7 +106,7 @@ export default function MultipleImageView(props) {
   }, []);
 
   useEffect(() => {
-    let tiSize = Object.keys(transformedImages).length;
+    let tiSize = transformedImages.length;
     if (
       photos === undefined ||
       photos === null ||
@@ -112,18 +117,18 @@ export default function MultipleImageView(props) {
     ) {
       return;
     }
-    addLogs(`transformedImages ${Object.keys(transformedImages).length}`);
+    addLogs(`transformedImages ${transformedImages.length}`);
     if (tiSize === photos?.length) {
       let imgTags = null;
-      for (const key in transformedImages) {
-        if (transformedImages.hasOwnProperty(key)) {
-          imgTags = `${imgTags ? imgTags : ""}${multiplephotosimgtag.replace(
-            "#URI",
-            transformedImages[key]
-          )}`;
-        }
+      for (let img of transformedImages) {
+        imgTags = `${imgTags ? imgTags : ""}${multiplephotosimgtag.replace(
+          "#URI#",
+          img
+        )}`;
       }
-      let html = multiplephotoshtml.replace("#TITLE#", title).replace("#IMGTAGS#", imgTags);
+      let html = multiplephotoshtml
+        .replace("#TITLE#", title)
+        .replace("#IMGTAGS#", imgTags);
       setHtml(html);
     }
   }, [transformedImages]);
@@ -132,7 +137,8 @@ export default function MultipleImageView(props) {
     if (html === null) {
       return;
     }
-    addLogs(`\n\n${html}`);
+    addLogs("HTML generated");
+    printToFile();
   }, [html]);
 
   useEffect(() => {
@@ -150,18 +156,21 @@ export default function MultipleImageView(props) {
   const transformImage = async (index, id) => {
     addLogs(`photo index ${index} id ${id} loaded`);
     if (Platform.OS === "web") {
-      addError("ViewShot not available on Web");
+      //addError("ViewShot not available on Web");
+      setTransformedImages((transformedImages) => [
+        ...transformedImages,
+        temporaryimgurl,
+      ]);
       return;
     }
     try {
       imageRefs.current[index].current
         .capture()
         .then((uri) => {
-          console.log(uri);
-          setTransformedImages((transformedImages) => ({
+          setTransformedImages((transformedImages) => [
             ...transformedImages,
-            id: uri,
-          }));
+            uri,
+          ]);
           setLoading(false);
         })
         .catch((e) => {
@@ -176,6 +185,20 @@ export default function MultipleImageView(props) {
       setLoading(false);
       sentryLog(e);
     }
+  };
+
+  const printToFile = async () => {
+    // On iOS/android prints the given html. On web prints the HTML from the current page.
+    const result = await Print.printToFileAsync({ html });
+    console.log("printToFileAsync", result);
+    addLogs(JSON.stringify(result));
+    if (sharingAvailability && result?.uri) {
+      await shareAsync(result?.uri, {
+        UTI: ".pdf",
+        mimeType: "application/pdf",
+      });
+    }
+    setLoading(false);
   };
 
   /*
@@ -353,11 +376,13 @@ export default function MultipleImageView(props) {
         contentContainerStyle={styles.scrollView}
       >
         {error ? <Text style={styles.textError}>{error}</Text> : null}
-        <ActivityIndicator
-          size="large"
-          color={colors.daclen_black}
-          style={styles.spinner}
-        />
+        {loading ? (
+          <ActivityIndicator
+            size="large"
+            color={colors.daclen_black}
+            style={styles.spinner}
+          />
+        ) : null}
         <Text style={styles.textLogs}>{logs}</Text>
       </ScrollView>
     </SafeAreaView>
