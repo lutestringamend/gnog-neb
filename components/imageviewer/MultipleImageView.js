@@ -76,8 +76,8 @@ export default function MultipleImageView(props) {
         }
       }
       setPageDimensions({
-        width: width + staticDimensions.productPhotoWidthMargin * 2,
-        height: height + staticDimensions.productPhotoWidthMargin * 2,
+        width,
+        height,
       });
 
       /*imageRefs.current = photos.map(
@@ -238,7 +238,7 @@ export default function MultipleImageView(props) {
       addLogs(`printToFileAsync ${JSON.stringify(result)}`);
       setLoading(false);
       if (result?.uri) {
-        await saveUriToAsyncStorage(result?.uri);
+        saveUriToAsyncStorage(result?.uri);
         await shareFileAsync(result?.uri);
         //save(result?.uri);
       } else if (Platform.OS === "web") {
@@ -333,8 +333,8 @@ export default function MultipleImageView(props) {
         userId,
         uri: uri ? uri : null,
       });
-      await setObjectAsync(ASYNC_WATERMARK_PHOTOS_PDF_KEY, newArray);
       addLogs(`new asyncStorage pdfphotos\n${JSON.stringify(newArray)}`);
+      await setObjectAsync(ASYNC_WATERMARK_PHOTOS_PDF_KEY, newArray);
     };
 
     const shareFileAsync = async (uri) => {
