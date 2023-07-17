@@ -5,11 +5,13 @@ import {
   MEDIA_KIT_COLORS_STATE_CHANGE,
   MEDIA_KIT_SIZES_STATE_CHANGE,
   MEDIA_KIT_CLEAR_DATA,
-  MEDIA_KIT_PHOTOS_ERROR_STATE_CHANGE
+  MEDIA_KIT_PHOTOS_ERROR_STATE_CHANGE,
+  MEDIA_KIT_PHOTOS_URI_STATE_CHANGE
 } from "../constants";
 
 const initialState = {
   photos: null,
+  photosUri: [],
   videos: [],
   fonts: [],
   colors: [],
@@ -23,6 +25,11 @@ export const mediakit = (state = initialState, action) => {
       return {
         ...state,
         photos: action.data,
+      };
+    case MEDIA_KIT_PHOTOS_URI_STATE_CHANGE:
+      return {
+        ...state,
+        photosUri: action.data,
       };
     case MEDIA_KIT_PHOTOS_ERROR_STATE_CHANGE:
       return {

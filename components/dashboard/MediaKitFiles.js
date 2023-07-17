@@ -51,7 +51,7 @@ function MediaKitFiles(props) {
     const [photoLoading, setPhotoLoading] = useState(false);
     const [loading, setLoading] = useState(false);
     const [sharingAvailability, setSharingAvailability] = useState(null);
-    const { currentUser, photoError } = props;
+    const { currentUser, photoError, photosUri } = props;
     const navigation = useNavigation();
 
     const [watermarkData, setWatermarkData] = useState({
@@ -184,6 +184,7 @@ function MediaKitFiles(props) {
               error={photoError}
               sharingAvailability={sharingAvailability}
               photos={props.mediaKitPhotos}
+              photosUri={photosUri}
             />
           )}
         </ScrollView>
@@ -320,6 +321,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
+  photosUri: store.mediaKitState.photosUri,
   mediaKitPhotos: store.mediaKitState.photos,
   photoError: store.mediaKitState.photoError,
 });

@@ -28,6 +28,7 @@ const WatermarkPhotosSegment = ({
   userId,
   isExpanded,
   sharingAvailability,
+  photosUri,
 }) => {
   const [expanded, setExpanded] = useState(isExpanded ? isExpanded : false);
   const [loading, setLoading] = useState(false);
@@ -35,10 +36,10 @@ const WatermarkPhotosSegment = ({
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (savedUri === null) {
+    if (savedUri === null || savedUri === "") {
       checkSavedUri();
     }
-  }, [savedUri]);
+  }, [photosUri]);
 
   function openPhoto(item) {
     navigation.navigate("ImageViewer", {
@@ -59,26 +60,40 @@ const WatermarkPhotosSegment = ({
   }
 
   const checkSavedUri = async () => {
-    const storagePdfPhotos = await getObjectAsync(
-      ASYNC_WATERMARK_PHOTOS_PDF_KEY
-    );
-    console.log("storagePdfPhotos", storagePdfPhotos);
     if (
-      !(
-        storagePdfPhotos === undefined ||
-        storagePdfPhotos === null ||
-        storagePdfPhotos?.length === undefined ||
-        storagePdfPhotos?.length < 1
-      )
+      photosUri === undefined ||
+      photosUri === null ||
+      photosUri?.length === undefined ||
+      photosUri?.length < 1
     ) {
-      for (let pp of storagePdfPhotos) {
+      const storagePdfPhotos = await getObjectAsync(
+        ASYNC_WATERMARK_PHOTOS_PDF_KEY
+      );
+      console.log("storagePdfPhotos", storagePdfPhotos);
+      if (
+        !(
+          storagePdfPhotos === undefined ||
+          storagePdfPhotos === null ||
+          storagePdfPhotos?.length === undefined ||
+          storagePdfPhotos?.length < 1
+        )
+      ) {
+        for (let pp of storagePdfPhotos) {
+          if (pp?.title === title && pp?.userId === userId) {
+            setSavedUri(pp?.uri);
+            return;
+          }
+        }
+      }
+    } else {
+      for (let pp of photosUri) {
         if (pp?.title === title && pp?.userId === userId) {
           setSavedUri(pp?.uri);
           return;
         }
       }
     }
-    setSavedUri("");
+    setSavedUri(null);
   };
 
   const shareFileAsync = async () => {
@@ -120,7 +135,7 @@ const WatermarkPhotosSegment = ({
           onPress={() => setExpanded((expanded) => !expanded)}
         >
           <Text style={styles.textHeader}>{title}</Text>
-          {savedUri === null || savedUri === "" ? null : (
+          {savedUri === null || savedUri === "" || !expanded ? null : (
             <TouchableOpacity
               onPress={() => shareFileAsync()}
               style={[styles.button, { backgroundColor: colors.daclen_blue }]}

@@ -11,11 +11,13 @@ import {
   ToastAndroid,
 } from "react-native";
 import { Image } from "expo-image";
-import { ErrorView } from "../webview/WebviewChild";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+
 import ViewShot from "react-native-view-shot";
 import { useNavigation } from "@react-navigation/native";
 import * as Print from "expo-print";
-import * as FileSystem from "expo-file-system";
+//import * as FileSystem from "expo-file-system";
 import { shareAsync } from "expo-sharing";
 
 import { colors, staticDimensions, dimensions } from "../../styles/base";
@@ -30,9 +32,11 @@ import {
   pdfpagewidth,
 } from "./constants";
 import { ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../asyncstorage/constants";
+import { updateReduxMediaKitPhotosUri } from "../../axios/mediakit";
+import { ErrorView } from "../webview/WebviewChild";
 import { webfotowatermark } from "../../axios/constants";
 
-export default function MultipleImageView(props) {
+const MultipleImageView = (props) => {
   const { title, photos, watermarkData, sharingAvailability, userId } =
     props.route.params;
 
@@ -242,6 +246,7 @@ export default function MultipleImageView(props) {
         await shareFileAsync(result?.uri);
         //save(result?.uri);
       } else if (Platform.OS === "web") {
+        saveUriToAsyncStorage("WEBURI");
         return;
       } else if (Platform.OS === "android") {
         ToastAndroid.show("Gagal membuat file PDF", ToastAndroid.LONG);
@@ -310,31 +315,46 @@ export default function MultipleImageView(props) {
     };*/
 
     const saveUriToAsyncStorage = async (uri) => {
+      let newArray = [];
       const storagePdfPhotos = await getObjectAsync(
         ASYNC_WATERMARK_PHOTOS_PDF_KEY
       );
-      let newArray = [];
       if (
-        !(
-          storagePdfPhotos === undefined ||
-          storagePdfPhotos === null ||
-          storagePdfPhotos?.length === undefined ||
-          storagePdfPhotos?.length < 1
-        )
+        props.photosUri === undefined ||
+        props.photosUri === null ||
+        props.photosUri?.length === undefined ||
+        props.photosUri?.length === null
       ) {
-        for (let pp of storagePdfPhotos) {
-          if (pp?.title !== title || pp?.userId !== userId) {
-            newArray(pp);
+        if (
+          !(
+            storagePdfPhotos === undefined ||
+            storagePdfPhotos === null ||
+            storagePdfPhotos?.length === undefined ||
+            storagePdfPhotos?.length < 1
+          )
+        ) {
+          for (let pp of storagePdfPhotos) {
+            if (!(pp?.title == title && pp?.userId === userId)) {
+              newArray.push(pp);
+            }
+          }
+        }
+      } else {
+        for (let pp of props.photosUri) {
+          if (!(pp?.title === title && pp?.userId === userId)) {
+            newArray.push(pp);
           }
         }
       }
+
       newArray.push({
         title,
         userId,
         uri: uri ? uri : null,
       });
       addLogs(`new asyncStorage pdfphotos\n${JSON.stringify(newArray)}`);
-      await setObjectAsync(ASYNC_WATERMARK_PHOTOS_PDF_KEY, newArray);
+      props.updateReduxMediaKitPhotosUri(newArray);
+      setObjectAsync(ASYNC_WATERMARK_PHOTOS_PDF_KEY, newArray);
     };
 
     const shareFileAsync = async (uri) => {
@@ -459,7 +479,7 @@ export default function MultipleImageView(props) {
       </SafeAreaView>
     );
   }
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -552,3 +572,17 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
 });
+
+const mapStateToProps = (store) => ({
+  photosUri: store.mediaKitState.photosUri,
+});
+
+const mapDispatchProps = (dispatch) =>
+  bindActionCreators(
+    {
+      updateReduxMediaKitPhotosUri,
+    },
+    dispatch
+  );
+
+export default connect(mapStateToProps, mapDispatchProps)(MultipleImageView);

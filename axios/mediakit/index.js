@@ -5,6 +5,7 @@ import {
   MEDIA_KIT_CLEAR_DATA,
   MEDIA_KIT_PHOTOS_STATE_CHANGE,
   MEDIA_KIT_PHOTOS_ERROR_STATE_CHANGE,
+  MEDIA_KIT_PHOTOS_URI_STATE_CHANGE,
 } from "../../redux/constants";
 import { sentryLog } from "../../sentry";
 
@@ -19,6 +20,13 @@ export function clearMediaKitPhotosError() {
   return (dispatch) => {
     console.log("clearMediaKitPhotosError");
     dispatch({ type: MEDIA_KIT_PHOTOS_ERROR_STATE_CHANGE, data: null });
+  };
+}
+
+export function updateReduxMediaKitPhotosUri(data) {
+  return (dispatch) => {
+    console.log("updateReduxMediaKitPhotosUri", data);
+    dispatch({ type: MEDIA_KIT_PHOTOS_URI_STATE_CHANGE, data });
   };
 }
 
