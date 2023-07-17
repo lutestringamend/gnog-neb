@@ -15,15 +15,13 @@ import {
 import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
-
+import moment from "moment";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { getLaporanPoin, clearAuthError } from "../../axios/user";
-
 import { colors, staticDimensions } from "../../styles/base";
 import Separator from "../profile/Separator";
-import moment from "moment";
 import { ErrorView } from "../webview/WebviewChild";
 import { weblaporanpoin } from "../../axios/constants";
 
@@ -114,7 +112,9 @@ function PointReport(props) {
         />
       ) : error ? (
         <ErrorView
-          error="Mohon membuka website Daclen untuk membaca Laporan Poin"
+        error={`Mohon membuka website Daclen untuk membaca Laporan Poin${
+          error ? `\n${error}` : ""
+        }`}
           onOpenExternalLink={() => onOpenExternalLink()}
         />
       ) : token === null || currentUser?.id === undefined ? (

@@ -30,7 +30,9 @@ import BSPopup from "../bottomsheets/BSPopup";
 import { colors, dimensions, staticDimensions } from "../../styles/base";
 
 function setPageHeight(bottomPadding) {
-  return dimensions.fullHeight - staticDimensions.authBoxTopHeight + bottomPadding;
+  return (
+    dimensions.fullHeight - staticDimensions.authBoxTopHeight + bottomPadding
+  );
 }
 
 function Login(props) {
@@ -207,7 +209,9 @@ function Login(props) {
               {
                 height:
                   !isChangePassword && !isLogin
-                    ? setPageHeight(staticDimensions.authPageRegisterBottomPadding)
+                    ? setPageHeight(
+                        staticDimensions.authPageRegisterBottomPadding
+                      )
                     : setPageHeight(staticDimensions.pageBottomPadding),
               },
             ]}
@@ -229,27 +233,29 @@ function Login(props) {
               <RegisterBox username={props.route.params?.username} />
             )}
 
-            {loading ? (
-              <ActivityIndicator
-                size="large"
-                color={colors.daclen_orange}
-                style={{ alignSelf: "center", marginVertical: 10 }}
-              />
-            ) : (
-              <TouchableOpacity
-                onPress={() =>
-                  isChangePassword
-                    ? onChangePassword()
-                    : isLogin
-                    ? onLogin()
-                    : onRegister()
-                }
-                style={[
-                  styles.button,
-                  loading && { backgroundColor: colors.daclen_gray },
-                ]}
-                disabled={loading}
-              >
+            <TouchableOpacity
+              onPress={() =>
+                isChangePassword
+                  ? onChangePassword()
+                  : isLogin
+                  ? onLogin()
+                  : onRegister()
+              }
+              style={[
+                styles.button,
+                loading && { backgroundColor: colors.daclen_gray },
+              ]}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.daclen_light}
+                  style={{
+                    alignSelf: "center",
+                  }}
+                />
+              ) : (
                 <Text style={styles.textButton}>
                   {isChangePassword
                     ? "Ganti Password"
@@ -257,8 +263,8 @@ function Login(props) {
                     ? "Login"
                     : "Register"}
                 </Text>
-              </TouchableOpacity>
-            )}
+              )}
+            </TouchableOpacity>
 
             {!isChangePassword && (
               <View style={styles.containerAdditional}>

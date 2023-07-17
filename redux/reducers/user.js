@@ -20,12 +20,11 @@ import {
   USER_OTP_STATE_CHANGE,
   USER_OTP_VALIDATION_STATE_CHANGE,
   CLEAR_USER_DATA,
-  DISABLE_FORCE_LOGOUT,
-  ENABLE_FORCE_LOGOUT,
   USER_HPV_STATE_CHANGE,
   USER_POINTS_STATE_CHANGE,
   USER_SYARAT_ROOT_STATE_CHANGE,
   USER_CART_STATE_ERROR,
+  USER_SALDO_STATE_CHANGE,
 } from "../constants";
 
 import { mainhttp } from "../../axios/constants";
@@ -36,6 +35,7 @@ export const initialState = {
   hpv: null,
   points: null,
   syaratRoot: [],
+  saldo: null,
   cart: null,
   cartError: null,
   currentAddress: null,
@@ -124,6 +124,11 @@ export const user = (state = initialState, action) => {
         ...state,
         syaratRoot: action.data,
       };
+    case USER_SALDO_STATE_CHANGE:
+      return {
+        ...state,
+        saldo: action.data,
+    };
     case USER_CART_STATE_CHANGE:
       return {
         ...state,

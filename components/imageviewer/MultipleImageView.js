@@ -76,8 +76,8 @@ export default function MultipleImageView(props) {
         }
       }
       setPageDimensions({
-        width: width + staticDimensions.productPhotoWidthMargin * 6,
-        height: height + staticDimensions.productPhotoWidthMargin * 15,
+        width: width + staticDimensions.productPhotoWidthMargin * 2,
+        height: height + staticDimensions.productPhotoWidthMargin * 2,
       });
 
       /*imageRefs.current = photos.map(
@@ -238,7 +238,7 @@ export default function MultipleImageView(props) {
       addLogs(`printToFileAsync ${JSON.stringify(result)}`);
       setLoading(false);
       if (result?.uri) {
-        saveUriToAsyncStorage(result?.uri);
+        await saveUriToAsyncStorage(result?.uri);
         await shareFileAsync(result?.uri);
         //save(result?.uri);
       } else if (Platform.OS === "web") {
@@ -424,38 +424,26 @@ export default function MultipleImageView(props) {
 
         <ScrollView
           style={styles.container}
-          contentContainerStyle={styles.scrollView}
+          contentContainerStyle={styles.containerLoading}
         >
           {error ? <Text style={styles.textError}>{error}</Text> : null}
           {loading ? (
-            <View
-              style={[
-                styles.containerLoading,
-                userId !== 8054 ? { flex: 1 } : null,
-              ]}
-            >
-              <ActivityIndicator
-                size="large"
-                color={colors.daclen_black}
-                style={styles.spinner}
-              />
-              <Text style={styles.textLoading}>
-                {`Menyimpan ${
-                  tiSize <= 0 ? "foto" : `${tiSize} foto`
-                } menjadi file PDF...`}
-              </Text>
-            </View>
+            <ActivityIndicator
+              size="large"
+              color={colors.daclen_black}
+              style={styles.spinner}
+            />
           ) : null}
-          {Platform.OS === "web" || !loading ? (
-            userId === 8054 ? (
-              <Text style={styles.textLogs}>{logs}</Text>
-            ) : (
-              <View style={styles.containerLoading}>
-                <Text style={styles.textLoading}>
-                  Berhasil menyimpan file PDF
-                </Text>
-              </View>
-            )
+
+          <Text style={styles.textLoading}>
+            {loading
+              ? `Menyimpan ${
+                  tiSize <= 0 ? "foto" : `${tiSize} foto`
+                } menjadi file PDF...`
+              : "Berhasil menyimpan file PDF"}
+          </Text>
+          {Platform.OS === "web" || userId === 8054 ? (
+            <Text style={styles.textLogs}>{logs}</Text>
           ) : null}
         </ScrollView>
       </SafeAreaView>
@@ -478,11 +466,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: "white",
-  },
-  scrollView: {
-    flex: 1,
-    width: "100%",
-    backgroundColor: "transparent",
   },
   containerLoading: {
     width: "100%",

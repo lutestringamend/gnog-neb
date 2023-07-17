@@ -16,6 +16,7 @@ import {
   laporanpoinuser,
   getsyaratroot,
   resetpassword,
+  laporansaldo,
 } from "../constants";
 import { getKeranjang } from "../cart";
 import { initialState } from "../../redux/reducers/user";
@@ -41,6 +42,7 @@ import {
   USER_POINTS_STATE_CHANGE,
   USER_SYARAT_ROOT_STATE_CHANGE,
   MEDIA_KIT_CLEAR_DATA,
+  USER_SALDO_STATE_CHANGE,
 } from "../../redux/constants";
 import {
   calculateBase64SizeInBytes,
@@ -125,6 +127,32 @@ export function getSyaratRoot(token) {
         dispatch({
           type: USER_AUTH_ERROR_STATE_CHANGE,
           data: error?.toString(),
+        });
+      });
+  };
+}
+
+export function getLaporanSaldo(id, token) {
+  return (dispatch) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    };
+    const url = laporansaldo + "/" + id.toString();
+    console.log("getLaporanSaldo", url);
+
+    Axios.get(url, config)
+      .then((response) => {
+        const data = response.data;
+        dispatch({ type: USER_SALDO_STATE_CHANGE, data });
+      })
+      .catch((error) => {
+        console.log(error);
+        dispatch({
+          type: USER_AUTH_ERROR_STATE_CHANGE,
+          data: error.toString(),
         });
       });
   };
