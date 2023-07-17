@@ -89,6 +89,10 @@ export default function MultipleImageView(props) {
       return;
     }
 
+    imageRefs.current = photos.map(
+      (ref, index) => (imageRefs.current[index] = createRef())
+    );
+
     if (
       sharingAvailability === undefined ||
       sharingAvailability === null ||
@@ -96,10 +100,6 @@ export default function MultipleImageView(props) {
     ) {
       setError("Perangkat tidak mengizinkan untuk membagikan file");
     }
-
-    imageRefs.current = photos.map(
-      (ref, index) => (imageRefs.current[index] = createRef())
-    );
 
     if (title !== null && title !== undefined && title !== "") {
       props.navigation.setOptions({ title });
@@ -176,13 +176,13 @@ export default function MultipleImageView(props) {
         })
         .catch((e) => {
           console.error(e);
-          addError(e.toString());
+          addError(`index ${index} ${e.toString()}`);
           setLoading(false);
           sentryLog(e);
         });
     } catch (e) {
       console.error(e);
-      addError(e.toString());
+      addError(`index ${index} ${e.toString()}`);
       setLoading(false);
       sentryLog(e);
     }
