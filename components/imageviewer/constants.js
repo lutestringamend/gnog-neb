@@ -1,0 +1,1 @@
+export const multiplephotosimgtag = `<img src="#URI#" style="width: 90vw;" />`

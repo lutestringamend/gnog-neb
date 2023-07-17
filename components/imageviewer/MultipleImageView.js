@@ -27,6 +27,7 @@ import { getFileName } from "../media";
 import WatermarkModel from "../media/WatermarkModel";
 import { sentryLog } from "../../sentry";
 import { sharingOptionsJPEG } from "../media/constants";
+import { multiplephotosimgtag } from "./constants";
 
 export default function MultipleImageView(props) {
   let { title, photos, watermarkData } = props.route.params;
@@ -96,7 +97,30 @@ export default function MultipleImageView(props) {
   }, []);
 
   useEffect(() => {
+    let tiSize = Object.keys(transformedImages).length;
+    if (
+      photos === undefined ||
+      photos === null ||
+      photos?.length === undefined ||
+      photos?.length < 1 ||
+      tiSize === undefined ||
+      tiSize < 1
+    ) {
+      return;
+    }
     addLogs(`transformedImages ${Object.keys(transformedImages).length}`);
+    if (tiSize === photos?.length) {
+      let imgTags = null;
+      for (const key in transformedImages) {
+        if (transformedImages.hasOwnProperty(key)) {
+          imgTags = `${imgTags ? imgTags : ""}${multiplephotosimgtag.replace(
+            "#URI",
+            transformedImages[key]
+          )}`;
+        }
+      }
+      addLogs(`\n\nimgTags\n${imgTags}`);
+    }
   }, [transformedImages]);
 
   const addError = (text) => {
@@ -114,7 +138,7 @@ export default function MultipleImageView(props) {
       return;
     }
     try {
-      imageRefs.current[index].current
+      imageRefs.current[index]
         .capture()
         .then((uri) => {
           console.log(uri);
