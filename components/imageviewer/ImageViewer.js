@@ -30,6 +30,7 @@ import { sharingOptionsJPEG } from "../media/constants";
 
 export default function ImageViewer(props) {
   let {
+    id,
     title,
     uri,
     isSquare,
@@ -253,7 +254,7 @@ export default function ImageViewer(props) {
       {watermarkData === undefined || watermarkData === null ? null : (
         <ViewShot
           ref={imageRef}
-          options={{ fileName: "watermarkphoto", format: "jpg", quality: 1 }}
+          options={{ fileName: `daclenwatermarkfoto_${id.toString()}`, format: "jpg", quality: 1 }}
           style={[styles.containerLargeImage, { width, height }]}
         >
           <Image

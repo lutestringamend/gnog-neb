@@ -11,9 +11,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Image } from "expo-image";
-
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import ViewShot from "react-native-view-shot";
+import { useNavigation } from "@react-navigation/native";
 import * as FileSystem from "expo-file-system";
 import { shareAsync, isAvailableAsync } from "expo-sharing";
 
@@ -29,7 +29,7 @@ import { sentryLog } from "../../sentry";
 import { sharingOptionsJPEG } from "../media/constants";
 
 export default function MultipleImageView(props) {
-  let { title, photos, isSquare, watermarkData } = props.route.params;
+  let { title, photos, watermarkData } = props.route.params;
 
   const productPhotoWidth =
     dimensions.fullWidth - staticDimensions.productPhotoWidthMargin;
@@ -58,72 +58,88 @@ export default function MultipleImageView(props) {
 
   //const [productPhotoHeight, setProductPhotoHeight] = useState(0);
   // const productPhotoHeight = isSquare ? productPhotoWidth : height / ratio;
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
-  const [transformedImage, setTransformedImage] = useState(null);
+  const [logs, setLogs] = useState(null);
+  const [transformedImages, setTransformedImages] = useState({});
   const [downloadUri, setDownloadUri] = useState(null);
   const [sharingAvailability, setSharingAvailability] = useState(false);
+  const navigation = useNavigation();
 
-  const imageRef = useRef();
+  const imageRefs = useRef([]);
 
   useEffect(() => {
-    if (title !== null && title !== undefined && title !== "") {
-      props.navigation.setOptions({ title });
-    }
-  }, [title]);
-
-  /*useEffect(() => {
     const checkSharing = async () => {
       const result = await isAvailableAsync();
       if (!result) {
-        setError("Perangkat tidak mengizinkan untuk membagikan file");
-      } else {
-        setLoading(true);
-        //transformImage();
+        addError("Perangkat tidak mengizinkan untuk membagikan file");
       }
       setSharingAvailability(result);
     };
 
     if (
-      watermarkData !== undefined &&
-      watermarkData !== null &&
-      (uri !== null) & (uri !== undefined)
+      photos === undefined ||
+      photos === null ||
+      photos?.length === undefined ||
+      photos?.length < 1 ||
+      watermarkData === undefined ||
+      watermarkData === null
     ) {
-      checkSharing();
+      navigation.goBack();
+      return;
     }
 
-    
+    checkSharing();
+    if (title !== null && title !== undefined && title !== "") {
+      props.navigation.setOptions({ title });
+    }
+  }, []);
 
-    console.log("ImageViewer route params", props.route.params);
-  }, [uri]);
+  useEffect(() => {
+    addLogs(`transformedImages ${Object.keys(transformedImages).length}`);
+  }, [transformedImages]);
 
-  const transformImage = async () => {
+  const addError = (text) => {
+    setError((error) => `${error ? error + "\n" : ""}${text}`);
+  };
+
+  const addLogs = (text) => {
+    setLogs((logs) => `${logs ? logs + "\n" : ""}${text}`);
+  };
+
+  const transformImage = async (index, id) => {
+    addLogs(`photo index ${index} id ${id} loaded`);
     if (Platform.OS === "web") {
-      setError("ViewShot not available on Web");
+      addError("ViewShot not available on Web");
       return;
     }
     try {
-      imageRef.current
+      imageRefs.current[index].current
         .capture()
         .then((uri) => {
           console.log(uri);
-          setTransformedImage(uri);
+          setTransformedImages((transformedImages) => ({
+            ...transformedImages,
+            id: uri,
+          }));
           setLoading(false);
         })
         .catch((e) => {
           console.error(e);
-          setError(e.toString());
+          addError(e.toString());
           setLoading(false);
           sentryLog(e);
         });
     } catch (e) {
       console.error(e);
-      setError(e.toString());
+      addError(e.toString());
       setLoading(false);
       sentryLog(e);
     }
   };
+
+  /*
+
 
   const sharePhotoAsync = async (uri) => {
     if (!sharingAvailability) {
@@ -247,59 +263,62 @@ export default function MultipleImageView(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {error ? (
-        <Text
-          style={[
-            styles.textError,
-            success && { backgroundColor: colors.daclen_green },
-          ]}
-        >
-          {error}
-        </Text>
-      ) : null}
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.scrollView}
-      >
+      <View style={styles.containerInside}>
         {photos === undefined ||
         photos === null ||
         photos?.length === undefined ||
         photos?.length < 1
           ? null
-          : photos.map(({ id, foto, width, height, text_x, text_y, font }) => (
-              <ViewShot
-                key={id}
-                options={{
-                  fileName: `daclenwatermarkfoto_${id.toString()}`,
-                  format: "jpg",
-                  quality: 1,
-                }}
-                style={[styles.containerLargeImage, { width, height }]}
-              >
-                <Image
-                  source={foto}
-                  style={{
-                    width,
-                    height,
+          : photos.map(
+              ({ id, foto, width, height, text_x, text_y, font }, index) => (
+                <ViewShot
+                  key={index}
+                  ref={imageRefs.current[index]}
+                  options={{
+                    fileName: `daclenwatermarkfoto_${id.toString()}`,
+                    format: "jpg",
+                    quality: 1,
                   }}
-                  contentFit="contain"
-                  placeholder={null}
-                  transition={0}
-                  onLoadEnd={() => setError((error) => `${error ? error + "\n" : ""}${id} loaded`)}
-                />
-                <WatermarkModel
-                  watermarkData={watermarkData}
-                  ratio={width / productPhotoWidth}
-                  text_align={null}
-                  text_x={(text_x * productPhotoWidth) / width}
-                  text_y={(text_y * productPhotoWidth) / width}
-                  color={null}
-                  fontSize={null}
-                  paddingHorizontal={1}
-                  paddingVertical={1}
-                />
-              </ViewShot>
-            ))}
+                  style={[styles.containerLargeImage, { width, height }]}
+                >
+                  <Image
+                    source={foto}
+                    style={{
+                      width,
+                      height,
+                    }}
+                    contentFit="contain"
+                    placeholder={null}
+                    transition={0}
+                    onLoadEnd={() => transformImage(index, id)}
+                  />
+                  <WatermarkModel
+                    watermarkData={watermarkData}
+                    ratio={width / productPhotoWidth}
+                    text_align={null}
+                    text_x={(text_x * productPhotoWidth) / width}
+                    text_y={(text_y * productPhotoWidth) / width}
+                    color={null}
+                    fontSize={null}
+                    paddingHorizontal={1}
+                    paddingVertical={1}
+                  />
+                </ViewShot>
+              )
+            )}
+      </View>
+
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.scrollView}
+      >
+        {error ? <Text style={styles.textError}>{error}</Text> : null}
+        <ActivityIndicator
+          size="large"
+          color={colors.daclen_black}
+          style={styles.spinner}
+        />
+        <Text style={styles.textLogs}>{logs}</Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -316,15 +335,16 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: "transparent",
-    justifyContent: "center",
     alignItems: "center",
+    zIndex: 1,
   },
   containerInside: {
     flex: 1,
-    width: "100%",
     backgroundColor: "white",
-    justifyContent: "center",
-    alignItems: "center",
+    position: "absolute",
+    top: 0,
+    start: 0,
+    zIndex: 0,
   },
   containerLargeImage: {
     flex: 1,
@@ -364,6 +384,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 32,
     backgroundColor: colors.daclen_orange,
+  },
+  textLogs: {
+    fontSize: 12,
+    margin: 20,
+    color: colors.daclen_gray,
   },
   textButton: {
     fontSize: 16,

@@ -30,6 +30,7 @@ const WatermarkPhotosSegment = ({
   function openPhoto(item) {
     navigation.navigate("ImageViewer", {
       title: `Foto ${item?.id.toString()}`,
+      id: item?.id,
       uri: item?.foto,
       isSquare: false,
       width: item?.width,
