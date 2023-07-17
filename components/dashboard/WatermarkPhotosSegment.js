@@ -35,8 +35,10 @@ const WatermarkPhotosSegment = ({
   const navigation = useNavigation();
 
   useEffect(() => {
-    checkSavedUri();
-  }, []);
+    if (savedUri === null) {
+      checkSavedUri();
+    }
+  }, [savedUri]);
 
   function openPhoto(item) {
     navigation.navigate("ImageViewer", {
@@ -76,6 +78,7 @@ const WatermarkPhotosSegment = ({
         }
       }
     }
+    setSavedUri("");
   };
 
   const shareFileAsync = async () => {
@@ -86,14 +89,14 @@ const WatermarkPhotosSegment = ({
           UTI: ".pdf",
           mimeType: "application/pdf",
         });
-        return;
+        setLoading(false);
       } catch (e) {
         console.error(e);
         if (Platform.OS === "android") {
           ToastAndroid.show(e.toString(), ToastAndroid.LONG);
         }
+        setLoading(false);
       }
-      setLoading(false);
     }
   };
 
@@ -107,6 +110,7 @@ const WatermarkPhotosSegment = ({
       sharingAvailability,
     };
     console.log("MultipleImageView", params);
+    setSavedUri(null);
     navigation.navigate("MultipleImageView", params);
   };
 
@@ -118,7 +122,7 @@ const WatermarkPhotosSegment = ({
           onPress={() => setExpanded((expanded) => !expanded)}
         >
           <Text style={styles.textHeader}>{title}</Text>
-          {savedUri === null ? null : (
+          {savedUri === null || savedUri === "" ? null : (
             <TouchableOpacity
               onPress={() => shareFileAsync()}
               style={[styles.button, { backgroundColor: colors.daclen_blue }]}
@@ -172,9 +176,9 @@ const WatermarkPhotosSegment = ({
           <Suspense
             fallback={
               <ActivityIndicator
-                size="large"
+                size="small"
                 color={colors.daclen_orange}
-                style={{ alignSelf: "center", marginVertical: 20 }}
+                style={styles.spinner}
               />
             }
           >
