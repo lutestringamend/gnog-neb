@@ -91,6 +91,10 @@ export default function MultipleImageView(props) {
       return;
     }
 
+    for (let i = 0; i < photos.length; i++) {
+      imageRefs.current[i] = createRef();
+    }
+
     /*let width = pdfpagewidth;
     let height = pdfpageheight;
     for (let i = 0; i < photos.length; i++) {

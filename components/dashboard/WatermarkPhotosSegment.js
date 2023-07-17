@@ -1,4 +1,4 @@
-import React, { Suspense, memo, useState } from "react";
+import React, { Suspense, memo, useEffect, useState } from "react";
 import {
   View,
   TouchableHighlight,
@@ -31,7 +31,12 @@ const WatermarkPhotosSegment = ({
 }) => {
   const [expanded, setExpanded] = useState(isExpanded ? isExpanded : false);
   const [loading, setLoading] = useState(false);
+  const [savedUri, setSavedUri] = useState(null);
   const navigation = useNavigation();
+
+  useEffect(() => {
+    checkSavedUri();
+  }, []);
 
   function openPhoto(item) {
     navigation.navigate("ImageViewer", {
@@ -51,8 +56,7 @@ const WatermarkPhotosSegment = ({
     });
   }
 
-  const prepareDownloadAll = async () => {
-    setLoading(true);
+  const checkSavedUri = async () => {
     const storagePdfPhotos = await getObjectAsync(
       ASYNC_WATERMARK_PHOTOS_PDF_KEY
     );
@@ -67,19 +71,18 @@ const WatermarkPhotosSegment = ({
     ) {
       for (let pp of storagePdfPhotos) {
         if (pp?.title === title && pp?.userId === userId) {
-          setLoading(false);
-          shareFileAsync(pp?.uri);
+          setSavedUri(pp?.uri);
           return;
         }
       }
     }
-    openMultipleImageView();
   };
 
-  const shareFileAsync = async (uri) => {
+  const shareFileAsync = async () => {
     if (sharingAvailability) {
+      setLoading(true);
       try {
-        await shareAsync(uri, {
+        await shareAsync(savedUri, {
           UTI: ".pdf",
           mimeType: "application/pdf",
         });
@@ -90,8 +93,8 @@ const WatermarkPhotosSegment = ({
           ToastAndroid.show(e.toString(), ToastAndroid.LONG);
         }
       }
+      setLoading(false);
     }
-    openMultipleImageView();
   };
 
   const openMultipleImageView = () => {
@@ -105,7 +108,6 @@ const WatermarkPhotosSegment = ({
     };
     console.log("MultipleImageView", params);
     navigation.navigate("MultipleImageView", params);
-    setLoading(false);
   };
 
   try {
@@ -116,16 +118,11 @@ const WatermarkPhotosSegment = ({
           onPress={() => setExpanded((expanded) => !expanded)}
         >
           <Text style={styles.textHeader}>{title}</Text>
-          {expanded &&
-          !(
-            photos?.length === undefined ||
-            photos?.length < 1 ||
-            watermarkData === undefined ||
-            watermarkData === null
-          ) ? (
+          {savedUri === null ? null : (
             <TouchableOpacity
-              onPress={() => prepareDownloadAll()}
-              style={styles.button}
+              onPress={() => shareFileAsync()}
+              style={[styles.button, { backgroundColor: colors.daclen_blue }]}
+              disabled={loading}
             >
               {loading ? (
                 <ActivityIndicator
@@ -135,13 +132,33 @@ const WatermarkPhotosSegment = ({
                 />
               ) : (
                 <MaterialCommunityIcons
-                  name="file-download"
+                  name="share-all"
                   size={16}
                   color="white"
                 />
               )}
 
-              <Text style={styles.textButton}>Download All</Text>
+              <Text style={styles.textButton}>Share</Text>
+            </TouchableOpacity>
+          )}
+          {expanded &&
+          !(
+            photos?.length === undefined ||
+            photos?.length < 1 ||
+            watermarkData === undefined ||
+            watermarkData === null
+          ) ? (
+            <TouchableOpacity
+              onPress={() => openMultipleImageView()}
+              style={styles.button}
+            >
+              <MaterialCommunityIcons
+                name="file-download"
+                size={16}
+                color="white"
+              />
+
+              <Text style={styles.textButton}>Download</Text>
             </TouchableOpacity>
           ) : null}
           <MaterialCommunityIcons
