@@ -41,6 +41,20 @@ export function clearDeliveryStatus() {
   };
 }
 
+export function updateReduxHistoryCheckouts(data) {
+  return (dispatch) => {
+    console.log("updateReduxHistoryCheckouts", data);
+    dispatch({ type: HISTORY_CHECKOUTS_STATE_CHANGE, data });
+  };
+}
+
+export function updateReduxHistoryDeliveries(data) {
+  return (dispatch) => {
+    console.log("updateReduxHistoryDeliveries", data);
+    dispatch({ type: HISTORY_DELIVERIES_STATE_CHANGE, data });
+  };
+}
+
 export function clearDashboardHTML(token) {
   return (dispatch) => {
     console.log("clearDashboardHTML");

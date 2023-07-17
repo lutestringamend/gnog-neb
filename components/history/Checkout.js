@@ -12,7 +12,6 @@ import {
 import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
-
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
@@ -22,10 +21,13 @@ import {
   postPembayaran,
   clearUserCheckoutData,
   clearHistoryData,
+  updateReduxHistoryCheckouts,
 } from "../../axios/history";
+import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 
 import { colors, dimensions } from "../../styles/base";
 import Separator from "../profile/Separator";
+import { ASYNC_HISTORY_CHECKOUT_KEY } from "../asyncstorage/constants";
 
 function Checkout(props) {
   const { token, checkouts, checkout } = props;
@@ -33,10 +35,14 @@ function Checkout(props) {
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (checkouts === null && token !== null) {
-      props.getCheckouts(token);
-      setLoading(true);
+    if (token === undefined || token === null) {
+      setLoading(false);
+      return;
+    }
+    if (checkouts === null) {
+      checkAsyncStorageHistory();
     } else {
+      setObjectAsync(ASYNC_HISTORY_CHECKOUT_KEY, checkouts);
       setLoading(false);
     }
     //console.log({ checkouts, token });
@@ -48,6 +54,16 @@ function Checkout(props) {
       console.log("checkout is null");
     }
   }, [checkout]);
+
+  const checkAsyncStorageHistory = async () => {
+    setLoading(true);
+    const storageHistory = await getObjectAsync(ASYNC_HISTORY_CHECKOUT_KEY);
+    if (storageHistory === undefined || storageHistory === null) {
+      props.getCheckouts(token);
+    } else {
+      props.updateReduxHistoryCheckouts(storageHistory);
+    }
+  }
 
   function openItem(id) {
     if (!loading) {
@@ -243,6 +259,7 @@ const mapDispatchProps = (dispatch) =>
       postPembayaran,
       clearUserCheckoutData,
       clearHistoryData,
+      updateReduxHistoryCheckouts,
     },
     dispatch
   );

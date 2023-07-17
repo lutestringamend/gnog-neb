@@ -43,6 +43,18 @@ const WatermarkPhotosSegment = ({
     });
   }
 
+  const prepareDownloadAll = () => {
+    const params = {
+      title: `Download ${title}`,
+      photos,
+      isSquare: false,
+      watermarkData,
+      userId,
+    };
+    console.log("MultipleImageView", params);
+    navigation.navigate("MultipleImageView", params);
+  };
+
   try {
     return (
       <View style={styles.containerFlatlist}>
@@ -51,9 +63,9 @@ const WatermarkPhotosSegment = ({
           onPress={() => setExpanded((expanded) => !expanded)}
         >
           <Text style={styles.textHeader}>{title}</Text>
-          {expanded ? (
+          {expanded && !(photos?.length === undefined || photos?.length < 1 || watermarkData === undefined || watermarkData === null) ? (
             <TouchableOpacity
-              onPress={() => console.log(photos)}
+              onPress={() => prepareDownloadAll()}
               style={styles.button}
             >
               <MaterialCommunityIcons
@@ -61,9 +73,7 @@ const WatermarkPhotosSegment = ({
                 size={16}
                 color="white"
               />
-              <Text style={styles.textButton}>
-                Download All
-              </Text>
+              <Text style={styles.textButton}>Download All</Text>
             </TouchableOpacity>
           ) : null}
           <MaterialCommunityIcons
@@ -126,6 +136,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     alignItems: "center",
+    borderBottomWidth: 1,
+    borderTopWidth: 1,
+    borderTopColor: colors.daclen_lightgrey,
+    borderBottomColor: colors.daclen_lightgrey,
   },
   containerImage: {
     flex: 1,
@@ -148,7 +162,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 10,
     alignSelf: "center",
-    backgroundColor: colors.daclen_orange,
+    backgroundColor: colors.daclen_red,
   },
   textButton: {
     fontSize: 12,

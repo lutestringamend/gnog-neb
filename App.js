@@ -54,15 +54,19 @@ import LoginScreen from "./components/auth/Login";
 import FillAddressScreen from "./components/address/FillAddress";
 import EditProfileScreen from "./components/profile/EditProfile";
 import CameraView from "./components/media/CameraView";
+
 import ImageViewer from "./components/imageviewer/ImageViewer";
+import MultipleImageView from "./components/imageviewer/MultipleImageView";
 import MediaKitFiles from "./components/dashboard/MediaKitFiles";
+import VideoPlayer from "./components/videoplayer/VideoPlayer";
+import VideoLogs from "./components/videoplayer/VideoLogs";
+
 import DeleteAccountScreen from "./components/auth/DeleteAccount";
 import PointReportScreen from "./components/dashboard/PointReport";
 import UserRoots from "./components/dashboard/UserRoots";
 import BonusRoot from "./components/dashboard/BonusRoot";
 import SaldoReport from "./components/dashboard/SaldoReport";
-import VideoPlayer from "./components/videoplayer/VideoPlayer";
-import VideoLogs from "./components/videoplayer/VideoLogs";
+
 
 import { appname } from "./axios/constants";
 import { colors, staticDimensions } from "./styles/base";
@@ -223,6 +227,11 @@ export default function App() {
                 name="ImageViewer"
                 component={ImageViewer}
                 options={{ ...defaultOptions, title: "Foto Produk" }}
+              />
+              <Stack.Screen
+                name="MultipleImageView"
+                component={MultipleImageView}
+                options={{ ...defaultOptions, title: "Download All" }}
               />
               <Stack.Screen
                 name="CameraView"

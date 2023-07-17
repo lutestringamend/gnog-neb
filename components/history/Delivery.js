@@ -12,18 +12,20 @@ import {
 import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
-
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
+import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import {
   getDeliveries,
   clearDeliveryStatus,
   clearHistoryData,
+  updateReduxHistoryDeliveries,
 } from "../../axios/history";
 
 import { colors, dimensions } from "../../styles/base";
 import Separator from "../profile/Separator";
+import { ASYNC_HISTORY_DELIVERY_KEY } from "../asyncstorage/constants";
 
 function Delivery(props) {
   const { token, deliveries, delivery, deliveryStatus } = props;
@@ -31,10 +33,14 @@ function Delivery(props) {
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (deliveries === null && token !== null) {
-      props.getDeliveries(token);
-      setLoading(true);
+    if (token === undefined || token === null) {
+      setLoading(false);
+      return;
+    }
+    if (deliveries === null) {
+      checkAsyncStorageHistory();
     } else {
+      setObjectAsync(ASYNC_HISTORY_DELIVERY_KEY, deliveries);
       setLoading(false);
     }
     //console.log({ deliveries, token });
@@ -46,6 +52,16 @@ function Delivery(props) {
       if (deliveryStatus !== null) props.clearDeliveryStatus();
     }
   }, [delivery, deliveryStatus]);
+
+  const checkAsyncStorageHistory = async () => {
+    setLoading(true);
+    const storageHistory = await getObjectAsync(ASYNC_HISTORY_DELIVERY_KEY);
+    if (storageHistory === undefined || storageHistory === null) {
+      props.getDeliveries(token);
+    } else {
+      props.updateReduxHistoryDeliveries(storageHistory);
+    }
+  }
 
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -235,6 +251,7 @@ const mapDispatchProps = (dispatch) =>
       getDeliveries,
       clearDeliveryStatus,
       clearHistoryData,
+      updateReduxHistoryDeliveries,
     },
     dispatch
   );
