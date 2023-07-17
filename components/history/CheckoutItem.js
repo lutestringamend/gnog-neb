@@ -69,11 +69,10 @@ function CheckoutItem(props) {
 
   useEffect(() => {
     if (userCheckout?.snap_token === null || checkout === null) {
-      console.log("userCheckout is null");
+      console.log("userCheckout is null", userCheckout);
       setSnapToken(null);
     } else {
-      console.log("userCheckout updated, can open Midtrans snap");
-      console.log(userCheckout);
+      console.log("userCheckout updated", userCheckout);
       setSnapToken(userCheckout?.snap_token);
     }
   }, [userCheckout]);
@@ -106,7 +105,9 @@ function CheckoutItem(props) {
           />
         }
       >
-        {checkout === null  || checkout?.detail_checkout === undefined || refreshing ? (
+        {checkout === null ||
+        checkout?.detail_checkout === undefined ||
+        refreshing ? (
           <ActivityIndicator
             size="large"
             color={colors.daclen_orange}
@@ -115,29 +116,19 @@ function CheckoutItem(props) {
         ) : (
           <View style={styles.container}>
             <View style={styles.containerHeader}>
-              <View style={styles.containerDescHorizontal}>
-                <View style={styles.containerDescVertical}>
-                  <Text style={styles.textTitle}>Nomor Invoice</Text>
-                  <Text styles={styles.textInvoice}>{checkout?.invoice}</Text>
-                </View>
-                <View style={styles.containerDescVertical}>
-                  <Text style={styles.textTitle}>Info Penerima</Text>
-                  <Text styles={styles.textEntry}>
-                    {checkout.detail_checkout?.nama_lengkap}
-                  </Text>
-                  <Text styles={styles.textEntry}>
-                    {checkout.detail_checkout?.email}
-                  </Text>
-                  <Text styles={styles.textEntry}>
-                    {checkout.detail_checkout?.nomor_telp}
-                  </Text>
-                </View>
-              </View>
               <View style={styles.containerDescVertical}>
+                <Text style={[styles.textTitle, { marginTop: 0 }]}>
+                  Nomor Invoice
+                </Text>
+                <Text styles={styles.textInvoice}>{checkout?.invoice}</Text>
+                <Text style={styles.textTitle}>Info Penerima</Text>
+                <Text styles={styles.textEntry}>
+                  {`${checkout.detail_checkout?.nama_lengkap}\n${checkout.detail_checkout?.email}\n${checkout.detail_checkout?.nomor_telp}`}
+                </Text>
+
                 <Text style={styles.textTitle}>Kurir Pengiriman</Text>
                 <Text styles={styles.textEntry}>{checkout.kurir?.nama}</Text>
-              </View>
-              <View style={styles.containerDescVertical}>
+
                 <Text style={styles.textTitle}>Alamat Pengiriman</Text>
                 <Text styles={styles.textEntry}>
                   {checkout.detail_checkout?.alamat_lengkap}
@@ -176,12 +167,17 @@ function CheckoutItem(props) {
       </ScrollView>
 
       <CartAction
-          isCart={false}
-          totalPrice={checkout?.total_currency}
-          buttonAction={() => openMidtrans()}
-          buttonText={checkout?.status}
-          buttonDisabled={checkout?.status !== null || loadingSnap}
-        />
+        isCart={false}
+        totalPrice={checkout?.total_currency}
+        buttonAction={() => openMidtrans()}
+        buttonText={checkout?.status}
+        buttonDisabled={
+          !(
+            checkout?.status === null ||
+            checkout?.status.toLowerCase() === "tertunda"
+          ) || loadingSnap
+        }
+      />
     </SafeAreaView>
   );
 }
@@ -231,6 +227,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 12,
     color: colors.daclen_blue,
+    marginTop: 12,
     marginBottom: 4,
   },
   textInvoice: {

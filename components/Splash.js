@@ -49,11 +49,14 @@ const styles = StyleSheet.create({
   },
   containerLogo: {
     flex: 6,
+    backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
   },
   containerText: {
     flex: 1,
+    backgroundColor: "transparent",
+    marginHorizontal: 32,
   },
   textError: {
     fontSize: 12,

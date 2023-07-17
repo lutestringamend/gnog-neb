@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     flex: 1,
-    backgroundColor: colors.daclen_light,
+    backgroundColor: "white",
   },
   text: {
     fontWeight: "bold",

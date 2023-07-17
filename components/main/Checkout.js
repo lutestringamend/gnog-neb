@@ -219,7 +219,11 @@ function Checkout(props) {
         for (let i = 0; i < props.couriers.length; i++) {
           newCourierServices.push({
             id: i.toString(),
-            label: `${props.couriers[i].service} (${props.couriers[i].cost[0].etd} hari) -- Rp ${props.couriers[i].cost[0].value}`,
+            label: `${props.couriers[i].service}${
+              props.couriers[i].cost[0].etd
+                ? ` (${props.couriers[i].cost[0].etd} hari)`
+                : ""
+            } -- Rp ${props.couriers[i].cost[0].value}`,
             value: i.toString(),
           });
         }
@@ -256,7 +260,12 @@ function Checkout(props) {
     setAllowCheckout(false);
     setCheckoutJson(null);
     console.log({ addressComplete, totalPrice, courierService, deliveryFee });
-    if (addressComplete && totalPrice > 0 && packaging !== null && courierService !== null) {
+    if (
+      addressComplete &&
+      totalPrice > 0 &&
+      packaging !== null &&
+      courierService !== null
+    ) {
       createCheckoutJson();
     }
   }, [addressComplete, totalPrice, courierService, packaging]);

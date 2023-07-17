@@ -35,12 +35,10 @@ function Main(props) {
       const readStorageProducts = async () => {
         const storageProducts = await getObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY);
         if (storageProducts === undefined || storageProducts === null) {
-          setError(
-            "Anda membutuhkan koneksi Internet untuk menggunakan Daclen."
-          );
-          return;
+          props.getProductData(null, 0);
+        } else {
+          props.getProductData(storageProducts, 0);
         }
-        props.getProductData(storageProducts, 0);
       };
 
       if (

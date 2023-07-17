@@ -70,25 +70,18 @@ function CheckoutBox(props) {
 
   return (
     <View style={styles.container}>
-      {erasing ? (
-        <ActivityIndicator
-          size="small"
-          color={colors.daclen_light}
-          style={styles.closeIcon}
+      <TouchableOpacity
+        onPress={() => proceedClear()}
+        style={styles.closeIcon}
+        disabled={erasing}
+      >
+        <MaterialCommunityIcons
+          name="close-circle"
+          size={36}
+          color={erasing ? colors.daclen_graydark : colors.daclen_light}
+          style={{ backgroundColor: "transparent" }}
         />
-      ) : (
-        <TouchableOpacity
-          onPress={() => proceedClear()}
-          style={styles.closeIcon}
-        >
-          <MaterialCommunityIcons
-            name="close-circle"
-            size={36}
-            color={colors.daclen_light}
-            style={{backgroundColor: "transparent"}}
-          />
-        </TouchableOpacity>
-      )}
+      </TouchableOpacity>
 
       <Text style={styles.textHeader}>Ringkasan</Text>
       <View style={[styles.containerHorizontal, { marginTop: 16 }]}>
@@ -166,8 +159,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     end: 12,
     top: 10,
-    zIndex: 4,
-    borderRadius: 18,
+    zIndex: 2,
     alignSelf: "center",
     backgroundColor: "transparent",
   },
