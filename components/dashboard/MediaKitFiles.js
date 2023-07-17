@@ -146,12 +146,7 @@ function MediaKitFiles(props) {
               icon={watermarkphotoicon}
               onPress={() => setActiveTab(WATERMARK_PHOTO)}
             />
-            <HistoryTabItem
-              activeTab={activeTab}
-              name={WATERMARK_VIDEO}
-              icon={watermarkvideoicon}
-              onPress={() => setActiveTab(WATERMARK_VIDEO)}
-            />
+
           </View>
           {activeTab === WATERMARK_VIDEO ? (
             <WatermarkVideos
@@ -185,6 +180,14 @@ function MediaKitFiles(props) {
 }
 
 /*
+
+            <HistoryTabItem
+              activeTab={activeTab}
+              name={WATERMARK_VIDEO}
+              icon={watermarkvideoicon}
+              onPress={() => setActiveTab(WATERMARK_VIDEO)}
+            />
+            
 <Text style={styles.textCompulsory}>Link Referral*</Text>
                 <TextInput
                   value={watermarkData?.url}

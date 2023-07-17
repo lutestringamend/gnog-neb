@@ -13,7 +13,7 @@ import TabBarIcon from "./TabBarIcon";
 const Tab = createMaterialBottomTabNavigator();
 
 export default function TabNavigator(props) {
-  const { login, token, currentUser } = props;
+  const { token, currentUser } = props;
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -60,7 +60,9 @@ export default function TabNavigator(props) {
           tabBarIcon: ({ focused }) => (
             <TabBarIcon
               title="Beranda"
-              iconName={login ? "view-dashboard" : "home"}
+              iconName={token === null ||
+                currentUser === null ||
+                currentUser?.id === undefined ? "home" : "view-dashboard"}
               focused={focused}
             />
           ),

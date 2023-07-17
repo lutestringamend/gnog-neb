@@ -2,7 +2,7 @@
   "expo": {
     "name": "Daclen",
     "slug": "daclen",
-    "version": "1.1.86",
+    "version": "1.1.87",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
     "userInterfaceStyle": "light",
@@ -53,7 +53,7 @@
         "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"
       ],
       "userInterfaceStyle": "light",
-      "versionCode": 49
+      "versionCode": 50
     },
     "web": {
       "favicon": "./assets/favicon.png"

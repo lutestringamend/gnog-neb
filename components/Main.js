@@ -25,14 +25,21 @@ import { sentryLog } from "../sentry";
 
 function Main(props) {
   try {
-    const [isLogin, setLogin] = useState(false);
-    const [loadingUserData, setLoadingUserData] = useState(false);
-    const [frozen, setFrozen] = useState(false);
+    //const [isLogin, setLogin] = useState(false);
+    //const [loadingUserData, setLoadingUserData] = useState(false);
+    const [error, setError] = useState(null);
+    //const [frozen, setFrozen] = useState(false);
     const { token, currentUser } = props;
 
     useEffect(() => {
       const readStorageProducts = async () => {
         const storageProducts = await getObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY);
+        if (storageProducts === undefined || storageProducts === null) {
+          setError(
+            "Anda membutuhkan koneksi Internet untuk menggunakan Daclen."
+          );
+          return;
+        }
         props.getProductData(storageProducts, 0);
       };
 
@@ -55,123 +62,94 @@ function Main(props) {
     }, [props.maxIndex]);
 
     useEffect(() => {
-      const readStorageToken = async () => {
-        const storageToken = await getTokenAsync();
-        if (
-          storageToken === undefined ||
-          storageToken === null ||
-          storageToken === ""
-        ) {
-          console.log("storageToken null", storageToken);
-          setLoadingUserData(false);
-          setLogin(false);
-        } else {
-          //setLogin(null);
-          readStorageCurrentUser(storageToken);
-        }
-      };
-
-      const readStorageCurrentUser = async (token) => {
-        if (token === null || token === undefined || token === "") {
-          props.clearUserData();
-          props.clearMediaKitData();
-          setLogin(false);
-        } else {
-          try {
-            const storageCurrentUser = await getObjectAsync(
-              ASYNC_USER_CURRENTUSER_KEY
-            );
-            props.setNewToken(token, storageCurrentUser);
-            const storageWatermarkVideos = await getObjectAsync(
-              ASYNC_MEDIA_WATERMARK_VIDEOS_KEY
-            );
-            props.overwriteWatermarkVideos(storageWatermarkVideos);
-          } catch (e) {
-            console.error(e);
-            sentryLog(e);
-          }
-        }
-        setLoadingUserData(false);
-      };
-
-      if (frozen) {
-        if (
-          (token === null || token === "") &&
-          (currentUser === null || currentUser?.id === undefined)
-        ) {
-          props.disableForceLogout();
-        }
-      } else {
-        //console.log({token: props.token, currentUser: props.currentUser});
-
-        if ((token === null || token === "") && !loadingUserData && !frozen) {
-          setLoadingUserData(true);
-          readStorageToken();
-        } else if (currentUser === null || currentUser?.id === undefined) {
-          if (loadingUserData && !frozen) {
-            //setLogin(null);
-          } else {
-            setLogin(false);
-          }
-        } else {
-          setLogin(true);
-        }
+      if (
+        token === undefined ||
+        token === null ||
+        token === "" ||
+        currentUser === undefined ||
+        currentUser === null
+      ) {
+        checkUserData();
+        return;
       }
+      console.log("redux token", token);
+      console.log("redux currentuser", currentUser);
     }, [token, currentUser]);
 
-    useEffect(() => {
-      const uponForceLogout = async () => {
-        await userLogout();
+    const checkUserData = async () => {
+      const storageToken = await readStorageToken();
+      const storageCurrentUser = await readStorageCurrentUser();
+      if (
+        storageToken === undefined ||
+        storageToken === null ||
+        storageCurrentUser === undefined ||
+        storageCurrentUser === null
+      ) {
         props.setNewToken(null, null);
-        props.clearUserData(true);
+        props.clearUserData();
         props.clearMediaKitData();
-        setLoadingUserData(false);
-        setLogin(false);
-      };
-
-      /*const restoreProductData = async () => {
-        console.log("restoreProductData");
-        await setObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY, props.products);
-        setFrozen(false);
-      }*/
-
-      //console.log({forceLogout: props.forceLogout, frozen});
-
-      if (props.forceLogout) {
-        if (frozen) {
-          uponForceLogout();
-        } else {
-          setFrozen(true);
-        }
       } else {
-        if (frozen) {
-          setFrozen(false);
-        }
+        props.setNewToken(storageToken, storageCurrentUser);
+        const storageWatermarkVideos = await getObjectAsync(
+          ASYNC_MEDIA_WATERMARK_VIDEOS_KEY
+        );
+        props.overwriteWatermarkVideos(storageWatermarkVideos);
       }
-    }, [props.forceLogout, frozen]);
+    };
+
+    const readStorageToken = async () => {
+      const storageToken = await getTokenAsync();
+      if (
+        storageToken === undefined ||
+        storageToken === null ||
+        storageToken === ""
+      ) {
+        console.log("storageToken null", storageToken);
+        return null;
+      }
+      return storageToken;
+    };
+
+    const readStorageCurrentUser = async () => {
+      try {
+        const storageCurrentUser = await getObjectAsync(
+          ASYNC_USER_CURRENTUSER_KEY
+        );
+        if (
+          storageCurrentUser === undefined ||
+          storageCurrentUser === null ||
+          storageCurrentUser === ""
+        ) {
+          console.log("storageCurrentUser null", storageCurrentUser);
+          return null;
+        }
+        return storageCurrentUser;
+      } catch (e) {
+        sentryLog(e);
+        setError(e.toString());
+        return null;
+      }
+    };
 
     if (
-      loadingUserData ||
+      error !== null ||
       props.products === null ||
       props.products?.length === undefined ||
       props.products?.length < 1
     ) {
-      return <SplashScreen />;
+      return <SplashScreen loading={true} errorText={error} />;
     } else {
-      return (
-        <TabNavigator login={isLogin} token={token} currentUser={currentUser} />
-      );
+      return <TabNavigator token={token} currentUser={currentUser} />;
     }
-  } catch (error) {
-    sentryLog(error);
-    return <SplashScreen errorText={error.toString()} />;
+  } catch (e) {
+    sentryLog(e);
+    return <SplashScreen errorText={e.toString()} />;
   }
 }
 
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
-  forceLogout: store.userState.forceLogout,
   products: store.productState.products,
   maxIndex: store.productState.maxIndex,
   loginToken: store.userState.loginToken,

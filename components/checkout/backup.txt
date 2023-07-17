@@ -1,0 +1,70 @@
+
+    /*const [snap, setSnap] = useState(null);
+
+    useEffect(() => {
+      initSnap();
+    }, []);
+
+    useEffect(() => {
+      const backAction = () => {
+        Alert.alert(
+          "Pembayaran",
+          "Apakah Anda telah menyelesaikan pembayaran?",
+          [
+            {
+              text: "Belum",
+              onPress: () => null,
+              style: "cancel",
+            },
+            {
+              text: "Sudah",
+              onPress: () => navigation.navigate("HistoryCheckout"),
+            },
+          ]
+        );
+        return true;
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        backAction
+      );
+
+      return () => backHandler.remove();
+    }, []);
+
+    function initSnap() {
+      const snapScript = document.createElement("script");
+
+      snapScript.src = "https://app.midtrans.com/snap/snap.js";
+      snapScript.type = "text/javascript";
+      snapScript.onload = () => {
+        if ("snap" in window) {
+          const { snap } = window;
+          setSnap(snap);
+          console.log(snap);
+        }
+      };
+      snapScript.dataset.clientKey = MIDTRANS_CLIENT_KEY;
+      document.head.appendChild(snapScript);
+    }
+
+    async function handlePay() {
+      snap.pay(token);
+    }
+
+    return (
+      <MainScreen
+        checkoutId={checkoutId}
+        content={
+          snap && (
+            <Image
+              source={require("./midtrans.png")}
+              onLoad={handlePay}
+              alt="Sedang membuka Midtrans..."
+              style={styles.image}
+            />
+          )
+        }
+      />
+    );*/

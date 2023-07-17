@@ -83,7 +83,7 @@ function Delivery(props) {
             />
           }
         >
-          {deliveries?.length < 1 ? (
+          {deliveries === undefined || deliveries === null || deliveries?.length === undefined || deliveries?.length < 1 ? (
             <Text style={styles.textUid}>
               Anda belum memiliki riwayat Pengiriman
             </Text>

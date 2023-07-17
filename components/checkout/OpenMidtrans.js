@@ -10,9 +10,8 @@ import {
   ActivityIndicator,
   Linking,
 } from "react-native";
-import * as Sentry from "sentry-expo";
 
-import { MIDTRANS_CLIENT_KEY, webcheckout } from "../../axios/constants";
+import { webcheckout } from "../../axios/constants";
 import { useNavigation } from "@react-navigation/native";
 import MainHeader from "../main/MainHeader";
 import { colors, dimensions } from "../../styles/base";
@@ -21,7 +20,7 @@ import { ErrorView } from "../webview/WebviewChild";
 import { WebView } from "react-native-webview";
 import { snapHTML } from "./snap";
 import { TouchableOpacity } from "react-native-gesture-handler";
-
+import { sentryLog } from "../../sentry";
 
 function MainScreen(props) {
   const navigation = useNavigation();
@@ -29,7 +28,7 @@ function MainScreen(props) {
 
   const backNavigation = () => {
     navigation.goBack();
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -39,6 +38,9 @@ function MainScreen(props) {
         onBackPress={() => backNavigation()}
       />
       <View style={styles.container}>
+        {props?.error ? (
+          <Text style={styles.textError}>{props?.error}</Text>
+        ) : null}
         {props?.content === null || props?.content === undefined ? (
           <ActivityIndicator
             size="large"
@@ -56,6 +58,7 @@ function MainScreen(props) {
 export default function OpenMidtrans(props) {
   try {
     const [htmlContent, setHtmlContent] = useState(null);
+    const [error, setError] = useState(null);
     let token = props.route.params?.snapToken;
     let checkoutId = props.route.params?.checkoutId;
     let snap_url = props.route.params?.snap_url;
@@ -73,6 +76,12 @@ export default function OpenMidtrans(props) {
       console.log({ htmlContent });
     }, [htmlContent]);*/
 
+    //DEV TEMP
+    function trackNavigation(e) {
+      console.log("onNavigationStateChange", e);
+      setError(`onNavigationStateChange\n${JSON.stringify(e)}`);
+    }
+
     if (token === null || token === undefined) {
       return (
         <MainScreen
@@ -84,12 +93,14 @@ export default function OpenMidtrans(props) {
       return (
         <MainScreen
           checkoutId={checkoutId}
+          error={error}
           content={
             htmlContent !== null && htmlContent !== undefined ? (
               <WebView
                 style={styles.container}
                 originWhitelist={["*"]}
                 source={{ html: htmlContent }}
+                onNavigationStateChange={(e) => trackNavigation(e)}
               />
             ) : null
           }
@@ -100,7 +111,9 @@ export default function OpenMidtrans(props) {
       const [linkText, setLinkText] = useState(null);
 
       useEffect(() => {
-        setLinkText(`Tekan untuk membayar menggunakan Midtrans di link berikut ini\n\n${snap_url}`);
+        setLinkText(
+          `Tekan untuk membayar menggunakan Midtrans di link berikut ini\n\n${snap_url}`
+        );
         if (!opened) {
           openSnapUrl();
           setOpened(true);
@@ -114,11 +127,10 @@ export default function OpenMidtrans(props) {
       return (
         <MainScreen
           checkoutId={checkoutId}
+          error={error}
           content={
             <TouchableOpacity onPress={() => openSnapUrl()}>
-              <Text style={styles.textUrl}>
-                {linkText}
-              </Text>
+              <Text style={styles.textUrl}>{linkText}</Text>
             </TouchableOpacity>
           }
         />
@@ -136,84 +148,8 @@ export default function OpenMidtrans(props) {
         />
       );
     }
-
-    /*const [snap, setSnap] = useState(null);
-
-    useEffect(() => {
-      initSnap();
-    }, []);
-
-    useEffect(() => {
-      const backAction = () => {
-        Alert.alert(
-          "Pembayaran",
-          "Apakah Anda telah menyelesaikan pembayaran?",
-          [
-            {
-              text: "Belum",
-              onPress: () => null,
-              style: "cancel",
-            },
-            {
-              text: "Sudah",
-              onPress: () => navigation.navigate("HistoryCheckout"),
-            },
-          ]
-        );
-        return true;
-      };
-
-      const backHandler = BackHandler.addEventListener(
-        "hardwareBackPress",
-        backAction
-      );
-
-      return () => backHandler.remove();
-    }, []);
-
-    function initSnap() {
-      const snapScript = document.createElement("script");
-
-      snapScript.src = "https://app.midtrans.com/snap/snap.js";
-      snapScript.type = "text/javascript";
-      snapScript.onload = () => {
-        if ("snap" in window) {
-          const { snap } = window;
-          setSnap(snap);
-          console.log(snap);
-        }
-      };
-      snapScript.dataset.clientKey = MIDTRANS_CLIENT_KEY;
-      document.head.appendChild(snapScript);
-    }
-
-    async function handlePay() {
-      snap.pay(token);
-    }
-
-    return (
-      <MainScreen
-        checkoutId={checkoutId}
-        content={
-          snap && (
-            <Image
-              source={require("./midtrans.png")}
-              onLoad={handlePay}
-              alt="Sedang membuka Midtrans..."
-              style={styles.image}
-            />
-          )
-        }
-      />
-    );*/
   } catch (error) {
-    console.error(error);
-    if (Platform.OS === "web") {
-      Sentry.Browser.captureException(error);
-    } else {
-      Sentry.Native.captureException(error);
-    }
-
+    sentryLog(error);
     return (
       <MainScreen
         backNavigation={() => backNavigation()}
@@ -238,6 +174,21 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 14,
     color: colors.daclen_gray,
+    textAlign: "center",
+  },
+  textError: {
+    position: "absolute",
+    top: 0,
+    start: 0,
+    width: "100%",
+    zIndex: 4,
+    elevation: 2,
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "white",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: colors.daclen_danger,
     textAlign: "center",
   },
   textUrl: {

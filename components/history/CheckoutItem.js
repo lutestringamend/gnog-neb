@@ -48,7 +48,7 @@ function CheckoutItem(props) {
       props.clearUserCheckoutData();
       console.log("checkout is null");
     } else {
-      console.log(checkout);
+      console.log("checkout", checkout);
       if (checkout?.status === null) {
         props.postPembayaran(token, checkout?.id);
       }

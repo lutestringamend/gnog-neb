@@ -41,6 +41,7 @@ function Checkout(props) {
   const [courier, setCourier] = useState(null);
   const [courierService, setCourierService] = useState(null);
   const [courierServices, setCourierServices] = useState([]);
+  const [packaging, setPackaging] = useState(null);
 
   const [points, setPoints] = useState(0);
   const [weight, setWeight] = useState(0);
@@ -255,10 +256,10 @@ function Checkout(props) {
     setAllowCheckout(false);
     setCheckoutJson(null);
     console.log({ addressComplete, totalPrice, courierService, deliveryFee });
-    if (addressComplete && totalPrice > 0 && courierService !== null) {
+    if (addressComplete && totalPrice > 0 && packaging !== null && courierService !== null) {
       createCheckoutJson();
     }
-  }, [addressComplete, totalPrice, courierService]);
+  }, [addressComplete, totalPrice, courierService, packaging]);
 
   useEffect(() => {
     if (checkout !== null) {
@@ -302,7 +303,6 @@ function Checkout(props) {
   };
 
   const createCheckoutJson = () => {
-    console.log("createCheckoutJson");
     let detail_checkout = { ...currentAddress };
     delete detail_checkout["alamat_short"];
     try {
@@ -317,13 +317,14 @@ function Checkout(props) {
           },
           total: totalPrice,
           metode_pembayaran: "transfer_bank",
+          tipe_kemasan: packaging,
         },
         detail_checkout,
         user: {
           saldo: currentUser.komisi_user.total.toString(),
         },
       };
-      console.log(newCheckout);
+      console.log("createCheckoutJson", newCheckout);
       setCheckoutJson(newCheckout);
       setAllowCheckout(true);
     } catch (e) {
@@ -353,7 +354,7 @@ function Checkout(props) {
         ({ selected }) => selected === true
       );
       setCourierLoading(true);
-      setCourierSlug(chosenCourier.value);
+      setCourierSlug(chosenCourier?.value);
     } catch (e) {
       console.log(e);
     }
@@ -364,7 +365,18 @@ function Checkout(props) {
       const chosenService = radioButtonsArray.find(
         ({ selected }) => selected === true
       );
-      setCourierService(props.couriers[parseInt(chosenService.value)]);
+      setCourierService(props.couriers[parseInt(chosenService?.value)]);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  function onPressRadioButtonPackaging(radioButtonsArray) {
+    try {
+      const chosenPackaging = radioButtonsArray.find(
+        ({ selected }) => selected === true
+      );
+      setPackaging(chosenPackaging?.value);
     } catch (e) {
       console.log(e);
     }
@@ -440,8 +452,10 @@ function Checkout(props) {
               }
               courierChoices={courierChoices}
               courierServices={courierServices}
+              packaging={packaging}
               onPressRadioButtonCourier={onPressRadioButtonCourier}
               onPressRadioButtonService={onPressRadioButtonService}
+              onPressRadioButtonPackaging={onPressRadioButtonPackaging}
               courierSlug={courierSlug}
               courierService={courierService}
               courierLoading={courierLoading}

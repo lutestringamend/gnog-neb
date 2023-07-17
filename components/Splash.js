@@ -1,5 +1,12 @@
 import React from "react";
-import { StyleSheet, View, Text, Image, SafeAreaView } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  SafeAreaView,
+  ActivityIndicator,
+} from "react-native";
 
 import packageJson from "../package.json";
 import { colors } from "../styles/base";
@@ -16,9 +23,18 @@ function SplashScreen(props) {
         />
       </View>
 
-      <Text style={styles.version}>
-        {props?.errorText === undefined ? versionText : props?.errorText}
-      </Text>
+      <View style={styles.containerText}>
+        {props?.errorText ? (
+          <Text style={styles.textError}>{props?.errorText}</Text>
+        ) : props?.loading ? (
+          <ActivityIndicator
+            size="small"
+            color={colors.daclen_orange}
+            style={styles.spinner}
+          />
+        ) : null}
+        <Text style={styles.textVersion}>{versionText}</Text>
+      </View>
     </SafeAreaView>
   );
 }
@@ -36,11 +52,24 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  version: {
+  containerText: {
     flex: 1,
+  },
+  textError: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: colors.daclen_orange,
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  textVersion: {
     fontSize: 12,
     color: colors.daclen_yellow,
     textAlign: "center",
+  },
+  spinner: {
+    alignSelf: "center",
+    marginVertical: 20,
   },
 });
 

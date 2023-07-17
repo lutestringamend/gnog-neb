@@ -6,9 +6,8 @@ import {
   Text,
   ActivityIndicator,
   RefreshControl,
-  FlatList
 } from "react-native";
-//import { FlashList } from "@shopify/flash-list";
+import { FlashList } from "@shopify/flash-list";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -62,8 +61,8 @@ function BlogFeed(props) {
         />
       ) : blogs?.length > 0 ? (
         <View style={styles.containerFlatlist}>
-          <FlatList
-            estimatedItemSize={100}
+          <FlashList
+            estimatedItemSize={10}
             numColumns={1}
             horizontal={false}
             data={blogs}

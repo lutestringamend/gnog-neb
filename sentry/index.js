@@ -2,13 +2,21 @@ import { Platform, ToastAndroid } from "react-native";
 import * as Sentry from "sentry-expo";
 
 export function sentryLog(e) {
-  let errorJSON = e.toJSON();
-  let status =
-    errorJSON === undefined ||
-    errorJSON === null ||
-    errorJSON?.status === undefined
-      ? null
-      : errorJSON?.status;
+  let errorJSON = null;
+  let status = null;
+
+  try {
+    errorJSON = e.toJSON();
+    status =
+      errorJSON === undefined ||
+      errorJSON === null ||
+      errorJSON?.status === undefined
+        ? null
+        : errorJSON?.status;
+  } catch (err) {
+
+  }
+  
   if (Platform.OS === "web") {
     Sentry.Browser.captureException(e);
     console.log("error status", status);

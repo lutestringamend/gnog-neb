@@ -85,7 +85,7 @@ function Checkout(props) {
             />
           }
         >
-          {checkouts?.length < 1 ? (
+          {checkouts === undefined || checkouts === null || checkouts?.length === undefined || checkouts?.length < 1 ? (
             <Text style={styles.textUid}>
               Anda belum memiliki riwayat Checkout
             </Text>

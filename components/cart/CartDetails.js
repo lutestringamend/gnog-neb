@@ -11,6 +11,7 @@ import RadioGroup, { RadioButtonProps } from "react-native-radio-buttons-group";
 
 import Separator from "../profile/Separator";
 import { colors } from "../../styles/base";
+import { defaultPackagingOptions } from "./constants";
 
 export default function CartDetails(props) {
   const navigation = useNavigation();
@@ -39,6 +40,17 @@ export default function CartDetails(props) {
         </Text>
       </View>
 
+      <View style={styles.containerRadio}>
+        <Text style={styles.textEntryHeader}>Pengemasan</Text>
+        <View style={styles.containerRadioGroup}>
+        <RadioGroup
+          radioButtons={defaultPackagingOptions}
+          onPress={props?.onPressRadioButtonPackaging}
+          layout="row"
+        />
+        </View>
+      </View>
+
       {props?.isCart &&
         (props?.addressComplete ? (
           <View style={styles.containerRadio}>
@@ -60,6 +72,7 @@ export default function CartDetails(props) {
                   <RadioGroup
                     radioButtons={props?.courierServices}
                     onPress={props?.onPressRadioButtonService}
+                    containerStyle={{marginTop: 6}}
                   />
                 ) : (
                   props?.courierSlug !== "" &&
@@ -135,7 +148,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   containerRadioGroup: {
-    marginVertical: 6,
     alignSelf: "flex-end",
     alignItems: "flex-end",
   },

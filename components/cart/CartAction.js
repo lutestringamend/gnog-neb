@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   button: {
+    minWidth: 120,
     alignSelf: "flex-end",
     marginEnd: 10,
     alignItems: "center",

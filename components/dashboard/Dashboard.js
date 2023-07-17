@@ -220,6 +220,7 @@ function DashboardMain(props) {
     <SafeAreaView style={styles.container}>
       <ScrollView
         style={styles.scrollView}
+        contentContainerStyles={styles.container}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -290,11 +291,13 @@ function DashboardMain(props) {
             </View>
           </View>
         ) : hpv === null || hpv?.data === undefined ? (
+          <View style={styles.containerWaiting}>
           <ActivityIndicator
             size="large"
-            color={colors.daclen_light}
+            color={colors.daclen_orange}
             style={styles.spinner}
           />
+          </View>
         ) : (
           <Main
             poin_user={currentUser?.poin_user}
@@ -323,12 +326,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
+    backgroundColor: colors.daclen_black,
   },
   scrollView: {
     flex: 1,
     width: "100%",
-    height: "100%",
-    backgroundColor: colors.daclen_black,
+    backgroundColor: "transparent",
+  },
+  containerWaiting: {
+    flex: 1,
+    justifyContent: "center",
+    backgroundColor: "transparent",
   },
   containerHorizontal: {
     backgroundColor: "transparent",
@@ -429,6 +437,7 @@ const styles = StyleSheet.create({
   },
   spinner: {
     marginVertical: 20,
+    alignSelf: "center",
   },
   iconWeb: {
     marginStart: 12,

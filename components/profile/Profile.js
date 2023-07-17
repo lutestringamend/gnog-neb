@@ -12,7 +12,8 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import packageJson from "../../package.json";
-import { enableForceLogout } from "../../axios/user";
+import { userLogout, setNewToken, clearUserData } from "../../axios/user";
+import { clearMediaKitData } from "../../axios/mediakit";
 import {
   aboutapp,
   aboutappicon,
@@ -46,6 +47,7 @@ import ProfileMenuItem from "./ProfileMenuItem";
 import BSPopup from "../bottomsheets/BSPopup";
 import { openWhatsapp } from "../whatsapp/Whatsapp";
 import { adminWA, adminWAtemplate } from "./constants";
+import { sentryLog } from "../../sentry";
 
 function Profile(props) {
   const { currentUser, token } = props;
@@ -59,7 +61,14 @@ function Profile(props) {
   }, [currentUser, token]);
 
   const userLogOut = async () => {
-    props.enableForceLogout();
+    try {
+      await userLogout();
+      props.setNewToken(null, null);
+      props.clearUserData(true);
+      props.clearMediaKitData();
+    } catch (e) {
+      sentryLog(e);
+    }
   };
 
   return (
@@ -211,7 +220,9 @@ const mapStateToProps = (store) => ({
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
-      enableForceLogout,
+      setNewToken,
+      clearUserData,
+      clearMediaKitData
     },
     dispatch
   );

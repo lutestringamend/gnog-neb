@@ -54,7 +54,7 @@ import {
   setObjectAsync,
   setTokenAsync,
 } from "../../components/asyncstorage";
-import { ASYNC_USER_CURRENTUSER_KEY } from "../../components/asyncstorage/constants";
+import { ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, ASYNC_USER_CURRENTUSER_KEY } from "../../components/asyncstorage/constants";
 import { MAXIMUM_FILE_SIZE_IN_BYTES } from "../../components/media/constants";
 import { sentryLog } from "../../sentry";
 
@@ -63,18 +63,19 @@ export const resetPassword = () => {
 };
 
 export const userLogout = async () => {
-  console.log("storage token and currentUser to be made null");
+  console.log("userLogout");
   await setTokenAsync(null);
   await setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, null);
+  setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_KEY);
   //await clearStorage();
 };
 
-export function enableForceLogout() {
+/*export function enableForceLogout() {
   return (dispatch) => {
     console.log("enableForceLogout");
     dispatch({ type: ENABLE_FORCE_LOGOUT });
   };
-}
+}*/
 
 export function disableForceLogout() {
   return (dispatch) => {
