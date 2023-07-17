@@ -37,7 +37,7 @@ export default function MultipleImageView(props) {
     props.route.params;
 
   const productPhotoWidth =
-    dimensions.fullWidth - staticDimensions.productPhotoWidthMargin;
+    pdfpagewidth - staticDimensions.productPhotoWidthMargin;
 
   /*
   title: `Download ${title}`,
@@ -66,10 +66,10 @@ export default function MultipleImageView(props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [logs, setLogs] = useState(null);
-  const [pageDimensions, setPageDimensions] = useState({
+  /*const [pageDimensions, setPageDimensions] = useState({
     width: 0,
     height: 0,
-  });
+  });*/
   const [loadCount, setLoadCount] = useState(0);
   const [tiSize, setTiSize] = useState(0);
   const [transformedImages, setTransformedImages] = useState([]);
@@ -91,7 +91,7 @@ export default function MultipleImageView(props) {
       return;
     }
 
-    let width = pdfpagewidth;
+    /*let width = pdfpagewidth;
     let height = pdfpageheight;
     for (let i = 0; i < photos.length; i++) {
       imageRefs.current[i] = createRef();
@@ -103,7 +103,7 @@ export default function MultipleImageView(props) {
     setPageDimensions({
       width: width + staticDimensions.productPhotoWidthMargin * 6,
       height: height + staticDimensions.productPhotoWidthMargin * 15,
-    });
+    });*/
     /*imageRefs.current = photos.map(
       (ref, index) => (imageRefs.current[index] = createRef())
     );*/
@@ -115,19 +115,21 @@ export default function MultipleImageView(props) {
     ) {
       addError("Perangkat tidak mengizinkan untuk membagikan file");
     }
-    addLogs(`sharingAvailability ${sharingAvailability}`);
+    addLogs(
+      `sharingAvailability ${sharingAvailability}\npageDimensions ${pdfpagewidth}x${pdfpageheight}`
+    );
 
     if (title !== null && title !== undefined && title !== "") {
       props.navigation.setOptions({ title: `Download ${title}` });
     }
   }, []);
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (pageDimensions?.width <= 0 || pageDimensions?.height <= 0) {
       return;
     }
     addLogs(`pageDimensions set ${JSON.stringify(pageDimensions)}`);
-  }, [pageDimensions]);
+  }, [pageDimensions]);*/
 
   useEffect(() => {
     if (loadCount <= 0) {
@@ -154,11 +156,14 @@ export default function MultipleImageView(props) {
     if (tiSize === photos?.length) {
       let imgTags = null;
       for (let img of transformedImages) {
-        imgTags = `${imgTags ? imgTags : ""}${multiplephotosimgtag
-          .replace("#URI#", img)
-          .replace("#WIDTH#", pageDimensions?.width)
-          .replace("#HEIGHT#", pageDimensions?.height)}`;
+        imgTags = `${imgTags ? imgTags : ""}${multiplephotosimgtag.replace(
+          "#URI#",
+          img
+        )}`;
       }
+      /*
+      .replace("#WIDTH#", pageDimensions?.width)
+      .replace("#HEIGHT#", pageDimensions?.height)*/
       let html = multiplephotoshtml
         .replace("#TITLE#", title)
         .replace("#IMGTAGS#", imgTags);
@@ -187,14 +192,17 @@ export default function MultipleImageView(props) {
     setLogs((logs) => `${logs ? logs + "\n" : ""}${text}`);
   };
 
+  const noteImageLoaded = (index, id, width, height, newWidth, newHeight) => {
+    addLogs(
+      `\nloading image index ${index} id ${id}\noriginal ${width}x${height}\nrezized to ${newWidth}x${newHeight}`
+    );
+    setLoadCount((loadCount) => loadCount + 1);
+  };
+
   const startRendering = async () => {
     for (let i = 0; i < loadCount; i++) {
-      let result = await transformImage(i);
-      if (result) {
-        addLogs(`index ${i} render successful`);
-      } else {
-        addError(`index ${i} render failed`);
-      }
+      await transformImage(i);
+      addLogs(`index ${i} rendered`);
     }
   };
 
@@ -206,7 +214,7 @@ export default function MultipleImageView(props) {
         `IMAGE INDEX ${index}`,
       ]);
       setTiSize((tiSize) => tiSize + 1);
-      return false;
+      return;
     }
     try {
       imageRefs.current[index].current
@@ -217,33 +225,30 @@ export default function MultipleImageView(props) {
             uri,
           ]);
           setTiSize((tiSize) => tiSize + 1);
-          return true;
         })
         .catch((e) => {
           sentryLog(e);
           addError(`capture catch index ${index} ${e.toString()}`);
           setTiSize((tiSize) => tiSize + 1);
-          return false;
         });
     } catch (e) {
       sentryLog(e);
       addError(`capture fail index ${index} ${e.toString()}`);
       setTiSize((tiSize) => tiSize + 1);
-      return false;
     }
   };
 
   const printToFile = async () => {
     const result = await Print.printToFileAsync({
       ...filePrintOptions,
-      ...pageDimensions,
       html,
     });
     console.log("printToFileAsync", result);
     addLogs(`printToFileAsync ${JSON.stringify(result)}`);
     setLoading(false);
     if (result?.uri) {
-      await save(result?.uri);
+      await saveUriToAsyncStorage(result?.uri);
+      save(result?.uri);
     } else {
       addError("Gagal membuat file PDF!");
       saveUriToAsyncStorage(result?.uri);
@@ -268,20 +273,19 @@ export default function MultipleImageView(props) {
           .then(async (safUri) => {
             addLogs(`after save uri ${safUri}`);
             try {
-              await FileSystem.writeAsStringAsync(safUri, base64, {
+              let result = await FileSystem.writeAsStringAsync(safUri, base64, {
                 encoding: FileSystem.EncodingType.Base64,
               });
-              addLogs("PDF berhasil disimpan dan siap dibagikan");
+              addLogs(`PDF berhasil disimpan dan siap dibagikan ${result}`);
+              shareFileAsync(uri);
             } catch (e) {
               console.error(e);
               addError("\nwriteAsStringAsync catch\n" + e.toString());
+              shareFileAsync(uri);
             }
-            saveUriToAsyncStorage(uri);
-            shareFileAsync(uri);
           })
           .catch((e) => {
             sentryLog(e);
-            setSuccess(false);
             if (e?.code === "ERR_FILESYSTEM_CANNOT_CREATE_FILE") {
               addError(
                 "Tidak bisa menyimpan foto di folder sistem. Mohon pilih folder lain."
@@ -293,9 +297,11 @@ export default function MultipleImageView(props) {
                   e.toString()
               );
             }
+            shareFileAsync(uri);
           });
       } else {
         addError("Anda tidak memberikan izin untuk mengakses penyimpanan");
+        shareFileAsync(uri);
       }
     } else {
       addLogs("PDF siap dibagikan");
@@ -332,15 +338,17 @@ export default function MultipleImageView(props) {
   };
 
   const shareFileAsync = async (uri) => {
-    try {
-      let result = await shareAsync(uri, {
-        UTI: ".pdf",
-        mimeType: "application/pdf",
-      });
-      addLogs(`shareAsync ${JSON.stringify(result)}`);
-    } catch (e) {
-      console.error(e);
-      addError(e.toString());
+    if (sharingAvailability) {
+      try {
+        let result = await shareAsync(uri, {
+          UTI: ".pdf",
+          mimeType: "application/pdf",
+        });
+        addLogs(`shareAsync ${JSON.stringify(result)}`);
+      } catch (e) {
+        console.error(e);
+        addError(e.toString());
+      }
     }
   };
 
@@ -350,9 +358,7 @@ export default function MultipleImageView(props) {
         {photos === undefined ||
         photos === null ||
         photos?.length === undefined ||
-        photos?.length < 1 ||
-        pageDimensions?.width <= 0 ||
-        pageDimensions?.height <= 0
+        photos?.length < 1
           ? null
           : photos.map(
               ({ id, foto, width, height, text_x, text_y, font }, index) => (
@@ -367,18 +373,33 @@ export default function MultipleImageView(props) {
                     quality: 1,
                     result: "data-uri",
                   }}
-                  style={[styles.containerLargeImage, { width, height }]}
-                  onLayout={() => setLoadCount((loadCount) => loadCount + 1)}
+                  style={[
+                    styles.containerLargeImage,
+                    {
+                      width: productPhotoWidth,
+                      height: Math.round((height * productPhotoWidth) / width),
+                    },
+                  ]}
                 >
                   <Image
                     source={foto}
                     style={{
-                      width,
-                      height,
+                      width: productPhotoWidth,
+                      height: Math.round((height * productPhotoWidth) / width),
                     }}
                     contentFit="contain"
                     placeholder={null}
                     transition={0}
+                    onLoadEnd={() =>
+                      noteImageLoaded(
+                        index,
+                        id,
+                        width,
+                        height,
+                        productPhotoWidth,
+                        Math.round((height * productPhotoWidth) / width)
+                      )
+                    }
                   />
                   <WatermarkModel
                     watermarkData={watermarkData}
@@ -402,7 +423,12 @@ export default function MultipleImageView(props) {
       >
         {error ? <Text style={styles.textError}>{error}</Text> : null}
         {loading ? (
-          <View style={styles.containerLoading}>
+          <View
+            style={[
+              styles.containerLoading,
+              userId !== 8054 ? { flex: 1 } : null,
+            ]}
+          >
             <ActivityIndicator
               size="large"
               color={colors.daclen_black}
@@ -415,7 +441,7 @@ export default function MultipleImageView(props) {
             </Text>
           </View>
         ) : null}
-        {Platform.OS === "web" || !loading ? (
+        {Platform.OS === "web" || userId === 8054 || !loading ? (
           <Text style={styles.textLogs}>{logs}</Text>
         ) : null}
       </ScrollView>
@@ -435,7 +461,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   containerLoading: {
-    flex: 1,
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
