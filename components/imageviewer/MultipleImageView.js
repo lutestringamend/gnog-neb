@@ -37,7 +37,7 @@ export default function MultipleImageView(props) {
     props.route.params;
 
   const productPhotoWidth =
-    pdfpagewidth - staticDimensions.productPhotoWidthMargin;
+    pdfpagewidth - (staticDimensions.productPhotoWidthMargin * 6);
 
   try {
     const [loading, setLoading] = useState(true);
