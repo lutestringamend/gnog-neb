@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { createRef, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   SafeAreaView,
@@ -27,7 +27,7 @@ import { getFileName } from "../media";
 import WatermarkModel from "../media/WatermarkModel";
 import { sentryLog } from "../../sentry";
 import { sharingOptionsJPEG } from "../media/constants";
-import { multiplephotosimgtag } from "./constants";
+import { multiplephotoshtml, multiplephotosimgtag } from "./constants";
 
 export default function MultipleImageView(props) {
   let { title, photos, watermarkData } = props.route.params;
@@ -63,6 +63,7 @@ export default function MultipleImageView(props) {
   const [error, setError] = useState(null);
   const [logs, setLogs] = useState(null);
   const [transformedImages, setTransformedImages] = useState({});
+  const [html, setHtml] = useState(null);
   const [downloadUri, setDownloadUri] = useState(null);
   const [sharingAvailability, setSharingAvailability] = useState(false);
   const navigation = useNavigation();
@@ -90,6 +91,9 @@ export default function MultipleImageView(props) {
       return;
     }
 
+    imageRefs.current = photos.map(
+      (ref, index) => (imageRefs.current[index] = createRef())
+    );
     checkSharing();
     if (title !== null && title !== undefined && title !== "") {
       props.navigation.setOptions({ title });
@@ -119,9 +123,21 @@ export default function MultipleImageView(props) {
           )}`;
         }
       }
-      addLogs(`\n\nimgTags\n${imgTags}`);
+      let html = multiplephotoshtml.replace("#TITLE#", title).replace("#IMGTAGS#", imgTags);
+      setHtml(html);
     }
   }, [transformedImages]);
+
+  useEffect(() => {
+    if (html === null) {
+      return;
+    }
+    addLogs(`\n\n${html}`);
+  }, [html]);
+
+  useEffect(() => {
+    console.log("imageRefs", imageRefs);
+  }, [imageRefs]);
 
   const addError = (text) => {
     setError((error) => `${error ? error + "\n" : ""}${text}`);
@@ -138,7 +154,7 @@ export default function MultipleImageView(props) {
       return;
     }
     try {
-      imageRefs.current[index]
+      imageRefs.current[index].current
         .capture()
         .then((uri) => {
           console.log(uri);
