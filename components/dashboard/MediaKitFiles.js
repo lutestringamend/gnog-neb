@@ -10,14 +10,16 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+
 import {
   getMediaKitPhotos,
   clearMediaKitPhotosError,
+  clearMediaKitData,
+  updateReduxMediaKitPhotos,
 } from "../../axios/mediakit";
-
+import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { colors, staticDimensions } from "../../styles/base";
 import { privacypolicy } from "../profile/constants";
 import { ErrorView } from "../webview/WebviewChild";
@@ -33,6 +35,7 @@ import {
 import WatermarkPhotos from "./WatermarkPhotos";
 import WatermarkVideos from "./WatermarkVideos";
 import { sentryLog } from "../../sentry";
+import { ASYNC_MEDIA_WATERMARK_PHOTOS_KEY } from "../asyncstorage/constants";
 
 function MediaKitFiles(props) {
   try {
@@ -55,20 +58,19 @@ function MediaKitFiles(props) {
         : "",
     });
 
+    /*useEffect(() => {
+      props.clearMediaKitData();
+    }, []);*/
+
     useEffect(() => {
-      if (
-        props.mediaKitPhotos?.length === undefined ||
-        props.mediaKitPhotos?.length < 1
-      ) {
-        props.clearMediaKitPhotosError();
-        if (!photoLoading) {
-          setPhotoLoading(true);
-          props.getMediaKitPhotos();
-        }
+      if (props.mediaKitPhotos === undefined || props.mediaKitPhotos === null) {
+        checkStorageMediaKitPhotos();
       } else {
         if (photoLoading) {
           setPhotoLoading(false);
         }
+        setObjectAsync(ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, props.mediaKitPhotos);
+        console.log("redux mediakitphotos", props.mediaKitPhotos);
       }
     }, [props.mediaKitPhotos]);
 
@@ -84,6 +86,22 @@ function MediaKitFiles(props) {
         setPhotoLoading(false);
       }
     }, [photoError]);
+
+    const checkStorageMediaKitPhotos = async () => {
+      const storagePhotos = await getObjectAsync(
+        ASYNC_MEDIA_WATERMARK_PHOTOS_KEY
+      );
+      if (storagePhotos === undefined || storagePhotos === null) {
+        props.clearMediaKitPhotosError();
+        props.clearMediaKitData();
+        if (!photoLoading) {
+          setPhotoLoading(true);
+          props.getMediaKitPhotos();
+        }
+      } else {
+        props.updateReduxMediaKitPhotos(storagePhotos);
+      }
+    };
 
     return (
       <SafeAreaView style={styles.container}>
@@ -139,15 +157,6 @@ function MediaKitFiles(props) {
             </View>
           ) : null}
 
-          <View style={styles.tabView}>
-            <HistoryTabItem
-              activeTab={activeTab}
-              name={WATERMARK_PHOTO}
-              icon={watermarkphotoicon}
-              onPress={() => setActiveTab(WATERMARK_PHOTO)}
-            />
-
-          </View>
           {activeTab === WATERMARK_VIDEO ? (
             <WatermarkVideos
               watermarkData={watermarkData}
@@ -180,13 +189,21 @@ function MediaKitFiles(props) {
 }
 
 /*
-
+          <View style={styles.tabView}>
+            <HistoryTabItem
+              activeTab={activeTab}
+              name={WATERMARK_PHOTO}
+              icon={watermarkphotoicon}
+              onPress={() => setActiveTab(WATERMARK_PHOTO)}
+            />
             <HistoryTabItem
               activeTab={activeTab}
               name={WATERMARK_VIDEO}
               icon={watermarkvideoicon}
               onPress={() => setActiveTab(WATERMARK_VIDEO)}
             />
+          </View>
+
             
 <Text style={styles.textCompulsory}>Link Referral*</Text>
                 <TextInput
@@ -294,6 +311,14 @@ const mapStateToProps = (store) => ({
 });
 
 const mapDispatchProps = (dispatch) =>
-  bindActionCreators({ getMediaKitPhotos, clearMediaKitPhotosError }, dispatch);
+  bindActionCreators(
+    {
+      getMediaKitPhotos,
+      updateReduxMediaKitPhotos,
+      clearMediaKitPhotosError,
+      clearMediaKitData,
+    },
+    dispatch
+  );
 
 export default connect(mapStateToProps, mapDispatchProps)(MediaKitFiles);

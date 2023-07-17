@@ -18,9 +18,10 @@ import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { enableForceLogout, deleteAccount } from "../../axios/user";
+import { deleteAccount, setNewToken, clearUserData } from "../../axios/user";
 import { colors } from "../../styles/base";
 import BSPopup from "../bottomsheets/BSPopup";
+import { userLogOut } from "../profile/Profile";
 
 function DeleteAccount(props) {
   const { currentUser, token, authDelete } = props;
@@ -36,8 +37,8 @@ function DeleteAccount(props) {
     password: "",
   });
 
-  const userLogOut = async () => {
-    props.enableForceLogout();
+  const attemptLogout = async () => {
+    await userLogOut(props);
     navigation.navigate("Main");
   };
 
@@ -162,7 +163,7 @@ function DeleteAccount(props) {
         ref={rbSheet}
         openDuration={250}
         height={350}
-        onClose={() => userLogOut()}
+        onClose={() => attemptLogout()}
       >
         <BSPopup
           title="Pengajuan Berhasil"
@@ -257,8 +258,9 @@ const mapStateToProps = (store) => ({
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
-      enableForceLogout,
       deleteAccount,
+      setNewToken,
+      clearUserData,
     },
     dispatch
   );

@@ -40,6 +40,7 @@ import {
   USER_HPV_STATE_CHANGE,
   USER_POINTS_STATE_CHANGE,
   USER_SYARAT_ROOT_STATE_CHANGE,
+  MEDIA_KIT_CLEAR_DATA,
 } from "../../redux/constants";
 import {
   calculateBase64SizeInBytes,
@@ -54,7 +55,7 @@ import {
   setObjectAsync,
   setTokenAsync,
 } from "../../components/asyncstorage";
-import { ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, ASYNC_USER_CURRENTUSER_KEY } from "../../components/asyncstorage/constants";
+import { ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, ASYNC_USER_CURRENTUSER_KEY } from "../../components/asyncstorage/constants";
 import { MAXIMUM_FILE_SIZE_IN_BYTES } from "../../components/media/constants";
 import { sentryLog } from "../../sentry";
 
@@ -66,7 +67,8 @@ export const userLogout = async () => {
   console.log("userLogout");
   await setTokenAsync(null);
   await setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, null);
-  setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_KEY);
+  await setObjectAsync(ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, null);
+  setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, null);
   //await clearStorage();
 };
 
@@ -84,11 +86,13 @@ export function disableForceLogout() {
   };
 }
 
-export function clearUserData(forceLogout) {
+export function clearUserData() {
   return (dispatch) => {
     console.log("clearUserData");
     //setTokenAsync(null);
-    dispatch({ type: CLEAR_USER_DATA, forceLogout });
+    dispatch({ type: CLEAR_USER_DATA });
+    dispatch({ type: HISTORY_CLEAR_DATA });
+    dispatch({ type: MEDIA_KIT_CLEAR_DATA });
   };
 }
 

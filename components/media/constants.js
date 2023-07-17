@@ -13,12 +13,13 @@ export const watermarkStyle = {
     paddingVertical: 2,
     paddingHorizontal: 6,
     borderRadius: 1,
-    textAlign: "left",
+    textAlign: "center",
     top: 1,
     start: 1,
     backgroundColor: "transparent",
-    color: colors.daclen_red,
+    color: colors.daclen_light,
     fontSize: 16,
+    textHorizontalMargin: 0,
   };
 
 export const sharingOptionsJPEG = {

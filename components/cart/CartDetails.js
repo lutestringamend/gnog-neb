@@ -40,16 +40,18 @@ export default function CartDetails(props) {
         </Text>
       </View>
 
-      <View style={styles.containerRadio}>
-        <Text style={styles.textEntryHeader}>Pengemasan</Text>
-        <View style={styles.containerRadioGroup}>
-        <RadioGroup
-          radioButtons={defaultPackagingOptions}
-          onPress={props?.onPressRadioButtonPackaging}
-          layout="row"
-        />
+      {props?.isCart ? (
+        <View style={styles.containerRadio}>
+          <Text style={styles.textEntryHeader}>Pengemasan</Text>
+          <View style={styles.containerRadioGroup}>
+            <RadioGroup
+              radioButtons={defaultPackagingOptions}
+              onPress={props?.onPressRadioButtonPackaging}
+              layout="row"
+            />
+          </View>
         </View>
-      </View>
+      ) : null}
 
       {props?.isCart &&
         (props?.addressComplete ? (
@@ -72,7 +74,7 @@ export default function CartDetails(props) {
                   <RadioGroup
                     radioButtons={props?.courierServices}
                     onPress={props?.onPressRadioButtonService}
-                    containerStyle={{marginTop: 6}}
+                    containerStyle={{ marginTop: 6 }}
                   />
                 ) : (
                   props?.courierSlug !== "" &&

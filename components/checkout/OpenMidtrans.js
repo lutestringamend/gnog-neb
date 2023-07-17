@@ -79,7 +79,7 @@ export default function OpenMidtrans(props) {
     //DEV TEMP
     function trackNavigation(e) {
       console.log("onNavigationStateChange", e);
-      setError(`onNavigationStateChange\n${JSON.stringify(e)}`);
+      //setError(`onNavigationStateChange\n${JSON.stringify(e)}`);
     }
 
     if (token === null || token === undefined) {

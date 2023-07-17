@@ -13,7 +13,6 @@ import { bindActionCreators } from "redux";
 
 import packageJson from "../../package.json";
 import { userLogout, setNewToken, clearUserData } from "../../axios/user";
-import { clearMediaKitData } from "../../axios/mediakit";
 import {
   aboutapp,
   aboutappicon,
@@ -49,6 +48,16 @@ import { openWhatsapp } from "../whatsapp/Whatsapp";
 import { adminWA, adminWAtemplate } from "./constants";
 import { sentryLog } from "../../sentry";
 
+export const userLogOut = async (props) => {
+  try {
+    await userLogout();
+    props.setNewToken(null, null);
+    props.clearUserData(true);
+  } catch (e) {
+    sentryLog(e);
+  }
+};
+
 function Profile(props) {
   const { currentUser, token } = props;
   const appVersion = `Versi ${packageJson?.version}`;
@@ -59,17 +68,6 @@ function Profile(props) {
       rbSheet.current.close();
     }
   }, [currentUser, token]);
-
-  const userLogOut = async () => {
-    try {
-      await userLogout();
-      props.setNewToken(null, null);
-      props.clearUserData(true);
-      props.clearMediaKitData();
-    } catch (e) {
-      sentryLog(e);
-    }
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -172,7 +170,7 @@ function Profile(props) {
           buttonNegativeColor={colors.daclen_gray}
           icon="logout"
           closeThis={() => rbSheet.current.close()}
-          onPress={() => userLogOut()}
+          onPress={() => userLogOut(props)}
         />
       </RBSheet>
     </SafeAreaView>
@@ -222,7 +220,6 @@ const mapDispatchProps = (dispatch) =>
     {
       setNewToken,
       clearUserData,
-      clearMediaKitData
     },
     dispatch
   );

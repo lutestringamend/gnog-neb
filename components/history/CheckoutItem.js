@@ -49,7 +49,7 @@ function CheckoutItem(props) {
       console.log("checkout is null");
     } else {
       console.log("checkout", checkout);
-      if (checkout?.status === null) {
+      if (checkout?.status === null || checkout?.status.toLowerCase() === "tertunda") {
         props.postPembayaran(token, checkout?.id);
       }
     }
@@ -171,12 +171,7 @@ function CheckoutItem(props) {
         totalPrice={checkout?.total_currency}
         buttonAction={() => openMidtrans()}
         buttonText={checkout?.status}
-        buttonDisabled={
-          !(
-            checkout?.status === null ||
-            checkout?.status.toLowerCase() === "tertunda"
-          ) || loadingSnap
-        }
+        buttonDisabled={snapToken === null || loadingSnap}
       />
     </SafeAreaView>
   );

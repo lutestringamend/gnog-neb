@@ -36,7 +36,6 @@ export const initialState = {
   hpv: null,
   points: null,
   syaratRoot: [],
-  forceLogout: false,
   cart: null,
   cartError: null,
   currentAddress: null,
@@ -251,20 +250,7 @@ export const user = (state = initialState, action) => {
         validationOTP: action.data,
       };
     case CLEAR_USER_DATA:
-      return {
-        ...initialState,
-        forceLogout: action?.forceLogout ? action?.forceLogout : false,
-      };
-    case ENABLE_FORCE_LOGOUT:
-      return {
-        ...state,
-        forceLogout: true,
-      };
-    case DISABLE_FORCE_LOGOUT:
-      return {
-        ...state,
-        forceLogout: false,
-      };
+      return initialState;
     default:
       return state;
   }

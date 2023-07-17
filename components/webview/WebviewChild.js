@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   containerVertical: {
+    flex: 1,
     backgroundColor: "transparent",
   },
   scrollView: {

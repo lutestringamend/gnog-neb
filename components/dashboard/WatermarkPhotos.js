@@ -1,93 +1,66 @@
 import React, { Suspense } from "react";
 import {
   View,
-  TouchableHighlight,
   StyleSheet,
   Text,
   ActivityIndicator,
   Linking,
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
-import { Image } from "expo-image";
-import { useNavigation } from "@react-navigation/native";
 
-import { colors, blurhash, staticDimensions } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 import { webfotowatermark } from "../../axios/constants";
 import { ErrorView } from "../webview/WebviewChild";
+import WatermarkPhotosSegment from "./WatermarkPhotosSegment";
+import { sentryLog } from "../../sentry";
 
 const WatermarkPhotos = ({ photos, watermarkData, userId, loading, error }) => {
-  const navigation = useNavigation();
-
-  function openPhoto(item) {
-    navigation.navigate("ImageViewer", {
-      title: `Foto ${item?.id.toString()}`,
-      uri: item?.foto,
-      isSquare: false,
-      width: item?.width,
-      height: item?.height,
-      text_align: item?.text_align,
-      text_x: item?.text_x,
-      text_y: item?.text_y,
-      font: item?.font,
-      watermarkData,
-      userId,
-    });
-  }
-
-  return (
-    <View style={styles.containerFlatlist}>
-      {error ? (
-        <ErrorView
-          error="Mohon membuka website Daclen untuk melihat foto Media Kit"
-          onOpenExternalLink={() => Linking.openURL(webfotowatermark)}
-        />
-      ) : loading ? (
-        <ActivityIndicator
-          size="large"
-          color={colors.daclen_orange}
-          style={{ alignSelf: "center", marginVertical: 20 }}
-        />
-      ) : photos?.length === undefined || photos?.length < 1 ? (
-        <Text style={styles.textUid}>Tidak ada foto Media Kit tersedia</Text>
-      ) : (
-        <Suspense
-          fallback={
-            <ActivityIndicator
-              size="large"
-              color={colors.daclen_orange}
-              style={{ alignSelf: "center", marginVertical: 20 }}
-            />
-          }
-        >
-          <FlashList
-            estimatedItemSize={50}
-            horizontal={false}
-            numColumns={3}
-            data={photos}
-            renderItem={({ item }) => (
-              <TouchableHighlight
-                onPress={() => openPhoto(item)}
-                underlayColor={colors.daclen_orange}
-                style={styles.containerImage}
-              >
-                <Image
-                  style={styles.imageList}
-                  source={item?.foto}
-                  contentFit="cover"
-                  placeholder={blurhash}
-                  transition={100}
-                />
-              </TouchableHighlight>
-            )}
+  try {
+    return (
+      <View style={styles.container}>
+        {error ? (
+          <ErrorView
+            error="Mohon membuka website Daclen untuk melihat foto Media Kit"
+            onOpenExternalLink={() => Linking.openURL(webfotowatermark)}
           />
-        </Suspense>
-      )}
-    </View>
-  );
+        ) : loading ? (
+          <ActivityIndicator
+            size="large"
+            color={colors.daclen_orange}
+            style={{ alignSelf: "center", marginVertical: 20 }}
+          />
+        ) : photos === undefined || photos === null ? (
+          <Text style={styles.textUid}>Tidak ada foto Media Kit tersedia</Text>
+        ) : (
+          Object.keys(photos)
+            .sort()
+            .reverse()
+            .map((keyName, i) => (
+              <WatermarkPhotosSegment
+                isExpanded={i === 0 ? true : false}
+                key={keyName}
+                title={keyName}
+                photos={photos[keyName]}
+                watermarkData={watermarkData}
+                userId={userId}
+              />
+            ))
+        )}
+      </View>
+    );
+  } catch (e) {
+    sentryLog(e);
+    return (
+      <ErrorView
+        error={`Mohon membuka website Daclen untuk melihat foto Media Kit\n\n${e.toString()}`}
+        onOpenExternalLink={() => Linking.openURL(webfotowatermark)}
+      />
+    );
+  }
 };
 
 const styles = StyleSheet.create({
   containerFlatlist: {
+    flex: 1,
     width: "100%",
     paddingBottom: staticDimensions.pageBottomPadding,
     backgroundColor: "white",

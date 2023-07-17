@@ -9,7 +9,7 @@ import {
 } from "../constants";
 
 const initialState = {
-  photos: [],
+  photos: null,
   videos: [],
   fonts: [],
   colors: [],
