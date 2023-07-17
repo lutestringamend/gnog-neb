@@ -70,6 +70,7 @@ export default function MultipleImageView(props) {
     width: 0,
     height: 0,
   });
+  const [loadCount, setLoadCount] = useState(0);
   const [tiSize, setTiSize] = useState(0);
   const [transformedImages, setTransformedImages] = useState([]);
   const [html, setHtml] = useState(null);
@@ -100,8 +101,8 @@ export default function MultipleImageView(props) {
       }
     }
     setPageDimensions({
-      width: width + (staticDimensions.productPhotoWidthMargin * 6),
-      height: height + (staticDimensions.productPhotoWidthMargin * 15),
+      width: width + staticDimensions.productPhotoWidthMargin * 6,
+      height: height + staticDimensions.productPhotoWidthMargin * 15,
     });
     /*imageRefs.current = photos.map(
       (ref, index) => (imageRefs.current[index] = createRef())
@@ -129,8 +130,17 @@ export default function MultipleImageView(props) {
   }, [pageDimensions]);
 
   useEffect(() => {
+    if (loadCount <= 0) {
+      return;
+    }
+    if (loadCount === photos?.length) {
+      startRendering();
+    }
+    addLogs(`loadCount ${loadCount}`);
+  }, [loadCount]);
+
+  useEffect(() => {
     //let tiSize = transformedImages.length;
-    addLogs(`tiSize ${tiSize} transformedImages ${transformedImages.length}`);
     if (
       photos === undefined ||
       photos === null ||
@@ -140,6 +150,7 @@ export default function MultipleImageView(props) {
     ) {
       return;
     }
+    addLogs(`tiSize ${tiSize} transformedImages ${transformedImages.length}`);
     if (tiSize === photos?.length) {
       let imgTags = null;
       for (let img of transformedImages) {
@@ -159,7 +170,7 @@ export default function MultipleImageView(props) {
     if (html === null) {
       return;
     }
-    addLogs(`\n\nHTML generated`);
+    addLogs(`\n\nHTML generated\n${Platform.OS === "web" ? html : ""}`);
     printToFile();
   }, [html]);
 
@@ -176,16 +187,26 @@ export default function MultipleImageView(props) {
     setLogs((logs) => `${logs ? logs + "\n" : ""}${text}`);
   };
 
-  const transformImage = async (index, id) => {
-    addLogs(`photo index ${index} id ${id} loaded`);
+  const startRendering = async () => {
+    for (let i = 0; i < loadCount; i++) {
+      let result = await transformImage(i);
+      if (result) {
+        addLogs(`index ${i} render successful`);
+      } else {
+        addError(`index ${i} render failed`);
+      }
+    }
+  };
+
+  const transformImage = async (index) => {
     if (Platform.OS === "web") {
       //addError("ViewShot not available on Web");
       setTransformedImages((transformedImages) => [
         ...transformedImages,
-        temporaryimgurl,
+        `IMAGE INDEX ${index}`,
       ]);
       setTiSize((tiSize) => tiSize + 1);
-      return;
+      return false;
     }
     try {
       imageRefs.current[index].current
@@ -196,23 +217,23 @@ export default function MultipleImageView(props) {
             uri,
           ]);
           setTiSize((tiSize) => tiSize + 1);
+          return true;
         })
         .catch((e) => {
-          console.error(e);
+          sentryLog(e);
           addError(`capture catch index ${index} ${e.toString()}`);
           setTiSize((tiSize) => tiSize + 1);
-          sentryLog(e);
+          return false;
         });
     } catch (e) {
-      console.error(e);
+      sentryLog(e);
       addError(`capture fail index ${index} ${e.toString()}`);
       setTiSize((tiSize) => tiSize + 1);
-      sentryLog(e);
+      return false;
     }
   };
 
   const printToFile = async () => {
-    // On iOS/android prints the given html. On web prints the HTML from the current page.
     const result = await Print.printToFileAsync({
       ...filePrintOptions,
       ...pageDimensions,
@@ -224,19 +245,18 @@ export default function MultipleImageView(props) {
     if (result?.uri) {
       await save(result?.uri);
     } else {
-      addError("uri is null");
+      addError("Gagal membuat file PDF!");
       saveUriToAsyncStorage(result?.uri);
     }
   };
 
   const save = async (uri) => {
-    const fileName = `Daclen_${title}_${userId}.pdf`;
-    
+    const fileName = `Daclen_${watermarkData?.name}_${title}.pdf`;
+
     if (Platform.OS === "android") {
       const permissions =
         await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
       if (permissions.granted) {
-
         const base64 = await FileSystem.readAsStringAsync(uri, {
           encoding: FileSystem.EncodingType.Base64,
         });
@@ -252,11 +272,12 @@ export default function MultipleImageView(props) {
                 encoding: FileSystem.EncodingType.Base64,
               });
               addLogs("PDF berhasil disimpan dan siap dibagikan");
-              saveUriToAsyncStorage(uri);
             } catch (e) {
               console.error(e);
               addError("\nwriteAsStringAsync catch\n" + e.toString());
             }
+            saveUriToAsyncStorage(uri);
+            shareFileAsync(uri);
           })
           .catch((e) => {
             sentryLog(e);
@@ -305,11 +326,10 @@ export default function MultipleImageView(props) {
       title,
       userId,
       uri: uri ? uri : null,
-    })
+    });
     await setObjectAsync(ASYNC_WATERMARK_PHOTOS_PDF_KEY, newArray);
     addLogs(`new asyncStorage pdfphotos\n${JSON.stringify(newArray)}`);
-    shareFileAsync(uri);
-  }
+  };
 
   const shareFileAsync = async (uri) => {
     try {
@@ -348,6 +368,7 @@ export default function MultipleImageView(props) {
                     result: "data-uri",
                   }}
                   style={[styles.containerLargeImage, { width, height }]}
+                  onLayout={() => setLoadCount((loadCount) => loadCount + 1)}
                 >
                   <Image
                     source={foto}
@@ -358,7 +379,6 @@ export default function MultipleImageView(props) {
                     contentFit="contain"
                     placeholder={null}
                     transition={0}
-                    onLoadEnd={() => transformImage(index, id)}
                   />
                   <WatermarkModel
                     watermarkData={watermarkData}
@@ -394,14 +414,14 @@ export default function MultipleImageView(props) {
               } menjadi file PDF...`}
             </Text>
           </View>
-        ) : (
+        ) : null}
+        {Platform.OS === "web" || !loading ? (
           <Text style={styles.textLogs}>{logs}</Text>
-        )}
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
 }
-//                  onLoadEnd={() => transformImage()}
 
 const styles = StyleSheet.create({
   container: {

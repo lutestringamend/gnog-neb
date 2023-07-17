@@ -91,7 +91,7 @@ const WatermarkPhotosSegment = ({
         }
       }
     }
-    openMultipleImageView(); 
+    openMultipleImageView();
   };
 
   const openMultipleImageView = () => {
