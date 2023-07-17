@@ -69,6 +69,7 @@ export default function MultipleImageView(props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [logs, setLogs] = useState(null);
+  const [tiSize, setTiSize] = useState(0);
   const [transformedImages, setTransformedImages] = useState([]);
   const [html, setHtml] = useState(null);
   const [downloadUri, setDownloadUri] = useState(null);
@@ -89,6 +90,7 @@ export default function MultipleImageView(props) {
       return;
     }
 
+    imageRefs.current[0] = createRef();
     imageRefs.current = photos.map(
       (ref, index) => (imageRefs.current[index] = createRef())
     );
@@ -107,13 +109,12 @@ export default function MultipleImageView(props) {
   }, []);
 
   useEffect(() => {
-    let tiSize = transformedImages.length;
+    //let tiSize = transformedImages.length;
     if (
       photos === undefined ||
       photos === null ||
       photos?.length === undefined ||
       photos?.length < 1 ||
-      tiSize === undefined ||
       tiSize < 1
     ) {
       return;
@@ -132,7 +133,7 @@ export default function MultipleImageView(props) {
         .replace("#IMGTAGS#", imgTags);
       setHtml(html);
     }
-  }, [transformedImages]);
+  }, [transformedImages, tiSize]);
 
   useEffect(() => {
     if (html === null) {
@@ -172,18 +173,18 @@ export default function MultipleImageView(props) {
             ...transformedImages,
             uri,
           ]);
-          setLoading(false);
+          setTiSize((tiSize) => tiSize + 1);
         })
         .catch((e) => {
           console.error(e);
           addError(`index ${index} ${e.toString()}`);
-          setLoading(false);
+          setTiSize((tiSize) => tiSize + 1);
           sentryLog(e);
         });
     } catch (e) {
       console.error(e);
       addError(`index ${index} ${e.toString()}`);
-      setLoading(false);
+      ssetTiSize((tiSize) => tiSize + 1);
       sentryLog(e);
     }
   };
@@ -337,7 +338,9 @@ export default function MultipleImageView(props) {
               ({ id, foto, width, height, text_x, text_y, font }, index) => (
                 <ViewShot
                   key={index}
-                  ref={imageRefs.current[index]}
+                  ref={
+                    index < 1 ? imageRefs.current[0] : imageRefs.current[index]
+                  }
                   options={{
                     fileName: `daclenwatermarkfoto_${id.toString()}`,
                     format: "jpg",
