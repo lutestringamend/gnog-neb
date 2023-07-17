@@ -29,6 +29,7 @@ import WatermarkModel from "../media/WatermarkModel";
 import { sentryLog } from "../../sentry";
 import { sharingOptionsJPEG } from "../media/constants";
 import {
+  filePrintOptions,
   multiplephotoshtml,
   multiplephotosimgtag,
   temporaryimgurl,
@@ -137,7 +138,7 @@ export default function MultipleImageView(props) {
     if (html === null) {
       return;
     }
-    addLogs("HTML generated");
+    addLogs(`\n\nHTML generated\n${html}`);
     printToFile();
   }, [html]);
 
@@ -189,7 +190,7 @@ export default function MultipleImageView(props) {
 
   const printToFile = async () => {
     // On iOS/android prints the given html. On web prints the HTML from the current page.
-    const result = await Print.printToFileAsync({ html });
+    const result = await Print.printToFileAsync({ ...filePrintOptions, html });
     console.log("printToFileAsync", result);
     addLogs(JSON.stringify(result));
     if (sharingAvailability && result?.uri) {
