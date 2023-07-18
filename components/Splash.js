@@ -16,22 +16,17 @@ function SplashScreen(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.containerLogo}>
-        <Image
-          source={require("../assets/splash.png")}
-          style={{ width: 225, height: 60 }}
-        />
-      </View>
+      <Image
+        source={require("../assets/splash.png")}
+        style={styles.logo}
+        resizeMode="center"
+      />
 
       <View style={styles.containerText}>
         {props?.errorText ? (
           <Text style={styles.textError}>{props?.errorText}</Text>
         ) : props?.loading ? (
-          <ActivityIndicator
-            size="small"
-            color={colors.daclen_orange}
-            style={styles.spinner}
-          />
+          <ActivityIndicator size="small" color={colors.daclen_orange} />
         ) : null}
         <Text style={styles.textVersion}>{versionText}</Text>
       </View>
@@ -47,32 +42,38 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  containerLogo: {
-    flex: 6,
-    backgroundColor: "transparent",
-    justifyContent: "center",
-    alignItems: "center",
+  logo: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+    top: 0,
+    start: 0,
+    zIndex: 0,
+    backgroundColor: "center",
   },
   containerText: {
-    flex: 1,
     backgroundColor: "transparent",
-    marginHorizontal: 32,
+    alignItems: "center",
+    position: "absolute",
+    width: "100%",
+    bottom: 0,
+    start: 0,
+    zIndex: 1,
   },
   textError: {
     fontSize: 12,
     fontWeight: "bold",
     color: colors.daclen_orange,
     textAlign: "center",
-    marginBottom: 20,
+    backgroundColor: "transparent",
+    marginHorizontal: 20,
   },
   textVersion: {
     fontSize: 12,
     color: colors.daclen_yellow,
     textAlign: "center",
-  },
-  spinner: {
-    alignSelf: "center",
-    marginVertical: 20,
+    marginVertical: 32,
+    backgroundColor: "transparent",
   },
 });
 

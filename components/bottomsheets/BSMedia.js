@@ -100,23 +100,31 @@ function BSMedia(props) {
           disabled={props?.disabled}
         >
           <MaterialCommunityIcons name="camera" size={18} color="white" />
-          <Text style={styles.textButton}>Ambil dari Kamera</Text>
+          <Text style={styles.textButton}>Foto dari Kamera</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => openImagePicker()}
-          style={[
-            styles.button,
-            {
-              backgroundColor: props?.disabled
-                ? colors.daclen_gray
-                : colors.daclen_green,
-            },
-          ]}
-          disabled={props?.disabled}
-        >
-          <MaterialCommunityIcons name="camera-burst" size={18} color="white" />
-          <Text style={styles.textButton}>Unggah dari Galeri</Text>
-        </TouchableOpacity>
+        {Platform.OS === "ios" ? null : (
+          <TouchableOpacity
+            onPress={() => openImagePicker()}
+            style={[
+              styles.button,
+              {
+                backgroundColor: props?.disabled
+                  ? colors.daclen_gray
+                  : colors.daclen_green,
+              },
+            ]}
+            disabled={props?.disabled}
+          >
+            <MaterialCommunityIcons
+              name="camera-burst"
+              size={18}
+              color="white"
+            />
+            <Text style={styles.textButton}>
+              {`Ambil dari ${Platform.OS === "ios" ? "Camera Roll" : "Galeri"}`}
+            </Text>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
           onPress={() => props?.closeThis()}
           style={styles.button}
