@@ -54,6 +54,7 @@ const MultipleImageView = (props) => {
     const [tiSize, setTiSize] = useState(0);
     const [transformedImages, setTransformedImages] = useState([]);
     const [html, setHtml] = useState(null);
+    let htmlArray = [];
     const navigation = useNavigation();
     const imageRefs = useRef([]);
 
@@ -130,20 +131,35 @@ const MultipleImageView = (props) => {
       ) {
         return;
       }
-      addLogs(`tiSize ${tiSize} transformedImages ${transformedImages.length}`);
+      addLogs(
+        `tiSize ${tiSize} transformedImages ${transformedImages?.length}`
+      );
       if (tiSize === photos?.length) {
+        for (let i = 0; i < transformedImages?.length; i++) {
+          let html = multiplephotoshtml
+            .replace("#TITLE#", title)
+            .replace(
+              "#IMGTAGS#",
+              multiplephotosimgtag
+                .replace("#URI#", transformedImages[i])
+                .replace("#WIDTH#", pageDimensions?.width)
+                .replace("#HEIGHT#", pageDimensions?.height)
+            );
+          htmlArray[i] = html;
+        }
+        /*
+        TEMP DEV
         let imgTags = null;
         for (let img of transformedImages) {
           imgTags = `${imgTags ? imgTags : ""}${multiplephotosimgtag
             .replace("#URI#", img)
             .replace("#WIDTH#", pageDimensions?.width)
             .replace("#HEIGHT#", pageDimensions?.height)}`;
-        }
-        let html = multiplephotoshtml
-          .replace("#TITLE#", title)
-          .replace("#IMGTAGS#", imgTags);
-        setHtml(html);
+        }*/
+
+        setHtml(htmlArray);
       }
+      //check
     }, [tiSize]);
 
     useEffect(() => {
@@ -233,27 +249,55 @@ const MultipleImageView = (props) => {
     };
 
     const printToFile = async () => {
-      const result = await Print.printToFileAsync({
-        ...filePrintOptions,
-        ...pageDimensions,
-        html,
-      });
-      console.log("printToFileAsync", result);
-      addLogs(`printToFileAsync ${JSON.stringify(result)}`);
-      setLoading(false);
-      if (result?.uri) {
-        saveUriToAsyncStorage(result?.uri);
-        await shareFileAsync(result?.uri);
-        //save(result?.uri);
-      } else if (Platform.OS === "web") {
-        saveUriToAsyncStorage("WEBURI");
-        return;
-      } else if (Platform.OS === "android") {
-        ToastAndroid.show("Gagal membuat file PDF", ToastAndroid.LONG);
+      if (html?.length > 1) {
+        let firstPage = null
+        for (let i = 0; i < html?.length; i++) {
+          const result = await Print.printToFileAsync({
+            ...filePrintOptions,
+            ...pageDimensions,
+            html: html[i],
+          });
+          if (i === 0) {
+            firstPage = result;
+          }
+          addLogs(`printToFileAsync ${JSON.stringify(result)}`);
+        }
+        if (firstPage?.uri) {
+          saveUriToAsyncStorage(firstPage?.uri);
+          await shareFileAsync(firstPage?.uri);
+          //save(result?.uri);
+        } else if (Platform.OS === "web") {
+          saveUriToAsyncStorage("WEBURI");
+          return;
+        } else if (Platform.OS === "android") {
+          ToastAndroid.show("Gagal membuat file PDF", ToastAndroid.LONG);
+        }
+      } else {
+        const result = await Print.printToFileAsync({
+          ...filePrintOptions,
+          ...pageDimensions,
+          html,
+        });
+        console.log("printToFileAsync", result);
+        addLogs(`printToFileAsync ${JSON.stringify(result)}`);
+        setLoading(false);
+        if (result?.uri) {
+          saveUriToAsyncStorage(result?.uri);
+          await shareFileAsync(result?.uri);
+          //save(result?.uri);
+        } else if (Platform.OS === "web") {
+          saveUriToAsyncStorage("WEBURI");
+          return;
+        } else if (Platform.OS === "android") {
+          ToastAndroid.show("Gagal membuat file PDF", ToastAndroid.LONG);
+        }
+        navigation.goBack();
       }
 
+      
+
       //saveUriToAsyncStorage(result?.uri);
-      navigation.goBack();
+
     };
 
     /*const save = async (uri) => {
