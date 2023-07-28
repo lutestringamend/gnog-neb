@@ -66,7 +66,10 @@ function MediaKitFiles(props) {
       const checkSharing = async () => {
         const result = await isAvailableAsync();
         if (!result && Platform.OS === "android") {
-          ToastAndroid.show("Perangkat tidak mengizinkan sharing file", ToastAndroid.LONG);
+          ToastAndroid.show(
+            "Perangkat tidak mengizinkan sharing file",
+            ToastAndroid.LONG
+          );
         }
         console.log("sharingAvailability", result);
         setSharingAvailability(result);
@@ -170,6 +173,23 @@ function MediaKitFiles(props) {
             </View>
           ) : null}
 
+          {currentUser?.id === 8054 ? (
+            <View style={styles.tabView}>
+              <HistoryTabItem
+                activeTab={activeTab}
+                name={WATERMARK_PHOTO}
+                icon={watermarkphotoicon}
+                onPress={() => setActiveTab(WATERMARK_PHOTO)}
+              />
+              <HistoryTabItem
+                activeTab={activeTab}
+                name={WATERMARK_VIDEO}
+                icon={watermarkvideoicon}
+                onPress={() => setActiveTab(WATERMARK_VIDEO)}
+              />
+            </View>
+          ) : null}
+
           {activeTab === WATERMARK_VIDEO ? (
             <WatermarkVideos
               watermarkData={watermarkData}
@@ -204,20 +224,7 @@ function MediaKitFiles(props) {
 }
 
 /*
-          <View style={styles.tabView}>
-            <HistoryTabItem
-              activeTab={activeTab}
-              name={WATERMARK_PHOTO}
-              icon={watermarkphotoicon}
-              onPress={() => setActiveTab(WATERMARK_PHOTO)}
-            />
-            <HistoryTabItem
-              activeTab={activeTab}
-              name={WATERMARK_VIDEO}
-              icon={watermarkvideoicon}
-              onPress={() => setActiveTab(WATERMARK_VIDEO)}
-            />
-          </View>
+
 
             
 <Text style={styles.textCompulsory}>Link Referral*</Text>

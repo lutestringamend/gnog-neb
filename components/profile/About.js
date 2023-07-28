@@ -31,7 +31,7 @@ export default function About() {
       <ScrollView style={styles.scrollView}>
         <View style={styles.containerLogo}>
           <Image
-            source={require("../../assets/splash.png")}
+            source={require("../../assets/splashsmall.png")}
             style={styles.logo}
           />
         </View>

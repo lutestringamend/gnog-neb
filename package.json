@@ -1,6 +1,6 @@
 {
   "name": "daclen",
-  "version": "1.1.87",
+  "version": "1.1.88",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
@@ -11,6 +11,7 @@
     "postinstall": "npm run bundle:ios"
   },
   "dependencies": {
+    "@config-plugins/ffmpeg-kit-react-native": "^6.0.0",
     "@react-native-async-storage/async-storage": "1.17.11",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-navigation/material-bottom-tabs": "^6.2.12",
@@ -23,6 +24,7 @@
     "expo": "^48.0.18",
     "expo-application": "~5.1.1",
     "expo-av": "~13.2.1",
+    "expo-build-properties": "~0.6.0",
     "expo-camera": "~13.2.1",
     "expo-clipboard": "~4.1.2",
     "expo-constants": "~14.2.1",
@@ -39,6 +41,7 @@
     "expo-status-bar": "~1.4.4",
     "expo-updates": "~0.16.4",
     "fbjs": "^3.0.4",
+    "ffmpeg-kit-react-native": "^5.1.0",
     "moment": "^2.29.4",
     "react": "18.2.0",
     "react-dom": "^18.2.0",

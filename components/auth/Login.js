@@ -198,7 +198,7 @@ function Login(props) {
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate("Main")}>
               <Image
-                source={require("../../assets/splash.png")}
+                source={require("../../assets/splashsmall.png")}
                 style={styles.imageLogo}
               />
             </TouchableOpacity>

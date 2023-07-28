@@ -64,7 +64,7 @@ function Header(props) {
     <View style={styles.container}>
       <TouchableOpacity onPress={() => navigation.navigate("About")}>
         <Image
-          source={require("../../assets/splash.png")}
+          source={require("../../assets/splashsmall.png")}
           style={styles.imageLogo}
         />
       </TouchableOpacity>

@@ -1,7 +1,7 @@
 import React from "react";
 import { Linking, SafeAreaView, StyleSheet } from "react-native";
 import { ErrorView } from "../webview/WebviewChild";
-import { webfotowatermark } from "../../axios/constants";
+import { webvideowatermark } from "../../axios/constants";
 import MainHeader from "../main/MainHeader";
 import { useNavigation } from "@react-navigation/native";
 
@@ -15,7 +15,7 @@ export default function VideoPlayer() {
         icon="arrow-left"
         onBackPress={() => navigation.goBack()}
       />
-      <ErrorView onOpenExternalLink={() => Linking.openURL(webfotowatermark)} />
+      <ErrorView onOpenExternalLink={() => Linking.openURL(webvideowatermark)} />
     </SafeAreaView>
   );
 }
