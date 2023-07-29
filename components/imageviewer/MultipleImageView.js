@@ -273,7 +273,7 @@ const MultipleImageView = (props) => {
           .capture()
           .then((uri) => {
             //let newUri = uri.replace("file:///", "file://");
-            let newUri = `${getFileName(index)}.jpg`;
+            /*let newUri = `${getFileName(index)}.jpg`;
             try {
               let items = uri.split("/");
               newUri = items[items?.length - 1];
@@ -281,14 +281,14 @@ const MultipleImageView = (props) => {
               console.error(error);
               addError(error.toString());
             }
-            addLogs(`new capture index ${index} uri ${newUri}`);
+            addLogs(`new capture index ${index} uri ${newUri}`);*/
             /*setTransformedImages((transformedImages) => [
               ...transformedImages,
               newUri,
             ]);*/
             setSavedUris((savedUris) => [
               ...savedUris,
-              newUri,
+              uri,
             ]);
             setTiSize((tiSize) => tiSize + 1);
           })
@@ -339,16 +339,15 @@ const MultipleImageView = (props) => {
       console.log("printToFileAsync", result);
       addLogs(`printToFileAsync ${JSON.stringify(result)}`);
       setLoading(false);
-      if (result?.uri) {
-        if (Platform.OS === "android") {
-          await saveFileToStorage(result?.uri);
-        } else {
-          saveUriToAsyncStorage(result?.uri);
-          await shareFileAsync(result?.uri);
-        }
-      } else if (Platform.OS === "web") {
+      if (Platform.OS === "web") {
         saveUriToAsyncStorage("WEBURI");
         return;
+      } else if (result?.uri) {
+        if (Platform.OS === "android") {
+          await saveFileToStorage(result?.uri);
+        } 
+        saveUriToAsyncStorage(result?.uri);
+        await shareFileAsync(result?.uri);
       } else if (Platform.OS === "android") {
         ToastAndroid.show("Gagal membuat file PDF", ToastAndroid.LONG);
       }
@@ -394,14 +393,12 @@ const MultipleImageView = (props) => {
             //addLogs(`index ${i} writeAsStringAsync resultUri ${resultUri}`);
             //newSavedUris.unshift(resultUri);
             addLogs(`\npdf saved to ${resultUri}`);
-            saveUriToAsyncStorage(resultUri);
-            await shareFileAsync(resultUri);
           } catch (e) {
             console.error(e);
             addError(
               `writeAsStringAsync catch\n${e.toString()}`
             );
-            reset();
+            //reset();
           }
         })
         .catch((e) => {
@@ -419,7 +416,7 @@ const MultipleImageView = (props) => {
               )}\n`
             );
           }
-          reset();
+          //reset();
         });
 
     };
@@ -521,7 +518,7 @@ const MultipleImageView = (props) => {
                         fileName: getFileName(index),
                         format: "jpg",
                         quality: 1,
-                        result: "tmpfile",
+                        result: "base64",
                       }}
                       style={[
                         styles.containerLargeImage,

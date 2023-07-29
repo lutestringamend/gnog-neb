@@ -3,7 +3,7 @@ export const pdfpageheight = 740;
 //612 792
 export const multiplephotosimgtag = `
     <div align="center" style="width: #WIDTH# ; height: #HEIGHT# ; text-align: center; display: block; margin: auto">
-        <img src="#URI#" />
+        <img src="data:image/jpeg;base64,#URI#" />
     </div>
 `;
 
