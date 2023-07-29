@@ -53,6 +53,7 @@ const WatermarkPhotosSegment = ({
       text_x: item?.text_x,
       text_y: item?.text_y,
       font: item?.font,
+      fontSize: item?.font ? item?.font?.ukuran : 16,
       watermarkData,
       userId,
       sharingAvailability,

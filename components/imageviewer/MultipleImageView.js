@@ -218,7 +218,9 @@ const MultipleImageView = (props) => {
     const checkFileSystemPermission = async () => {
       const permissions =
         await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
-      addLogs(`FileSystem granted ${permissions?.granted} directoryUri ${permissions?.directoryUri}`);
+      addLogs(
+        `FileSystem granted ${permissions?.granted} directoryUri ${permissions?.directoryUri}`
+      );
       setPermission(permissions);
     };
 
@@ -350,9 +352,10 @@ const MultipleImageView = (props) => {
               encoding: FileSystem.EncodingType.Base64,
             }
           );
+          let fileName = `daclen_${title}_${i}.jpg`;
           await FileSystem.StorageAccessFramework.createFileAsync(
-            permission.directoryUri,
-            `daclen_${title}_${i}.jpg`,
+            permission?.directoryUri,
+            fileName,
             "image/jpeg"
           )
             .then(async (safUri) => {
@@ -365,8 +368,9 @@ const MultipleImageView = (props) => {
                     encoding: FileSystem.EncodingType.Base64,
                   }
                 );
-                addLogs(`index ${i} writeAsStringAsync result ${result}`);
-                newSavedUris.unshift(result);
+                let resultUri = `${permission?.directoryUri}/${fileName}`;
+                addLogs(`index ${i} writeAsStringAsync resultUri ${resultUri}`);
+                newSavedUris.unshift(resultUri);
               } catch (e) {
                 console.error(e);
                 addError(
@@ -466,7 +470,7 @@ const MultipleImageView = (props) => {
               ? null
               : photos.map(
                   (
-                    { id, foto, width, height, text_x, text_y, font },
+                    { id, foto, width, height, text_x, text_y, fontSize },
                     index
                   ) => (
                     <ViewShot
@@ -518,7 +522,10 @@ const MultipleImageView = (props) => {
                         text_x={(text_x * productPhotoWidth) / width}
                         text_y={(text_y * productPhotoWidth) / width}
                         color={null}
-                        fontSize={null}
+                        fontSize={Math.round(
+                          ((fontSize ? fontSize : 16) * productPhotoWidth) /
+                            width
+                        )}
                         paddingHorizontal={1}
                         paddingVertical={1}
                       />
