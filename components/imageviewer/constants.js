@@ -1,5 +1,5 @@
-export const pdfpagewidth = 612;
-export const pdfpageheight = 792;
+export const pdfpagewidth = 640;
+export const pdfpageheight = 800;
 //612 792
 //data:image/jpeg;base64,
 export const multiplephotosimgtag = `

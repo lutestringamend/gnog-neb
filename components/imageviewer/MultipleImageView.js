@@ -114,12 +114,9 @@ const MultipleImageView = (props) => {
           height,
         });
 
-        /*imageRefs.current = photos.map(
-        (ref, index) => (imageRefs.current[index] = createRef())
-      );*/
-      } else if (!permission?.granted && Platform.OS !== "android") {
+      } else if (!permission?.granted && Platform.OS === "android") {
         addError("Anda tidak memberikan izin untuk mengakses penyimpanan");
-        //navigation.goBack();
+        navigation.goBack();
       }
     }, [permission]);
 
@@ -146,7 +143,6 @@ const MultipleImageView = (props) => {
     }, [loadCount]);
 
     useEffect(() => {
-      //let tiSize = transformedImages.length;
       if (
         photos === undefined ||
         photos === null ||
@@ -159,9 +155,6 @@ const MultipleImageView = (props) => {
       addLogs(
         `tiSize ${tiSize} transformedImages ${transformedImages?.length}`
       );
-      /*if (tiSize === photos?.length) {
-        saveImagestoStorage();
-      }*/
     }, [tiSize]);
 
     useEffect(() => {
@@ -173,20 +166,7 @@ const MultipleImageView = (props) => {
         addLogs(`savedUris length ${savedUris?.length}`);
         return;
       }
-      /*
-        MULTIPLE HTML
-        for (let i = 0; i < transformedImages?.length; i++) {
-          let html = multiplephotoshtml
-            .replace("#TITLE#", title)
-            .replace(
-              "#IMGTAGS#",
-              multiplephotosimgtag
-                .replace("#URI#", transformedImages[i])
-                .replace("#WIDTH#", pageDimensions?.width)
-                .replace("#HEIGHT#", pageDimensions?.height)
-            );
-          htmlArray[i] = html;
-        }*/
+
       let imgTags = null;
       for (let img of savedUris) {
         imgTags = `${imgTags ? imgTags : ""}${multiplephotosimgtag
@@ -207,11 +187,6 @@ const MultipleImageView = (props) => {
       addLogs(`\n\nHTML generated\n${html}`);
       printToFile();
     }, [html]);
-
-    /*useEffect(() => {
-      console.log("imageRefs", imageRefs);
-      addLogs(`imageRefs ${JSON.stringify(imageRefs)}`);
-    }, [imageRefs]);*/
 
     const addError = (text) => {
       setError((error) => `${error ? error + "\n" : ""}${text}`);
@@ -265,7 +240,7 @@ const MultipleImageView = (props) => {
       }*/
 
       if (Platform.OS === "web") {
-        //addError("ViewShot not available on Web");
+        addError("ViewShot not available on Web");
         setTransformedImages((transformedImages) => [
           ...transformedImages,
           `IMAGE INDEX ${index}`,
@@ -277,20 +252,6 @@ const MultipleImageView = (props) => {
         imageRefs.current[index].current
           .capture()
           .then(async (uri) => {
-            //let newUri = uri.replace("file:///", "file://");
-            /*let newUri = `${getFileName(index)}.jpg`;
-            try {
-              let items = uri.split("/");
-              newUri = items[items?.length - 1];
-            } catch (error) {
-              console.error(error);
-              addError(error.toString());
-            }
-            */
-            /*setTransformedImages((transformedImages) => [
-              ...transformedImages,
-              newUri,
-            ]);*/
             let newUri = uri;
             try {
               newUri = await FileSystem.getContentUriAsync(uri);
@@ -316,32 +277,6 @@ const MultipleImageView = (props) => {
     };
 
     const printToFile = async () => {
-      /*if (html?.length > 1) {
-        let firstPage = null
-        for (let i = 0; i < html?.length; i++) {
-          const result = await Print.printToFileAsync({
-            ...filePrintOptions,
-            ...pageDimensions,
-            html: html[i],
-          });
-          if (i === 0) {
-            firstPage = result;
-          }
-          addLogs(`printToFileAsync ${JSON.stringify(result)}`);
-        }
-        if (firstPage?.uri) {
-          saveUriToAsyncStorage(firstPage?.uri);
-          await shareFileAsync(firstPage?.uri);
-          //save(result?.uri);
-        } else if (Platform.OS === "web") {
-          saveUriToAsyncStorage("WEBURI");
-          return;
-        } else if (Platform.OS === "android") {
-          ToastAndroid.show("Gagal membuat file PDF", ToastAndroid.LONG);
-        }
-        return;
-      } */
-
       const result = await Print.printToFileAsync({
         ...filePrintOptions,
         ...pageDimensions,
@@ -362,22 +297,13 @@ const MultipleImageView = (props) => {
       } else if (Platform.OS === "android") {
         ToastAndroid.show("Gagal membuat file PDF", ToastAndroid.LONG);
       }
-      if (userId !== 8054) {
+      /*if (userId !== 8054) {
         navigation.goBack();
-      }
+      }*/
       //saveUriToAsyncStorage(result?.uri);
     };
 
     const saveFileToStorage = async (uri) => {
-      /*if (Platform.OS === "android") {
-        let newSavedUris = [];
-        for (let i = 0; i < transformedImages?.length; i++) {
-          
-        }
-        setSavedUris(newSavedUris);
-      } else {
-        setSavedUris(transformedImages);
-      }*/
       const base64 = await FileSystem.readAsStringAsync(uri, {
         encoding: FileSystem.EncodingType.Base64,
       });
@@ -388,14 +314,11 @@ const MultipleImageView = (props) => {
         pdfmimetype
       )
         .then(async (safUri) => {
-          //addLogs(`index ${i} after save uri ${safUri}`);
           try {
             await FileSystem.writeAsStringAsync(safUri, base64, {
               encoding: FileSystem.EncodingType.Base64,
             });
             let resultUri = `${permission?.directoryUri}/${fileName}`;
-            //addLogs(`index ${i} writeAsStringAsync resultUri ${resultUri}`);
-            //newSavedUris.unshift(resultUri);
             addLogs(`\npdf saved to ${resultUri}`);
           } catch (e) {
             console.error(e);
@@ -407,12 +330,9 @@ const MultipleImageView = (props) => {
           sentryLog(e);
           if (e?.code === "ERR_FILESYSTEM_CANNOT_CREATE_FILE") {
             ToastAndroid.show(
-              `Tidak bisa menyimpan foto di folder ini. Mohon pilih folder lain.`,
+              `Tidak bisa menyimpan foto di folder ini.`,
               ToastAndroid.LONG
             );
-            /*addError(
-              `Tidak bisa menyimpan foto di folder ini. Mohon pilih folder lain.`
-            );*/
           } else {
             addError(
               `createFileAsync catch\n${e.toString()}\n${base64.substring(
@@ -593,7 +513,7 @@ const MultipleImageView = (props) => {
                 } menjadi file PDF...`
               : "Berhasil menyimpan file PDF"}
           </Text>
-          {Platform.OS === "web" || userId === 8054 ? (
+          {Platform.OS === "web" ? (
             <Text style={styles.textLogs}>{logs}</Text>
           ) : null}
         </ScrollView>
@@ -620,6 +540,8 @@ const styles = StyleSheet.create({
   },
   containerLoading: {
     width: "100%",
+    height: "100%",
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "transparent",
