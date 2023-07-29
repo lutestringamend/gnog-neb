@@ -455,7 +455,7 @@ const MultipleImageView = (props) => {
 
     return (
       <SafeAreaView style={styles.container}>
-        {permission ? (
+        {permission?.granted ? (
           <View style={styles.containerInside}>
             {photos === undefined ||
             photos === null ||
@@ -480,7 +480,7 @@ const MultipleImageView = (props) => {
                         fileName: `daclenwatermarkfoto_${id.toString()}`,
                         format: "jpg",
                         quality: 1,
-                        result: "data-uri",
+                        result: "tmpfile",
                       }}
                       style={[
                         styles.containerLargeImage,
