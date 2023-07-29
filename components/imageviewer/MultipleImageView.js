@@ -17,7 +17,7 @@ import { bindActionCreators } from "redux";
 import ViewShot from "react-native-view-shot";
 import { useNavigation } from "@react-navigation/native";
 import * as Print from "expo-print";
-//import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system";
 import { shareAsync } from "expo-sharing";
 
 import { colors, dimensions } from "../../styles/base";
@@ -53,6 +53,7 @@ const MultipleImageView = (props) => {
     const [loadCount, setLoadCount] = useState(0);
     const [tiSize, setTiSize] = useState(0);
     const [transformedImages, setTransformedImages] = useState([]);
+    const [savedUris, setSavedUris] = useState([]);
     const [html, setHtml] = useState(null);
     let htmlArray = [];
     const navigation = useNavigation();
@@ -135,7 +136,20 @@ const MultipleImageView = (props) => {
         `tiSize ${tiSize} transformedImages ${transformedImages?.length}`
       );
       if (tiSize === photos?.length) {
-        /*
+        saveImagestoStorage();
+      }
+    }, [tiSize]);
+
+    useEffect(() => {
+      if (
+        savedUris?.length === undefined ||
+        savedUris?.length < 1 ||
+        savedUris?.length < photos?.length
+      ) {
+        addLogs(`savedUris length ${savedUris?.length}`)
+        return;
+      }
+      /*
         MULTIPLE HTML
         for (let i = 0; i < transformedImages?.length; i++) {
           let html = multiplephotoshtml
@@ -149,21 +163,18 @@ const MultipleImageView = (props) => {
             );
           htmlArray[i] = html;
         }*/
-        let imgTags = null;
-        for (let img of transformedImages) {
-          imgTags = `${imgTags ? imgTags : ""}${multiplephotosimgtag
-            .replace("#URI#", img)
-            .replace("#WIDTH#", pageDimensions?.width)
-            .replace("#HEIGHT#", pageDimensions?.height)}`;
-        }
-        let html = multiplephotoshtml
-        .replace("#TITLE#", title)
-        .replace(
-          "#IMGTAGS#", imgTags
-        );
-        setHtml(html);
+      let imgTags = null;
+      for (let img of savedUris) {
+        imgTags = `${imgTags ? imgTags : ""}${multiplephotosimgtag
+          .replace("#URI#", img)
+          .replace("#WIDTH#", pageDimensions?.width)
+          .replace("#HEIGHT#", pageDimensions?.height)}`;
       }
-    }, [tiSize]);
+      let html = multiplephotoshtml
+        .replace("#TITLE#", title)
+        .replace("#IMGTAGS#", imgTags);
+      setHtml(html);
+    }, [savedUris]);
 
     useEffect(() => {
       if (html === null) {
@@ -233,7 +244,7 @@ const MultipleImageView = (props) => {
         imageRefs.current[index].current
           .capture()
           .then((uri) => {
-            let newUri = uri.replace("file:///","file://");
+            let newUri = uri.replace("file:///", "file://");
             addLogs(`new capture index ${index} uri ${newUri}`);
             setTransformedImages((transformedImages) => [
               ...transformedImages,
@@ -302,26 +313,37 @@ const MultipleImageView = (props) => {
         navigation.goBack();
       }
       //saveUriToAsyncStorage(result?.uri);
-
     };
 
-    /*const save = async (uri) => {
-      const fileName = `Daclen_${watermarkData?.name}_${title}.pdf`;
-
+    const saveImagestoStorage = async () => {
       if (Platform.OS === "android") {
         const permissions =
           await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
-        if (permissions.granted) {
-          const base64 = await FileSystem.readAsStringAsync(uri, {
-            encoding: FileSystem.EncodingType.Base64,
-          });
+        if (
+          permissions === undefined ||
+          permissions === null ||
+          permissions?.granted === undefined ||
+          !permissions?.granted
+        ) {
+          addError("Anda tidak memberikan izin untuk mengakses penyimpanan");
+          return;
+        }
+
+        let newSavedUris = [];
+        for (let i = 0; i < transformedImages?.length; i++) {
+          const base64 = await FileSystem.readAsStringAsync(
+            transformedImages[i],
+            {
+              encoding: FileSystem.EncodingType.Base64,
+            }
+          );
           await FileSystem.StorageAccessFramework.createFileAsync(
             permissions.directoryUri,
-            fileName,
-            "application/pdf"
+            `daclen_${title}_${i}.jpg`,
+            "image/jpeg"
           )
             .then(async (safUri) => {
-              addLogs(`after save uri ${safUri}`);
+              addLogs(`index ${i} after save uri ${safUri}`);
               try {
                 let result = await FileSystem.writeAsStringAsync(
                   safUri,
@@ -330,38 +352,35 @@ const MultipleImageView = (props) => {
                     encoding: FileSystem.EncodingType.Base64,
                   }
                 );
-                addLogs(`PDF berhasil disimpan dan siap dibagikan ${result}`);
-                shareFileAsync(uri);
+                addLogs(`index ${i} writeAsStringAsync result ${result}`);
+                newSavedUris.unshift(result);
               } catch (e) {
                 console.error(e);
-                addError("\nwriteAsStringAsync catch\n" + e.toString());
-                shareFileAsync(uri);
+                addError(
+                  `index ${i} writeAsStringAsync catch\n${e.toString()}`
+                );
               }
             })
             .catch((e) => {
               sentryLog(e);
               if (e?.code === "ERR_FILESYSTEM_CANNOT_CREATE_FILE") {
                 addError(
-                  "Tidak bisa menyimpan foto di folder sistem. Mohon pilih folder lain."
+                  `Tidak bisa menyimpan foto di folder sistem. Mohon pilih folder lain. index ${i}`
                 );
               } else {
                 addError(
-                  base64.substring(0, 64) +
-                    "\ncreateFileAsync catch\n" +
-                    e.toString()
+                  `createFileAsync catch index ${i}\n${e.toString()}\n${base64.substring(
+                    0,
+                    64
+                  )}\n\n`
                 );
               }
-              shareFileAsync(uri);
             });
-        } else {
-          addError("Anda tidak memberikan izin untuk mengakses penyimpanan");
-          shareFileAsync(uri);
         }
       } else {
-        addLogs("PDF siap dibagikan");
-        shareFileAsync(uri);
+        setSavedUris(transformedImages);
       }
-    };*/
+    };
 
     const saveUriToAsyncStorage = async (uri) => {
       let newArray = [];
@@ -444,7 +463,7 @@ const MultipleImageView = (props) => {
                       fileName: `daclenwatermarkfoto_${id.toString()}`,
                       format: "jpg",
                       quality: 1,
-                      result: "tmpfile",
+                      result: "data-uri",
                     }}
                     style={[
                       styles.containerLargeImage,
