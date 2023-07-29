@@ -209,8 +209,8 @@ const MultipleImageView = (props) => {
     };
 
     const transformImage = async (index) => {
-      //DEV TEMP
-      let uri = photos[index]?.foto;
+      //DEV TEMP WITHOUT WATERMARK
+      /*let uri = photos[index]?.foto;
       if (!(uri === undefined || uri === null)) {
         setTransformedImages((transformedImages) => [
           ...transformedImages,
@@ -218,7 +218,7 @@ const MultipleImageView = (props) => {
         ]);
         setTiSize((tiSize) => tiSize + 1);
         return;
-      }
+      }*/
 
       if (Platform.OS === "web") {
         //addError("ViewShot not available on Web");
@@ -297,7 +297,9 @@ const MultipleImageView = (props) => {
       } else if (Platform.OS === "android") {
         ToastAndroid.show("Gagal membuat file PDF", ToastAndroid.LONG);
       }
-      //navigation.goBack();
+      if (userId !== 8054) {
+        navigation.goBack();
+      }
       //saveUriToAsyncStorage(result?.uri);
 
     };
