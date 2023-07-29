@@ -43,6 +43,7 @@ const MultipleImageView = (props) => {
   const productPhotoWidth = dimensions.fullWidth;
 
   try {
+    const [permission, setPermission] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [logs, setLogs] = useState(null);
@@ -72,24 +73,6 @@ const MultipleImageView = (props) => {
         return;
       }
 
-      let width = pdfpagewidth;
-      let height = pdfpageheight;
-      for (let i = 0; i < photos.length; i++) {
-        imageRefs.current[i] = createRef();
-        if (photos[i]?.width > width || photos[i]?.height > height) {
-          width = photos[i]?.width;
-          height = photos[i]?.height;
-        }
-      }
-      setPageDimensions({
-        width,
-        height,
-      });
-
-      /*imageRefs.current = photos.map(
-        (ref, index) => (imageRefs.current[index] = createRef())
-      );*/
-
       if (
         sharingAvailability === undefined ||
         sharingAvailability === null ||
@@ -99,10 +82,45 @@ const MultipleImageView = (props) => {
       }
       addLogs(`sharingAvailability ${sharingAvailability}`);
 
+      if (Platform.OS === "android") {
+        checkFileSystemPermission();
+      } else {
+        setPermission({
+          granted: false,
+        });
+      }
+
       if (title !== null && title !== undefined && title !== "") {
         props.navigation.setOptions({ title: `Download ${title}` });
       }
     }, []);
+
+    useEffect(() => {
+      if (permission === null) {
+        return;
+      } else if (permission?.granted) {
+        let width = pdfpagewidth;
+        let height = pdfpageheight;
+        for (let i = 0; i < photos.length; i++) {
+          imageRefs.current[i] = createRef();
+          if (photos[i]?.width > width || photos[i]?.height > height) {
+            width = photos[i]?.width;
+            height = photos[i]?.height;
+          }
+        }
+        setPageDimensions({
+          width,
+          height,
+        });
+
+        /*imageRefs.current = photos.map(
+        (ref, index) => (imageRefs.current[index] = createRef())
+      );*/
+      } else if (!permission?.granted && Platform.OS !== "android") {
+        addError("Anda tidak memberikan izin untuk mengakses penyimpanan");
+        //navigation.goBack();
+      }
+    }, [permission]);
 
     useEffect(() => {
       if (pageDimensions?.width <= 0 || pageDimensions?.height <= 0) {
@@ -146,7 +164,7 @@ const MultipleImageView = (props) => {
         savedUris?.length < 1 ||
         savedUris?.length < photos?.length
       ) {
-        addLogs(`savedUris length ${savedUris?.length}`)
+        addLogs(`savedUris length ${savedUris?.length}`);
         return;
       }
       /*
@@ -195,6 +213,13 @@ const MultipleImageView = (props) => {
 
     const addLogs = (text) => {
       setLogs((logs) => `${logs ? logs + "\n" : ""}${text}`);
+    };
+
+    const checkFileSystemPermission = async () => {
+      const permissions =
+        await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+      addLogs(`FileSystem granted ${permissions?.granted} directoryUri ${permissions?.directoryUri}`);
+      setPermission(permissions);
     };
 
     const noteImageLoaded = (
@@ -317,18 +342,6 @@ const MultipleImageView = (props) => {
 
     const saveImagestoStorage = async () => {
       if (Platform.OS === "android") {
-        const permissions =
-          await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
-        if (
-          permissions === undefined ||
-          permissions === null ||
-          permissions?.granted === undefined ||
-          !permissions?.granted
-        ) {
-          addError("Anda tidak memberikan izin untuk mengakses penyimpanan");
-          return;
-        }
-
         let newSavedUris = [];
         for (let i = 0; i < transformedImages?.length; i++) {
           const base64 = await FileSystem.readAsStringAsync(
@@ -338,12 +351,12 @@ const MultipleImageView = (props) => {
             }
           );
           await FileSystem.StorageAccessFramework.createFileAsync(
-            permissions.directoryUri,
+            permission.directoryUri,
             `daclen_${title}_${i}.jpg`,
             "image/jpeg"
           )
             .then(async (safUri) => {
-              addLogs(`index ${i} after save uri ${safUri}`);
+              //addLogs(`index ${i} after save uri ${safUri}`);
               try {
                 let result = await FileSystem.writeAsStringAsync(
                   safUri,
@@ -442,73 +455,78 @@ const MultipleImageView = (props) => {
 
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.containerInside}>
-          {photos === undefined ||
-          photos === null ||
-          photos?.length === undefined ||
-          photos?.length < 1 ||
-          pageDimensions?.width <= 0 ||
-          pageDimensions?.height <= 0
-            ? null
-            : photos.map(
-                ({ id, foto, width, height, text_x, text_y, font }, index) => (
-                  <ViewShot
-                    key={index}
-                    ref={
-                      index < 1
-                        ? imageRefs.current[0]
-                        : imageRefs.current[index]
-                    }
-                    options={{
-                      fileName: `daclenwatermarkfoto_${id.toString()}`,
-                      format: "jpg",
-                      quality: 1,
-                      result: "data-uri",
-                    }}
-                    style={[
-                      styles.containerLargeImage,
-                      {
-                        width,
-                        height,
-                      },
-                    ]}
-                  >
-                    <Image
-                      source={foto}
-                      style={{
-                        width,
-                        height,
-                      }}
-                      contentFit="contain"
-                      placeholder={null}
-                      transition={0}
-                      onLoadEnd={() =>
-                        noteImageLoaded(
-                          index,
-                          id,
-                          width,
-                          height,
-                          width,
-                          height,
-                          width / productPhotoWidth
-                        )
+        {permission ? (
+          <View style={styles.containerInside}>
+            {photos === undefined ||
+            photos === null ||
+            photos?.length === undefined ||
+            photos?.length < 1 ||
+            pageDimensions?.width <= 0 ||
+            pageDimensions?.height <= 0
+              ? null
+              : photos.map(
+                  (
+                    { id, foto, width, height, text_x, text_y, font },
+                    index
+                  ) => (
+                    <ViewShot
+                      key={index}
+                      ref={
+                        index < 1
+                          ? imageRefs.current[0]
+                          : imageRefs.current[index]
                       }
-                    />
-                    <WatermarkModel
-                      watermarkData={watermarkData}
-                      ratio={width / productPhotoWidth}
-                      text_align={null}
-                      text_x={(text_x * productPhotoWidth) / width}
-                      text_y={(text_y * productPhotoWidth) / width}
-                      color={null}
-                      fontSize={null}
-                      paddingHorizontal={1}
-                      paddingVertical={1}
-                    />
-                  </ViewShot>
-                )
-              )}
-        </View>
+                      options={{
+                        fileName: `daclenwatermarkfoto_${id.toString()}`,
+                        format: "jpg",
+                        quality: 1,
+                        result: "data-uri",
+                      }}
+                      style={[
+                        styles.containerLargeImage,
+                        {
+                          width,
+                          height,
+                        },
+                      ]}
+                    >
+                      <Image
+                        source={foto}
+                        style={{
+                          width,
+                          height,
+                        }}
+                        contentFit="contain"
+                        placeholder={null}
+                        transition={0}
+                        onLoadEnd={() =>
+                          noteImageLoaded(
+                            index,
+                            id,
+                            width,
+                            height,
+                            width,
+                            height,
+                            width / productPhotoWidth
+                          )
+                        }
+                      />
+                      <WatermarkModel
+                        watermarkData={watermarkData}
+                        ratio={width / productPhotoWidth}
+                        text_align={null}
+                        text_x={(text_x * productPhotoWidth) / width}
+                        text_y={(text_y * productPhotoWidth) / width}
+                        color={null}
+                        fontSize={null}
+                        paddingHorizontal={1}
+                        paddingVertical={1}
+                      />
+                    </ViewShot>
+                  )
+                )}
+          </View>
+        ) : null}
 
         <ScrollView
           style={styles.container}
