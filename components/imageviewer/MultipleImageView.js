@@ -169,7 +169,7 @@ const MultipleImageView = (props) => {
       if (html === null) {
         return;
       }
-      addLogs(`\n\nHTML generated\n${Platform.OS === "web" ? html : ""}`);
+      addLogs(`\n\nHTML generated\n${html}`);
       printToFile();
     }, [html]);
 
@@ -233,10 +233,11 @@ const MultipleImageView = (props) => {
         imageRefs.current[index].current
           .capture()
           .then((uri) => {
-            addLogs(`new capture index ${index} uri ${uri}`);
+            let newUri = uri.replace("file:///","file://");
+            addLogs(`new capture index ${index} uri ${newUri}`);
             setTransformedImages((transformedImages) => [
               ...transformedImages,
-              uri,
+              newUri,
             ]);
             setTiSize((tiSize) => tiSize + 1);
           })
