@@ -20,7 +20,7 @@ import * as Print from "expo-print";
 //import * as FileSystem from "expo-file-system";
 import { shareAsync } from "expo-sharing";
 
-import { colors, staticDimensions, dimensions } from "../../styles/base";
+import { colors, dimensions } from "../../styles/base";
 import WatermarkModel from "../media/WatermarkModel";
 import { sentryLog } from "../../sentry";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
@@ -135,6 +135,8 @@ const MultipleImageView = (props) => {
         `tiSize ${tiSize} transformedImages ${transformedImages?.length}`
       );
       if (tiSize === photos?.length) {
+        /*
+        MULTIPLE HTML
         for (let i = 0; i < transformedImages?.length; i++) {
           let html = multiplephotoshtml
             .replace("#TITLE#", title)
@@ -146,20 +148,21 @@ const MultipleImageView = (props) => {
                 .replace("#HEIGHT#", pageDimensions?.height)
             );
           htmlArray[i] = html;
-        }
-        /*
-        TEMP DEV
+        }*/
         let imgTags = null;
         for (let img of transformedImages) {
           imgTags = `${imgTags ? imgTags : ""}${multiplephotosimgtag
             .replace("#URI#", img)
             .replace("#WIDTH#", pageDimensions?.width)
             .replace("#HEIGHT#", pageDimensions?.height)}`;
-        }*/
-
-        setHtml(htmlArray);
+        }
+        let html = multiplephotoshtml
+        .replace("#TITLE#", title)
+        .replace(
+          "#IMGTAGS#", imgTags
+        );
+        setHtml(html);
       }
-      //check
     }, [tiSize]);
 
     useEffect(() => {
@@ -230,6 +233,7 @@ const MultipleImageView = (props) => {
         imageRefs.current[index].current
           .capture()
           .then((uri) => {
+            addLogs(`new capture index ${index} uri ${uri}`);
             setTransformedImages((transformedImages) => [
               ...transformedImages,
               uri,
@@ -249,7 +253,7 @@ const MultipleImageView = (props) => {
     };
 
     const printToFile = async () => {
-      if (html?.length > 1) {
+      /*if (html?.length > 1) {
         let firstPage = null
         for (let i = 0; i < html?.length; i++) {
           const result = await Print.printToFileAsync({
@@ -272,30 +276,28 @@ const MultipleImageView = (props) => {
         } else if (Platform.OS === "android") {
           ToastAndroid.show("Gagal membuat file PDF", ToastAndroid.LONG);
         }
-      } else {
-        const result = await Print.printToFileAsync({
-          ...filePrintOptions,
-          ...pageDimensions,
-          html,
-        });
-        console.log("printToFileAsync", result);
-        addLogs(`printToFileAsync ${JSON.stringify(result)}`);
-        setLoading(false);
-        if (result?.uri) {
-          saveUriToAsyncStorage(result?.uri);
-          await shareFileAsync(result?.uri);
-          //save(result?.uri);
-        } else if (Platform.OS === "web") {
-          saveUriToAsyncStorage("WEBURI");
-          return;
-        } else if (Platform.OS === "android") {
-          ToastAndroid.show("Gagal membuat file PDF", ToastAndroid.LONG);
-        }
-        navigation.goBack();
+        return;
+      } */
+
+      const result = await Print.printToFileAsync({
+        ...filePrintOptions,
+        ...pageDimensions,
+        html,
+      });
+      console.log("printToFileAsync", result);
+      addLogs(`printToFileAsync ${JSON.stringify(result)}`);
+      setLoading(false);
+      if (result?.uri) {
+        saveUriToAsyncStorage(result?.uri);
+        await shareFileAsync(result?.uri);
+        //save(result?.uri);
+      } else if (Platform.OS === "web") {
+        saveUriToAsyncStorage("WEBURI");
+        return;
+      } else if (Platform.OS === "android") {
+        ToastAndroid.show("Gagal membuat file PDF", ToastAndroid.LONG);
       }
-
-      
-
+      //navigation.goBack();
       //saveUriToAsyncStorage(result?.uri);
 
     };
@@ -439,7 +441,7 @@ const MultipleImageView = (props) => {
                       fileName: `daclenwatermarkfoto_${id.toString()}`,
                       format: "jpg",
                       quality: 1,
-                      result: "data-uri",
+                      result: "tmpfile",
                     }}
                     style={[
                       styles.containerLargeImage,
