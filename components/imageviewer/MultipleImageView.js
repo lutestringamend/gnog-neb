@@ -28,6 +28,7 @@ import {
   filePrintOptions,
   multiplephotoshtml,
   multiplephotosimgtag,
+  pdfmimetype,
   pdfpageheight,
   pdfpagewidth,
 } from "./constants";
@@ -97,7 +98,7 @@ const MultipleImageView = (props) => {
 
     useEffect(() => {
       if (permission === null) {
-        return;
+        checkFileSystemPermission();
       } else if (permission?.granted) {
         let width = pdfpagewidth;
         let height = pdfpageheight;
@@ -130,10 +131,10 @@ const MultipleImageView = (props) => {
     }, [pageDimensions]);
 
     useEffect(() => {
-      if (loadCount <= 0) {
+      if (loadCount <= 0 || permission === null || permission?.granted === undefined || permission?.directoryUri === undefined) {
         return;
       }
-      if (loadCount === photos?.length) {
+      if (loadCount === photos?.length && permission?.granted) {
         startRendering();
       }
       addLogs(`loadCount ${loadCount}`);
@@ -153,9 +154,9 @@ const MultipleImageView = (props) => {
       addLogs(
         `tiSize ${tiSize} transformedImages ${transformedImages?.length}`
       );
-      if (tiSize === photos?.length) {
+      /*if (tiSize === photos?.length) {
         saveImagestoStorage();
-      }
+      }*/
     }, [tiSize]);
 
     useEffect(() => {
@@ -271,10 +272,22 @@ const MultipleImageView = (props) => {
         imageRefs.current[index].current
           .capture()
           .then((uri) => {
-            let newUri = uri.replace("file:///", "file://");
+            //let newUri = uri.replace("file:///", "file://");
+            let newUri = `${getFileName(index)}.jpg`;
+            try {
+              let items = uri.split("/");
+              newUri = items[items?.length - 1];
+            } catch (error) {
+              console.error(error);
+              addError(error.toString());
+            }
             addLogs(`new capture index ${index} uri ${newUri}`);
-            setTransformedImages((transformedImages) => [
+            /*setTransformedImages((transformedImages) => [
               ...transformedImages,
+              newUri,
+            ]);*/
+            setSavedUris((savedUris) => [
+              ...savedUris,
               newUri,
             ]);
             setTiSize((tiSize) => tiSize + 1);
@@ -327,9 +340,12 @@ const MultipleImageView = (props) => {
       addLogs(`printToFileAsync ${JSON.stringify(result)}`);
       setLoading(false);
       if (result?.uri) {
-        saveUriToAsyncStorage(result?.uri);
-        await shareFileAsync(result?.uri);
-        //save(result?.uri);
+        if (Platform.OS === "android") {
+          await saveFileToStorage(result?.uri);
+        } else {
+          saveUriToAsyncStorage(result?.uri);
+          await shareFileAsync(result?.uri);
+        }
       } else if (Platform.OS === "web") {
         saveUriToAsyncStorage("WEBURI");
         return;
@@ -342,62 +358,79 @@ const MultipleImageView = (props) => {
       //saveUriToAsyncStorage(result?.uri);
     };
 
-    const saveImagestoStorage = async () => {
-      if (Platform.OS === "android") {
+    const saveFileToStorage = async (uri) => {
+      /*if (Platform.OS === "android") {
         let newSavedUris = [];
         for (let i = 0; i < transformedImages?.length; i++) {
-          const base64 = await FileSystem.readAsStringAsync(
-            transformedImages[i],
-            {
-              encoding: FileSystem.EncodingType.Base64,
-            }
-          );
-          let fileName = `daclen_${title}_${i}.jpg`;
-          await FileSystem.StorageAccessFramework.createFileAsync(
-            permission?.directoryUri,
-            fileName,
-            "image/jpeg"
-          )
-            .then(async (safUri) => {
-              //addLogs(`index ${i} after save uri ${safUri}`);
-              try {
-                let result = await FileSystem.writeAsStringAsync(
-                  safUri,
-                  base64,
-                  {
-                    encoding: FileSystem.EncodingType.Base64,
-                  }
-                );
-                let resultUri = `${permission?.directoryUri}/${fileName}`;
-                addLogs(`index ${i} writeAsStringAsync resultUri ${resultUri}`);
-                newSavedUris.unshift(resultUri);
-              } catch (e) {
-                console.error(e);
-                addError(
-                  `index ${i} writeAsStringAsync catch\n${e.toString()}`
-                );
-              }
-            })
-            .catch((e) => {
-              sentryLog(e);
-              if (e?.code === "ERR_FILESYSTEM_CANNOT_CREATE_FILE") {
-                addError(
-                  `Tidak bisa menyimpan foto di folder sistem. Mohon pilih folder lain. index ${i}`
-                );
-              } else {
-                addError(
-                  `createFileAsync catch index ${i}\n${e.toString()}\n${base64.substring(
-                    0,
-                    64
-                  )}\n\n`
-                );
-              }
-            });
+          
         }
+        setSavedUris(newSavedUris);
       } else {
         setSavedUris(transformedImages);
-      }
+      }*/
+      const base64 = await FileSystem.readAsStringAsync(
+        uri,
+        {
+          encoding: FileSystem.EncodingType.Base64,
+        }
+      );
+      let fileName = `Daclen_${title}.pdf`;
+      await FileSystem.StorageAccessFramework.createFileAsync(
+        permission?.directoryUri,
+        fileName,
+        pdfmimetype
+      )
+        .then(async (safUri) => {
+          //addLogs(`index ${i} after save uri ${safUri}`);
+          try {
+            await FileSystem.writeAsStringAsync(
+              safUri,
+              base64,
+              {
+                encoding: FileSystem.EncodingType.Base64,
+              }
+            );
+            let resultUri = `${permission?.directoryUri}/${fileName}`;
+            //addLogs(`index ${i} writeAsStringAsync resultUri ${resultUri}`);
+            //newSavedUris.unshift(resultUri);
+            addLogs(`\npdf saved to ${resultUri}`);
+            saveUriToAsyncStorage(resultUri);
+            await shareFileAsync(resultUri);
+          } catch (e) {
+            console.error(e);
+            addError(
+              `writeAsStringAsync catch\n${e.toString()}`
+            );
+            reset();
+          }
+        })
+        .catch((e) => {
+          sentryLog(e);
+          if (e?.code === "ERR_FILESYSTEM_CANNOT_CREATE_FILE") {
+            ToastAndroid.show(`Tidak bisa menyimpan foto di folder ini. Mohon pilih folder lain.`, ToastAndroid.LONG);
+            /*addError(
+              `Tidak bisa menyimpan foto di folder ini. Mohon pilih folder lain.`
+            );*/
+          } else {
+            addError(
+              `createFileAsync catch\n${e.toString()}\n${base64.substring(
+                0,
+                64
+              )}\n`
+            );
+          }
+          reset();
+        });
+
     };
+
+    const reset = () => {
+      setPermission(null);
+      setTiSize(0);
+      setTransformedImages([]);
+      setSavedUris([]);
+      setHtml(null);
+    }
 
     const saveUriToAsyncStorage = async (uri) => {
       let newArray = [];
@@ -457,6 +490,10 @@ const MultipleImageView = (props) => {
       }
     };
 
+    const getFileName = (index) => {
+      return `daclen_${title}_${index.toString()}`;
+    }
+
     return (
       <SafeAreaView style={styles.container}>
         {permission?.granted ? (
@@ -481,7 +518,7 @@ const MultipleImageView = (props) => {
                           : imageRefs.current[index]
                       }
                       options={{
-                        fileName: `daclenwatermarkfoto_${id.toString()}`,
+                        fileName: getFileName(index),
                         format: "jpg",
                         quality: 1,
                         result: "tmpfile",

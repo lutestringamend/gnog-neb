@@ -24,5 +24,7 @@ export const filePrintOptions = {
   height: pdfpageheight,
 };
 
+export const pdfmimetype = "application/pdf"
+
 export const temporaryimgurl =
   "https://daclen.com/img/foto-watermark/1687854257FLYER PRODUCT 3_page-0005.jpg";
