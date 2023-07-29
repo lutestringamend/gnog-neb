@@ -271,7 +271,7 @@ const MultipleImageView = (props) => {
       try {
         imageRefs.current[index].current
           .capture()
-          .then((uri) => {
+          .then(async (uri) => {
             //let newUri = uri.replace("file:///", "file://");
             /*let newUri = `${getFileName(index)}.jpg`;
             try {
@@ -281,14 +281,16 @@ const MultipleImageView = (props) => {
               console.error(error);
               addError(error.toString());
             }
-            addLogs(`new capture index ${index} uri ${newUri}`);*/
+            */
             /*setTransformedImages((transformedImages) => [
               ...transformedImages,
               newUri,
             ]);*/
+            let newUri = await FileSystem.getContentUriAsync(uri);
+            addLogs(`new capture index ${index} uri ${newUri}`);
             setSavedUris((savedUris) => [
               ...savedUris,
-              uri,
+              newUri,
             ]);
             setTiSize((tiSize) => tiSize + 1);
           })
@@ -518,7 +520,7 @@ const MultipleImageView = (props) => {
                         fileName: getFileName(index),
                         format: "jpg",
                         quality: 1,
-                        result: "base64",
+                        result: "tmpfile",
                       }}
                       style={[
                         styles.containerLargeImage,

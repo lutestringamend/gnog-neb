@@ -1,9 +1,9 @@
-export const pdfpagewidth = 600;
-export const pdfpageheight = 740;
+export const pdfpagewidth = 612;
+export const pdfpageheight = 792;
 //612 792
 export const multiplephotosimgtag = `
     <div align="center" style="width: #WIDTH# ; height: #HEIGHT# ; text-align: center; display: block; margin: auto">
-        <img src="data:image/jpeg;base64,#URI#" />
+        <img src="data:image/jpeg;base64,#URI#" style="width: 90vw;" />
     </div>
 `;
 
