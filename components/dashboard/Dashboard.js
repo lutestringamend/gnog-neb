@@ -1,58 +1,45 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
-  StyleSheet,
   ScrollView,
-  TouchableOpacity,
+  StyleSheet,
+  ImageBackground,
   Text,
-  View,
-  Image,
-  Linking,
-  ActivityIndicator,
-  RefreshControl,
   Platform,
-  ToastAndroid,
 } from "react-native";
-import * as Clipboard from "expo-clipboard";
-//import * as Sharing from "expo-sharing";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import * as Sharing from "expo-sharing";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { clearUserData, getCurrentUser, getHPV } from "../../axios/user";
-
-import RBSheet from "react-native-raw-bottom-sheet";
-import Header from "./Header";
 import { colors } from "../../styles/base";
-import Main from "./Main";
-import { personalwebsiteurl, webdashboard } from "../../axios/constants";
-import { useNavigation } from "@react-navigation/native";
-import BSDashboard from "../bottomsheets/BSDashboard";
-import {
-  bonusrootpopup,
-  dashboardbrowser,
-  komisiuserpopup,
-  linkcopied,
-  personalwebsite,
-  poinuserhpvpopup,
-  poinuserpopup,
-  poinusertotalpopup,
-} from "./constants";
-import { referralWAtemplate, sharereferral } from "../profile/constants";
-import { openWhatsapp } from "../whatsapp/Whatsapp";
+import Header from "./Header";
+import { clearUserData, getCurrentUser, getHPV } from "../../axios/user";
+import DashboardUser from "./components/DashboardUser";
+import DashboardStats from "./components/DashboardStats";
+import { setObjectAsync } from "../asyncstorage";
+import { ASYNC_USER_HPV_KEY } from "../asyncstorage/constants";
+import DashboardButtons from "./components/DashboardButtons";
+import DashboardBottom from "./components/DashboardBottom";
 
-function DashboardMain(props) {
+const Dashboard = (props) => {
   const [message, setMessage] = useState({
     text: null,
     isError: false,
   });
-
-  const [popupDetail, setPopupDetail] = useState({ title: null });
   const [refreshing, setRefreshing] = useState(false);
-  const navigation = useNavigation();
-  const rbSheet = useRef();
+  const [isSharingAvailable, setSharingAvailable] = useState(false);
+
   const { currentUser, token, hpv } = props;
+
+  useEffect(() => {
+    const checkSharingAsync = async () => {
+      const isAvailable = await Sharing.isAvailableAsync();
+      setSharingAvailable(isAvailable && Platform.OS !== "web");
+      console.log("Sharing isAvailable", isAvailable);
+    };
+    checkSharingAsync();
+  }, []);
 
   useEffect(() => {
     if (
@@ -80,352 +67,75 @@ function DashboardMain(props) {
         isError: false,
       });
       console.log("redux HPV", hpv);
+      setObjectAsync(ASYNC_USER_HPV_KEY, hpv);
     }
   }, [hpv]);
-
-  useEffect(() => {
-    if (popupDetail?.title !== null) {
-      rbSheet.current.open();
-    }
-    //console.log("popupDetail", popupDetail);
-  }, [popupDetail]);
-
-  /*useEffect(() => {
-    const checkSharingAsync = async () => {
-      const isAvailable = await Sharing.isAvailableAsync();
-      setSharingAvailable(isAvailable);
-      console.log({ isAvailable });
-    };
-
-    if (username === null || username === undefined) {
-      setReferral(null);
-    } else {
-      setReferral(`${webreferral}${username}`);
-    }
-
-    if (Platform.OS === "web") {
-      setSharingAvailable(true);
-    } else {
-      checkSharingAsync();
-    }
-  }, [username]);
-
-  useEffect(() => {
-    if (referral?.length > 34) {
-      setReferralText(referral.substring(0, 30) + "...");
-    } else {
-      setReferralText(referral);
-    }
-  }, [referral]);*/
-
-  /*const openShareDialogAsync = async () => {
-    setLoading(true);
-    try {
-      await Sharing.shareAsync(`https://${referral}`, {
-        dialogTitle: sharingdialogtitle,
-      })
-    } catch (e) {
-      console.error(e);
-      props?.onMessageChange({
-        text: e.message,
-        isError: true,
-      });
-    }
-    setLoading(false);
-  };*/
 
   function fetchHPV() {
     props.getHPV(currentUser?.id, token);
   }
 
-  function buttonPress(title) {
-    if (title !== null && title === popupDetail?.title) {
-      rbSheet.current.open();
-    } else {
-      //setBrowserText(`Lihat ${title} di Browser`);
-      switch (title) {
-        case poinuserpopup.title:
-          setPopupDetail(poinuserpopup);
-          break;
-        case poinuserhpvpopup.title:
-          setPopupDetail(poinuserhpvpopup);
-          break;
-        case poinusertotalpopup.title:
-          setPopupDetail(poinusertotalpopup);
-          break;
-        case komisiuserpopup.title:
-          setPopupDetail(komisiuserpopup);
-          break;
-        case bonusrootpopup.title:
-          setPopupDetail(bonusrootpopup);
-          break;
-        default:
-          break;
-      }
-    }
-  }
-
-  function openPersonalWebsite() {
-    if (
-      currentUser?.name === undefined ||
-      currentUser?.name === null ||
-      currentUser?.name === ""
-    ) {
-      return;
-    }
-    try {
-      Linking.openURL(`${personalwebsiteurl}${currentUser?.name}`);
-    } catch (e) {
-      console.error(e);
-      setMessage({
-        text: e.toString(),
-        isError: true,
-      });
-    }
-  }
-
-  const sharePersonalWebsite = async () => {
-    if (
-      currentUser?.name === undefined ||
-      currentUser?.name === null ||
-      currentUser?.name === ""
-    ) {
-      return;
-    }
-
-    try {
-      let fullLink = `${referralWAtemplate}${personalwebsiteurl}${currentUser?.name}`;
-      await Clipboard.setStringAsync(fullLink);
-      if (Platform.OS === "android") {
-        ToastAndroid.show(
-          `${personalwebsiteurl}${currentUser?.name}\n${linkcopied}`,
-          ToastAndroid.SHORT
-        );
-      }
-      /*setMessage({
-        text: linkcopied,
-        isError: false,
-      });*/
-      openWhatsapp(null, fullLink);
-    } catch (e) {
-      console.error(e);
-      setMessage({
-        text: e.toString(),
-        isError: true,
-      });
-    }
-  };
-
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyles={styles.container}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => fetchHPV()}
-          />
-        }
-      >
-        <Header
-          username={currentUser?.name}
-          onMessageChange={(m) => setMessage(m)}
-        />
-        {message?.text !== null && message?.text !== undefined ? (
-          <Text
-            style={[
-              styles.textError,
-              {
-                backgroundColor: message?.isError
-                  ? colors.daclen_red
-                  : colors.daclen_green,
-              },
-            ]}
-          >
-            {message?.text}
-          </Text>
-        ) : null}
-        <View style={styles.containerHorizontal}>
-          <TouchableOpacity
-            onPress={() => openPersonalWebsite()}
-            style={styles.buttonLogin}
-          >
-            <MaterialCommunityIcons
-              name="web"
-              size={20}
-              color={colors.daclen_light}
-              style={styles.iconWeb}
-            />
-            <Text style={styles.textLogin}>{personalwebsite}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.containerReferral}
-            onPress={() => sharePersonalWebsite()}
-          >
-            <Text style={styles.textReferral}>SHARE</Text>
-          </TouchableOpacity>
-        </View>
-
-        {currentUser?.nomor_telp_verified_at === null ? (
-          <View style={styles.containerVerification}>
-            <View style={styles.containerLogo}>
-              <Image
-                source={require("../../assets/whatsappverify.png")}
-                style={styles.logo}
-              />
-            </View>
-            <View style={styles.containerContent}>
-              <Text style={styles.textHeader}>Verifikasi Nomor Handphone</Text>
-              <Text style={styles.text}>
-                Anda perlu verifikasi nomor handphone melalui Whatsapp sebelum
-                bisa menggunakan Dashboard.
-              </Text>
-
-              <TouchableOpacity
-                onPress={() => navigation.navigate("VerifyPhone")}
-                style={styles.button}
-              >
-                <Text style={styles.textButton}>Verifikasi</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ) : hpv === null || hpv?.data === undefined ? (
-          <View style={styles.containerWaiting}>
-          <ActivityIndicator
-            size="large"
-            color={colors.daclen_orange}
-            style={styles.spinner}
-          />
-          </View>
-        ) : (
-          <Main
-            poin_user={currentUser?.poin_user}
-            komisi_user={currentUser?.komisi_user}
-            bonus_level_user={currentUser?.bonus_level_user}
-            referral_number={hpv?.data?.children?.length}
-            onButtonPress={(e) => buttonPress(e)}
-          />
-        )}
+      <ImageBackground
+        source={require("../../assets/profilbg.png")}
+        style={styles.background}
+        resizeMode="cover"
+      />
+      {message?.text === null || message?.text === "" ? null : (
+        <Text
+          style={[
+            styles.textError,
+            {
+              backgroundColor: message?.isError
+                ? colors.daclen_red
+                : colors.daclen_green,
+            },
+          ]}
+        >
+          {message?.text}
+        </Text>
+      )}
+      <ScrollView style={styles.scrollView}>
+        <Header username={currentUser?.name} />
+        <DashboardUser currentUser={currentUser} />
+        <DashboardStats currentUser={currentUser} />
+        <DashboardButtons />
       </ScrollView>
-      <RBSheet
-        ref={rbSheet}
-        openDuration={250}
-        height={popupDetail?.height ? popupDetail?.height : 370}
-      >
-        <BSDashboard
-          data={popupDetail}
-          closeThis={() => rbSheet.current.close()}
-        />
-      </RBSheet>
+      <DashboardBottom
+        username={currentUser?.name}
+        isSharingAvailable={isSharingAvailable}
+        setMessage={(text, isError) =>
+          setMessage({
+            text,
+            isError,
+          })
+        }
+      />
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: colors.daclen_black,
+    backgroundColor: colors.daclen_bg,
   },
   scrollView: {
     flex: 1,
     width: "100%",
     backgroundColor: "transparent",
+    zIndex: 1,
   },
-  containerWaiting: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: "transparent",
-  },
-  containerHorizontal: {
-    backgroundColor: "transparent",
+  background: {
+    position: "absolute",
+    zIndex: 0,
+    top: 0,
+    start: 0,
     width: "100%",
-    flexDirection: "row",
-    marginBottom: 10,
-  },
-  containerVerification: {
-    flex: 1,
-    marginHorizontal: 10,
-    borderColor: colors.daclen_gray,
-    borderWidth: 2,
-    borderRadius: 6,
-    padding: 10,
-    paddingBottom: 20,
-    backgroundColor: "white",
-    alignItems: "center",
-  },
-  containerReferral: {
-    flexDirection: "row",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    backgroundColor: colors.daclen_blue,
-    alignItems: "center",
-  },
-  containerContent: {
-    backgroundColor: "white",
-  },
-  containerLogo: {
-    marginVertical: 32,
-    backgroundColor: "white",
-    alignSelf: "center",
-    alignItems: "center",
-  },
-  logo: {
-    width: 120,
-    height: 120,
-    alignSelf: "center",
-  },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-    backgroundColor: colors.daclen_orange,
-  },
-  textReferral: {
-    color: colors.daclen_light,
-    fontWeight: "bold",
-    fontSize: 12,
-    textAlign: "center",
-  },
-  textButton: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginVertical: 12,
-    color: colors.daclen_light,
-    textAlignVertical: "center",
-    marginStart: 6,
-  },
-  textHeader: {
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: colors.daclen_black,
-  },
-  text: {
-    fontSize: 14,
-    marginVertical: 20,
-    color: colors.daclen_gray,
-    textAlign: "center",
-  },
-  buttonLogin: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: colors.daclen_orange,
-  },
-  textLogin: {
-    color: colors.daclen_light,
-    textAlignVertical: "center",
-    alignSelf: "center",
-    fontSize: 14,
-    fontWeight: "bold",
-    marginStart: 4,
-    marginEnd: 12,
+    height: "100%",
+    opacity: 0.5,
   },
   textError: {
     fontSize: 14,
@@ -434,16 +144,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     color: colors.daclen_light,
     textAlign: "center",
-  },
-  spinner: {
-    marginVertical: 20,
-    alignSelf: "center",
-  },
-  iconWeb: {
-    marginStart: 12,
-    marginVertical: 12,
-    alignSelf: "center",
-    backgroundColor: "transparent",
   },
 });
 
@@ -463,4 +163,4 @@ const mapDispatchProps = (dispatch) =>
     dispatch
   );
 
-export default connect(mapStateToProps, mapDispatchProps)(DashboardMain);
+export default connect(mapStateToProps, mapDispatchProps)(Dashboard);

@@ -34,6 +34,7 @@ import { SENTRY_DSN } from "./sentry/constants";
 
 import MainScreen from "./components/Main";
 import SplashScreen from "./components/Splash";
+import History from "./components/history/History";
 import HistoryCheckoutScreen from "./components/history/Checkout";
 import CheckoutItemScreen from "./components/history/CheckoutItem";
 import DeliveryItemScreen from "./components/history/DeliveryItem";
@@ -83,7 +84,7 @@ export default function App() {
 
   try {
     const theme = useTheme();
-    theme.colors.primary = colors.daclen_black;
+    theme.colors.primary = colors.daclen_bg;
     theme.colors.primaryContainer = colors.daclen_black;
     theme.colors.secondaryContainer = "transparent";
 
@@ -132,6 +133,11 @@ export default function App() {
               <Stack.Screen
                 name="Main"
                 component={MainScreen}
+                options={{ ...defaultOptions, headerShown: false }}
+              />
+              <Stack.Screen
+                name="History"
+                component={History}
                 options={{ ...defaultOptions, headerShown: false }}
               />
               <Stack.Screen

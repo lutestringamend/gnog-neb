@@ -19,7 +19,7 @@ function SplashScreen(props) {
       <Image
         source={require("../assets/splash.png")}
         style={styles.logo}
-        resizeMode="center"
+        resizeMode="contain"
       />
 
       <View style={styles.containerText}>

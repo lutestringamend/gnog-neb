@@ -49,6 +49,7 @@ export const contentbannertiga = "api/mobile/content/tiga-banner"
 export const mediakitphoto = "api/mobile/media-kit/foto"
 
 export const personalwebsiteurl = "https://daclen.com/id/"
+export const personalwebsiteurlshort = "daclen.com/id/"
 export const resetpassword = "https://daclen.com/password/reset"
 export const webreferral = "daclen.com/register/"
 export const webregister = "https://daclen.com/register"
@@ -63,3 +64,42 @@ export const websaldo = "https://daclen.com/admin/penarikan/komisi/riwayat-penar
 export const weblaporanpoin = "https://daclen.com/admin/laporan/poin-user/pengguna"
 export const websyaratbonus = "https://daclen.com/admin/setting/bonus-root/syarat"
 export const commissionpointpdf = "https://daclen.com/pdf/komisi-dan-point/Skema%20Bonus.pdf"
+
+export const monthNames = [
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
+  ];
+  export const monthNamesShort = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "Mei",
+    "Jun",
+    "Jul",
+    "Agu",
+    "Sep",
+    "Okt",
+    "Nov",
+    "Des",
+  ];
+  export const dayNames = [
+    "Minggu",
+    "Senin",
+    "Selasa",
+    "Rabu",
+    "Kamis",
+    "Jumat",
+    "Sabtu",
+  ];
+  export const dayNamesShort = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
