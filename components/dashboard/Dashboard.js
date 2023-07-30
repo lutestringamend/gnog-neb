@@ -6,6 +6,7 @@ import {
   ImageBackground,
   Text,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import * as Sharing from "expo-sharing";
 
@@ -96,12 +97,23 @@ const Dashboard = (props) => {
           {message?.text}
         </Text>
       )}
-      <ScrollView style={styles.scrollView}>
-        <Header username={currentUser?.name} />
-        <DashboardUser currentUser={currentUser} />
-        <DashboardStats currentUser={currentUser} />
-        <DashboardButtons />
-      </ScrollView>
+      {currentUser === null ||
+      currentUser?.id === undefined ||
+      currentUser?.name === undefined ? (
+        <ActivityIndicator
+          size="large"
+          color={colors.daclen_light}
+          style={styles.spinner}
+        />
+      ) : (
+        <ScrollView style={styles.scrollView}>
+          <Header username={currentUser?.name} />
+          <DashboardUser currentUser={currentUser} />
+          <DashboardStats currentUser={currentUser} />
+          <DashboardButtons />
+        </ScrollView>
+      )}
+
       <DashboardBottom
         username={currentUser?.name}
         isSharingAvailable={isSharingAvailable}
@@ -144,6 +156,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     color: colors.daclen_light,
     textAlign: "center",
+  },
+  spinner: {
+    alignSelf: "center",
+    marginVertical: 20,
   },
 });
 
