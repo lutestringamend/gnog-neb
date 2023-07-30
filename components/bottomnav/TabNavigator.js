@@ -3,11 +3,9 @@ import { createMaterialBottomTabNavigator } from "@react-navigation/material-bot
 
 import DashboardMain from "../dashboard/Dashboard";
 import HomeScreen from "../home/Home";
-import HistoryScreen from "../history/History";
-import BlogScreen from "../blog/BlogFeed";
-import ProfileScreen from "../profile/Profile";
+import MediaKitFiles from "../dashboard/MediaKitFiles";
 
-import { bottomNav } from "../../styles/base";
+import { bottomNav, colors } from "../../styles/base";
 import TabBarIcon from "./TabBarIcon";
 
 const Tab = createMaterialBottomTabNavigator();
@@ -19,50 +17,41 @@ export default function TabNavigator(props) {
       initialRouteName="Home"
       labeled={true}
       shifting={false}
-      activeColor={bottomNav.activeColor}
-      inactiveColor={bottomNav.inactiveColor}
+      activeColor={colors.daclen_bg_highlighted}
+      inactiveColor={colors.daclen_bg}
       barStyle={{
-        backgroundColor: bottomNav.barBackground,
-        height: 48,
+        backgroundColor: colors.daclen_bg,
+        height: 24,
         justifyContent: "center",
         marginTop: 0,
-        tabBarActiveTintColor: bottomNav.activeColor,
-        tabBarInactiveTintColor: bottomNav.inactiveColor,
+        tabBarActiveTintColor: colors.daclen_bg_highlighted,
+        tabBarInactiveTintColor: colors.daclen_bg,
       }}
       screenOptions={{
         elevation: 1,
         tabBarHideOnKeyboard: true,
-        tabBarActiveTintColor: bottomNav.activeColor,
-        tabBarInactiveTintColor: bottomNav.inactiveColor,
-        tabBarLabel: true,
-        tabBarShowLabel: true,
+        tabBarActiveTintColor: colors.daclen_bg_highlighted,
+        tabBarInactiveTintColor: colors.daclen_bg,
+        tabBarLabel: false,
+        tabBarShowLabel: false,
       }}
       tabBarOptions={{
-        activeTintColor: bottomNav.activeColor,
-        inactiveTintColor: bottomNav.inactiveColor,
+        activeTintColor: colors.daclen_bg_highlighted,
+        inactiveTintColor: colors.daclen_bg,
       }}
     >
       <Tab.Screen
         name="Home"
         key="Home"
-        component={
-          token === null ||
-          currentUser === null ||
-          currentUser?.id === undefined
-            ? HomeScreen
-            : DashboardMain
-        }
+        component={HomeScreen}
         navigation={props.navigation}
         options={{
           headerShown: false,
-          title: "Beranda",
+          title: "BELANJA",
           tabBarColor: bottomNav.activeColor,
           tabBarIcon: ({ focused }) => (
             <TabBarIcon
-              title="Beranda"
-              iconName={token === null ||
-                currentUser === null ||
-                currentUser?.id === undefined ? "home" : "view-dashboard"}
+              title="BELANJA"
               focused={focused}
             />
           ),
@@ -73,42 +62,17 @@ export default function TabNavigator(props) {
       currentUser === null ||
       currentUser?.id === undefined ? null : (
         <Tab.Screen
-          name="Belanja"
-          key="Shop"
-          component={HomeScreen}
+          name="MediaKitTab"
+          key="MediaKit"
+          component={MediaKitFiles}
           navigation={props.navigation}
           options={{
             headerShown: false,
-            title: "Belanja",
-            tabBarColor: bottomNav.activeColor,
-
-            tabBarIcon: ({ focused }) => (
-              <TabBarIcon
-                title="Belanja"
-                iconName="shopping"
-                focused={focused}
-              />
-            ),
-          }}
-        />
-      )}
-
-      {token === null ||
-      currentUser === null ||
-      currentUser?.id === undefined ? null : (
-        <Tab.Screen
-          name="HistoryTab"
-          key="History"
-          component={HistoryScreen}
-          navigation={props.navigation}
-          options={{
-            headerShown: true,
-            title: "Riwayat",
+            title: "MATERI PROMOSI",
             tabBarColor: bottomNav.activeColor,
             tabBarIcon: ({ focused }) => (
               <TabBarIcon
-                title="Riwayat"
-                iconName="history"
+                title="MATERI PROMOSI"
                 focused={focused}
               />
             ),
@@ -117,23 +81,17 @@ export default function TabNavigator(props) {
       )}
 
       <Tab.Screen
-        name="Profile"
+        name="ProfileTab"
         key="Profile"
-        component={ProfileScreen}
-        listeners={({ navigation }) => ({
-          tabPress: (event) => {
-            event.preventDefault();
-            navigation.navigate("Profile", { uid: "selfTab" });
-          },
-        })}
+        component={DashboardMain}
+        navigation={props.navigation}
         options={{
-          headerShown: true,
-          title: "Profil Pengguna",
+          headerShown: false,
+          title: "PROFIL",
           tabBarColor: bottomNav.activeColor,
           tabBarIcon: ({ focused }) => (
             <TabBarIcon
-              title="Profil"
-              iconName="account-circle"
+              title="PROFIL"
               focused={focused}
             />
           ),
@@ -143,23 +101,3 @@ export default function TabNavigator(props) {
   );
 }
 
-/*
-<Tab.Screen
-        name="BlogFeed"
-        key="Blog"
-        component={BlogScreen}
-        navigation={props.navigation}
-        options={{
-          headerShown: true,
-          title: "Blog",
-          tabBarColor: bottomNav.activeColor,
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon
-              title="Blog"
-              iconName="book-open-outline"
-              focused={focused}
-            />
-          ),
-        }}
-      />
-*/

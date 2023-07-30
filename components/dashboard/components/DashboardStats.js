@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginTop: 20,
     marginBottom: 12,
-    fontSize: 14,
+    fontSize: 12,
     color: colors.daclen_light,
   },
   image: {

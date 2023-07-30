@@ -3,13 +3,12 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import SplashScreen from "./Splash";
-import TabNavigator from "./bottomnav/TabNavigator";
+//import TabNavigator from "./bottomnav/TabNavigator";
 import { getProductData, clearData } from "../axios/product";
 import {
   setNewToken,
   getCurrentUser,
   clearUserData,
-  userLogout,
   disableForceLogout,
 } from "../axios/user";
 import { clearMediaKitData } from "../axios/mediakit";
@@ -22,6 +21,7 @@ import {
 } from "./asyncstorage/constants";
 import { clearCartError } from "../axios/cart";
 import { sentryLog } from "../sentry";
+import Top from "./Top";
 
 function Main(props) {
   try {
@@ -137,7 +137,7 @@ function Main(props) {
     ) {
       return <SplashScreen loading={true} errorText={error} />;
     } else {
-      return <TabNavigator token={token} currentUser={currentUser} />;
+      return <Top token={token} currentUser={currentUser} />;
     }
   } catch (e) {
     sentryLog(e);

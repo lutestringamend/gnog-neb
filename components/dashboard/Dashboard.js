@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   ScrollView,
+  View,
   StyleSheet,
   ImageBackground,
   Text,
   Platform,
   ActivityIndicator,
 } from "react-native";
-import * as Sharing from "expo-sharing";
+//import * as Sharing from "expo-sharing";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -29,10 +30,10 @@ const Dashboard = (props) => {
     isError: false,
   });
   const [refreshing, setRefreshing] = useState(false);
-  const [isSharingAvailable, setSharingAvailable] = useState(false);
 
   const { currentUser, token, hpv } = props;
 
+  /*const [isSharingAvailable, setSharingAvailable] = useState(false);
   useEffect(() => {
     const checkSharingAsync = async () => {
       const isAvailable = await Sharing.isAvailableAsync();
@@ -40,7 +41,7 @@ const Dashboard = (props) => {
       console.log("Sharing isAvailable", isAvailable);
     };
     checkSharingAsync();
-  }, []);
+  }, []);*/
 
   useEffect(() => {
     if (
@@ -77,7 +78,7 @@ const Dashboard = (props) => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ImageBackground
         source={require("../../assets/profilbg.png")}
         style={styles.background}
@@ -97,26 +98,28 @@ const Dashboard = (props) => {
           {message?.text}
         </Text>
       )}
-      {currentUser === null ||
-      currentUser?.id === undefined ||
-      currentUser?.name === undefined ? (
-        <ActivityIndicator
-          size="large"
-          color={colors.daclen_light}
-          style={styles.spinner}
-        />
-      ) : (
-        <ScrollView style={styles.scrollView}>
-          <Header username={currentUser?.name} />
-          <DashboardUser currentUser={currentUser} />
-          <DashboardStats currentUser={currentUser} />
-          <DashboardButtons />
-        </ScrollView>
-      )}
+      <ScrollView style={styles.scrollView}>
+        <Header username={currentUser?.name} />
+        {currentUser === null ||
+        currentUser?.id === undefined ||
+        currentUser?.name === undefined ? (
+          <ActivityIndicator
+            size="large"
+            color={colors.daclen_light}
+            style={styles.spinner}
+          />
+        ) : (
+          <View style={styles.scrollView}>
+            <DashboardUser currentUser={currentUser} />
+            <DashboardStats currentUser={currentUser} />
+            <DashboardButtons />
+          </View>
+        )}
+      </ScrollView>
 
       <DashboardBottom
         username={currentUser?.name}
-        isSharingAvailable={isSharingAvailable}
+        isSharingAvailable={Platform.OS !== "web"}
         setMessage={(text, isError) =>
           setMessage({
             text,
@@ -124,7 +127,7 @@ const Dashboard = (props) => {
           })
         }
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

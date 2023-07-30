@@ -9,7 +9,6 @@ import {
   Share,
   ToastAndroid,
 } from "react-native";
-import * as Sharing from "expo-sharing";
 import * as Clipboard from "expo-clipboard";
 import { useNavigation } from "@react-navigation/native";
 
@@ -55,7 +54,7 @@ const DashboardBottom = (props) => {
         sentryLog(error);
         copytoClipboard();
       }
-    } else if (Platform.OS === "android") {
+    } else {
       copytoClipboard();
     }
   };
@@ -124,7 +123,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 2,
     paddingVertical: 6,
-    paddingEnd: 10,
+    paddingEnd: 4,
   },
   containerHorizontal: {
     flexDirection: "row",
@@ -136,8 +135,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: 6,
-    paddingHorizontal: 10,
-    marginHorizontal: 4,
+    paddingHorizontal: 6,
+    marginHorizontal: 2,
     backgroundColor: colors.daclen_gold_brown,
   },
   textButton: {
@@ -148,7 +147,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.daclen_graydark,
     marginStart: 20,
-    marginEnd: 10,
+    marginEnd: 8,
   },
   textLink: {
     marginTop: 6,

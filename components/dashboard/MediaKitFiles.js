@@ -39,14 +39,11 @@ import WatermarkPhotos from "./WatermarkPhotos";
 import WatermarkVideos from "./WatermarkVideos";
 import { sentryLog } from "../../sentry";
 import { ASYNC_MEDIA_WATERMARK_PHOTOS_KEY } from "../asyncstorage/constants";
+import MainHeader from "../main/MainHeader";
 
 function MediaKitFiles(props) {
   try {
-    const [activeTab, setActiveTab] = useState(
-      props.route.params?.activeTab
-        ? props.route.params?.activeTab
-        : WATERMARK_PHOTO
-    );
+    const [activeTab, setActiveTab] = useState(WATERMARK_PHOTO);
     const [expand, setExpand] = useState(false);
     const [photoLoading, setPhotoLoading] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -120,7 +117,8 @@ function MediaKitFiles(props) {
     };
 
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
+        <MainHeader title="Materi Promosi" icon="file-image" />
         <ScrollView style={styles.scrollView}>
           <TouchableOpacity onPress={() => setExpand(!expand)}>
             <View style={styles.containerHeader}>
@@ -208,7 +206,7 @@ function MediaKitFiles(props) {
             />
           )}
         </ScrollView>
-      </SafeAreaView>
+      </View>
     );
   } catch (error) {
     sentryLog(error);

@@ -1,5 +1,5 @@
 import React from "react";
-import { SafeAreaView, StyleSheet, ScrollView, Platform } from "react-native";
+import { SafeAreaView, StyleSheet, ScrollView, Platform, View } from "react-native";
 
 import Header from "./Header";
 import Slider from "./Slider";
@@ -12,7 +12,7 @@ import { colors, dimensions } from "../../styles/base";
 
 function Home() {
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Header />
       <ScrollView style={styles.scrollView}>
         <Slider />
@@ -21,7 +21,7 @@ function Home() {
         <Shop />
       </ScrollView>
       <CheckoutBox />
-    </SafeAreaView>
+    </View>
   );
 }
 

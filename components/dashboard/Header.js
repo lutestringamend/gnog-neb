@@ -7,13 +7,6 @@ import { colors } from "../../styles/base";
 export default function Header(props) {
   const { username } = props;
   const navigation = useNavigation();
-  const openLogin = () => {
-    if (username === undefined || username === null) {
-      navigation.navigate("Login");
-    } else {
-      navigation.navigate("Profile", { username });
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -28,7 +21,7 @@ export default function Header(props) {
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={() => openLogin()}
+        onPress={() => navigation.navigate("Profile", { username })}
         style={styles.containerUser}
       >
         <Text style={styles.textLogin}>SETTING</Text>

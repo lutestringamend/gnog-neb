@@ -19,7 +19,11 @@ export const dimensions = {
 }
 
 export const colors = {
-  daclen_black: "#212529",
+  daclen_black: "#001731",
+  daclen_black_old: "#212529",
+  daclen_bg: "#001731",
+  daclen_bg_highlighted: "#303c54",
+  white: "#FFFFFF",
   daclen_green_button: "#96af9a",
   daclen_green_pale: "#9fa88a",
   daclen_grey_button: "#3d3b3f",
@@ -54,8 +58,6 @@ export const colors = {
   daclen_offgreen: "#eaffe7",
   daclen_palepink: "#ffdbcb",
   daclen_reddishbrown: "#750f0f",
-  daclen_bg: "#001731",
-  white: "#FFFFFF",
 };
 
 export const padding = {

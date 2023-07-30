@@ -63,7 +63,7 @@ function Slider(props) {
             preview={false}
             caroselImageContainerStyle={{
               aspectRatio,
-              backgroundColor: colors.daclen_light,
+              backgroundColor: "transparent",
             }}
             caroselImageStyle={{
               width: windowWidth,

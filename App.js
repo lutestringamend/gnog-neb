@@ -62,6 +62,7 @@ import MediaKitFiles from "./components/dashboard/MediaKitFiles";
 import VideoPlayer from "./components/videoplayer/VideoPlayer";
 import VideoLogs from "./components/videoplayer/VideoLogs";
 
+import Profile from "./components/profile/Profile";
 import DeleteAccountScreen from "./components/auth/DeleteAccount";
 import PointReportScreen from "./components/dashboard/PointReport";
 import UserRoots from "./components/dashboard/UserRoots";
@@ -247,6 +248,11 @@ export default function App() {
               <Stack.Screen
                 name="Login"
                 component={LoginScreen}
+                options={{ ...defaultOptions, headerShown: false }}
+              />
+              <Stack.Screen
+                name="Profile"
+                component={Profile}
                 options={{ ...defaultOptions, headerShown: false }}
               />
               <Stack.Screen

@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: colors.daclen_black,
+    backgroundColor: colors.daclen_black_old,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     top: 0,
     start: 0,
     zIndex: 0,
-    backgroundColor: "center",
+    backgroundColor: "transparent",
   },
   containerText: {
     backgroundColor: "transparent",
