@@ -59,19 +59,19 @@ const DashboardButtons = () => {
       </View>
       <View style={[styles.containerVertical, { marginStart: 10 }]}>
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: colors.daclen_violet }]}
+          style={styles.button}
           onPress={() => openExplanation()}
         >
           <Text style={styles.textButton}>{`PENJELASAN\nBISNIS`}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: colors.daclen_green_dark }]}
+          style={styles.button}
           onPress={() => openWebDashboard()}
         >
           <Text style={styles.textButton}>{`DASHBOARD\nWEBSITE`}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: colors.daclen_violet }]}
+          style={styles.button}
           onPress={() => openCatalog()}
         >
           <Text style={styles.textButton}>{`KATALOG\nHADIAH`}</Text>

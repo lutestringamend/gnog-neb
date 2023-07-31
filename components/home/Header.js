@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  Platform,
+} from "react-native";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
@@ -52,11 +59,19 @@ function Header(props) {
   };
 
   const openLogin = () => {
-    if (token === null) {
+    if (token === null || currentUser === null) {
       props.clearUserData();
       navigation.navigate("Login", { username });
+    } else if (
+      props?.goDashboard === undefined ||
+      props?.goDashboard === null ||
+      Platform.OS === "web"
+    ) {
+      navigation.navigate("ProfileTab", {
+        screen: "Main"
+      });
     } else {
-      navigation.navigate("Profile", { username });
+      props?.goDashboard();
     }
   };
 

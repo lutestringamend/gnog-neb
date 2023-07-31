@@ -3,7 +3,7 @@ import { createMaterialBottomTabNavigator } from "@react-navigation/material-bot
 
 import DashboardMain from "../dashboard/Dashboard";
 import HomeScreen from "../home/Home";
-import MediaKitFiles from "../dashboard/MediaKitFiles";
+import MediaKitFiles from "../mediakit/MediaKitFiles";
 
 import { bottomNav, colors } from "../../styles/base";
 import TabBarIcon from "./TabBarIcon";
@@ -52,6 +52,7 @@ export default function TabNavigator(props) {
           tabBarIcon: ({ focused }) => (
             <TabBarIcon
               title="BELANJA"
+              iconName="shopping"
               focused={focused}
             />
           ),
@@ -73,6 +74,7 @@ export default function TabNavigator(props) {
             tabBarIcon: ({ focused }) => (
               <TabBarIcon
                 title="MATERI PROMOSI"
+                iconName="file-image"
                 focused={focused}
               />
             ),
@@ -92,6 +94,7 @@ export default function TabNavigator(props) {
           tabBarIcon: ({ focused }) => (
             <TabBarIcon
               title="PROFIL"
+              iconName="account-circle"
               focused={focused}
             />
           ),

@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import {
-  SafeAreaView,
   StyleSheet,
   TouchableHighlight,
   Text,
   View,
 } from "react-native";
 import { colors } from "../styles/base";
-import MediaKitFiles from "./dashboard/MediaKitFiles";
+import MediaKitFiles from "./mediakit/MediaKitFiles";
 import Dashboard from "./dashboard/Dashboard";
 import Home from "./home/Home";
 
@@ -43,13 +42,13 @@ const Top = ({ token, currentUser }) => {
   const [tab, setTab] = useState("home");
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {tab === "mediakit" ? (
         <MediaKitFiles />
       ) : tab === "profile" ? (
         <Dashboard />
       ) : (
-        <Home />
+        <Home goDashboard={() => setTab("profile")} />
       )}
       <View style={styles.containerNav}>
         <TabButton
@@ -79,7 +78,7 @@ const Top = ({ token, currentUser }) => {
           setTab={() => setTab("profile")}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -87,7 +86,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: colors.daclen_bg,
+    backgroundColor: "transparent",
   },
   containerNav: {
     width: "100%",

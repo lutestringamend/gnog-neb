@@ -71,7 +71,7 @@ function Profile(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <MainHeader icon="account-circle" title="Profil Pengguna" />
+      <MainHeader icon="arrow-left" title="Setting Pengguna" />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.containerVertical}
@@ -114,13 +114,6 @@ function Profile(props) {
           screen="PDFViewer"
           thickness={3}
           webKey={commissionpointpdf}
-        />
-
-        <ProfileMenuItem
-          text={blogscroll}
-          icon={blogicon}
-          screen="BlogFeed"
-          thickness={2}
         />
 
         <ProfileMenuItem

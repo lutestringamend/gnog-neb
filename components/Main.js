@@ -1,4 +1,10 @@
 import React, { useEffect, useState } from "react";
+import {
+  Platform,
+  ImageBackground,
+  SafeAreaView,
+  StyleSheet,
+} from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
@@ -22,7 +28,7 @@ import {
 import { clearCartError } from "../axios/cart";
 import { sentryLog } from "../sentry";
 import Top from "./Top";
-import { Platform } from "react-native";
+import { colors } from "../styles/base";
 
 function Main(props) {
   try {
@@ -137,16 +143,52 @@ function Main(props) {
       props.products?.length < 1
     ) {
       return <SplashScreen loading={true} errorText={error} />;
-    } else if (Platform.OS === "web") {
-      return <TabNavigator token={token} currentUser={currentUser} />;
     } else {
-      return <Top token={token} currentUser={currentUser} />;
+      return (
+        <SafeAreaView style={styles.container}>
+          <ImageBackground
+            source={require("../assets/profilbg.png")}
+            style={styles.background}
+            resizeMode="cover"
+          />
+          {Platform.OS === "web" ? (
+            <TabNavigator token={token} currentUser={currentUser} />
+          ) : (
+            <Top token={token} currentUser={currentUser} />
+          )}
+        </SafeAreaView>
+      );
     }
   } catch (e) {
     sentryLog(e);
     return <SplashScreen errorText={e.toString()} />;
   }
 }
+
+/*
+          {Platform.OS === "web" ? (
+            <TabNavigator token={token} currentUser={currentUser} />
+          ) : (
+            <Top token={token} currentUser={currentUser} />
+          )}
+*/
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: colors.daclen_bg,
+  },
+  background: {
+    position: "absolute",
+    zIndex: 0,
+    top: 0,
+    start: 0,
+    width: "100%",
+    height: "100%",
+    opacity: 0.5,
+  },
+});
 
 const mapStateToProps = (store) => ({
   token: store.userState.token,

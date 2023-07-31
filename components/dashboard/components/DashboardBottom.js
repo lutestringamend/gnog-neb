@@ -22,7 +22,11 @@ import { sentryLog } from "../../../sentry";
 const DashboardBottom = (props) => {
   const navigation = useNavigation();
 
-  function openQRLink() {}
+  function openQRLink() {
+    navigation.navigate("QRScreen", {
+      text: `${personalwebsiteurl}${props?.username}`,
+    })
+  }
 
   function openPersonalWebsite() {
     Linking.openURL(`${personalwebsiteurl}${props?.username}`);

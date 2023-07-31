@@ -35,6 +35,7 @@ import { SENTRY_DSN } from "./sentry/constants";
 import MainScreen from "./components/Main";
 import SplashScreen from "./components/Splash";
 import History from "./components/history/History";
+import Dashboard from "./components/dashboard/Dashboard";
 import HistoryCheckoutScreen from "./components/history/Checkout";
 import CheckoutItemScreen from "./components/history/CheckoutItem";
 import DeliveryItemScreen from "./components/history/DeliveryItem";
@@ -58,7 +59,8 @@ import CameraView from "./components/media/CameraView";
 
 import ImageViewer from "./components/imageviewer/ImageViewer";
 import MultipleImageView from "./components/imageviewer/MultipleImageView";
-import MediaKitFiles from "./components/dashboard/MediaKitFiles";
+import MediaKitFiles from "./components/mediakit/MediaKitFiles";
+import QRScreen from "./components/qrscreen/QRScreen";
 import VideoPlayer from "./components/videoplayer/VideoPlayer";
 import VideoLogs from "./components/videoplayer/VideoLogs";
 
@@ -134,6 +136,11 @@ export default function App() {
               <Stack.Screen
                 name="Main"
                 component={MainScreen}
+                options={{ ...defaultOptions, headerShown: false }}
+              />
+              <Stack.Screen
+                name="Dashboard"
+                component={Dashboard}
                 options={{ ...defaultOptions, headerShown: false }}
               />
               <Stack.Screen
@@ -289,6 +296,11 @@ export default function App() {
                 name="SaldoReportScreen"
                 component={SaldoReport}
                 options={{ ...defaultOptions, title: "Laporan Saldo" }}
+              />
+              <Stack.Screen
+                name="QRScreen"
+                component={QRScreen}
+                options={{ ...defaultOptions, title: "QR Code" }}
               />
               <Stack.Screen
                 name="VideoPlayerScreen"

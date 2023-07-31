@@ -15,7 +15,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { colors } from "../../styles/base";
-import Header from "./Header";
+import Header from "../DashboardHeader";
 import { clearUserData, getCurrentUser, getHPV } from "../../axios/user";
 import DashboardUser from "./components/DashboardUser";
 import DashboardStats from "./components/DashboardStats";
@@ -79,11 +79,6 @@ const Dashboard = (props) => {
 
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={require("../../assets/profilbg.png")}
-        style={styles.background}
-        resizeMode="cover"
-      />
       {message?.text === null || message?.text === "" ? null : (
         <Text
           style={[
@@ -135,7 +130,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: colors.daclen_bg,
+    backgroundColor: "transparent",
   },
   scrollView: {
     flex: 1,

@@ -169,7 +169,7 @@ function Login(props) {
 
   function closeBS() {
     if (isChangePassword) {
-      navigation.navigate("Profile");
+      navigation.goBack();
     } else {
       if (isLogin) {
         props.setNewToken(props.loginToken);
@@ -187,7 +187,7 @@ function Login(props) {
           <View style={styles.containerHeader}>
             <TouchableOpacity
               style={styles.containerBack}
-              onPress={() => navigation.navigate("Main")}
+              onPress={() => navigation.goBack()}
             >
               <MaterialCommunityIcons
                 name="arrow-left-bold-circle"

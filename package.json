@@ -47,6 +47,7 @@
     "react-native-global-props": "^1.1.5",
     "react-native-image-slider-banner": "^1.0.3",
     "react-native-paper": "^5.1.4",
+    "react-native-qrcode-svg": "^6.2.0",
     "react-native-radio-buttons-group": "^2.3.1",
     "react-native-raw-bottom-sheet": "^2.2.0",
     "react-native-render-html": "^6.3.4",

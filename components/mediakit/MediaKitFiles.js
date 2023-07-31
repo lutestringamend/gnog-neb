@@ -34,12 +34,12 @@ import {
   WATERMARK_PHOTO,
   WATERMARK_VIDEO,
   tempvideoarray,
-} from "./constants";
+} from "../dashboard/constants";
 import WatermarkPhotos from "./WatermarkPhotos";
 import WatermarkVideos from "./WatermarkVideos";
 import { sentryLog } from "../../sentry";
 import { ASYNC_MEDIA_WATERMARK_PHOTOS_KEY } from "../asyncstorage/constants";
-import MainHeader from "../main/MainHeader";
+import Header from "../DashboardHeader";
 
 function MediaKitFiles(props) {
   try {
@@ -118,59 +118,52 @@ function MediaKitFiles(props) {
 
     return (
       <View style={styles.container}>
-        <MainHeader title="Materi Promosi" icon="file-image" />
-        <ScrollView style={styles.scrollView}>
-          <TouchableOpacity onPress={() => setExpand(!expand)}>
-            <View style={styles.containerHeader}>
-              <Text style={styles.textHeader}>Pengaturan Watermark</Text>
-              <Image
-                source={require("../../assets/gear.png")}
-                style={styles.gear}
+        <Header
+          settingText="SETTING WATERMARK"
+          onSettingPress={() => setExpand(!expand)}
+        />
+        {expand ? (
+          <View style={styles.containerInfo}>
+            <View style={styles.containerPrivacy}>
+              <Text style={styles.textUid}>
+                Kirimkan foto dan video promosi dari katalog Daclen dengan
+                watermark spesial untuk kamu. Watermark berisi nama, nomor
+                telepon dan link referral.
+              </Text>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("Webview", {
+                    webKey: "privacy",
+                    text: privacypolicy,
+                  })
+                }
+                disabled={loading}
+              >
+                <Text style={styles.textChange}>Baca {privacypolicy}</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.containerBox}>
+              <Text style={styles.textCompulsory}>Nama*</Text>
+              <TextInput
+                value={watermarkData?.name}
+                style={styles.textInput}
+                onChangeText={(name) =>
+                  setWatermarkData({ ...watermarkData, name })
+                }
+              />
+              <Text style={styles.textCompulsory}>Nomor telepon*</Text>
+              <TextInput
+                value={watermarkData?.phone}
+                style={styles.textInput}
+                onChangeText={(phone) =>
+                  setWatermarkData({ ...watermarkData, phone })
+                }
               />
             </View>
-          </TouchableOpacity>
-          {expand ? (
-            <View style={styles.containerInfo}>
-              <View style={styles.containerPrivacy}>
-                <Text style={styles.textUid}>
-                  Kirimkan foto dan video promosi dari katalog Daclen dengan
-                  watermark spesial untuk kamu. Watermark berisi nama, nomor
-                  telepon dan link referral.
-                </Text>
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("Webview", {
-                      webKey: "privacy",
-                      text: privacypolicy,
-                    })
-                  }
-                  disabled={loading}
-                >
-                  <Text style={styles.textChange}>Baca {privacypolicy}</Text>
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.containerBox}>
-                <Text style={styles.textCompulsory}>Nama*</Text>
-                <TextInput
-                  value={watermarkData?.name}
-                  style={styles.textInput}
-                  onChangeText={(name) =>
-                    setWatermarkData({ ...watermarkData, name })
-                  }
-                />
-                <Text style={styles.textCompulsory}>Nomor telepon*</Text>
-                <TextInput
-                  value={watermarkData?.phone}
-                  style={styles.textInput}
-                  onChangeText={(phone) =>
-                    setWatermarkData({ ...watermarkData, phone })
-                  }
-                />
-              </View>
-            </View>
-          ) : null}
-
+          </View>
+        ) : null}
+        <ScrollView style={styles.scrollView}>
           {currentUser?.id === 8054 ? (
             <View style={styles.tabView}>
               <HistoryTabItem
@@ -212,6 +205,7 @@ function MediaKitFiles(props) {
     sentryLog(error);
     return (
       <SafeAreaView style={styles.container}>
+        <Header />
         <ErrorView
           error={error.message}
           onOpenExternalLink={() => openExternalLink()}
@@ -222,7 +216,15 @@ function MediaKitFiles(props) {
 }
 
 /*
-
+          <TouchableOpacity onPress={() => setExpand(!expand)}>
+            <View style={styles.containerHeader}>
+              <Text style={styles.textHeader}>Pengaturan Watermark</Text>
+              <Image
+                source={require("../../assets/gear.png")}
+                style={styles.gear}
+              />
+            </View>
+          </TouchableOpacity>
 
             
 <Text style={styles.textCompulsory}>Link Referral*</Text>
@@ -239,11 +241,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: "white",
+    backgroundColor: "transparent",
   },
   scrollView: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: colors.white,
     paddingBottom: staticDimensions.pageBottomPadding,
   },
   containerHeader: {
@@ -252,7 +254,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_graydark,
   },
   containerInfo: {
-    backgroundColor: "white",
+    backgroundColor: colors.white,
   },
   containerPrivacy: {
     marginVertical: 20,
