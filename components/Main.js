@@ -146,11 +146,6 @@ function Main(props) {
     } else {
       return (
         <SafeAreaView style={styles.container}>
-          <ImageBackground
-            source={require("../assets/profilbg.png")}
-            style={styles.background}
-            resizeMode="cover"
-          />
           {Platform.OS === "web" ? (
             <TabNavigator token={token} currentUser={currentUser} />
           ) : (

@@ -1,5 +1,5 @@
 import React from "react";
-import { Platform, SafeAreaView } from "react-native";
+import { Platform, SafeAreaView, StyleSheet, ImageBackground } from "react-native";
 import * as Sentry from "sentry-expo";
 import { StatusBar } from "expo-status-bar";
 import { useTheme } from "react-native-paper";
@@ -71,7 +71,6 @@ import UserRoots from "./components/dashboard/UserRoots";
 import BonusRoot from "./components/dashboard/BonusRoot";
 import SaldoReport from "./components/dashboard/SaldoReport";
 
-
 import { appname } from "./axios/constants";
 import { colors, staticDimensions } from "./styles/base";
 import { sentryLog } from "./sentry";
@@ -107,24 +106,26 @@ export default function App() {
         color: colors.daclen_light,
       },
       headerStyle: {
-        backgroundColor: Platform.OS === "web" ? colors.daclen_bg : "transparent",
+        backgroundColor:
+          Platform.OS === "web" ? colors.daclen_bg : "transparent",
       },
       headerTintColor: colors.daclen_light,
       title: appname,
     };
 
     return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          paddingTop: staticDimensions.statusBarPadding,
-        }}
-      >
-        <StatusBar
-          backgroundColor={colors.daclen_black}
-          translucent={true}
-          style="dark"
+      <SafeAreaView style={styles.container}>
+        <ImageBackground
+          source={require("./assets/profilbg.png")}
+          style={styles.background}
+          resizeMode="cover"
         />
+        <StatusBar
+          backgroundColor="transparent"
+          translucent={true}
+          style="light"
+        />
+
         <Provider store={store}>
           <NavigationContainer>
             <Stack.Navigator
@@ -323,6 +324,24 @@ export default function App() {
     return <SplashScreen errorText={error.message} />;
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: colors.daclen_bg,
+    paddingTop: staticDimensions.statusBarPadding,
+  },
+  background: {
+    position: "absolute",
+    zIndex: 0,
+    top: 0,
+    start: 0,
+    width: "100%",
+    height: "100%",
+    opacity: 0.5,
+  },
+});
 
 const customViewProps = {
   style: {
