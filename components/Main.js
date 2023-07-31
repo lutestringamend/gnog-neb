@@ -137,7 +137,7 @@ function Main(props) {
       props.products?.length < 1
     ) {
       return <SplashScreen loading={true} errorText={error} />;
-    } else if (Platform.OS === "ios") {
+    } else if (Platform.OS === "web") {
       return <TabNavigator token={token} currentUser={currentUser} />;
     } else {
       return <Top token={token} currentUser={currentUser} />;
