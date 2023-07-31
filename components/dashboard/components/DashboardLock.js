@@ -44,8 +44,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   containerOTP: {
-    marginVertical: 32,
-    backgroundColor: colors.daclen_light,
+    marginVertical: 40,
   },
   textLockHeader: {
     fontSize: 20,

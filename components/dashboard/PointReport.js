@@ -172,12 +172,11 @@ function PointReport(props) {
                       item?.refferal_user_id === undefined ||
                       item?.refferal_user_id === null ? null : (
                         <Text style={styles.textReferral}>
-                          {"Referral: "}
-                          {
+                          {`Poin Didapatkan dari Referral\nReferral: ${
                             referralData.find(
                               ({ id }) => id === item?.refferal_user_id
                             )?.name
-                          }
+                          }`}
                         </Text>
                       )}
                       {item?.checkout_id === undefined ||
@@ -186,7 +185,7 @@ function PointReport(props) {
                           onPress={() => openItem(item?.checkout_id)}
                           disabled={loading}
                         >
-                          <Text style={styles.textCheckout}>Buka Checkout</Text>
+                          <Text style={styles.textCheckout}>{`Poin Didapatkan dari Checkout\nBuka Checkout`}</Text>
                         </TouchableOpacity>
                       )}
                     </View>
@@ -266,6 +265,7 @@ const styles = StyleSheet.create({
   },
   textReferral: {
     fontSize: 14,
+    fontStyle: "bold",
     color: colors.daclen_black,
     marginTop: 6,
   },
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontStyle: "bold",
     color: colors.daclen_blue,
-    marginTop: 2,
+    marginTop: 6,
   },
   textPoint: {
     fontWeight: "bold",

@@ -45,8 +45,8 @@ export default function DashboardStats(props) {
       <View style={styles.containerHorizontal}>
         <View style={styles.containerVertical}>
           <Text style={styles.text}>Penjualan Bulan Ini</Text>
-          <Text style={styles.textYellow}>{`#NUM# Invoice`}</Text>
-          <Text style={styles.textYellow}>{`Rp #TOTAL#`}</Text>
+          <Text style={styles.textYellow}>{`0 Invoice`}</Text>
+          <Text style={styles.textYellow}>{`Rp 0`}</Text>
         </View>
         <TouchableOpacity style={styles.button} onPress={() => openHistory()}>
           <Text style={styles.textButton}>{`Riwayat\nTransaksi`}</Text>
@@ -75,9 +75,9 @@ export default function DashboardStats(props) {
 
       <View style={styles.containerHorizontal}>
         <View style={styles.containerVertical}>
-          <Text style={[styles.textYellow, {color: colors.daclen_green_pale}]}>{`Bonus Jaringan Level #D#`}</Text>
-          <Text style={styles.text}>{`Agen Anda: #NUM# Orang`}</Text>
-          <Text style={styles.text}>{`Reseller Anda: #NUM# Orang`}</Text>
+          <Text style={[styles.textYellow, {color: colors.daclen_green_pale}]}>{`Bonus Jaringan Level A`}</Text>
+          <Text style={styles.text}>{`Agen Anda: 0 Orang`}</Text>
+          <Text style={styles.text}>{`Reseller Anda: 0 Orang`}</Text>
         </View>
         <TouchableOpacity style={styles.button} onPress={() => openUserRoots()}>
           <Text style={styles.textButton}>{`Tampilkan\nReseller & Agen`}</Text>
@@ -85,7 +85,7 @@ export default function DashboardStats(props) {
       </View>
 
       <Text style={styles.textBottom}>
-        {`Minimal Rekruitment Bulan Ini: #NUM# Reseller`}
+        {`Minimal Rekruitment Bulan Ini: 0 Reseller`}
       </Text>
     </View>
   );

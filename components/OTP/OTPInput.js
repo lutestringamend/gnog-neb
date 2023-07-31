@@ -45,7 +45,7 @@ const OTPInput = ({ code, setCode, maximumLength, setIsPinReady, style }) => {
         <Text
           style={[
             styles.SplitBoxText,
-            isInputBoxFocused && isValueFocused ? { color: "white" } : null,
+            isInputBoxFocused && isValueFocused ? { color: colors.daclen_light } : null,
           ]}
         >
           {digit}
@@ -90,6 +90,7 @@ const styles = StyleSheet.create({
   },
   SplitBoxes: {
     borderColor: colors.daclen_gray,
+    backgroundColor: colors.daclen_light,
     borderWidth: 2,
     borderRadius: 5,
     padding: 20,
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
   },
   SplitBoxesFocused: {
     borderColor: colors.daclen_light,
-    backgroundColor: colors.daclen_graydark,
+    backgroundColor: colors.daclen_blue,
   },
   SplitBoxText: {
     fontSize: 20,

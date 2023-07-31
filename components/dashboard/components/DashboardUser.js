@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     overflow: "hidden",
     borderColor: colors.daclen_bg,
+    marginVertical: 4,
   },
   containerVertical: {
     marginHorizontal: 12,
