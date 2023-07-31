@@ -28,7 +28,7 @@ export default function MainHeader(props) {
         <MaterialCommunityIcons
           name={props?.icon}
           size={24}
-          color="white"
+          color={colors.daclen_light}
           style={{ alignSelf: "center" }}
         />
       </TouchableOpacity>

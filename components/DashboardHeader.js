@@ -7,6 +7,7 @@ import {
   Text,
   Platform,
 } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
 
@@ -22,6 +23,13 @@ const Header = (props) => {
     } else {
       props.onSettingPress();
     }
+  }
+
+  function onLockPress() {
+    if (props?.onLockPress === undefined || props?.onLockPress === null) {
+      return;
+    }
+    props.onLockPress();
   }
 
   return (
@@ -64,6 +72,22 @@ const Header = (props) => {
 
         <Image source={require("../assets/gear.png")} style={styles.gear} />
       </TouchableOpacity>
+      {props?.lockStatus === undefined ? null : (
+        <TouchableOpacity
+          style={styles.containerUser}
+          onPress={() => onLockPress()}
+        >
+          <MaterialCommunityIcons
+            name={props?.lockStatus === "open" ? "lock-open-alert" : "lock"}
+            size={24}
+            color={
+              props?.lockStatus === "open"
+                ? colors.daclen_green_light
+                : colors.daclen_orange
+            }
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -97,6 +121,10 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: 20,
     height: 20,
+  },
+  lock: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
   },
   textLogin: {
     fontSize: 12,

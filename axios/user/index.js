@@ -17,6 +17,7 @@ import {
   getsyaratroot,
   resetpassword,
   laporansaldo,
+  PROFILE_LOCK_TIMEOUT_IN_MILISECONDS,
 } from "../constants";
 import { getKeranjang } from "../cart";
 import { initialState } from "../../redux/reducers/user";
@@ -37,12 +38,13 @@ import {
   USER_LOGIN_TOKEN_STATE_CHANGE,
   USER_REGISTER_TOKEN_STATE_CHANGE,
   DISABLE_FORCE_LOGOUT,
-  ENABLE_FORCE_LOGOUT,
   USER_HPV_STATE_CHANGE,
   USER_POINTS_STATE_CHANGE,
   USER_SYARAT_ROOT_STATE_CHANGE,
   MEDIA_KIT_CLEAR_DATA,
   USER_SALDO_STATE_CHANGE,
+  USER_PROFILE_LOCK_STATE_CHANGE,
+  USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE,
 } from "../../redux/constants";
 import {
   calculateBase64SizeInBytes,
@@ -83,6 +85,29 @@ export const userLogout = async () => {
     dispatch({ type: ENABLE_FORCE_LOGOUT });
   };
 }*/
+
+export function updateReduxProfileLockStatus(data) {
+  return (dispatch) => {
+    console.log("updateReduxProfileLockStatus", data);
+    dispatch({ type: USER_PROFILE_LOCK_STATE_CHANGE, data });
+    if (data) {
+      dispatch({ type: USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE, data: null });
+      console.log("updateReduxProfileLockTimeout", null);
+    } else {
+      let date = new Date();
+      date.setTime(date.getTime() + PROFILE_LOCK_TIMEOUT_IN_MILISECONDS);
+      dispatch({ type: USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE, data: date.getTime() });
+      console.log("updateReduxProfileLockTimeout", date.getTime());
+    }
+  };
+}
+
+export function updateReduxProfileLockTimeout(data) {
+  return (dispatch) => {
+    console.log("updateReduxProfileLockTimeout", data);
+    dispatch({ type: USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE, data });
+  };
+}
 
 export function disableForceLogout() {
   return (dispatch) => {

@@ -7,7 +7,8 @@ export const MIDTRANS_CLIENT_KEY = "Mid-client-BqXWNDpvPhUU7fB1"
 export const SB_MIDTRANS_CLIENT_KEY = "SB-Mid-client-xamInlBsiMBuJSWC"
 
 export const finalblognumber = 9999
-export const productpaginationnumber = 6
+export const productpaginationnumber = 3
+export const PROFILE_LOCK_TIMEOUT_IN_MILISECONDS = 30000
 
 export const productfetchlink = "api/mobile/produk"
 export const showproduct = "api/mobile/produk/show"

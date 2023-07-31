@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Platform,
   ImageBackground,
   SafeAreaView,
   StyleSheet,
+  AppState,
 } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -16,6 +17,7 @@ import {
   getCurrentUser,
   clearUserData,
   disableForceLogout,
+  updateReduxProfileLockStatus,
 } from "../axios/user";
 import { clearMediaKitData } from "../axios/mediakit";
 import { getObjectAsync, getTokenAsync } from "./asyncstorage";
@@ -32,11 +34,9 @@ import { colors } from "../styles/base";
 
 function Main(props) {
   try {
-    //const [isLogin, setLogin] = useState(false);
-    //const [loadingUserData, setLoadingUserData] = useState(false);
     const [error, setError] = useState(null);
-    //const [frozen, setFrozen] = useState(false);
-    const { token, currentUser } = props;
+    const appState = useRef(AppState.currentState);
+    const { token, currentUser, profileLock, profileLockTimeout } = props;
 
     useEffect(() => {
       const readStorageProducts = async () => {
@@ -77,9 +77,28 @@ function Main(props) {
         checkUserData();
         return;
       }
-      console.log("redux token", token);
-      console.log("redux currentuser", currentUser);
-    }, [token, currentUser]);
+      //console.log("redux token", token);
+      //console.log("redux currentuser", currentUser);
+      if (!profileLock) {
+        const theAppState = AppState.addEventListener(
+          "change",
+          handleAppStateChange
+        );
+        return () => theAppState.remove();
+      }
+    }, [token, currentUser, profileLock]);
+
+    useEffect(() => {
+      console.log("Main profileLock", profileLock);
+      if (
+        profileLock ||
+        profileLockTimeout === null ||
+        profileLockTimeout <= 0
+      ) {
+        return;
+      }
+      checkProfileLockTimeout();
+    }, [profileLock, profileLockTimeout]);
 
     const checkUserData = async () => {
       const storageToken = await readStorageToken();
@@ -136,6 +155,31 @@ function Main(props) {
       }
     };
 
+    const handleAppStateChange = async (nextAppState) => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === "active"
+      ) {
+        checkProfileLockTimeout();
+      }
+      appState.current = nextAppState;
+    };
+
+    const checkProfileLockTimeout = async () => {
+      console.log("checkProfileLockTimeout");
+      try {
+        let time = new Date().getTime();
+        if (time >= profileLockTimeout) {
+          props.updateReduxProfileLockStatus(true);
+        } else {
+          setTimeout(checkProfileLockTimeout, 1000);
+        }
+      } catch (err) {
+        console.error(err);
+        props.updateReduxProfileLockStatus(false);
+      }
+    };
+
     if (
       error !== null ||
       props.products === null ||
@@ -167,14 +211,6 @@ function Main(props) {
   }
 }
 
-/*
-          {Platform.OS === "web" ? (
-            <TabNavigator token={token} currentUser={currentUser} />
-          ) : (
-            <Top token={token} currentUser={currentUser} />
-          )}
-*/
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -195,6 +231,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
+  profileLock: store.userState.profileLock,
+  profileLockTimeout: store.userState.profileLockTimeout,
   products: store.productState.products,
   maxIndex: store.productState.maxIndex,
   loginToken: store.userState.loginToken,
@@ -213,6 +251,7 @@ const mapDispatchProps = (dispatch) =>
       disableForceLogout,
       clearMediaKitData,
       clearCartError,
+      updateReduxProfileLockStatus,
     },
     dispatch
   );

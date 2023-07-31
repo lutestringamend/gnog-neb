@@ -25,6 +25,8 @@ import {
   USER_SYARAT_ROOT_STATE_CHANGE,
   USER_CART_STATE_ERROR,
   USER_SALDO_STATE_CHANGE,
+  USER_PROFILE_LOCK_STATE_CHANGE,
+  USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE,
 } from "../constants";
 
 import { mainhttp } from "../../axios/constants";
@@ -32,6 +34,8 @@ import { mainhttp } from "../../axios/constants";
 export const initialState = {
   token: null,
   currentUser: null,
+  profileLock: true,
+  profileLockTimeout: null,
   hpv: null,
   points: null,
   syaratRoot: [],
@@ -108,6 +112,16 @@ export const user = (state = initialState, action) => {
       return {
         ...state,
         token: action.token,
+      };
+    case USER_PROFILE_LOCK_STATE_CHANGE:
+      return {
+        ...state,
+        profileLock: action.data,
+      };
+    case USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE:
+      return {
+        ...state,
+        profileLockTimeout: action.data,
       };
     case USER_HPV_STATE_CHANGE:
       return {

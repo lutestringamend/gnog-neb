@@ -15,7 +15,7 @@ import { bindActionCreators } from "redux";
 
 import { colors } from "../../styles/base";
 import Header from "../DashboardHeader";
-import { clearUserData, getCurrentUser, getHPV } from "../../axios/user";
+import { clearUserData, getCurrentUser, getHPV, updateReduxProfileLockStatus } from "../../axios/user";
 import DashboardUser from "./components/DashboardUser";
 import DashboardStats from "./components/DashboardStats";
 import { setObjectAsync } from "../asyncstorage";
@@ -30,7 +30,7 @@ const Dashboard = (props) => {
   });
   const [refreshing, setRefreshing] = useState(false);
 
-  const { currentUser, token, hpv } = props;
+  const { currentUser, token, hpv, profileLock } = props;
 
   /*const [isSharingAvailable, setSharingAvailable] = useState(false);
   useEffect(() => {
@@ -76,6 +76,10 @@ const Dashboard = (props) => {
     props.getHPV(currentUser?.id, token);
   }
 
+  function onLockPress() {
+    props.updateReduxProfileLockStatus(!profileLock);
+  }
+
   return (
     <View style={styles.container}>
       {Platform.OS === "web" ? (
@@ -101,7 +105,11 @@ const Dashboard = (props) => {
         </Text>
       )}
       <ScrollView style={styles.scrollView}>
-        <Header username={currentUser?.name} />
+        <Header
+          username={currentUser?.name}
+          lockStatus="closed"
+          onLockPress={() => onLockPress()}
+        />
         {currentUser === null ||
         currentUser?.id === undefined ||
         currentUser?.name === undefined ? (
@@ -110,6 +118,10 @@ const Dashboard = (props) => {
             color={colors.daclen_light}
             style={styles.spinner}
           />
+        ) : profileLock === undefined || profileLock === null || profileLock ? (
+          <View style={styles.containerLock}>
+            <Text style={styles.textLockHeader}>TERKUNCI</Text>
+          </View>
         ) : (
           <View style={styles.scrollView}>
             <DashboardUser currentUser={currentUser} />
@@ -119,16 +131,20 @@ const Dashboard = (props) => {
         )}
       </ScrollView>
 
-      <DashboardBottom
-        username={currentUser?.name}
-        isSharingAvailable={Platform.OS !== "web"}
-        setMessage={(text, isError) =>
-          setMessage({
-            text,
-            isError,
-          })
-        }
-      />
+      {profileLock === undefined ||
+      profileLock === null ||
+      profileLock ? null : (
+        <DashboardBottom
+          username={currentUser?.name}
+          isSharingAvailable={Platform.OS !== "web"}
+          setMessage={(text, isError) =>
+            setMessage({
+              text,
+              isError,
+            })
+          }
+        />
+      )}
     </View>
   );
 };
@@ -138,6 +154,11 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: "transparent",
+  },
+  containerLock: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   background: {
     position: "absolute",
@@ -161,6 +182,12 @@ const styles = StyleSheet.create({
     color: colors.daclen_light,
     textAlign: "center",
   },
+  textLockHeader: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: colors.daclen_light,
+    textAlign: "center",
+  },
   spinner: {
     alignSelf: "center",
     marginVertical: 20,
@@ -170,6 +197,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
+  profileLock: store.userState.profileLock,
   hpv: store.userState.hpv,
 });
 
@@ -179,6 +207,7 @@ const mapDispatchProps = (dispatch) =>
       clearUserData,
       getCurrentUser,
       getHPV,
+      updateReduxProfileLockStatus,
     },
     dispatch
   );
