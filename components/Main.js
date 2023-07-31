@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import SplashScreen from "./Splash";
-//import TabNavigator from "./bottomnav/TabNavigator";
+import TabNavigator from "./bottomnav/TabNavigator";
 import { getProductData, clearData } from "../axios/product";
 import {
   setNewToken,
@@ -22,6 +22,7 @@ import {
 import { clearCartError } from "../axios/cart";
 import { sentryLog } from "../sentry";
 import Top from "./Top";
+import { Platform } from "react-native";
 
 function Main(props) {
   try {
@@ -136,6 +137,8 @@ function Main(props) {
       props.products?.length < 1
     ) {
       return <SplashScreen loading={true} errorText={error} />;
+    } else if (Platform.OS === "ios") {
+      return <TabNavigator token={token} currentUser={currentUser} />;
     } else {
       return <Top token={token} currentUser={currentUser} />;
     }

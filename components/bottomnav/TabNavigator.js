@@ -17,27 +17,27 @@ export default function TabNavigator(props) {
       initialRouteName="Home"
       labeled={true}
       shifting={false}
-      activeColor={colors.daclen_bg_highlighted}
-      inactiveColor={colors.daclen_bg}
+      activeColor={bottomNav.activeColor}
+      inactiveColor={bottomNav.inactiveColor}
       barStyle={{
-        backgroundColor: colors.daclen_bg,
-        height: 24,
+        backgroundColor: bottomNav.barBackground,
+        height: 32,
         justifyContent: "center",
         marginTop: 0,
-        tabBarActiveTintColor: colors.daclen_bg_highlighted,
-        tabBarInactiveTintColor: colors.daclen_bg,
+        tabBarActiveTintColor: bottomNav.activeColor,
+        tabBarInactiveTintColor: bottomNav.inactiveColor,
       }}
       screenOptions={{
         elevation: 1,
         tabBarHideOnKeyboard: true,
-        tabBarActiveTintColor: colors.daclen_bg_highlighted,
-        tabBarInactiveTintColor: colors.daclen_bg,
-        tabBarLabel: false,
-        tabBarShowLabel: false,
+        tabBarActiveTintColor: bottomNav.activeColor,
+        tabBarInactiveTintColor: bottomNav.inactiveColor,
+        tabBarLabel: true,
+        tabBarShowLabel: true,
       }}
       tabBarOptions={{
-        activeTintColor: colors.daclen_bg_highlighted,
-        inactiveTintColor: colors.daclen_bg,
+        activeTintColor: bottomNav.activeColor,
+        inactiveTintColor: bottomNav.inactiveColor,
       }}
     >
       <Tab.Screen
