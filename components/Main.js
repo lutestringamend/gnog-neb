@@ -152,6 +152,11 @@ function Main(props) {
     } else {
       return (
         <SafeAreaView style={styles.container}>
+          <ImageBackground
+            source={require("../assets/profilbg.png")}
+            style={styles.background}
+            resizeMode="cover"
+          />
           <Top token={token} currentUser={currentUser} />
         </SafeAreaView>
       );
@@ -174,7 +179,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: "transparent",
+    backgroundColor: colors.daclen_bg,
   },
   background: {
     position: "absolute",

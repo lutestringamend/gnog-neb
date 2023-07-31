@@ -1,5 +1,5 @@
 import React from "react";
-import { Platform, SafeAreaView, StyleSheet, ImageBackground } from "react-native";
+import { Platform, SafeAreaView, StyleSheet } from "react-native";
 import * as Sentry from "sentry-expo";
 import { StatusBar } from "expo-status-bar";
 import { useTheme } from "react-native-paper";
@@ -114,11 +114,6 @@ export default function App() {
 
     return (
       <SafeAreaView style={styles.container}>
-        <ImageBackground
-          source={require("./assets/profilbg.png")}
-          style={styles.background}
-          resizeMode="cover"
-        />
         <StatusBar
           backgroundColor="transparent"
           translucent={true}
@@ -330,15 +325,6 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: colors.daclen_bg,
     paddingTop: staticDimensions.statusBarPadding,
-  },
-  background: {
-    position: "absolute",
-    zIndex: 0,
-    top: 0,
-    start: 0,
-    width: "100%",
-    height: "100%",
-    opacity: 0.5,
   },
 });
 
