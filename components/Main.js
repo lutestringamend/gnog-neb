@@ -143,14 +143,16 @@ function Main(props) {
       props.products?.length < 1
     ) {
       return <SplashScreen loading={true} errorText={error} />;
+    } else if (Platform.OS === "web") {
+      return (
+        <SafeAreaView style={styles.container}>
+          <TabNavigator token={token} currentUser={currentUser} />
+        </SafeAreaView>
+      );
     } else {
       return (
         <SafeAreaView style={styles.container}>
-          {Platform.OS === "web" ? (
-            <TabNavigator token={token} currentUser={currentUser} />
-          ) : (
-            <Top token={token} currentUser={currentUser} />
-          )}
+          <Top token={token} currentUser={currentUser} />
         </SafeAreaView>
       );
     }
@@ -172,7 +174,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: colors.daclen_bg,
+    backgroundColor: "transparent",
   },
   background: {
     position: "absolute",

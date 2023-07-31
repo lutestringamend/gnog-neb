@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: colors.daclen_black_old,
+    backgroundColor: colors.daclen_black,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   textVersion: {
-    fontSize: 12,
+    fontSize: 10,
     color: colors.daclen_yellow,
     textAlign: "center",
     marginVertical: 32,

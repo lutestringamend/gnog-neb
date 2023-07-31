@@ -106,8 +106,7 @@ export default function App() {
         color: colors.daclen_light,
       },
       headerStyle: {
-        backgroundColor:
-          Platform.OS === "web" ? colors.daclen_bg : "transparent",
+        backgroundColor: colors.daclen_bg,
       },
       headerTintColor: colors.daclen_light,
       title: appname,
