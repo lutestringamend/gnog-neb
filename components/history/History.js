@@ -15,7 +15,7 @@ import {
   checkoutIcon,
   deliveryIcon,
 } from "./constants";
-import { colors, dimensions } from "../../styles/base";
+import { colors } from "../../styles/base";
 
 export default function History() {
   const [activeTab, setActiveTab] = useState(checkoutItem);
@@ -26,7 +26,6 @@ export default function History() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <MainHeader title="Riwayat" icon="history" />
       <View style={styles.tabView}>
         <HistoryTabItem
           activeTab={activeTab}

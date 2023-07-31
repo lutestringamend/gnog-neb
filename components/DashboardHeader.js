@@ -1,5 +1,12 @@
 import React from "react";
-import { StyleSheet, View, TouchableOpacity, Image, Text } from "react-native";
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Image,
+  Text,
+  Platform,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
 
@@ -18,7 +25,15 @@ const Header = (props) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor:
+            Platform.OS === "web" ? colors.daclen_bg : "transparent",
+        },
+      ]}
+    >
       <TouchableOpacity
         onPress={() => navigation.navigate("About")}
         style={styles.containerLogo}
@@ -57,7 +72,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "transparent",
   },
   containerLogo: {
     marginHorizontal: 12,

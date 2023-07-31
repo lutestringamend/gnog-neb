@@ -4,6 +4,7 @@ import {
   TouchableHighlight,
   Text,
   View,
+  Platform,
 } from "react-native";
 import { colors } from "../styles/base";
 import MediaKitFiles from "./mediakit/MediaKitFiles";
@@ -42,7 +43,15 @@ const Top = ({ token, currentUser }) => {
   const [tab, setTab] = useState("home");
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor:
+            Platform.OS === "web" ? colors.daclen_bg : "transparent",
+        },
+      ]}
+    >
       {tab === "mediakit" ? (
         <MediaKitFiles />
       ) : tab === "profile" ? (

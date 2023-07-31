@@ -98,18 +98,18 @@ export default function App() {
     setCustomTouchableOpacity(customTouchableOpacityProps);
 
     if (Platform.OS === "android") {
-      NavigationBar.setBackgroundColorAsync("white");
-      NavigationBar.setButtonStyleAsync("dark");
+      NavigationBar.setBackgroundColorAsync(colors.daclen_bg);
+      NavigationBar.setButtonStyleAsync("light");
     }
 
     const defaultOptions = {
       headerTitleStyle: {
-        color: "white",
+        color: colors.daclen_light,
       },
       headerStyle: {
-        backgroundColor: colors.daclen_black,
+        backgroundColor: Platform.OS === "web" ? colors.daclen_bg : "transparent",
       },
-      headerTintColor: "white",
+      headerTintColor: colors.daclen_light,
       title: appname,
     };
 
@@ -146,7 +146,7 @@ export default function App() {
               <Stack.Screen
                 name="History"
                 component={History}
-                options={{ ...defaultOptions, headerShown: false }}
+                options={{ ...defaultOptions, title: "Riwayat Transaksi" }}
               />
               <Stack.Screen
                 name="HistoryCheckout"

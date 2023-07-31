@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import {
-  SafeAreaView,
   ScrollView,
   View,
   StyleSheet,
-  ImageBackground,
   Text,
   Platform,
   ActivityIndicator,
+  ImageBackground,
 } from "react-native";
 //import * as Sharing from "expo-sharing";
 
@@ -79,6 +78,14 @@ const Dashboard = (props) => {
 
   return (
     <View style={styles.container}>
+      {Platform.OS === "web" ? (
+        <ImageBackground
+          source={require("../../assets/profilbg.png")}
+          style={styles.background}
+          resizeMode="cover"
+        />
+      ) : null}
+
       {message?.text === null || message?.text === "" ? null : (
         <Text
           style={[
@@ -132,12 +139,6 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "transparent",
   },
-  scrollView: {
-    flex: 1,
-    width: "100%",
-    backgroundColor: "transparent",
-    zIndex: 1,
-  },
   background: {
     position: "absolute",
     zIndex: 0,
@@ -145,7 +146,12 @@ const styles = StyleSheet.create({
     start: 0,
     width: "100%",
     height: "100%",
-    opacity: 0.5,
+  },
+  scrollView: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: "transparent",
+    zIndex: 1,
   },
   textError: {
     fontSize: 14,
