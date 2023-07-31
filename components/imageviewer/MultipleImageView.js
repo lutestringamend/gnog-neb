@@ -44,7 +44,7 @@ const MultipleImageView = (props) => {
   const productPhotoWidth = dimensions.fullWidth;
 
   try {
-    const [permission, setPermission] = useState(null);
+    //const [permission, setPermission] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [logs, setLogs] = useState(null);
@@ -57,7 +57,6 @@ const MultipleImageView = (props) => {
     const [transformedImages, setTransformedImages] = useState([]);
     const [savedUris, setSavedUris] = useState([]);
     const [html, setHtml] = useState(null);
-    let htmlArray = [];
     const navigation = useNavigation();
     const imageRefs = useRef([]);
 
@@ -83,20 +82,33 @@ const MultipleImageView = (props) => {
       }
       addLogs(`sharingAvailability ${sharingAvailability}`);
 
-      if (Platform.OS === "android") {
+      /*if (Platform.OS === "android") {
         checkFileSystemPermission();
       } else {
         setPermission({
           granted: false,
         });
+      }*/
+      let width = pdfpagewidth;
+      let height = pdfpageheight;
+      for (let i = 0; i < photos.length; i++) {
+        imageRefs.current[i] = createRef();
+        if (photos[i]?.width > width || photos[i]?.height > height) {
+          width = photos[i]?.width;
+          height = photos[i]?.height;
+        }
       }
+      setPageDimensions({
+        width,
+        height,
+      });
 
       if (title !== null && title !== undefined && title !== "") {
         props.navigation.setOptions({ title: `Download ${title}` });
       }
     }, []);
 
-    useEffect(() => {
+    /*useEffect(() => {
       if (permission === null) {
         checkFileSystemPermission();
       } else if (permission?.granted) {
@@ -118,7 +130,7 @@ const MultipleImageView = (props) => {
         addError("Anda tidak memberikan izin untuk mengakses penyimpanan");
         navigation.goBack();
       }
-    }, [permission]);
+    }, [permission]);*/
 
     useEffect(() => {
       if (pageDimensions?.width <= 0 || pageDimensions?.height <= 0) {
@@ -128,15 +140,17 @@ const MultipleImageView = (props) => {
     }, [pageDimensions]);
 
     useEffect(() => {
-      if (
-        loadCount <= 0 ||
+      /*
+      ||
         permission === null ||
         permission?.granted === undefined ||
         permission?.directoryUri === undefined
-      ) {
+      */
+      if (loadCount <= 0) {
         return;
       }
-      if (loadCount === photos?.length && permission?.granted) {
+      // && permission?.granted
+      if (loadCount === photos?.length) {
         startRendering();
       }
       addLogs(`loadCount ${loadCount}`);
@@ -196,14 +210,14 @@ const MultipleImageView = (props) => {
       setLogs((logs) => `${logs ? logs + "\n" : ""}${text}`);
     };
 
-    const checkFileSystemPermission = async () => {
+    /*const checkFileSystemPermission = async () => {
       const permissions =
         await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
       addLogs(
         `FileSystem granted ${permissions?.granted} directoryUri ${permissions?.directoryUri}`
       );
       setPermission(permissions);
-    };
+    };*/
 
     const noteImageLoaded = (
       index,
@@ -288,22 +302,24 @@ const MultipleImageView = (props) => {
       if (Platform.OS === "web") {
         saveUriToAsyncStorage("WEBURI");
         return;
-      } else if (result?.uri) {
-        if (Platform.OS === "android") {
+      }
+
+      if (result?.uri) {
+        /*if (Platform.OS === "android") {
           await saveFileToStorage(result?.uri);
-        }
+        }*/
         saveUriToAsyncStorage(result?.uri);
         await shareFileAsync(result?.uri);
+        navigation.goBack();
       } else if (Platform.OS === "android") {
         ToastAndroid.show("Gagal membuat file PDF", ToastAndroid.LONG);
       }
       /*if (userId !== 8054) {
-        navigation.goBack();
       }*/
       //saveUriToAsyncStorage(result?.uri);
     };
 
-    const saveFileToStorage = async (uri) => {
+    /*const saveFileToStorage = async (uri) => {
       const base64 = await FileSystem.readAsStringAsync(uri, {
         encoding: FileSystem.EncodingType.Base64,
       });
@@ -351,7 +367,7 @@ const MultipleImageView = (props) => {
       setTransformedImages([]);
       setSavedUris([]);
       setHtml(null);
-    };
+    };*/
 
     const saveUriToAsyncStorage = async (uri) => {
       let newArray = [];
@@ -415,83 +431,82 @@ const MultipleImageView = (props) => {
       return `daclen_${title}_${index.toString()}`;
     };
 
+    //        {permission?.granted ?  : null}
+
     return (
       <SafeAreaView style={styles.container}>
-        {permission?.granted ? (
-          <View style={styles.containerInside}>
-            {photos === undefined ||
-            photos === null ||
-            photos?.length === undefined ||
-            photos?.length < 1 ||
-            pageDimensions?.width <= 0 ||
-            pageDimensions?.height <= 0
-              ? null
-              : photos.map(
-                  (
-                    { id, foto, width, height, text_x, text_y, fontSize },
-                    index
-                  ) => (
-                    <ViewShot
-                      key={index}
-                      ref={
-                        index < 1
-                          ? imageRefs.current[0]
-                          : imageRefs.current[index]
-                      }
-                      options={{
-                        fileName: getFileName(index),
-                        format: "jpg",
-                        quality: 1,
-                        result: "tmpfile",
+        <View style={styles.containerInside}>
+          {photos === undefined ||
+          photos === null ||
+          photos?.length === undefined ||
+          photos?.length < 1 ||
+          pageDimensions?.width <= 0 ||
+          pageDimensions?.height <= 0
+            ? null
+            : photos.map(
+                (
+                  { id, foto, width, height, text_x, text_y, fontSize },
+                  index
+                ) => (
+                  <ViewShot
+                    key={index}
+                    ref={
+                      index < 1
+                        ? imageRefs.current[0]
+                        : imageRefs.current[index]
+                    }
+                    options={{
+                      fileName: getFileName(index),
+                      format: "jpg",
+                      quality: 1,
+                      result: "tmpfile",
+                    }}
+                    style={[
+                      styles.containerLargeImage,
+                      {
+                        width,
+                        height,
+                      },
+                    ]}
+                  >
+                    <Image
+                      source={foto}
+                      style={{
+                        width,
+                        height,
                       }}
-                      style={[
-                        styles.containerLargeImage,
-                        {
+                      contentFit="contain"
+                      placeholder={null}
+                      transition={0}
+                      onLoadEnd={() =>
+                        noteImageLoaded(
+                          index,
+                          id,
                           width,
                           height,
-                        },
-                      ]}
-                    >
-                      <Image
-                        source={foto}
-                        style={{
                           width,
                           height,
-                        }}
-                        contentFit="contain"
-                        placeholder={null}
-                        transition={0}
-                        onLoadEnd={() =>
-                          noteImageLoaded(
-                            index,
-                            id,
-                            width,
-                            height,
-                            width,
-                            height,
-                            width / productPhotoWidth
-                          )
-                        }
-                      />
-                      <WatermarkModel
-                        watermarkData={watermarkData}
-                        ratio={width / productPhotoWidth}
-                        text_align={null}
-                        text_x={(text_x * productPhotoWidth) / width}
-                        text_y={(text_y * productPhotoWidth) / width}
-                        color={null}
-                        fontSize={Math.round(
-                          ((fontSize ? fontSize : 16) * productPhotoWidth) /
-                            width
-                        )}
-                        paddingHorizontal={1}
-                        paddingVertical={1}
-                      />
-                    </ViewShot>
-                  )
-                )}
-          </View>
-        ) : null}
+                          width / productPhotoWidth
+                        )
+                      }
+                    />
+                    <WatermarkModel
+                      watermarkData={watermarkData}
+                      ratio={width / productPhotoWidth}
+                      text_align={null}
+                      text_x={(text_x * productPhotoWidth) / width}
+                      text_y={(text_y * productPhotoWidth) / width}
+                      color={null}
+                      fontSize={Math.round(
+                        ((fontSize ? fontSize : 16) * productPhotoWidth) / width
+                      )}
+                      paddingHorizontal={1}
+                      paddingVertical={1}
+                    />
+                  </ViewShot>
+                )
+              )}
+        </View>
 
         <ScrollView
           style={styles.container}
