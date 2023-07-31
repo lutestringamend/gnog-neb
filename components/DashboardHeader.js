@@ -72,18 +72,22 @@ const Header = (props) => {
 
         <Image source={require("../assets/gear.png")} style={styles.gear} />
       </TouchableOpacity>
-      {props?.lockStatus === undefined ? null : (
+      {currentUser === undefined ||
+      currentUser === null ||
+      currentUser?.name === undefined ||
+      props?.lockStatus === undefined ? null : (
         <TouchableOpacity
           style={styles.containerUser}
           onPress={() => onLockPress()}
           disabled={props?.lockStatus}
         >
           <MaterialCommunityIcons
-            name={props?.lockStatus? "lock" : "lock-open-alert"}
+            name={props?.lockStatus ? "lock" : "lock-open-alert"}
             size={24}
             color={
               props?.lockStatus
-                ? colors.daclen_orange : colors.daclen_green_light
+                ? colors.daclen_orange
+                : colors.daclen_green_light
             }
           />
         </TouchableOpacity>

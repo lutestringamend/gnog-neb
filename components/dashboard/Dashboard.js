@@ -7,6 +7,7 @@ import {
   Platform,
   ActivityIndicator,
   ImageBackground,
+  RefreshControl,
 } from "react-native";
 //import * as Sharing from "expo-sharing";
 
@@ -28,6 +29,8 @@ import { ASYNC_USER_HPV_KEY } from "../asyncstorage/constants";
 import DashboardButtons from "./components/DashboardButtons";
 import DashboardBottom from "./components/DashboardBottom";
 import DashboardLock from "./components/DashboardLock";
+import DashboardLogout from "./components/DashboardLogout";
+import DashboardVerification from "./components/DashboardVerification";
 
 const Dashboard = (props) => {
   const [message, setMessage] = useState({
@@ -90,6 +93,9 @@ const Dashboard = (props) => {
   }, [profileLock, pinLoading]);
 
   function fetchHPV() {
+    if (token === null || currentUser === null || currentUser?.id === undefined || currentUser?.id === null) {
+      return;
+    }
     props.getHPV(currentUser?.id, token);
   }
 
@@ -139,15 +145,22 @@ const Dashboard = (props) => {
           {message?.text}
         </Text>
       )}
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+        style={styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => fetchHPV()}
+          />
+        }
+      >
         {currentUser === null ||
         currentUser?.id === undefined ||
         currentUser?.name === undefined ? (
-          <ActivityIndicator
-            size="large"
-            color={colors.daclen_light}
-            style={styles.spinner}
-          />
+          <DashboardLogout />
+        ) : currentUser?.nomor_telp_verified_at === null ||
+          currentUser?.nomor_telp_verified_at === "" ? (
+          <DashboardVerification />
         ) : profileLock === undefined ||
           profileLock === null ||
           profileLock ||

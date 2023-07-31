@@ -137,6 +137,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   containerLogin: {
+    backgroundColor: "transparent",
     marginHorizontal: 10,
     marginVertical: 20,
   },
@@ -182,7 +183,7 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "white",
+    color: colors.daclen_light,
   },
   arrow: { alignSelf: "center", marginStart: 10, flex: 1 },
 });
