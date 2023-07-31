@@ -64,33 +64,31 @@ const Dashboard = (props) => {
   }, [token, currentUser]);
 
   useEffect(() => {
-    if (hpv === undefined || hpv === null || hpv?.data === undefined) {
-      fetchHPV();
-    } else if (hpv?.data === null) {
-      setMessage({
-        text: "Mohon cek koneksi Internet Anda",
-        isError: true,
-      });
-    } else {
-      setRefreshing(false);
+    if (profileLock || pinLoading) {
+      return;
+    }
+    setPinLoading(false);
       setMessage({
         text: null,
         isError: false,
       });
-      console.log("redux HPV", hpv);
-      setObjectAsync(ASYNC_USER_HPV_KEY, hpv);
-    }
-  }, [hpv]);
-
-  useEffect(() => {
-    if (!profileLock && pinLoading) {
-      setPinLoading(false);
-      setMessage({
-        text: null,
-        isError: false,
-      });
-    }
-  }, [profileLock, pinLoading]);
+      if (hpv === undefined || hpv === null || hpv?.data === undefined) {
+        fetchHPV();
+      } else if (hpv?.data === null) {
+        setMessage({
+          text: "Mohon cek koneksi Internet Anda",
+          isError: true,
+        });
+      } else {
+        setRefreshing(false);
+        setMessage({
+          text: null,
+          isError: false,
+        });
+        console.log("redux HPV", hpv);
+        setObjectAsync(ASYNC_USER_HPV_KEY, hpv);
+      }
+  }, [hpv, profileLock, pinLoading]);
 
   function fetchHPV() {
     if (token === null || currentUser === null || currentUser?.id === undefined || currentUser?.id === null) {
