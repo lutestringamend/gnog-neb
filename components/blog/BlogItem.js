@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   ScrollView,
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import RenderHTML from "react-native-render-html";
@@ -54,20 +53,13 @@ function BlogItem(props) {
 
             <View style={styles.containerDescVertical}>
               <View style={styles.containerDescHorizontal}>
-                {props?.tag_blog?.length > 0 && (
-                  <FlashList
-                    estimatedItemSize={4}
-                    numColumns={2}
-                    horizontal={false}
-                    data={props?.tag_blog}
-                    contentContainerStyle={styles.containerFlatlist}
-                    renderItem={({ item }) => (
-                      <Text style={styles.textCategory}>{item?.nama}</Text>
-                    )}
-                  />
-                )}
-                <Text style={styles.textDate}>{props?.created_at}</Text>
+                {props?.tag_blog?.length > 0
+                  ? props?.tag_blog.map(({ nama }) => (
+                      <Text key={nama} style={styles.textCategory}>{nama}</Text>
+                    ))
+                  : null}
               </View>
+              <Text style={styles.textDate}>{props?.created_at}</Text>
               <Text style={styles.textTitle}>{props?.judul}</Text>
               <RenderHTML
                 style={styles.textDesc}
@@ -102,7 +94,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    padding: 4,
+    marginVertical: 4,
   },
   containerFlatlist: {
     flex: 1,
@@ -118,12 +110,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
     color: colors.daclen_black,
-    marginVertical: 6,
+    marginVertical: 2,
   },
   textDate: {
-    alignSelf: "center",
     fontSize: 12,
     color: colors.daclen_gray,
+    marginVertical: 6,
   },
   textDesc: {
     marginVertical: 6,

@@ -6,14 +6,15 @@ import {
   Text,
   ActivityIndicator,
   RefreshControl,
+  FlatList,
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
+//import { FlashList } from "@shopify/flash-list";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { getBlog } from "../../axios/blog";
-import { finalblognumber } from "../../axios/constants";
+import { finalblognumber, productpaginationnumber } from "../../axios/constants";
 import MainHeader from "../main/MainHeader";
 import BlogItem from "./BlogItem";
 import { colors } from "../../styles/base";
@@ -21,6 +22,7 @@ import { colors } from "../../styles/base";
 function BlogFeed(props) {
   const { blogs, pageNumber } = props;
   const [loading, setLoading] = useState(false);
+  const [onEndReachedCalledDuringMomentum, setEndReachedCalledDuringMomentum] = useState(true);
   const [paginationLoading, setPaginationLoading] = useState(false);
 
   useEffect(() => {
@@ -50,6 +52,14 @@ function BlogFeed(props) {
     }
   }
 
+  function onEndReached() {
+    if (!onEndReachedCalledDuringMomentum) {
+      console.log("onEndReached");
+      setEndReachedCalledDuringMomentum(true);
+      loadData(false);
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <MainHeader title="Blog" icon="arrow-left" />
@@ -61,8 +71,9 @@ function BlogFeed(props) {
         />
       ) : blogs?.length > 0 ? (
         <View style={styles.containerFlatlist}>
-          <FlashList
-            estimatedItemSize={10}
+          <FlatList
+            initialNumToRender={productpaginationnumber}
+            estimatedItemSize={productpaginationnumber}
             numColumns={1}
             horizontal={false}
             data={blogs}
@@ -72,8 +83,9 @@ function BlogFeed(props) {
                 onRefresh={() => loadData(true)}
               />
             }
+            onMomentumScrollBegin={() => setEndReachedCalledDuringMomentum(false)}
             onEndReachedThreshold={0.1}
-            onEndReached={() => loadData(false)}
+            onEndReached={() => onEndReached()}
             renderItem={({ item }) => (
               <BlogItem
                 id={item?.id}

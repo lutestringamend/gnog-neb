@@ -117,7 +117,7 @@ export default function App() {
         <StatusBar
           backgroundColor="transparent"
           translucent={true}
-          style="dark"
+          style="light"
         />
 
         <Provider store={store}>
