@@ -76,14 +76,14 @@ const Header = (props) => {
         <TouchableOpacity
           style={styles.containerUser}
           onPress={() => onLockPress()}
+          disabled={props?.lockStatus}
         >
           <MaterialCommunityIcons
-            name={props?.lockStatus === "open" ? "lock-open-alert" : "lock"}
+            name={props?.lockStatus? "lock" : "lock-open-alert"}
             size={24}
             color={
-              props?.lockStatus === "open"
-                ? colors.daclen_green_light
-                : colors.daclen_orange
+              props?.lockStatus
+                ? colors.daclen_orange : colors.daclen_green_light
             }
           />
         </TouchableOpacity>

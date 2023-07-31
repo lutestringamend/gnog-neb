@@ -15,19 +15,26 @@ import { bindActionCreators } from "redux";
 
 import { colors } from "../../styles/base";
 import Header from "../DashboardHeader";
-import { clearUserData, getCurrentUser, getHPV, updateReduxProfileLockStatus } from "../../axios/user";
+import {
+  clearUserData,
+  getCurrentUser,
+  getHPV,
+  updateReduxProfileLockStatus,
+} from "../../axios/user";
 import DashboardUser from "./components/DashboardUser";
 import DashboardStats from "./components/DashboardStats";
 import { setObjectAsync } from "../asyncstorage";
 import { ASYNC_USER_HPV_KEY } from "../asyncstorage/constants";
 import DashboardButtons from "./components/DashboardButtons";
 import DashboardBottom from "./components/DashboardBottom";
+import DashboardLock from "./components/DashboardLock";
 
 const Dashboard = (props) => {
   const [message, setMessage] = useState({
     text: null,
     isError: false,
   });
+  const [pinLoading, setPinLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   const { currentUser, token, hpv, profileLock } = props;
@@ -72,12 +79,34 @@ const Dashboard = (props) => {
     }
   }, [hpv]);
 
+  useEffect(() => {
+    if (!profileLock && pinLoading) {
+      setPinLoading(false);
+      setMessage({
+        text: null,
+        isError: false,
+      });
+    }
+  }, [profileLock, pinLoading]);
+
   function fetchHPV() {
     props.getHPV(currentUser?.id, token);
   }
 
   function onLockPress() {
     props.updateReduxProfileLockStatus(!profileLock);
+  }
+
+  function receiveOTP(e) {
+    console.log("receiveOTP", e);
+    setPinLoading(true);
+    if (e === "1234") {
+      setMessage({ text: "PIN benar", isError: false });
+      props.updateReduxProfileLockStatus(false);
+    } else {
+      setMessage({ text: "PIN salah", isError: true });
+      setPinLoading(false);
+    }
   }
 
   return (
@@ -89,6 +118,12 @@ const Dashboard = (props) => {
           resizeMode="cover"
         />
       ) : null}
+
+      <Header
+        username={currentUser?.name}
+        lockStatus={profileLock}
+        onLockPress={() => onLockPress()}
+      />
 
       {message?.text === null || message?.text === "" ? null : (
         <Text
@@ -105,11 +140,6 @@ const Dashboard = (props) => {
         </Text>
       )}
       <ScrollView style={styles.scrollView}>
-        <Header
-          username={currentUser?.name}
-          lockStatus="closed"
-          onLockPress={() => onLockPress()}
-        />
         {currentUser === null ||
         currentUser?.id === undefined ||
         currentUser?.name === undefined ? (
@@ -118,10 +148,11 @@ const Dashboard = (props) => {
             color={colors.daclen_light}
             style={styles.spinner}
           />
-        ) : profileLock === undefined || profileLock === null || profileLock ? (
-          <View style={styles.containerLock}>
-            <Text style={styles.textLockHeader}>TERKUNCI</Text>
-          </View>
+        ) : profileLock === undefined ||
+          profileLock === null ||
+          profileLock ||
+          pinLoading ? (
+          <DashboardLock receiveOTP={(e) => receiveOTP(e)} />
         ) : (
           <View style={styles.scrollView}>
             <DashboardUser currentUser={currentUser} />
@@ -129,6 +160,13 @@ const Dashboard = (props) => {
             <DashboardButtons />
           </View>
         )}
+        {profileLock && pinLoading ? (
+          <ActivityIndicator
+            size="large"
+            color={colors.daclen_light}
+            style={styles.spinner}
+          />
+        ) : null}
       </ScrollView>
 
       {profileLock === undefined ||
@@ -155,11 +193,6 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "transparent",
   },
-  containerLock: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   background: {
     position: "absolute",
     zIndex: 0,
@@ -181,12 +214,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     color: colors.daclen_light,
     textAlign: "center",
-  },
-  textLockHeader: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: colors.daclen_light,
-    textAlign: "center",
+    zIndex: 2,
   },
   spinner: {
     alignSelf: "center",

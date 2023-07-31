@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { colors } from "../../styles/base";
 
-const OTPInput = ({ code, setCode, maximumLength, setIsPinReady }) => {
+const OTPInput = ({ code, setCode, maximumLength, setIsPinReady, style }) => {
   const boxArray = new Array(maximumLength).fill(0);
   const inputRef = useRef();
 
@@ -55,12 +55,13 @@ const OTPInput = ({ code, setCode, maximumLength, setIsPinReady }) => {
   };
 
   return (
-    <View style={styles.OTPInputContainer}>
+    <View style={[styles.OTPInputContainer, style ? style : null]}>
       <Pressable style={styles.SplitOTPBoxesContainer} onPress={handleOnPress}>
         {boxArray.map(boxDigit)}
       </Pressable>
       <TextInput
         style={styles.TextInputHidden}
+        inputMode="numeric"
         value={code}
         onChangeText={setCode}
         maxLength={maximumLength}
@@ -75,11 +76,13 @@ const styles = StyleSheet.create({
   OTPInputContainer: {
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "transparent",
   },
   SplitOTPBoxesContainer: {
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-evenly",
+    backgroundColor: "transparent",
   },
   TextInputHidden: {
     position: "absolute",

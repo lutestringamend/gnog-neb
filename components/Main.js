@@ -56,15 +56,15 @@ function Main(props) {
         readStorageProducts();
       } else {
         props.clearCartError();
-        console.log("redux products", props.products);
+        //console.log("redux products", props.products);
       }
     }, [props.products]);
 
-    useEffect(() => {
+    /*useEffect(() => {
       if (props.maxIndex > 0) {
         console.log("redux products maxIndex", props.maxIndex);
       }
-    }, [props.maxIndex]);
+    }, [props.maxIndex]);*/
 
     useEffect(() => {
       if (
@@ -166,7 +166,7 @@ function Main(props) {
     };
 
     const checkProfileLockTimeout = async () => {
-      console.log("checkProfileLockTimeout");
+      //console.log("checkProfileLockTimeout");
       try {
         let time = new Date().getTime();
         if (time >= profileLockTimeout) {
