@@ -5,30 +5,46 @@ import {
   TouchableOpacity,
   Text,
   Linking,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors, staticDimensions } from "../../../styles/base";
 import { openWhatsapp } from "../../whatsapp/Whatsapp";
 import { adminWA, adminWAtemplate } from "../../profile/constants";
-import { commissionpointpdf, webdashboard } from "../../../axios/constants";
+import { commissionpointpdf, mainhttp, webdashboard } from "../../../axios/constants";
 
-const DashboardButtons = () => {
+const DashboardButtons = ({ userId, username }) => {
   const navigation = useNavigation();
 
   function openDaclenCare() {
-    openWhatsapp(adminWA, adminWAtemplate);
+    let template = adminWAtemplate;
+    if (!(username === undefined || username === null)) {
+      template = template.replace("#USERNAME#", username);
+    }
+    if (!(userId === undefined || userId === null)) {
+      template = template.replace("#USERID#", userId);
+    }
+    template = template.replace("#PLATFORM#", Platform.OS);
+    console.log("Daclen care intro", template);
+    openWhatsapp(adminWA, template);
   }
 
-  function openKodeEtik() {}
+  function openKodeEtik() {
+    Linking.openURL(mainhttp);
+  }
 
   function openBlog() {
     navigation.navigate("BlogFeed");
   }
 
-  function openTutorial() {}
+  function openTutorial() {
+    Linking.openURL(mainhttp);
+  }
 
-  function openExplanation() {}
+  function openExplanation() {
+    Linking.openURL(mainhttp);
+  }
 
   function openWebDashboard() {
     Linking.openURL(webdashboard);

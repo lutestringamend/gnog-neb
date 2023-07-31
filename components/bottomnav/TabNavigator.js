@@ -61,7 +61,10 @@ export default function TabNavigator(props) {
 
       {token === null ||
       currentUser === null ||
-      currentUser?.id === undefined ? null : (
+      currentUser?.id === undefined ||
+      currentUser?.nomor_telp_verified_at === undefined ||
+      currentUser?.nomor_telp_verified_at === null ||
+      currentUser?.nomor_telp_verified_at === "" ? null : (
         <Tab.Screen
           name="MediaKitTab"
           key="MediaKit"

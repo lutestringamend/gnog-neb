@@ -7,6 +7,7 @@ import {
 
 import { colors } from "../../../styles/base";
 import OTPInput from "../../OTP/OTPInput";
+import { PROFILE_LOCK_TIMEOUT_IN_MILISECONDS } from "../../../axios/constants";
 
 const DashboardLock = (props) => {
   const [otp, setOtp] = useState("");
@@ -33,15 +34,22 @@ const DashboardLock = (props) => {
         setIsPinReady={setIsPinReady}
         style={styles.containerOTP}
       />
+      <Text style={styles.textSubheader}>{`Halaman Profil akan dikunci lagi secara otomatis dalam ${PROFILE_LOCK_TIMEOUT_IN_MILISECONDS/60000} menit setelah Anda memasukkan PIN`}</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   containerLock: {
+    backgroundColor: colors.daclen_bg_highlighted,
+    opacity: 0.9,
+    borderRadius: 6,
+    elevation: 2,
     alignItems: "center",
-    backgroundColor: "transparent",
-    paddingHorizontal: 20,
+    marginHorizontal: 10,
+    marginVertical: 20,
+    paddingVertical: 24,
+    paddingHorizontal: 12,
   },
   containerOTP: {
     marginVertical: 40,
@@ -50,7 +58,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: colors.daclen_light,
-    marginTop: 32,
+    textAlign: "center",
+  },
+  textSubheader: {
+    fontSize: 14,
+    color: colors.daclen_light,
     textAlign: "center",
   },
 });

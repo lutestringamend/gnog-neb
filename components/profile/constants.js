@@ -50,7 +50,7 @@ export const abouttext =
   "Daclen merupakan brand tas premium yang menghadirkan bermacam produk tas berkualitas tinggi. Bergabung bersama Daclen dan dapatkan kesempatan meraih penghasilan tanpa modal, tanpa pembelian! Karena kami percaya dengan kualitas produk Daclen. Jika kamu ingin memiliki bisnis online terpercaya dengan komisi yang langsung dapat dicairkan, kesempatan mendapat banyak hadiah serta cashback dan tentu saja memiliki produk fashion premium berkualitas, Daclen jawabannya!\n\nDaclen menganut sistem bisnis Direct Selling yang merupakan metode penjualan dengan memaksimalkan anggotanya untuk mendapatkan keuntungan dari penjualan produk Daclen. Di Daclen, kamu tidak perlu mengeluarkan biaya apapun untuk mendaftar. Bahkan, kamu juga tidak perlu membeli produk apapun untuk menjadi member Daclen! Setelah menjadi member, kamu bisa menggunakan referalmu untuk mengajak orang lain bergabung, dan setiap transaksi pembelian produk yang dilakukan member yang kamu ajak, tentu kamu akan mendapat komisi!\n\n\nWhatsapp: +0811210555\nSenin to Sabtu : 08:00 WIB - 17:00 WIB\n\nAlamat :\nKomp. Pasadena Ruko R2 No. 42, Margahayu Utara, Babakan Ciparay, Bandung 40223, Jawa Barat, Indonesia.";
 export const copyrighttext = "Copyright 2023 Daclen";
 export const adminWA = "62811210555";
-export const adminWAtemplate = "Halo, Daclen!\n";
+export const adminWAtemplate = "Halo, Daclen Care! Saya adalah user dengan id #USERID# dan nama #USERNAME# menggunakan aplikasi #PLATFORM#.\n";
 export const referralWAtemplate =
   "Ayo ikut berjualan dan berbisnis bersama saya di daclen.com. Daftar disini ";
 export const sharereferral = "Bagikan Referral";

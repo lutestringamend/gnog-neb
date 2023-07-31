@@ -1,13 +1,18 @@
 import React from "react";
-import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Text, Linking } from "react-native";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors } from "../../../styles/base";
+import { websaldo } from "../../../axios/constants";
 
 export default function DashboardUser(props) {
   const { currentUser } = props;
   const navigation = useNavigation();
+
+  function openWithdrawal() {
+    Linking.openURL(websaldo);
+  }
 
   if (
     currentUser === undefined ||
@@ -57,7 +62,7 @@ export default function DashboardUser(props) {
           {`Referral Id: ${currentUser?.name}`}
         </Text>
       </View>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={() => openWithdrawal()}>
             <Text style={styles.textButton}>
                 {`CAIRKAN\nSALDO`}
             </Text>

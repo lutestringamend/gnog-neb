@@ -170,7 +170,7 @@ const Dashboard = (props) => {
           <View style={styles.scrollView}>
             <DashboardUser currentUser={currentUser} />
             <DashboardStats currentUser={currentUser} />
-            <DashboardButtons />
+            <DashboardButtons userId={currentUser?.id} username={currentUser?.name} />
           </View>
         )}
         {profileLock && pinLoading ? (
