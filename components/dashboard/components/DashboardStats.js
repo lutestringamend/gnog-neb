@@ -80,7 +80,7 @@ export default function DashboardStats(props) {
           <Text style={styles.text}>{`Reseller Anda: 0 Orang`}</Text>
         </View>
         <TouchableOpacity style={styles.button} onPress={() => openUserRoots()}>
-          <Text style={styles.textButton}>{`Tampilkan\nReseller & Agen`}</Text>
+          <Text style={styles.textButton}>{`Tampilkan\nAgen & Reseller`}</Text>
         </TouchableOpacity>
       </View>
 

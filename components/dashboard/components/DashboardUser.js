@@ -10,7 +10,7 @@ export default function DashboardUser(props) {
   const navigation = useNavigation();
 
   function openWithdrawal() {
-    navigation.navigate("Withdrawal");
+    navigation.navigate("SaldoReportScreen");
   }
 
   if (
@@ -56,7 +56,7 @@ export default function DashboardUser(props) {
           </Text>
         ) : null}
 
-        <Text style={styles.text}>Distributor Daclen</Text>
+        <Text style={styles.text}>Reseller Daclen</Text>
         <Text style={styles.textReferral}>
           {`Referral Id: ${currentUser?.name}`}
         </Text>

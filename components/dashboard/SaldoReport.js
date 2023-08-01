@@ -32,7 +32,11 @@ const SaldoReport = (props) => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    props.clearAuthError();
+    try {
+      props.clearAuthError();
+    } catch (e) {
+      console.error(e);
+    }
   }, []);
 
   useEffect(() => {
@@ -62,12 +66,25 @@ const SaldoReport = (props) => {
     }
   }
 
+  function openWithdrawal() {
+    navigation.navigate("Withdrawal");
+  }
+
   function onOpenExternalLink() {
     Linking.openURL(websaldo);
   }
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.containerButton}>
+        <TouchableOpacity
+          onPress={() => openWithdrawal()}
+          style={styles.button}
+        >
+          <MaterialCommunityIcons name="cash-refund" size={18} color="white" />
+          <Text style={styles.textButton}>Tarik Saldo</Text>
+        </TouchableOpacity>
+      </View>
       {loading ? (
         <ActivityIndicator
           size="large"
@@ -207,6 +224,10 @@ const styles = StyleSheet.create({
   containerPoints: {
     marginHorizontal: 10,
   },
+  containerButton: {
+    width: "100%",
+    backgroundColor: colors.daclen_light,
+  },
   containerFlatlist: {
     flex: 1,
   },
@@ -267,19 +288,18 @@ const styles = StyleSheet.create({
     aspectRatio: 1 / 1,
   },
   button: {
-    alignSelf: "flex-end",
-    marginEnd: 10,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 4,
-    elevation: 3,
-    backgroundColor: colors.daclen_blue,
+    width: "100%",
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    backgroundColor: colors.daclen_orange,
   },
   textButton: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "bold",
+    marginStart: 10,
     color: "white",
   },
 });

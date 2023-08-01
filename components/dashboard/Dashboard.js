@@ -187,6 +187,12 @@ const Dashboard = (props) => {
             <DashboardButtons
               userId={currentUser?.id}
               username={currentUser?.name}
+              setMessage={(text, isError) =>
+                setMessage({
+                  text,
+                  isError,
+                })
+              }
             />
           </View>
         )}

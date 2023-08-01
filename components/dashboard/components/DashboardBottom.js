@@ -12,7 +12,7 @@ import {
 import * as Clipboard from "expo-clipboard";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, staticDimensions } from "../../../styles/base";
+import { colors } from "../../../styles/base";
 import {
   personalwebsiteurl,
   personalwebsiteurlshort,
