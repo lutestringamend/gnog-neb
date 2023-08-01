@@ -86,6 +86,7 @@ const WatermarkSettings = ({
         <TextInput
           value={tempWatermarkData?.phone}
           style={styles.textInput}
+          inputMode="numeric"
           onChangeText={(phone) =>
             setTempWatermarkData({ ...tempWatermarkData, phone })
           }

@@ -311,7 +311,6 @@ const MultipleImageView = (props) => {
         }*/
         saveUriToAsyncStorage(result?.uri);
         await shareFileAsync(result?.uri);
-        navigation.goBack();
       } else if (Platform.OS === "android") {
         ToastAndroid.show("Gagal membuat file PDF", ToastAndroid.LONG);
       }
@@ -426,6 +425,7 @@ const MultipleImageView = (props) => {
           addError(e.toString());
         }
       }
+      navigation.goBack();
     };
 
     const getFileName = (index) => {
