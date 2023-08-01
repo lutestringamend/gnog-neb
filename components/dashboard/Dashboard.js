@@ -67,7 +67,7 @@ const Dashboard = (props) => {
   useEffect(() => {
     if (hpv === undefined || hpv === null || hpv?.data === undefined) {
       fetchHPV();
-    /*} else if (hpv?.data === null) {
+      /*} else if (hpv?.data === null) {
       setMessage({
         text: "Mohon cek koneksi Internet Anda",
         isError: true,
@@ -84,19 +84,25 @@ const Dashboard = (props) => {
   }, [hpv]);
 
   useEffect(() => {
-    if (profileLock || pinLoading) {
+    if (profileLock) {
       return;
     }
-    setPinLoading(false);
-      setMessage({
-        text: null,
-        isError: false,
-      });
-
+    if (pinLoading) {
+      setPinLoading(false);
+    }
+    setMessage({
+      text: null,
+      isError: false,
+    });
   }, [profileLock, pinLoading]);
 
   function fetchHPV() {
-    if (token === null || currentUser === null || currentUser?.id === undefined || currentUser?.id === null) {
+    if (
+      token === null ||
+      currentUser === null ||
+      currentUser?.id === undefined ||
+      currentUser?.id === null
+    ) {
       return;
     }
     props.getHPV(currentUser?.id, token);
@@ -113,7 +119,10 @@ const Dashboard = (props) => {
       setMessage({ text: "PIN benar", isError: false });
       props.updateReduxProfileLockStatus(false);
     } else {
-      setMessage({ text: "PIN salah. Tekan Reset PIN jika Anda lupa PIN.", isError: true });
+      setMessage({
+        text: "PIN salah. Tekan Reset PIN jika Anda lupa PIN.",
+        isError: true,
+      });
       setPinLoading(false);
     }
   }
@@ -164,9 +173,9 @@ const Dashboard = (props) => {
         ) : currentUser?.nomor_telp_verified_at === null ||
           currentUser?.nomor_telp_verified_at === "" ? (
           <DashboardVerification />
-        ) : profilePIN === null || profilePIN === "" ? 
+        ) : profilePIN === null || profilePIN === "" ? (
           <DashboardCreatePIN />
-        : profileLock === undefined ||
+        ) : profileLock === undefined ||
           profileLock === null ||
           profileLock ||
           pinLoading ? (
@@ -175,7 +184,10 @@ const Dashboard = (props) => {
           <View style={styles.scrollView}>
             <DashboardUser currentUser={currentUser} />
             <DashboardStats currentUser={currentUser} />
-            <DashboardButtons userId={currentUser?.id} username={currentUser?.name} />
+            <DashboardButtons
+              userId={currentUser?.id}
+              username={currentUser?.name}
+            />
           </View>
         )}
         {profileLock && pinLoading ? (

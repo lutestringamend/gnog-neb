@@ -272,7 +272,7 @@ function MediaKitFiles(props) {
         <RBSheet
           ref={rbSheet}
           openDuration={250}
-          height={480}
+          height={500}
           onClose={() => closeBS()}
         >
           <BSPopup
