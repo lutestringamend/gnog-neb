@@ -14,12 +14,19 @@ import { connect } from "react-redux";
 import { colors } from "../styles/base";
 
 const Header = (props) => {
-  const { username, currentUser } = props;
+  const { username, currentUser, profileLock } = props;
   const navigation = useNavigation();
 
   function onSettingPress() {
     if (props?.onSettingPress === undefined || props?.onSettingPress === null) {
-      navigation.navigate("Profile", { username });
+      if (profileLock && Platform.OS !== "web") {
+        if (props?.goDashboard === undefined || props?.goDashboard === null) {
+          return;
+        }
+        props?.goDashboard();
+      } else {
+        navigation.navigate("Profile", { username });
+      }
     } else {
       props.onSettingPress();
     }
@@ -152,15 +159,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (store) => ({
   currentUser: store.userState.currentUser,
+  profileLock: store.userState.profileLock,
 });
-
-/*const mapDispatchProps = (dispatch) =>
-  bindActionCreators(
-    {
-      clearUserData,
-      getCurrentUser,
-    },
-    dispatch
-  );*/
 
 export default connect(mapStateToProps, null)(Header);

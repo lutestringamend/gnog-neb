@@ -54,7 +54,9 @@ const Withdrawal = (props) => {
   }, [amount]);
 
   function editBankDetails() {
-    navigation.navigate("EditProfile");
+    navigation.navigate("EditProfile", {
+        exitRightAway: true,
+    });
   }
 
   function submit() {
@@ -225,7 +227,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     marginHorizontal: 20,
-    marginTop: 32,
+    marginTop: 24,
   },
   text: {
     color: colors.daclen_gray,

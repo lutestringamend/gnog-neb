@@ -53,6 +53,7 @@ function EditProfile(props) {
   const rbSheetAddress = useRef();
 
   const [permissions, setPermissions] = useState(intiialPermissions);
+  const exitRightAway = props.route.params?.exitRightAway ? props.route.params?.exitRightAway : false;
 
   useEffect(() => {
     const initiatePermission = async () => {
@@ -133,6 +134,9 @@ function EditProfile(props) {
       if (props.userUpdate?.session === "success") {
         setSuccess(true);
         setError(props.userUpdate?.message);
+        if (exitRightAway) {
+          navigation.goBack();
+        }
       } else {
         setSuccess(false);
         let errorHeader = "Gagal update data user\n";

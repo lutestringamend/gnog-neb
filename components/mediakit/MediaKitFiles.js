@@ -165,18 +165,25 @@ function MediaKitFiles(props) {
 
     const checkWatermarkData = async () => {
       let newData = await getObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY);
-      if (newData === undefined || newData === null) {
-        newData = {
-          ...WatermarkData,
-          name: currentUser?.name ? currentUser?.name : "",
-          phone: currentUser?.nomor_telp ? currentUser?.nomor_telp : "",
-          url: currentUser?.name
-            ? `https://${webreferral}${currentUser?.name}`
-            : "",
-        };
+      if (!(newData === undefined || newData === null)) {
+        setTempWatermarkData(newData);
+        props.updateReduxMediaKitWatermarkData(newData);
+      } else {
+        newData = getWatermarkDataFromCurrentUser();
+        setTempWatermarkData(newData);
+        props.updateReduxMediaKitWatermarkData(newData);
       }
-      setTempWatermarkData(newData);
-      props.updateReduxMediaKitWatermarkData(newData);
+    }
+
+    function getWatermarkDataFromCurrentUser() {
+      return {
+        ...WatermarkData,
+        name: currentUser?.name ? currentUser?.name : "",
+        phone: currentUser?.nomor_telp ? currentUser?.nomor_telp : "",
+        url: currentUser?.name
+          ? `https://${webreferral}${currentUser?.name}`
+          : "",
+      };
     }
 
     const checkStorageMediaKitPhotos = async () => {
@@ -332,7 +339,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_graydark,
   },
   containerInfo: {
-    flex: 1,
+    height: dimensions.fullHeight - 100,
     backgroundColor: "transparent",
   },
   containerPrivacy: {

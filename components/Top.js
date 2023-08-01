@@ -108,8 +108,8 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    paddingVertical: 6,
     paddingHorizontal: 12,
+    height: 60,
     justifyContent: "center",
     alignItems: "center",
   },

@@ -1,5 +1,5 @@
 import React from "react";
-import { SafeAreaView, StyleSheet, ScrollView, View } from "react-native";
+import { StyleSheet, ScrollView, View } from "react-native";
 
 import Header from "../DashboardHeader";
 //import Header from "./Header";
@@ -11,10 +11,16 @@ import CheckoutBox from "./CheckoutBox";
 import { colors } from "../../styles/base";
 //import Youtube from "../home/Youtube";
 
-function Home({ goDashboard }) {
+function Home(props) {
+  function openDashboard() {
+    if (props?.goDashboard === undefined || props?.goDashboard === null) {
+      return;
+    }
+    props.goDashboard();
+  }
   return (
     <View style={styles.container}>
-      <Header goDashboard={goDashboard} isHome={true} />
+      <Header goDashboard={openDashboard()} isHome={true} />
       <ScrollView style={styles.scrollView}>
         <Slider />
         <Banner />
