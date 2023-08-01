@@ -26,7 +26,7 @@ import {
   updateReduxMediaKitPhotosUri,
 } from "../../axios/mediakit";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
-import { colors, staticDimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import { privacypolicy } from "../profile/constants";
 import { ErrorView } from "../webview/WebviewChild";
 import HistoryTabItem from "../history/HistoryTabItem";
@@ -270,7 +270,7 @@ function MediaKitFiles(props) {
         <RBSheet
           ref={rbSheet}
           openDuration={250}
-          height={500}
+          height={dimensions.fullHeight - 32}
           onClose={() => closeBS()}
         >
           <BSPopup
@@ -315,28 +315,6 @@ function MediaKitFiles(props) {
   }
 }
 
-/*
-          <TouchableOpacity onPress={() => setExpand(!expand)}>
-            <View style={styles.containerHeader}>
-              <Text style={styles.textHeader}>Pengaturan Watermark</Text>
-              <Image
-                source={require("../../assets/gear.png")}
-                style={styles.gear}
-              />
-            </View>
-          </TouchableOpacity>
-
-            
-<Text style={styles.textCompulsory}>Link Referral*</Text>
-                <TextInput
-                  value={watermarkData?.url}
-                  style={styles.textInput}
-                  onChangeText={(url) =>
-                    setWatermarkData({ ...watermarkData, url })
-                  }
-                />
-*/
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -354,6 +332,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_graydark,
   },
   containerInfo: {
+    flex: 1,
     backgroundColor: "transparent",
   },
   containerPrivacy: {

@@ -76,6 +76,17 @@ export const watermarkvideoicon = "video-box";
 export const linkcopied = "Tersimpan ke Clipboard";
 export const sharingdialogtitle = "Bagikan Link Referral";
 
+export const withdrawalexplanation = `
+- Minimal penarikan saldo Rp. 50.000,-.
+- Maksimal penarikan saldo adalah Rp. 25.000.000,- atau sesuai kebijakan tiap bank.
+- Metode transfer menggunakan sistem Real Time Online (RTO).
+- Transfer uang melalui RTO dilakukan secara internet banking.
+- Untuk bank yang selain kami gunakan akan dikenakan biaya admin.
+- Saldo anda akan dikurangi biaya admin sebesar Rp. 6.500,- jika biaya admin dikenakan.
+- Biaya admin dapat berbeda-beda pada setiap bank.
+- Transfer uang akan diproses admin pada waktu kerja dari hari senin - jumat, pada pukul 8:00 WIB - 17:00 WIB
+`
+
 export const tempvideoarray = [
   {
     uri: "https://daclen.com/mp4/source.mp4",

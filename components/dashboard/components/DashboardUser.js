@@ -4,14 +4,13 @@ import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors } from "../../../styles/base";
-import { websaldo } from "../../../axios/constants";
 
 export default function DashboardUser(props) {
   const { currentUser } = props;
   const navigation = useNavigation();
 
   function openWithdrawal() {
-    Linking.openURL(websaldo);
+    navigation.navigate("Withdrawal");
   }
 
   if (
@@ -25,7 +24,7 @@ export default function DashboardUser(props) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.containerPhoto}>
+      <TouchableOpacity onPress={() => navigation.navigate("EditProfile")} style={styles.containerPhoto}>
         <Image
           key="userImage"
           style={styles.image}
@@ -39,7 +38,7 @@ export default function DashboardUser(props) {
           placeholder={null}
           transition={100}
         />
-      </View>
+      </TouchableOpacity>
 
       <View style={styles.containerVertical}>
         <Text style={styles.textName}>

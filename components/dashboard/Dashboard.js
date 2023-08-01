@@ -175,10 +175,10 @@ const Dashboard = (props) => {
           <DashboardVerification />
         ) : profilePIN === null || profilePIN === "" ? (
           <DashboardCreatePIN />
-        ) : profileLock === undefined ||
+        ) : Platform.OS !== "web" && (profileLock === undefined ||
           profileLock === null ||
           profileLock ||
-          pinLoading ? (
+          pinLoading) ? (
           <DashboardLock receiveOTP={(e) => receiveOTP(e)} />
         ) : (
           <View style={styles.scrollView}>

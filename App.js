@@ -48,6 +48,7 @@ import VerifyPhone from "./components/auth/VerifyPhone";
 import OTPScreen from "./components/auth/OTPScreen";
 
 import OpenMidtrans from "./components/checkout/OpenMidtrans";
+import Withdrawal from "./components/dashboard/Withdrawal";
 import WebviewScreen from "./components/webview/Webview";
 import FAQScreen from "./components/profile/FAQ";
 import AboutScreen from "./components/profile/About";
@@ -185,6 +186,11 @@ export default function App() {
                   title: "Pembayaran",
                   headerShown: false,
                 }}
+              />
+              <Stack.Screen
+                name="Withdrawal"
+                component={Withdrawal}
+                options={{ ...defaultOptions, title: "Penarikan Saldo" }}
               />
               <Stack.Screen
                 name="CheckoutItem"
