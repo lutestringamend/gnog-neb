@@ -45,17 +45,17 @@ export default function SocialsItem(props) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.daclen_gray,
-    width: 54,
-    height: 54,
-    borderRadius: 27,
+    backgroundColor: colors.daclen_bg_highlighted,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     marginHorizontal: 6,
     justifyContent: "center",
     alignItems: "center",
   },
   icon: {
-    width: 20,
-    height: 20,
+    width: 24,
+    height: 24,
     alignSelf: "center",
   },
 });

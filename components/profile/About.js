@@ -71,7 +71,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   containerSocials: {
-    backgroundColor: colors.daclen_black,
+    backgroundColor: "transparent",
+    opacity: 0.9,
     flexDirection: "row",
     paddingHorizontal: 32,
     marginVertical: 20,
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingBottom: 20,
     fontSize: 12,
-    color: colors.daclen_gray,
+    color: colors.daclen_light,
     textAlign: "justify",
   },
   textCaption: {
@@ -100,7 +101,7 @@ const styles = StyleSheet.create({
   textSocials: {
     fontSize: 16,
     fontWeight: "bold",
-    color: colors.daclen_light,
+    color: colors.white,
     alignSelf: "center",
     marginVertical: 6,
   },
