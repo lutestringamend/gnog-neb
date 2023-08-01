@@ -170,11 +170,11 @@ const Dashboard = (props) => {
         currentUser?.id === undefined ||
         currentUser?.name === undefined ? (
           <DashboardLogout />
+        ) : profilePIN === null || profilePIN === "" ? (
+          <DashboardCreatePIN />
         ) : currentUser?.nomor_telp_verified_at === null ||
           currentUser?.nomor_telp_verified_at === "" ? (
           <DashboardVerification />
-        ) : profilePIN === null || profilePIN === "" ? (
-          <DashboardCreatePIN />
         ) : profileLock === undefined ||
           profileLock === null ||
           profileLock ||

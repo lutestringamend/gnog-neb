@@ -20,7 +20,7 @@ function Home(props) {
   }
   return (
     <View style={styles.container}>
-      <Header goDashboard={openDashboard()} isHome={true} />
+      <Header goDashboard={() => openDashboard()} isHome={true} />
       <ScrollView style={styles.scrollView}>
         <Slider />
         <Banner />
