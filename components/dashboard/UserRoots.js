@@ -68,9 +68,7 @@ const UserRoots = (props) => {
     }
   }
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
+  /*
         <View style={styles.containerHorizontal}>
           <UserRootHeaderItem
             title={userverified}
@@ -87,6 +85,11 @@ const UserRoots = (props) => {
             content={numRoots - numVerified}
           />
         </View>
+  */
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
         <View style={styles.containerMain}>
           <UserRootItem
             userData={currentUser}

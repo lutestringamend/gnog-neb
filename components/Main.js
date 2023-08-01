@@ -18,6 +18,7 @@ import {
   clearUserData,
   disableForceLogout,
   updateReduxProfileLockStatus,
+  updateReduxProfilePIN,
 } from "../axios/user";
 import { clearMediaKitData } from "../axios/mediakit";
 import { getObjectAsync, getTokenAsync } from "./asyncstorage";
@@ -26,6 +27,7 @@ import {
   ASYNC_MEDIA_WATERMARK_VIDEOS_KEY,
   ASYNC_PRODUCTS_ARRAY_KEY,
   ASYNC_USER_CURRENTUSER_KEY,
+  ASYNC_USER_PROFILE_PIN_KEY,
 } from "./asyncstorage/constants";
 import { clearCartError } from "../axios/cart";
 import { sentryLog } from "../sentry";
@@ -36,7 +38,7 @@ function Main(props) {
   try {
     const [error, setError] = useState(null);
     const appState = useRef(AppState.currentState);
-    const { token, currentUser, profileLock, profileLockTimeout } = props;
+    const { token, currentUser, profileLock, profileLockTimeout, profilePIN } = props;
 
     useEffect(() => {
       const readStorageProducts = async () => {
@@ -89,7 +91,14 @@ function Main(props) {
     }, [token, currentUser, profileLock]);
 
     useEffect(() => {
-      console.log("Main profileLock", profileLock);
+      if (profilePIN === null) {
+        checkAsyncPIN();
+      }
+      console.log("Main redux PIN", profilePIN);
+    }, [profilePIN]);
+
+    useEffect(() => {
+      //console.log("Main profileLock", profileLock);
       if (
         profileLock ||
         profileLockTimeout === null ||
@@ -165,6 +174,13 @@ function Main(props) {
       appState.current = nextAppState;
     };
 
+    const checkAsyncPIN = async () => {
+      let asyncPIN = await getObjectAsync(ASYNC_USER_PROFILE_PIN_KEY);
+      if (!(asyncPIN === undefined || asyncPIN === null || asyncPIN === "")) {
+        props.updateReduxProfilePIN(asyncPIN);
+      }
+    }
+
     const checkProfileLockTimeout = async () => {
       //console.log("checkProfileLockTimeout");
       try {
@@ -233,6 +249,7 @@ const mapStateToProps = (store) => ({
   currentUser: store.userState.currentUser,
   profileLock: store.userState.profileLock,
   profileLockTimeout: store.userState.profileLockTimeout,
+  profilePIN: store.userState.profilePIN,
   products: store.productState.products,
   maxIndex: store.productState.maxIndex,
   loginToken: store.userState.loginToken,
@@ -252,6 +269,7 @@ const mapDispatchProps = (dispatch) =>
       clearMediaKitData,
       clearCartError,
       updateReduxProfileLockStatus,
+      updateReduxProfilePIN,
     },
     dispatch
   );

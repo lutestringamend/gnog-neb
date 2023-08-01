@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -6,21 +6,23 @@ import {
   Text,
   View,
   TextInput,
-  Image,
   TouchableOpacity,
   Platform,
   ToastAndroid,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { isAvailableAsync } from "expo-sharing";
+import RBSheet from "react-native-raw-bottom-sheet";
 
 import {
   getMediaKitPhotos,
   clearMediaKitPhotosError,
   clearMediaKitData,
   updateReduxMediaKitPhotos,
+  updateReduxMediaKitWatermarkData,
 } from "../../axios/mediakit";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { colors, staticDimensions } from "../../styles/base";
@@ -38,26 +40,71 @@ import {
 import WatermarkPhotos from "./WatermarkPhotos";
 import WatermarkVideos from "./WatermarkVideos";
 import { sentryLog } from "../../sentry";
-import { ASYNC_MEDIA_WATERMARK_PHOTOS_KEY } from "../asyncstorage/constants";
+import { ASYNC_MEDIA_WATERMARK_DATA_KEY, ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../asyncstorage/constants";
 import Header from "../DashboardHeader";
+import BSPopup from "../bottomsheets/BSPopup";
+import { WatermarkData } from "./constants";
+
+const WatermarkSettings = ({
+  navigation,
+  loading,
+  tempWatermarkData,
+  setTempWatermarkData,
+}) => {
+  return (
+    <View style={styles.containerInfo}>
+      <View style={styles.containerPrivacy}>
+        <Text style={styles.textUid}>
+          Kirimkan foto dan video promosi dari katalog Daclen dengan watermark
+          spesial untuk kamu. Watermark berisi nama, nomor telepon dan link
+          referral.
+        </Text>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("Webview", {
+              webKey: "privacy",
+              text: privacypolicy,
+            })
+          }
+          disabled={loading}
+        >
+          <Text style={styles.textChange}>Baca {privacypolicy}</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.containerBox}>
+        <Text style={styles.textCompulsory}>Nama*</Text>
+        <TextInput
+          value={tempWatermarkData?.name}
+          style={styles.textInput}
+          onChangeText={(name) =>
+            setTempWatermarkData({ ...tempWatermarkData, name })
+          }
+        />
+        <Text style={styles.textCompulsory}>Nomor telepon*</Text>
+        <TextInput
+          value={tempWatermarkData?.phone}
+          style={styles.textInput}
+          onChangeText={(phone) =>
+            setTempWatermarkData({ ...tempWatermarkData, phone })
+          }
+        />
+      </View>
+    </View>
+  );
+};
 
 function MediaKitFiles(props) {
   try {
     const [activeTab, setActiveTab] = useState(WATERMARK_PHOTO);
-    const [expand, setExpand] = useState(false);
     const [photoLoading, setPhotoLoading] = useState(false);
     const [loading, setLoading] = useState(false);
     const [sharingAvailability, setSharingAvailability] = useState(null);
-    const { currentUser, photoError, photosUri } = props;
-    const navigation = useNavigation();
+    const [tempWatermarkData, setTempWatermarkData] = useState(WatermarkData);
 
-    const [watermarkData, setWatermarkData] = useState({
-      name: currentUser?.name ? currentUser?.name : "",
-      phone: currentUser?.nomor_telp ? currentUser?.nomor_telp : "",
-      url: currentUser?.name
-        ? `https://${webreferral}${currentUser?.name}`
-        : "",
-    });
+    const { currentUser, photoError, photosUri, watermarkData } = props;
+    const rbSheet = useRef();
+    const navigation = useNavigation();
 
     useEffect(() => {
       const checkSharing = async () => {
@@ -74,6 +121,20 @@ function MediaKitFiles(props) {
       checkSharing();
       //props.clearMediaKitData();
     }, []);
+
+    useEffect(() => {
+      if (currentUser === null || currentUser?.name === undefined || currentUser?.id === undefined) {
+        return;
+      }
+      if (watermarkData === null) {
+        checkWatermarkData();
+      } else {
+        if (loading) {
+          changingWatermarkData();
+        }
+        console.log("redux WatermarkData", watermarkData);
+      }
+    }, [watermarkData]);
 
     useEffect(() => {
       if (props.mediaKitPhotos === undefined || props.mediaKitPhotos === null) {
@@ -100,6 +161,22 @@ function MediaKitFiles(props) {
       }
     }, [photoError]);
 
+    const checkWatermarkData = async () => {
+      let newData = await getObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY);
+      if (newData === undefined || newData === null) {
+        newData = {
+          ...WatermarkData,
+          name: currentUser?.name ? currentUser?.name : "",
+          phone: currentUser?.nomor_telp ? currentUser?.nomor_telp : "",
+          url: currentUser?.name
+            ? `https://${webreferral}${currentUser?.name}`
+            : "",
+        };
+      }
+      setTempWatermarkData(newData);
+      props.updateReduxMediaKitWatermarkData(newData);
+    }
+
     const checkStorageMediaKitPhotos = async () => {
       const storagePhotos = await getObjectAsync(
         ASYNC_MEDIA_WATERMARK_PHOTOS_KEY
@@ -116,53 +193,40 @@ function MediaKitFiles(props) {
       }
     };
 
+    function closeBS() {}
+
+    function changeWatermark() {
+      if (
+        tempWatermarkData?.name === null ||
+        tempWatermarkData?.name === "" ||
+        tempWatermarkData?.name?.length < 3 ||
+        tempWatermarkData?.phone === null ||
+        tempWatermarkData?.phone === "" ||
+        tempWatermarkData?.phone?.length < 8
+      ) {
+        rbSheet.current.close();
+        return;
+      }
+      setLoading(true);
+      props.updateReduxMediaKitWatermarkData(tempWatermarkData);
+    }
+
+    const changingWatermarkData = async () => {
+      await setObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY, watermarkData);
+      //await setObjectAsync(ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, null);
+      await setObjectAsync(ASYNC_WATERMARK_PHOTOS_PDF_KEY, null);
+      //props.clearMediaKitPhotosError();
+      //props.clearMediaKitData();
+      setLoading(false);
+      rbSheet.current.close();
+    }
+
     return (
       <View style={styles.container}>
         <Header
           settingText="SETTING WATERMARK"
-          onSettingPress={() => setExpand(!expand)}
+          onSettingPress={() => rbSheet.current.open()}
         />
-        {expand ? (
-          <View style={styles.containerInfo}>
-            <View style={styles.containerPrivacy}>
-              <Text style={styles.textUid}>
-                Kirimkan foto dan video promosi dari katalog Daclen dengan
-                watermark spesial untuk kamu. Watermark berisi nama, nomor
-                telepon dan link referral.
-              </Text>
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("Webview", {
-                    webKey: "privacy",
-                    text: privacypolicy,
-                  })
-                }
-                disabled={loading}
-              >
-                <Text style={styles.textChange}>Baca {privacypolicy}</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.containerBox}>
-              <Text style={styles.textCompulsory}>Nama*</Text>
-              <TextInput
-                value={watermarkData?.name}
-                style={styles.textInput}
-                onChangeText={(name) =>
-                  setWatermarkData({ ...watermarkData, name })
-                }
-              />
-              <Text style={styles.textCompulsory}>Nomor telepon*</Text>
-              <TextInput
-                value={watermarkData?.phone}
-                style={styles.textInput}
-                onChangeText={(phone) =>
-                  setWatermarkData({ ...watermarkData, phone })
-                }
-              />
-            </View>
-          </View>
-        ) : null}
         <ScrollView style={styles.scrollView}>
           {currentUser?.id === 8054 ? (
             <View style={styles.tabView}>
@@ -181,7 +245,13 @@ function MediaKitFiles(props) {
             </View>
           ) : null}
 
-          {activeTab === WATERMARK_VIDEO ? (
+          {watermarkData === null ? (
+            <ActivityIndicator
+              size="large"
+              color={colors.daclen_orange}
+              style={styles.spinner}
+            />
+          ) : activeTab === WATERMARK_VIDEO ? (
             <WatermarkVideos
               watermarkData={watermarkData}
               userId={currentUser?.id}
@@ -199,6 +269,38 @@ function MediaKitFiles(props) {
             />
           )}
         </ScrollView>
+        <RBSheet
+          ref={rbSheet}
+          openDuration={250}
+          height={480}
+          onClose={() => closeBS()}
+        >
+          <BSPopup
+            title="Setting Watermark"
+            content={
+              <WatermarkSettings
+                loading={loading}
+                navigation={navigation}
+                tempWatermarkData={tempWatermarkData}
+                setTempWatermarkData={setTempWatermarkData}
+              />
+            }
+            buttonPositive="Ganti"
+            buttonPositiveColor={colors.daclen_orange}
+            buttonNegative="Tutup"
+            buttonNegativeColor={colors.daclen_gray}
+            buttonDisabled={
+              tempWatermarkData?.name === null ||
+              tempWatermarkData?.name === "" ||
+              tempWatermarkData?.name?.length < 3 ||
+              tempWatermarkData?.phone === null ||
+              tempWatermarkData?.phone === "" ||
+              tempWatermarkData?.phone?.length < 8
+            }
+            closeThis={() => rbSheet.current.close()}
+            onPress={() => changeWatermark()}
+          />
+        </RBSheet>
       </View>
     );
   } catch (error) {
@@ -254,7 +356,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_graydark,
   },
   containerInfo: {
-    backgroundColor: colors.white,
+    backgroundColor: "transparent",
   },
   containerPrivacy: {
     marginVertical: 20,
@@ -262,7 +364,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   containerBox: {
-    backgroundColor: colors.daclen_light,
+    backgroundColor: colors.white,
     borderColor: colors.daclen_gray,
     borderWidth: 2,
     borderRadius: 5,
@@ -283,6 +385,10 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: 20,
     height: 20,
+  },
+  spinner: {
+    alignSelf: "center",
+    marginVertical: 20,
   },
   text: {
     color: colors.daclen_gray,
@@ -329,6 +435,7 @@ const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
   photosUri: store.mediaKitState.photosUri,
+  watermarkData: store.mediaKitState.watermarkData,
   mediaKitPhotos: store.mediaKitState.photos,
   photoError: store.mediaKitState.photoError,
 });
@@ -338,6 +445,7 @@ const mapDispatchProps = (dispatch) =>
     {
       getMediaKitPhotos,
       updateReduxMediaKitPhotos,
+      updateReduxMediaKitWatermarkData,
       clearMediaKitPhotosError,
       clearMediaKitData,
     },

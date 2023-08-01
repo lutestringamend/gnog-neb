@@ -67,6 +67,7 @@ import VideoLogs from "./components/videoplayer/VideoLogs";
 import Profile from "./components/profile/Profile";
 import DeleteAccountScreen from "./components/auth/DeleteAccount";
 import PointReportScreen from "./components/dashboard/PointReport";
+import CreatePIN from "./components/profile/CreatePIN";
 import UserRoots from "./components/dashboard/UserRoots";
 import BonusRoot from "./components/dashboard/BonusRoot";
 import SaldoReport from "./components/dashboard/SaldoReport";
@@ -266,6 +267,11 @@ export default function App() {
                 name="DeleteAccount"
                 component={DeleteAccountScreen}
                 options={{ ...defaultOptions, title: "Hapus Akun Daclen" }}
+              />
+              <Stack.Screen
+                name="CreatePIN"
+                component={CreatePIN}
+                options={{ ...defaultOptions, title: "Buat PIN Baru" }}
               />
               <Stack.Screen
                 name="MediaKitFiles"

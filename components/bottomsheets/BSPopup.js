@@ -67,11 +67,11 @@ export default function BSPopup(props) {
               onPress={() => proceedAction()}
               style={[
                 styles.button,
-                loading
+                loading || props?.buttonDisabled
                   ? { backgroundColor: colors.daclen_gray }
                   : { backgroundColor: props?.buttonPositiveColor },
               ]}
-              disabled={loading}
+              disabled={loading || props?.buttonDisabled}
             >
               <Text style={styles.textButton}>{props?.buttonPositive}</Text>
             </TouchableOpacity>

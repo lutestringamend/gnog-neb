@@ -27,6 +27,7 @@ import {
   USER_SALDO_STATE_CHANGE,
   USER_PROFILE_LOCK_STATE_CHANGE,
   USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE,
+  USER_PROFILE_PIN_STATE_CHANGE,
 } from "../constants";
 
 import { mainhttp } from "../../axios/constants";
@@ -36,6 +37,7 @@ export const initialState = {
   currentUser: null,
   profileLock: true,
   profileLockTimeout: null,
+  profilePIN: null,
   hpv: null,
   points: null,
   syaratRoot: [],
@@ -122,6 +124,11 @@ export const user = (state = initialState, action) => {
       return {
         ...state,
         profileLockTimeout: action.data,
+      };
+    case USER_PROFILE_PIN_STATE_CHANGE:
+      return {
+        ...state,
+        profilePIN: action.data,
       };
     case USER_HPV_STATE_CHANGE:
       return {

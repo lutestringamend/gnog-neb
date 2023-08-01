@@ -28,6 +28,8 @@ import RegisterBox from "./RegisterBox";
 import ChangePasswordBox from "./ChangePasswordBox";
 import BSPopup from "../bottomsheets/BSPopup";
 import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { setObjectAsync } from "../asyncstorage";
+import { ASYNC_USER_PROFILE_PIN_KEY } from "../asyncstorage/constants";
 
 function setPageHeight(bottomPadding) {
   return (
@@ -39,9 +41,13 @@ function Login(props) {
   const [error, setError] = useState(null);
   const [isLogin, setLogin] = useState(true);
   const [isChangePassword, setChangePassword] = useState(false);
+  const [resettingPin, setResettingPin] = useState(false);
   const [loading, setLoading] = useState(false);
   const rbSheet = useRef();
   const webKey = props.route.params?.webKey;
+  const resetPIN = props.route.params?.resetPIN
+    ? props.route.params?.resetPIN
+    : false;
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -51,7 +57,8 @@ function Login(props) {
     } else if (
       props?.token !== null &&
       props.loginToken === null &&
-      props.registerToken === null
+      props.registerToken === null &&
+      !resetPIN
     ) {
       navigation.navigate("Main");
     } else {
@@ -94,7 +101,7 @@ function Login(props) {
     }
   }, [props.registerToken]);
 
-  const onLogin = () => {
+  const onLogin = async () => {
     if (props.authData?.email === null || props.authData?.email === undefined) {
       setError("Anda belum mengisi username atau email Anda");
     } else if (
@@ -105,12 +112,21 @@ function Login(props) {
     } else {
       setError(null);
       setLoading(true);
-      props.login(props.authData?.email, props.authData?.password);
+      if (resetPIN) {
+        await setObjectAsync(ASYNC_USER_PROFILE_PIN_KEY, null);
+      }
+      props.login(props.authData?.email, props.authData?.password, resetPIN);
+      setResettingPin(resetPIN);
     }
   };
 
   const onRegister = () => {
-    if (props.authData?.name === null || props.authData?.name === undefined) {
+    if (resetPIN) {
+      return;
+    } else if (
+      props.authData?.name === null ||
+      props.authData?.name === undefined
+    ) {
       setError("Anda wajib mengisi username untuk register");
     } else if (
       props.authData?.email === null ||
@@ -176,7 +192,11 @@ function Login(props) {
       } else {
         props.setNewToken(props.registerToken);
       }
-      navigation.navigate("Main");
+      if (resetPIN && resettingPin) {
+        navigation.navigate("CreatePIN");
+      } else {
+        navigation.navigate("Main");
+      }
     }
   }
 
@@ -222,7 +242,9 @@ function Login(props) {
               {isChangePassword
                 ? "Ganti Password"
                 : isLogin
-                ? "Login"
+                ? resetPIN
+                  ? "Login dan Reset PIN"
+                  : "Login"
                 : "Register"}
             </Text>
             {isChangePassword ? (
@@ -266,7 +288,7 @@ function Login(props) {
               )}
             </TouchableOpacity>
 
-            {!isChangePassword && (
+            {!isChangePassword && !resetPIN ? (
               <View style={styles.containerAdditional}>
                 <Text style={styles.text}>
                   {isLogin ? "Belum punya akun?" : "Sudah punya akun?"}
@@ -280,7 +302,7 @@ function Login(props) {
                   </Text>
                 </TouchableOpacity>
               </View>
-            )}
+            ) : null}
 
             {error && <Text style={styles.textError}>{error}</Text>}
           </View>

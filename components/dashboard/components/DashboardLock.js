@@ -3,15 +3,17 @@ import {
   StyleSheet,
   View,
   Text,
+  TouchableOpacity,
 } from "react-native";
-
+import { useNavigation } from "@react-navigation/native";
 import { colors } from "../../../styles/base";
 import OTPInput from "../../OTP/OTPInput";
-import { PROFILE_LOCK_TIMEOUT_IN_MILISECONDS } from "../../../axios/constants";
+//import { PROFILE_LOCK_TIMEOUT_IN_MILISECONDS } from "../../../axios/constants";
 
 const DashboardLock = (props) => {
   const [otp, setOtp] = useState("");
   const [isPinReady, setIsPinReady] = useState(false);
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (isPinReady) {
@@ -24,6 +26,12 @@ const DashboardLock = (props) => {
     }
   }, [isPinReady]);
 
+  function resetPIN() {
+    navigation.navigate("Login", {
+      resetPIN: true,
+    });
+  }
+
   return (
     <View style={styles.containerLock}>
       <Text style={styles.textLockHeader}>Masukkan PIN untuk Membuka</Text>
@@ -34,10 +42,15 @@ const DashboardLock = (props) => {
         setIsPinReady={setIsPinReady}
         style={styles.containerOTP}
       />
-      <Text style={styles.textSubheader}>{`Halaman Profil akan dikunci lagi secara otomatis dalam ${PROFILE_LOCK_TIMEOUT_IN_MILISECONDS/60000} menit setelah Anda memasukkan PIN`}</Text>
+      <TouchableOpacity onPress={() => resetPIN()}>
+      <Text style={styles.textSubheader}>Reset PIN</Text>
+      </TouchableOpacity>
+
     </View>
   );
 };
+
+// <Text style={styles.textSubheader}>{`Halaman Profil akan dikunci lagi secara otomatis dalam ${PROFILE_LOCK_TIMEOUT_IN_MILISECONDS/60000} menit setelah Anda memasukkan PIN`}</Text>
 
 const styles = StyleSheet.create({
   containerLock: {
@@ -62,7 +75,8 @@ const styles = StyleSheet.create({
   },
   textSubheader: {
     fontSize: 14,
-    color: colors.daclen_light,
+    fontWeight: "bold",
+    color: colors.daclen_green_button,
     textAlign: "center",
   },
 });

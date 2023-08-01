@@ -31,6 +31,7 @@ import DashboardBottom from "./components/DashboardBottom";
 import DashboardLock from "./components/DashboardLock";
 import DashboardLogout from "./components/DashboardLogout";
 import DashboardVerification from "./components/DashboardVerification";
+import DashboardCreatePIN from "./components/DashboardCreatePIN";
 
 const Dashboard = (props) => {
   const [message, setMessage] = useState({
@@ -40,7 +41,7 @@ const Dashboard = (props) => {
   const [pinLoading, setPinLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  const { currentUser, token, hpv, profileLock } = props;
+  const { currentUser, token, hpv, profileLock, profilePIN } = props;
 
   /*const [isSharingAvailable, setSharingAvailable] = useState(false);
   useEffect(() => {
@@ -64,6 +65,25 @@ const Dashboard = (props) => {
   }, [token, currentUser]);
 
   useEffect(() => {
+    if (hpv === undefined || hpv === null || hpv?.data === undefined) {
+      fetchHPV();
+    /*} else if (hpv?.data === null) {
+      setMessage({
+        text: "Mohon cek koneksi Internet Anda",
+        isError: true,
+      });*/
+    } else {
+      setRefreshing(false);
+      setMessage({
+        text: null,
+        isError: false,
+      });
+      console.log("redux HPV", hpv);
+      setObjectAsync(ASYNC_USER_HPV_KEY, hpv);
+    }
+  }, [hpv]);
+
+  useEffect(() => {
     if (profileLock || pinLoading) {
       return;
     }
@@ -72,23 +92,8 @@ const Dashboard = (props) => {
         text: null,
         isError: false,
       });
-      if (hpv === undefined || hpv === null || hpv?.data === undefined) {
-        fetchHPV();
-      } else if (hpv?.data === null) {
-        setMessage({
-          text: "Mohon cek koneksi Internet Anda",
-          isError: true,
-        });
-      } else {
-        setRefreshing(false);
-        setMessage({
-          text: null,
-          isError: false,
-        });
-        console.log("redux HPV", hpv);
-        setObjectAsync(ASYNC_USER_HPV_KEY, hpv);
-      }
-  }, [hpv, profileLock, pinLoading]);
+
+  }, [profileLock, pinLoading]);
 
   function fetchHPV() {
     if (token === null || currentUser === null || currentUser?.id === undefined || currentUser?.id === null) {
@@ -104,11 +109,11 @@ const Dashboard = (props) => {
   function receiveOTP(e) {
     console.log("receiveOTP", e);
     setPinLoading(true);
-    if (e === "1234") {
+    if (e === profilePIN) {
       setMessage({ text: "PIN benar", isError: false });
       props.updateReduxProfileLockStatus(false);
     } else {
-      setMessage({ text: "PIN salah", isError: true });
+      setMessage({ text: "PIN salah. Tekan Reset PIN jika Anda lupa PIN.", isError: true });
       setPinLoading(false);
     }
   }
@@ -159,7 +164,9 @@ const Dashboard = (props) => {
         ) : currentUser?.nomor_telp_verified_at === null ||
           currentUser?.nomor_telp_verified_at === "" ? (
           <DashboardVerification />
-        ) : profileLock === undefined ||
+        ) : profilePIN === null || profilePIN === "" ? 
+          <DashboardCreatePIN />
+        : profileLock === undefined ||
           profileLock === null ||
           profileLock ||
           pinLoading ? (
@@ -236,6 +243,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
+  profilePIN: store.userState.profilePIN,
   profileLock: store.userState.profileLock,
   hpv: store.userState.hpv,
 });

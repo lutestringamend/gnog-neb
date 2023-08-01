@@ -38,9 +38,10 @@ import { ErrorView } from "../webview/WebviewChild";
 import { webfotowatermark } from "../../axios/constants";
 
 const MultipleImageView = (props) => {
-  const { title, photos, watermarkData, sharingAvailability, userId } =
+  const { title, photos, sharingAvailability, userId } =
     props.route.params;
 
+  const { watermarkData } = props;
   const productPhotoWidth = dimensions.fullWidth;
 
   try {
@@ -642,6 +643,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (store) => ({
+  watermarkData: store.mediaKitState.watermarkData,
   photosUri: store.mediaKitState.photosUri,
 });
 

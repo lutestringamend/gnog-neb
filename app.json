@@ -52,6 +52,7 @@
         "android.permission.ACCESS_MEDIA_LOCATION",
         "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"
       ],
+      "softwareKeyboardLayoutMode": "pan",
       "userInterfaceStyle": "light",
       "versionCode": 54
     },

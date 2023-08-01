@@ -6,7 +6,8 @@ import {
   MEDIA_KIT_SIZES_STATE_CHANGE,
   MEDIA_KIT_CLEAR_DATA,
   MEDIA_KIT_PHOTOS_ERROR_STATE_CHANGE,
-  MEDIA_KIT_PHOTOS_URI_STATE_CHANGE
+  MEDIA_KIT_PHOTOS_URI_STATE_CHANGE,
+  MEDIA_KIT_WATERMARK_DATA_STATE_CHANGE
 } from "../constants";
 
 const initialState = {
@@ -17,10 +18,16 @@ const initialState = {
   colors: [],
   sizes: [],
   photoError: null,
+  watermarkData: null,
 };
 
 export const mediakit = (state = initialState, action) => {
   switch (action.type) {
+    case MEDIA_KIT_WATERMARK_DATA_STATE_CHANGE:
+      return {
+        ...state,
+        watermarkData: action.data,
+      };
     case MEDIA_KIT_PHOTOS_STATE_CHANGE:
       return {
         ...state,

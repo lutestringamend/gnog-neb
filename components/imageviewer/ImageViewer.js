@@ -6,16 +6,16 @@ import {
   StyleSheet,
   Text,
   Platform,
-  ToastAndroid,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
 import { Image } from "expo-image";
+import { connect } from "react-redux";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import ViewShot from "react-native-view-shot";
 import * as FileSystem from "expo-file-system";
-import { shareAsync, isAvailableAsync } from "expo-sharing";
+import { shareAsync } from "expo-sharing";
 
 import {
   colors,
@@ -28,13 +28,12 @@ import WatermarkModel from "../media/WatermarkModel";
 import { sentryLog } from "../../sentry";
 import { sharingOptionsJPEG } from "../media/constants";
 
-export default function ImageViewer(props) {
+const ImageViewer = (props) => {
   const {
     id,
     title,
     uri,
     isSquare,
-    watermarkData,
     width,
     height,
     text_align,
@@ -61,6 +60,7 @@ export default function ImageViewer(props) {
   const [transformedImage, setTransformedImage] = useState(null);
   const [downloadUri, setDownloadUri] = useState(null);
 
+  const { watermarkData } = props;
   const imageRef = useRef();
 
   useEffect(() => {
@@ -481,3 +481,9 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
 });
+
+const mapStateToProps = (store) => ({
+  watermarkData: store.mediaKitState.watermarkData,
+});
+
+export default connect(mapStateToProps, null)(ImageViewer);

@@ -45,6 +45,7 @@ import {
   USER_SALDO_STATE_CHANGE,
   USER_PROFILE_LOCK_STATE_CHANGE,
   USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE,
+  USER_PROFILE_PIN_STATE_CHANGE,
 } from "../../redux/constants";
 import {
   calculateBase64SizeInBytes,
@@ -59,7 +60,7 @@ import {
   setObjectAsync,
   setTokenAsync,
 } from "../../components/asyncstorage";
-import { ASYNC_HISTORY_CHECKOUT_KEY, ASYNC_HISTORY_DELIVERY_KEY, ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, ASYNC_USER_CURRENTUSER_KEY, ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../../components/asyncstorage/constants";
+import { ASYNC_HISTORY_CHECKOUT_KEY, ASYNC_HISTORY_DELIVERY_KEY, ASYNC_MEDIA_WATERMARK_DATA_KEY, ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, ASYNC_USER_CURRENTUSER_KEY, ASYNC_USER_PROFILE_PIN_KEY, ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../../components/asyncstorage/constants";
 import { MAXIMUM_FILE_SIZE_IN_BYTES } from "../../components/media/constants";
 import { sentryLog } from "../../sentry";
 
@@ -71,8 +72,10 @@ export const userLogout = async () => {
   console.log("userLogout");
   await setTokenAsync(null);
   await setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, null);
+  await setObjectAsync(ASYNC_USER_PROFILE_PIN_KEY, null);
   await setObjectAsync(ASYNC_HISTORY_CHECKOUT_KEY, null);
   await setObjectAsync(ASYNC_HISTORY_DELIVERY_KEY, null);
+  await setObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY, null);
   await setObjectAsync(ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, null);
   await setObjectAsync(ASYNC_WATERMARK_PHOTOS_PDF_KEY, null);
   setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, null);
@@ -106,6 +109,13 @@ export function updateReduxProfileLockTimeout(data) {
   return (dispatch) => {
     console.log("updateReduxProfileLockTimeout", data);
     dispatch({ type: USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE, data });
+  };
+}
+
+export function updateReduxProfilePIN(data) {
+  return (dispatch) => {
+    console.log("updateReduxProfilePIN", data);
+    dispatch({ type: USER_PROFILE_PIN_STATE_CHANGE, data });
   };
 }
 
@@ -737,7 +747,7 @@ export function register(authData) {
   };
 }
 
-export function login(email, password) {
+export function login(email, password, resetPIN) {
   return (dispatch) => {
     dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: null });
     const params = {
@@ -753,6 +763,11 @@ export function login(email, password) {
         const token = response.data.token;
         if (token !== null && token !== undefined) {
           //dispatch(setNewToken(token));
+          if (resetPIN) {
+            dispatch({ type: USER_PROFILE_PIN_STATE_CHANGE, data: null });
+            dispatch({ type: USER_PROFILE_LOCK_STATE_CHANGE, data: true });
+            dispatch({ type: USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE, data: null });
+          }
           dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token });
         } else {
           const data =
@@ -796,7 +811,7 @@ export function getCurrentUser(token, storageCurrentUser) {
             sentryLog(e);
           }
         } else {
-          console.log(`getCurrentUser token ${token}`, data);
+          //console.log(`getCurrentUser token ${token}`, data);
           dispatch({ type: USER_STATE_CHANGE, data });
           dispatch({ type: USER_ADDRESS_STATE_CHANGE, data });
           dispatch({ type: HISTORY_CLEAR_DATA });

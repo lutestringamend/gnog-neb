@@ -3,18 +3,18 @@ import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { colors } from "../../../styles/base";
 
-const DashboardLogout = () => {
+const DashboardCreatePIN = () => {
   const navigation = useNavigation();
   return (
     <View style={styles.containerLogin}>
       <Text style={styles.text}>
-        Login / Register untuk berbelanja dengan Daclen
+        Anda perlu membuat PIN 4 digit untuk mengamankan halaman Profil
       </Text>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("Login")}
+        onPress={() => navigation.navigate("CreatePIN")}
       >
-        <Text style={styles.textButton}>Login / Register</Text>
+        <Text style={styles.textButton}>Buat PIN Baru</Text>
       </TouchableOpacity>
     </View>
   );
@@ -55,4 +55,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DashboardLogout;
+export default DashboardCreatePIN;
