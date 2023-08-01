@@ -398,8 +398,9 @@ export const pickImage = async () => {
     }
 
     let data = null;
+    let result = null;
     try {
-      let result = await ImagePicker.launchImageLibraryAsync({
+      result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
@@ -411,7 +412,7 @@ export const pickImage = async () => {
       return IMAGE_PICKER_ERROR;
     }
 
-    if (result?.cancelled) {
+    if (result === null || result?.cancelled) {
       return null;
     } else if (!result.cancelled) {
       console.log("result", result);

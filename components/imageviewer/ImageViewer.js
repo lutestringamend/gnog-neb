@@ -125,13 +125,13 @@ const ImageViewer = (props) => {
     }
 
     try {
-      if (Platform.OS === "ios" && currentUser?.id === 8054) {
+      /*if (Platform.OS === "ios" && currentUser?.id === 8054) {
         let displayUri = uri.toString();
         if (displayUri?.length > 100) {
           displayUri = displayUri.substring(0, 98);
         }
         setError(displayUri);
-      }
+      }*/
       await shareAsync(uri, sharingOptionsJPEG);
     } catch (e) {
       console.error(e);
@@ -140,7 +140,7 @@ const ImageViewer = (props) => {
   };
 
   const save = async (uri, mimeType) => {
-    if (Platform.OS !== "web") {
+    if (Platform.OS === "android") {
       const permissions =
         await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
       if (permissions.granted) {
@@ -230,11 +230,7 @@ const ImageViewer = (props) => {
           }
         } else {
           try {
-            if (Platform.OS === "ios") {
-              save(transformedImage);
-            } else {
-              sharePhotoAsync(transformedImage);
-            }
+            sharePhotoAsync(transformedImage);
           } catch (e) {
             console.error(e);
             setSuccess(false);
@@ -257,6 +253,7 @@ const ImageViewer = (props) => {
             fileName: `daclenwatermarkfoto_${id.toString()}`,
             format: "jpg",
             quality: 1,
+            result: "tmpfile",
           }}
           style={[styles.containerLargeImage, { width, height }]}
         >
