@@ -23,7 +23,7 @@ export const watermarkStyle = {
   };
 
 export const sharingOptionsJPEG = {
-  UTI: "JPEG",
+  UTI: "public.image",
   dialogTitle: "Share Foto Daclen",
   mimeType: "image/jpeg",
 };

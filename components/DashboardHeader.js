@@ -83,9 +83,6 @@ const Header = (props) => {
       currentUser === null ||
       currentUser?.id === undefined ||
       currentUser?.name === undefined ||
-      currentUser?.nomor_telp_verified_at === undefined ||
-      currentUser?.nomor_telp_verified_at === null ||
-      currentUser?.nomor_telp_verified_at === "" ||
       props?.lockStatus === undefined ? null : (
         <TouchableOpacity
           style={styles.containerUser}

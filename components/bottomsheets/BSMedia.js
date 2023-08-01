@@ -29,6 +29,7 @@ import {
   IMAGE_PICKER_NO_PERMISSION,
   MAXIMUM_FILE_SIZE_IN_BYTES,
 } from "../media/constants";
+import { sentryLog } from "../../sentry";
 
 function BSMedia(props) {
   const navigation = useNavigation();
@@ -40,38 +41,44 @@ function BSMedia(props) {
 
   const openImagePicker = async () => {
     props?.closeThis();
-    const uri = await pickImage();
-    if (props?.mediaKey === "profilePicture") {
-      if (uri === undefined || uri === null) {
-        return;
-      } else if (uri === IMAGE_PICKER_NO_PERMISSION) {
-        props.sendProfilePhotoImagePickerFail(
-          Platform.OS === "ios"
-            ? imagepickernocameralrollmessage
-            : Platform.OS === "android"
-            ? imagepickernopermissionmessage
-            : ""
-        );
-        return;
-      } else if (uri === IMAGE_PICKER_ERROR) {
-        props.sendProfilePhotoImagePickerFail("");
-        return;
-      } else if (uri === FILE_OVERSIZE) {
-        props.sendProfilePhotoUnusable(true);
-      } else {
-        if (Platform.OS !== "web") {
-          let fileInfoSize = await getFileSizeAsync(uri);
-          if (fileInfoSize === undefined || fileInfoSize === null) {
-            props.sendProfilePhotoUnusable(false);
-            return;
+    try {
+      const uri = await pickImage();
+      if (props?.mediaKey === "profilePicture") {
+        if (uri === undefined || uri === null) {
+          return;
+        } else if (uri === IMAGE_PICKER_NO_PERMISSION) {
+          props.sendProfilePhotoImagePickerFail(
+            Platform.OS === "ios"
+              ? imagepickernocameralrollmessage
+              : Platform.OS === "android"
+              ? imagepickernopermissionmessage
+              : ""
+          );
+          return;
+        } else if (uri === IMAGE_PICKER_ERROR) {
+          props.sendProfilePhotoImagePickerFail("");
+          return;
+        } else if (uri === FILE_OVERSIZE) {
+          props.sendProfilePhotoUnusable(true);
+        } else {
+          if (Platform.OS !== "web") {
+            let fileInfoSize = await getFileSizeAsync(uri);
+            if (fileInfoSize === undefined || fileInfoSize === null) {
+              props.sendProfilePhotoUnusable(false);
+              return;
+            }
+            if (fileInfoSize >= MAXIMUM_FILE_SIZE_IN_BYTES) {
+              props.sendProfilePhotoUnusable(true);
+              return;
+            }
           }
-          if (fileInfoSize >= MAXIMUM_FILE_SIZE_IN_BYTES) {
-            props.sendProfilePhotoUnusable(true);
-            return;
-          }
+          props.setMediaProfilePicture(uri, props.currentUser?.id);
         }
-        props.setMediaProfilePicture(uri, props.currentUser?.id);
       }
+    } catch (e) {
+      console.error(e);
+      sentryLog(e);
+      props.sendProfilePhotoImagePickerFail(e.toString());
     }
   };
 
@@ -102,7 +109,7 @@ function BSMedia(props) {
           <MaterialCommunityIcons name="camera" size={18} color="white" />
           <Text style={styles.textButton}>Foto dari Kamera</Text>
         </TouchableOpacity>
-        {Platform.OS === "ios" ? null : (
+        {Platform.OS === "windows" ? null : (
           <TouchableOpacity
             onPress={() => openImagePicker()}
             style={[

@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_graydark,
   },
   containerInfo: {
-    height: dimensions.fullHeight - 100,
+    height: dimensions.fullHeight - 200,
     backgroundColor: "transparent",
   },
   containerPrivacy: {

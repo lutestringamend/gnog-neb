@@ -243,7 +243,7 @@ function Login(props) {
                 ? "Ganti Password"
                 : isLogin
                 ? resetPIN
-                  ? "Login dan Reset PIN"
+                  ? "Reset PIN"
                   : "Login"
                 : "Register"}
             </Text>
@@ -282,7 +282,7 @@ function Login(props) {
                   {isChangePassword
                     ? "Ganti Password"
                     : isLogin
-                    ? "Login"
+                    ? resetPIN ? "Login Ulang & Reset PIN" : "Login"
                     : "Register"}
                 </Text>
               )}
