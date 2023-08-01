@@ -11,7 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import { colors, blurhash, staticDimensions } from "../../styles/base";
 
-const WatermarkVideos = ({ videos, watermarkData, userId }) => {
+const WatermarkVideos = ({ videos, userId }) => {
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -23,7 +23,6 @@ const WatermarkVideos = ({ videos, watermarkData, userId }) => {
   function openVideo(item) {
     navigation.navigate("VideoPlayerScreen", {
       ...item,
-      watermarkData,
       userId,
     });
   }

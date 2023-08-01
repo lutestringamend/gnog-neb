@@ -13,7 +13,7 @@ import { ErrorView } from "../webview/WebviewChild";
 import WatermarkPhotosSegment from "./WatermarkPhotosSegment";
 import { sentryLog } from "../../sentry";
 
-const WatermarkPhotos = ({ photos, watermarkData, userId, loading, error, sharingAvailability, photosUri }) => {
+const WatermarkPhotos = ({ photos, userId, loading, error, sharingAvailability }) => {
   try {
     return (
       <View style={styles.container}>
@@ -40,10 +40,8 @@ const WatermarkPhotos = ({ photos, watermarkData, userId, loading, error, sharin
                 key={keyName}
                 title={keyName}
                 photos={photos[keyName]}
-                watermarkData={watermarkData}
                 userId={userId}
                 sharingAvailability={sharingAvailability}
-                photosUri={photosUri}
               />
             ))
         )}

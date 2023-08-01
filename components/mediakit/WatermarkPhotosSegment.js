@@ -1,4 +1,4 @@
-import React, { Suspense, memo, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import {
   View,
   TouchableHighlight,
@@ -9,6 +9,7 @@ import {
   Platform,
   ToastAndroid,
 } from "react-native";
+import { connect } from "react-redux";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { FlashList } from "@shopify/flash-list";
@@ -21,24 +22,24 @@ import { sentryLog } from "../../sentry";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../asyncstorage/constants";
 
-const WatermarkPhotosSegment = ({
-  title,
-  photos,
-  watermarkData,
-  userId,
-  isExpanded,
-  sharingAvailability,
-  photosUri,
-}) => {
+const WatermarkPhotosSegment = (props) => {
+  const {
+    photosUri,
+    watermarkData,
+    title,
+    photos,
+    userId,
+    isExpanded,
+    sharingAvailability,
+  } = props;
+
   const [expanded, setExpanded] = useState(isExpanded ? isExpanded : false);
   const [loading, setLoading] = useState(false);
   const [savedUri, setSavedUri] = useState(null);
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (savedUri === null || savedUri === "") {
-      checkSavedUri();
-    }
+    checkSavedUri();
   }, [photosUri]);
 
   function openPhoto(item) {
@@ -119,7 +120,6 @@ const WatermarkPhotosSegment = ({
       title,
       photos,
       isSquare: false,
-      watermarkData,
       userId,
       sharingAvailability,
     };
@@ -223,6 +223,7 @@ const WatermarkPhotosSegment = ({
       </View>
     );
   } catch (e) {
+    console.error(e);
     sentryLog(e);
     return null;
   }
@@ -299,4 +300,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(WatermarkPhotosSegment);
+const mapStateToProps = (store) => ({
+  photosUri: store.mediaKitState.photosUri,
+  watermarkData: store.mediaKitState.watermarkData,
+});
+
+export default connect(mapStateToProps, null)(WatermarkPhotosSegment);

@@ -23,6 +23,7 @@ import {
   clearMediaKitData,
   updateReduxMediaKitPhotos,
   updateReduxMediaKitWatermarkData,
+  updateReduxMediaKitPhotosUri,
 } from "../../axios/mediakit";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { colors, staticDimensions } from "../../styles/base";
@@ -102,7 +103,7 @@ function MediaKitFiles(props) {
     const [sharingAvailability, setSharingAvailability] = useState(null);
     const [tempWatermarkData, setTempWatermarkData] = useState(WatermarkData);
 
-    const { currentUser, photoError, photosUri, watermarkData } = props;
+    const { currentUser, photoError, watermarkData } = props;
     const rbSheet = useRef();
     const navigation = useNavigation();
 
@@ -213,10 +214,8 @@ function MediaKitFiles(props) {
 
     const changingWatermarkData = async () => {
       await setObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY, watermarkData);
-      //await setObjectAsync(ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, null);
       await setObjectAsync(ASYNC_WATERMARK_PHOTOS_PDF_KEY, null);
-      //props.clearMediaKitPhotosError();
-      //props.clearMediaKitData();
+      props.updateReduxMediaKitPhotosUri([]);
       setLoading(false);
       rbSheet.current.close();
     }
@@ -259,13 +258,11 @@ function MediaKitFiles(props) {
             />
           ) : (
             <WatermarkPhotos
-              watermarkData={watermarkData}
               userId={currentUser?.id}
               loading={photoLoading}
               error={photoError}
               sharingAvailability={sharingAvailability}
               photos={props.mediaKitPhotos}
-              photosUri={photosUri}
             />
           )}
         </ScrollView>
@@ -446,6 +443,7 @@ const mapDispatchProps = (dispatch) =>
       getMediaKitPhotos,
       updateReduxMediaKitPhotos,
       updateReduxMediaKitWatermarkData,
+      updateReduxMediaKitPhotosUri,
       clearMediaKitPhotosError,
       clearMediaKitData,
     },
