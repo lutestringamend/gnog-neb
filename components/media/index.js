@@ -398,13 +398,18 @@ export const pickImage = async () => {
     }
 
     let data = null;
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: PICKER_COMPRESSION_QUALITY,
-      allowsMultipleSelection: false,
-    });
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: PICKER_COMPRESSION_QUALITY,
+        allowsMultipleSelection: false,
+      });
+    } catch (e) {
+      console.error(e);
+      return IMAGE_PICKER_ERROR;
+    }
 
     if (result?.cancelled) {
       return null;
@@ -473,7 +478,7 @@ export const checkCameraPermission = async () => {
 };
 
 export const checkStoragePermission = async () => {
-  const permission = await ImagePicker.getMediaLibraryPermissionsAsync();
+  const permission = await ImagePicker.getMediaLibraryPermissionsAsync(true);
   console.log("storage permission", permission);
   return {
     status: permission?.status,

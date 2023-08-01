@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 //import { MaterialCommunityIcons } from '@expo/vector-icons';
 import RBSheet from "react-native-raw-bottom-sheet";
@@ -26,10 +25,10 @@ import useModal from "../../hook/useModal";*/
 import BSPopup from "../bottomsheets/BSPopup";
 import BSProductBenefit from "../bottomsheets/BSProductBenefit";
 import { openCheckout } from "./CheckoutScreen";
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 import { useNavigation } from "@react-navigation/native";
 
-function Product(props, { navigation }) {
+function Product(props) {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const rbSheet = useRef();
@@ -85,31 +84,16 @@ function Product(props, { navigation }) {
               <Cart produk_id={product?.id} />
             </View>
 
-            {product?.tag_produk?.length > 0 && (
+            {product?.tag_produk === undefined ||
+            product?.tag_produk === null ||
+            product?.tag_produk?.length === undefined ||
+            product?.tag_produk?.length < 1 ? null : (
               <View style={styles.containerCategory}>
                 <Text style={styles.textCategory}>Kategori</Text>
-                <FlashList
-                  estimatedItemSize={4}
-                  horizontal={true}
-                  data={product?.tag_produk}
-                  renderItem={({ item }) => (
-                    <Text style={styles.textTag}>{item?.nama}</Text>
-                  )}
-                />
+                {product?.tag_produk.map(({ nama }) => (
+                  <Text key={nama} style={styles.textTag}>{nama}</Text>
+                ))}
               </View>
-            )}
-
-            {product?.poin_produk !== null && (
-              <TouchableOpacity onPress={() => rbSheet.current.open()}>
-                <View style={styles.containerBenefit}>
-                  <MaterialCommunityIcons
-                    name="hand-coin"
-                    size={20}
-                    color="white"
-                  />
-                  <Text style={styles.textBenefit}>Keuntungan</Text>
-                </View>
-              </TouchableOpacity>
             )}
 
             <ProductDesc
@@ -162,6 +146,21 @@ function Product(props, { navigation }) {
     </SafeAreaView>
   );
 }
+
+/*
+            {product?.poin_produk !== null && (
+              <TouchableOpacity onPress={() => rbSheet.current.open()}>
+                <View style={styles.containerBenefit}>
+                  <MaterialCommunityIcons
+                    name="hand-coin"
+                    size={20}
+                    color="white"
+                  />
+                  <Text style={styles.textBenefit}>Keuntungan</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+*/
 
 const styles = StyleSheet.create({
   container: {
@@ -224,7 +223,6 @@ const styles = StyleSheet.create({
     color: colors.daclen_black,
     marginVertical: 10,
   },
-
   textPrice: {
     flex: 1,
     fontSize: 20,
@@ -248,8 +246,7 @@ const styles = StyleSheet.create({
     color: colors.daclen_light,
     borderRadius: 2,
     marginVertical: 2,
-    marginEnd: 8,
-    flex: 1,
+    marginEnd: 4,
   },
   textUid: {
     fontSize: 12,

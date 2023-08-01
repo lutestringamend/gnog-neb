@@ -4,6 +4,7 @@ import {
   View,
   Text,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
@@ -26,7 +27,7 @@ export default function MainHeader(props) {
     <View style={styles.container}>
       <TouchableOpacity onPress={() => backArrow()} disabled={props?.disabled}>
         <MaterialCommunityIcons
-          name={props?.icon}
+          name={props?.icon === "arrow-left" && Platform.OS === "ios" ? "chevron-left" : props?.icon}
           size={24}
           color={colors.daclen_light}
           style={{ alignSelf: "center" }}
