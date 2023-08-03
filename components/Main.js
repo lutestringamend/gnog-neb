@@ -80,7 +80,7 @@ function Main(props) {
         return;
       }
       //console.log("redux token", token);
-      //console.log("redux currentuser", currentUser);
+      console.log("redux currentuser", currentUser);
       if (!profileLock) {
         const theAppState = AppState.addEventListener(
           "change",

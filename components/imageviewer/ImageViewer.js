@@ -15,6 +15,7 @@ import { connect } from "react-redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import ViewShot from "react-native-view-shot";
 import * as FileSystem from "expo-file-system";
+import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
 
 import {
@@ -27,6 +28,12 @@ import { getFileName } from "../media";
 import WatermarkModel from "../media/WatermarkModel";
 import { sentryLog } from "../../sentry";
 import { sharingOptionsJPEG } from "../media/constants";
+import {
+  filePrintOptions,
+  multiplephotosimgtag,
+  pdfpageheight,
+  pdfpagewidth,
+} from "./constants";
 
 const ImageViewer = (props) => {
   const {
@@ -140,7 +147,7 @@ const ImageViewer = (props) => {
   };
 
   const save = async (uri, mimeType) => {
-    if (Platform.OS === "android") {
+    if (Platform.OS === "web") {
       const permissions =
         await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
       if (permissions.granted) {
@@ -198,9 +205,42 @@ const ImageViewer = (props) => {
         setError("Anda tidak memberikan izin untuk mengakses penyimpanan");
       }
     } else {
-      setSuccess(true);
-      setError("Foto siap dibagikan");
-      sharePhotoAsync(uri);
+      try {
+        //render HTML
+        let imageWidth = pdfpagewidth;
+        let imageHeight = pdfpageheight;
+        if (width > imageWidth || height > imageHeight) {
+          imageWidth = width;
+          imageHeight = height;
+        }
+
+        let imgTag = `${multiplephotosimgtag
+          .replace("#URI#", uri)
+          .replace("#WIDTH#", imageWidth)
+          .replace("#HEIGHT#", imageHeight)}`;
+        let html = multiplephotoshtml
+          .replace("#TITLE#", title)
+          .replace("#IMGTAGS#", imgTag);
+        const result = await Print.printToFileAsync({
+          ...filePrintOptions,
+          ...{ width, height },
+          html,
+        });
+        if (result?.uri) {
+          setSuccess(true);
+          //setError("Foto siap dibagikan");
+          setError(JSON.stringify(result));
+          sharePhotoAsync(result?.uri);
+        } else {
+          setSuccess(false);
+          setError("Gagal membuat file PDF");
+        }
+      } catch (e) {
+        console.error(e);
+        sentryLog(e);
+        setSuccess(false);
+        setError(`Gagal membuat file PDF\n${e.toString()}`);
+      }
     }
   };
 
@@ -403,7 +443,7 @@ const ImageViewer = (props) => {
       </ScrollView>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
