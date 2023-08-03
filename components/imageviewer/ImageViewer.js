@@ -30,6 +30,7 @@ import { sentryLog } from "../../sentry";
 import { sharingOptionsJPEG } from "../media/constants";
 import {
   filePrintOptions,
+  multiplephotoshtml,
   multiplephotosimgtag,
   pdfpageheight,
   pdfpagewidth,
@@ -65,6 +66,7 @@ const ImageViewer = (props) => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [transformedImage, setTransformedImage] = useState(null);
+  const [pdfUri, setPdfUri] = useState(null);
   const [downloadUri, setDownloadUri] = useState(null);
 
   const { watermarkData, currentUser } = props;
@@ -86,17 +88,19 @@ const ImageViewer = (props) => {
     console.log("ImageViewer route params", props.route.params);
   }, [uri]);
 
-  //debug
-  /*useEffect(() => {
+  useEffect(() => {
     if (transformedImage === null) {
       return;
     }
-    let uriText = transformedImage;
+    /*let uriText = transformedImage;
     if (uriText?.length > 50) {
       uriText = uriText.substring(0,47) + "..."
     }
-    setError(uriText);
-  }, [transformedImage]);*/
+    setError(uriText);*/
+    if (Platform.OS !== "web") {
+      renderPDF(transformedImage);
+    }
+  }, [transformedImage]);
 
   const transformImage = async () => {
     if (Platform.OS === "web") {
@@ -146,8 +150,48 @@ const ImageViewer = (props) => {
     }
   };
 
+  const renderPDF = async (uri) => {
+    try {
+      //render HTML
+      let imageWidth = pdfpagewidth;
+      let imageHeight = pdfpageheight;
+      if (width > imageWidth || height > imageHeight) {
+        imageWidth = width;
+        imageHeight = height;
+      }
+
+      let newUri = await FileSystem.getContentUriAsync(uri);
+      let imgTag = `${multiplephotosimgtag
+        .replace("#URI#", newUri)
+        .replace("#WIDTH#", imageWidth)
+        .replace("#HEIGHT#", imageHeight)}`;
+      let html = multiplephotoshtml
+        .replace("#TITLE#", title)
+        .replace("#IMGTAGS#", imgTag);
+      const result = await Print.printToFileAsync({
+        ...filePrintOptions,
+        ...{ width: width - 20, height: height - 20 },
+        html,
+      });
+      if (result?.uri) {
+        setSuccess(true);
+        setError(newUri);
+        //setError("PDF siap dibagikan");
+        setPdfUri(result?.uri);
+      } else {
+        setSuccess(false);
+        setError("Gagal membuat file PDF");
+      }
+    } catch (e) {
+      console.error(e);
+      sentryLog(e);
+      setSuccess(false);
+      setError(`Gagal membuat file PDF\n${e.toString()}`);
+    }
+  };
+
   const save = async (uri, mimeType) => {
-    if (Platform.OS === "web") {
+    if (Platform.OS === "android") {
       const permissions =
         await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
       if (permissions.granted) {
@@ -205,42 +249,7 @@ const ImageViewer = (props) => {
         setError("Anda tidak memberikan izin untuk mengakses penyimpanan");
       }
     } else {
-      try {
-        //render HTML
-        let imageWidth = pdfpagewidth;
-        let imageHeight = pdfpageheight;
-        if (width > imageWidth || height > imageHeight) {
-          imageWidth = width;
-          imageHeight = height;
-        }
-
-        let imgTag = `${multiplephotosimgtag
-          .replace("#URI#", uri)
-          .replace("#WIDTH#", imageWidth)
-          .replace("#HEIGHT#", imageHeight)}`;
-        let html = multiplephotoshtml
-          .replace("#TITLE#", title)
-          .replace("#IMGTAGS#", imgTag);
-        const result = await Print.printToFileAsync({
-          ...filePrintOptions,
-          ...{ width, height },
-          html,
-        });
-        if (result?.uri) {
-          setSuccess(true);
-          //setError("Foto siap dibagikan");
-          setError(JSON.stringify(result));
-          sharePhotoAsync(result?.uri);
-        } else {
-          setSuccess(false);
-          setError("Gagal membuat file PDF");
-        }
-      } catch (e) {
-        console.error(e);
-        sentryLog(e);
-        setSuccess(false);
-        setError(`Gagal membuat file PDF\n${e.toString()}`);
-      }
+      renderPDF(uri);
     }
   };
 
@@ -337,50 +346,90 @@ const ImageViewer = (props) => {
       ) : null}
 
       {watermarkData === null || watermarkData === undefined ? null : (
-        <View style={styles.containerButton}>
-          <TouchableOpacity
-            onPress={() =>
-              startDownload(
-                transformedImage !== null && transformedImage !== ""
-              )
-            }
-            style={[
-              styles.button,
-              loading ||
-                ((downloadUri !== null ||
-                  transformedImage !== null ||
-                  Platform.OS === "web") &&
-                  !sharingAvailability && {
-                    backgroundColor: colors.daclen_gray,
-                  }),
-            ]}
-            disabled={
-              loading ||
-              ((downloadUri !== null ||
-                transformedImage !== null ||
-                Platform.OS === "web") &&
-                !sharingAvailability)
-            }
-          >
-            <MaterialCommunityIcons
-              name={
-                downloadUri !== null ||
-                transformedImage !== null ||
-                Platform.OS === "web"
-                  ? "share-variant"
-                  : "download"
+        <View style={styles.containerHorizontal}>
+          {Platform.OS === "ios" ? null : (
+            <View style={styles.containerButton}>
+              <TouchableOpacity
+                onPress={() =>
+                  startDownload(
+                    transformedImage !== null && transformedImage !== ""
+                  )
+                }
+                style={[
+                  styles.button,
+                  loading ||
+                    ((downloadUri !== null ||
+                      transformedImage !== null ||
+                      Platform.OS === "web") &&
+                      !sharingAvailability && {
+                        backgroundColor: colors.daclen_gray,
+                      }),
+                ]}
+                disabled={
+                  loading ||
+                  ((downloadUri !== null ||
+                    transformedImage !== null ||
+                    Platform.OS === "web") &&
+                    !sharingAvailability)
+                }
+              >
+                <MaterialCommunityIcons
+                  name={
+                    downloadUri !== null ||
+                    transformedImage !== null ||
+                    Platform.OS === "web"
+                      ? "share-variant"
+                      : "download"
+                  }
+                  size={18}
+                  color="white"
+                />
+                <Text style={styles.textButton}>Share Foto</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          <View style={styles.containerButton}>
+            <TouchableOpacity
+              onPress={() => shareAsync(pdfUri)}
+              style={[
+                styles.button,
+                {
+                  backgroundColor:
+                    loading ||
+                    pdfUri === null ||
+                    transformedImage === null ||
+                    Platform.OS === "web" ||
+                    !sharingAvailability
+                      ? colors.daclen_gray
+                      : colors.daclen_red,
+                },
+              ]}
+              disabled={
+                loading ||
+                pdfUri === null ||
+                transformedImage === null ||
+                Platform.OS === "web" ||
+                !sharingAvailability
               }
-              size={18}
-              color="white"
-            />
-            <Text style={styles.textButton}>
-              {downloadUri !== null ||
-              transformedImage !== null ||
-              Platform.OS === "web"
-                ? "Share Foto"
-                : "Download Foto"}
-            </Text>
-          </TouchableOpacity>
+            >
+              {pdfUri === null ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.daclen_light}
+                  style={{ alignSelf: "center" }}
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="file-download"
+                  size={18}
+                  color="white"
+                />
+              )}
+
+              <Text style={styles.textButton}>Share PDF</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
 
@@ -490,8 +539,13 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     overflow: "visible",
   },
-  containerButton: {
+  containerHorizontal: {
     width: "100%",
+    flexDirection: "row",
+    backgroundColor: "transparent",
+  },
+  containerButton: {
+    flex: 1,
     backgroundColor: colors.daclen_light,
   },
   button: {
