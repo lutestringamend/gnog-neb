@@ -1,162 +1,157 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   StyleSheet,
   View,
-  Text,
   TouchableOpacity,
   Image,
+  Text,
   Platform,
 } from "react-native";
-
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
-
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-
-import { clearUserData, getCurrentUser } from "../../axios/user";
 import { colors } from "../../styles/base";
 
-function Header(props) {
-  const [username, setUsername] = useState(null);
-  const [displayAddress, setDisplayAddress] = useState(null);
-  const { currentUser, token, currentAddress } = props;
+const Header = (props) => {
+  const { username, currentUser, profileLock } = props;
   const navigation = useNavigation();
 
-  useEffect(() => {
-    if (currentUser === null || token === null) {
-      console.log("currentUser is null");
-      setUsername(null);
-      setDisplayAddress(null);
-    } else {
-      setUsername(currentUser?.name);
-      console.log({
-        token,
-        currentUser,
-      });
+  function goDashboard() {
+    if (props?.goDashboard === undefined || props?.goDashboard === null) {
+      return;
     }
-  }, [currentUser, token]);
-
-  useEffect(() => {
-    if (
-      currentAddress === null ||
-      currentAddress?.alamat === undefined ||
-      currentAddress?.alamat === null
-    ) {
-      setDisplayAddress(null);
-    } else {
-      if (currentAddress?.alamat.length > 18) {
-        setDisplayAddress(currentAddress?.alamat.substring(0, 15) + "...");
-      } else {
-        setDisplayAddress(currentAddress?.alamat);
-      }
-    }
-    //console.log(currentAddress);
-  }, [currentAddress]);
-
-  const openAddress = () => {
-    navigation.navigate("Address");
-  };
-
-  const openLogin = () => {
-    if (token === null || currentUser === null) {
-      props.clearUserData();
-      navigation.navigate("Login", { username });
-    } else if (
-      props?.goDashboard === undefined ||
-      props?.goDashboard === null ||
-      Platform.OS === "web"
-    ) {
-      navigation.navigate("ProfileTab", {
-        screen: "Main"
-      });
-    } else {
-      props?.goDashboard();
-    }
-  };
+    props?.goDashboard();
+  }
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.navigate("About")}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor:
+            Platform.OS === "web" ? colors.daclen_bg : "transparent",
+        },
+      ]}
+    >
+      <TouchableOpacity
+        onPress={() => goDashboard()}
+        style={styles.containerPhoto}
+      >
         <Image
-          source={require("../../assets/splashsmall.png")}
-          style={styles.imageLogo}
+          key="userImage"
+          style={styles.image}
+          source={
+            currentUser?.detail_user?.foto
+              ? currentUser?.detail_user?.foto
+              : require("../../assets/user.png")
+          }
+          alt={currentUser?.name}
+          contentFit="contain"
+          placeholder={null}
+          transition={100}
         />
       </TouchableOpacity>
+      
+      <View style={styles.containerVertical}>
+      <Text style={styles.textName}>
+          {currentUser?.detail_user?.nama_lengkap
+            ? currentUser?.detail_user?.nama_lengkap
+            : currentUser?.name}
+        </Text>
+        <Text style={styles.text}>Reseller Daclen</Text>
+        <Text style={styles.textReferral}>
+          {`Referral Id: ${currentUser?.name}`}
+        </Text>
+      </View>
 
       <TouchableOpacity
-        style={styles.containerAddress}
-        onPress={() => openAddress()}
+        onPress={() => goDashboard()}
+        style={styles.containerUser}
       >
-        <Text style={styles.textAddress}>
-          {displayAddress ? displayAddress : "Alamat Pengiriman"}
-        </Text>
-        <MaterialCommunityIcons
-          name="map"
-          size={14}
-          color={colors.daclen_light}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => openLogin()}>
-        <Text style={styles.textLogin}>
-          {username ? username : "Login/Register"}
-        </Text>
+        <Image source={require("../../assets/gear.png")} style={styles.gear} />
       </TouchableOpacity>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: colors.daclen_black,
+    backgroundColor: "transparent",
   },
-  containerAddress: {
+  containerPhoto: {
+    height: 60,
+    width: 60,
+    borderRadius: 30,
+    borderWidth: 1,
+    overflow: "hidden",
+    borderColor: colors.daclen_bg,
+    marginStart: 10,
+    marginVertical: 10,
+    alignSelf: "center",
+  },
+  containerVertical: {
+    marginHorizontal: 12,
+    backgroundColor: "transparent",
     flex: 1,
+    alignSelf: "center",
+  },
+  containerUser: {
     flexDirection: "row",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: colors.daclen_gray,
     alignItems: "center",
-    marginStart: 14,
-    marginVertical: 6,
-    borderRadius: 5,
+    backgroundColor: "transparent",
+    alignSelf: "flex-start",
+    marginVertical: 16,
+    marginEnd: 14,
   },
-  imageLogo: {
-    width: 75,
+  image: {
+    width: 60,
+    height: 60,
+    aspectRatio: 1 / 1,
+  },
+  gear: {
+    backgroundColor: "transparent",
+    alignSelf: "flex-start",
+    width: 20,
     height: 20,
-    marginStart: 14,
-    marginVertical: 12,
   },
-  textAddress: {
-    color: "white",
+  lock: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
+  },
+  textName: {
+    fontSize: 14,
+    color: colors.daclen_light,
+    fontWeight: "bold",
+  },
+  text: {
     fontSize: 12,
-    textAlign: "center",
-    flex: 1,
+    color: colors.daclen_light,
+  },
+  textReferral: {
+    fontSize: 10,
+    color: colors.daclen_lightgrey,
+    marginTop: 6,
   },
   textLogin: {
     fontSize: 12,
     fontWeight: "bold",
     textAlign: "center",
-    color: colors.daclen_yellow,
-    marginHorizontal: 14,
+    color: colors.daclen_light,
+    marginEnd: 6,
+  },
+  textUsername: {
+    fontSize: 12,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: colors.daclen_light,
+    marginEnd: 6,
   },
 });
 
 const mapStateToProps = (store) => ({
-  token: store.userState.token,
   currentUser: store.userState.currentUser,
-  currentAddress: store.userState.currentAddress,
+  profileLock: store.userState.profileLock,
 });
 
-const mapDispatchProps = (dispatch) =>
-  bindActionCreators(
-    {
-      clearUserData,
-      getCurrentUser,
-    },
-    dispatch
-  );
-
-export default connect(mapStateToProps, mapDispatchProps)(Header);
+export default connect(mapStateToProps, null)(Header);

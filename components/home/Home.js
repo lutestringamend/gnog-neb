@@ -1,33 +1,73 @@
 import React from "react";
-import { StyleSheet, ScrollView, View } from "react-native";
+import { StyleSheet, View, Platform, ImageBackground } from "react-native";
+import { connect } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 
-import Header from "../DashboardHeader";
-//import Header from "./Header";
-import Slider from "./Slider";
-import Banner from "./Banner";
-import Alert from "./Alert";
+import DashboardHeader from "../DashboardHeader";
+import Header from "./Header";
+//import Slider from "./Slider";
+//import Banner from "./Banner";
+//import Alert from "./Alert";
 import Shop from "./Shop";
-import CheckoutBox from "./CheckoutBox";
-import { colors } from "../../styles/base";
+//import CheckoutBox from "./CheckoutBox";
+import DashboardBottom from "../dashboard/components/DashboardBottom";
+
+//import { colors } from "../../styles/base";
 //import Youtube from "../home/Youtube";
 
 function Home(props) {
+  const { currentUser, token } = props;
+  const navigation = useNavigation();
+
   function openDashboard() {
     if (props?.goDashboard === undefined || props?.goDashboard === null) {
       return;
     }
     props.goDashboard();
   }
+
+  /*
+        <ScrollView style={styles.scrollView}>
+                  <Slider />
+        <Banner />
+              <Alert />
+
+      <CheckoutBox />
+      </ScrollView>
+
+  */
+
   return (
     <View style={styles.container}>
-      <Header goDashboard={() => openDashboard()} isHome={true} />
-      <ScrollView style={styles.scrollView}>
-        <Slider />
-        <Banner />
-        <Alert />
-        <Shop />
-      </ScrollView>
-      <CheckoutBox />
+      {Platform.OS === "web" ? (
+        <ImageBackground
+          source={require("../../assets/profilbg.png")}
+          style={styles.background}
+          resizeMode="cover"
+        />
+      ) : null}
+      {token === null ||
+      currentUser === null ||
+      currentUser?.id === undefined ? (
+        <DashboardHeader
+          onSettingPress={() => navigation.navigate("Profile")}
+        />
+      ) : (
+        <Header goDashboard={() => openDashboard()} isHome={true} />
+      )}
+
+      <Shop />
+
+      <DashboardBottom
+        username={currentUser?.name}
+        isSharingAvailable={Platform.OS !== "web"}
+        setMessage={(text, isError) =>
+          setMessage({
+            text,
+            isError,
+          })
+        }
+      />
     </View>
   );
 }
@@ -36,14 +76,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    justifyContent: "space-evenly",
     backgroundColor: "transparent",
   },
-  scrollView: {
-    flex: 1,
+  background: {
+    position: "absolute",
+    zIndex: 0,
+    top: 0,
+    start: 0,
     width: "100%",
-    backgroundColor: colors.white,
+    height: "100%",
   },
 });
 
-export default Home;
+const mapStateToProps = (store) => ({
+  currentUser: store.userState.currentUser,
+  token: store.userState.token,
+});
+
+export default connect(mapStateToProps, null)(Home);

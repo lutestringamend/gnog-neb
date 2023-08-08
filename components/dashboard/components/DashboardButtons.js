@@ -22,6 +22,24 @@ import {
   webreferral,
 } from "../../../axios/constants";
 
+const DashButton = (props) => {
+  return (
+    <TouchableOpacity style={styles.button} onPress={() => props?.onPress()}>
+      {props?.icon ? (
+        <MaterialCommunityIcons
+          name={props?.icon}
+          size={24}
+          color={colors.daclen_light}
+        />
+      ) : null}
+
+      <Text style={[styles.textButton, { marginStart: props?.icon ? 10 : 0 }]}>
+        {props?.text}
+      </Text>
+    </TouchableOpacity>
+  );
+};
+
 const DashboardButtons = ({ userId, username }) => {
   const navigation = useNavigation();
 
@@ -100,60 +118,50 @@ const DashboardButtons = ({ userId, username }) => {
 
   return (
     <View style={styles.containerMain}>
-      <TouchableOpacity
-        style={[styles.button, { marginBottom: 32, marginHorizontal: 20, width: null }]}
-        onPress={() => shareURL()}
-      >
-        <MaterialCommunityIcons
-          name="share-variant"
-          size={16}
-          color={colors.daclen_light}
-        />
-
-        <Text
-          style={[styles.textButton, { marginStart: 10 }]}
-        >{`SHARE REFERRAL`}</Text>
-      </TouchableOpacity>
       <View style={styles.container}>
         <View style={[styles.containerVertical, { marginEnd: 10 }]}>
-          <TouchableOpacity
-            style={styles.button}
+          <DashButton
+            text="DACLEN CARE"
+            icon="phone-message"
             onPress={() => openDaclenCare()}
-          >
-            <Text style={styles.textButton}>{`DACLEN CARE`}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
+          />
+          <DashButton
+            text="KODE ETIK"
+            icon="file-document-multiple"
             onPress={() => openKodeEtik()}
-          >
-            <Text style={styles.textButton}>{`KODE ETIK`}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => openBlog()}>
-            <Text style={styles.textButton}>{`BLOG`}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
+          />
+          <DashButton
+            text="BLOG"
+            icon="newspaper-variant"
+            onPress={() => openBlog()}
+          />
+          <DashButton
+            text="TUTORIAL"
+            icon="play-box"
             onPress={() => openTutorial()}
-          >
-            <Text style={styles.textButton}>{`TUTORIAL`}</Text>
-          </TouchableOpacity>
+          />
         </View>
         <View style={[styles.containerVertical, { marginStart: 10 }]}>
-          <TouchableOpacity
-            style={styles.button}
+          <DashButton
+            text={`SHARE\nREFERRAL`}
+            icon="account-group"
+            onPress={() => shareURL()}
+          />
+          <DashButton
+            text={`PENJELASAN\nBISNIS`}
+            icon="help-rhombus"
             onPress={() => openExplanation()}
-          >
-            <Text style={styles.textButton}>{`PENJELASAN\nBISNIS`}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
+          />
+          <DashButton
+            text={`DASHBOARD\nWEBSITE`}
+            icon="web-check"
             onPress={() => openWebDashboard()}
-          >
-            <Text style={styles.textButton}>{`DASHBOARD\nWEBSITE`}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => openCatalog()}>
-            <Text style={styles.textButton}>{`KATALOG\nHADIAH`}</Text>
-          </TouchableOpacity>
+          />
+          <DashButton
+            text={`KATALOG\nHADIAH`}
+            icon="gift"
+            onPress={() => openCatalog()}
+          />
         </View>
       </View>
     </View>
@@ -188,6 +196,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 10,
     width: 160,
+    height: 48,
     marginBottom: 12,
   },
   textButton: {

@@ -9,24 +9,19 @@ import {
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { connect } from "react-redux";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { useNavigation } from "@react-navigation/native";
 
-import { colors } from "../../styles/base";
+import { colors, dimensions } from "../../styles/base";
 import ShopItem from "./ShopItem";
 import Search from "./Search";
 import { getObjectAsync } from "../asyncstorage";
 import { ASYNC_PRODUCTS_ARRAY_KEY } from "../asyncstorage/constants";
+import ShopPages from "./ShopPages";
 import { productpaginationnumber } from "../../axios/constants";
-import { openCheckout } from "../main/CheckoutScreen";
 
 function Shop(props) {
   const [storageProducts, setStorageProducts] = useState(null);
   const [category, setCategory] = useState("");
-  const [isSearch, setSearch] = useState(false);
   const [loading, setLoading] = useState(true);
-  const navigation = useNavigation();
-  const { token, currentUser, cart } = props;
 
   const products = useMemo(() => {
     if (
@@ -112,7 +107,8 @@ function Shop(props) {
     return filteredProducts;
   }
 
-  /*
+  return (
+    <View style={styles.container}>
       <View style={styles.containerHorizontal}>
         <Text
           style={[
@@ -182,68 +178,7 @@ function Shop(props) {
         </View>
       </View>
 
-
-              <View
-          style={[
-            styles.containerCounter,
-            { opacity: products?.length < 1 ? 1 : 0 },
-          ]}
-        >
-          <ShopPages
-            disabled={products?.length > 0}
-            storageProducts={storageProducts}
-          />
-        </View>
-*/
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.containerHeader}>
-        <View style={styles.containerLogo}>
-          <TouchableOpacity onPress={() => navigation.navigate("About")}>
-            <Image
-              source={require("../../assets/splashsmall.png")}
-              style={styles.imageLogo}
-            />
-          </TouchableOpacity>
-        </View>
-        <TouchableOpacity
-          onPress={() =>
-            openCheckout(
-              navigation,
-              false,
-              token,
-              currentUser,
-              cart?.jumlah_produk,
-              null
-            )
-          }
-          style={styles.containerCart}
-          disabled={
-            token === null ||
-            cart?.jumlah_produk === 0 ||
-            cart?.jumlah_produk === undefined ||
-            cart?.jumlah_produk === null
-          }
-        >
-          <MaterialCommunityIcons
-            name="cart"
-            size={24}
-            color={colors.daclen_light}
-          />
-          {token === null ||
-          cart?.jumlah_produk === 0 ||
-          cart?.jumlah_produk === undefined ||
-          cart?.jumlah_produk === null ? null : (
-            <View style={styles.containerNumber}>
-              <Text style={styles.textCartNumber}>
-                {cart?.jumlah_produk}
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      </View>
-      {isSearch ? <Search /> : null}
+      <Search />
 
       <View style={styles.containerFlatlist}>
         {loading ? (
@@ -265,13 +200,10 @@ function Shop(props) {
         ) : (
           <FlashList
             estimatedItemSize={productpaginationnumber}
-            numColumns={1}
+            numColumns={2}
             horizontal={false}
             data={
-              props?.searchFilter === null ||
-              props?.searchFilter === "" ||
-              products?.length === undefined ||
-              products?.length < 1
+              products?.length === undefined || products?.length < 1
                 ? props.products
                 : products
             }
@@ -285,6 +217,18 @@ function Shop(props) {
             )}
           />
         )}
+
+        <View
+          style={[
+            styles.containerCounter,
+            { opacity: products?.length < 1 ? 1 : 0 },
+          ]}
+        >
+          <ShopPages
+            disabled={products?.length > 0}
+            storageProducts={storageProducts}
+          />
+        </View>
       </View>
     </View>
   );
@@ -294,42 +238,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "flex-start",
-    paddingBottom: 100,
-  },
-  containerHeader: {
-    width: "100%",
-    backgroundColor: colors.black,
-    flexDirection: "row",
-  },
-  containerLogo: {
-    flex: 1,
-    marginHorizontal: 12,
-    marginVertical: 10,
-    alignSelf: "center",
-    backgroundColor: "transparent",
-  },
-  containerCart: {
-    backgroundColor: colors.daclen_gray,
-    paddingStart: 20,
-    paddingEnd: 16,
-    paddingVertical: 10,
-    justifyContent: "center",
-    borderTopStartRadius: 6,
-    borderBottomStartRadius: 6,
-  },
-  containerNumber: {
-    padding: 4,
-    backgroundColor: colors.daclen_orange,
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    position: "absolute",
-    top: 2,
-    end: 2,
-    zIndex: 4,
-    elevation: 4,
-    justifyContent: "center",
-    alignItems: "center",
+    paddingBottom: dimensions.fullHeight / 3,
   },
   containerHorizontal: {
     flexDirection: "row",
@@ -357,22 +266,11 @@ const styles = StyleSheet.create({
     marginEnd: 10,
     alignSelf: "flex-end",
   },
-  imageLogo: {
-    width: 72,
-    height: 18,
-    backgroundColor: "transparent",
-  },
   textHeader: {
     flex: 1,
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "left",
-  },
-  textCartNumber: {
-    backgroundColor: "transparent",
-    fontSize: 10,
-    fontWeight: "bold",
-    color: colors.daclen_light,
   },
   image: {
     width: 28,
@@ -394,7 +292,6 @@ const mapStateToProps = (store) => ({
   productItems: store.productState.productItems,
   searchFilter: store.productState.searchFilter,
   token: store.userState.token,
-  currentUser: store.userState.currentUser,
   cart: store.userState.cart,
 });
 

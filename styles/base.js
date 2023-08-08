@@ -23,6 +23,7 @@ export const colors = {
   daclen_black_old: "#212529",
   daclen_bg: "#001731",
   daclen_bg_highlighted: "#303c54",
+  black: "#000000",
   white: "#FFFFFF",
   daclen_green_button: "#96af9a",
   daclen_green_pale: "#9fa88a",
