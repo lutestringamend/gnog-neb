@@ -20,7 +20,7 @@ const ShopItem = (props) => {
     navigation.navigate("Product", { id, nama });
   };
 
-  function goDashboard() {
+  function openDashboard() {
     if (props?.goDashboard === undefined || props?.goDashboard === null) {
       return;
     }
@@ -84,7 +84,7 @@ const ShopItem = (props) => {
             isPremium={isPremium}
             produk_id={id}
             navigation={navigation}
-            openDashboard={() => goDashboard()}
+            goDashboard={() => openDashboard()}
           />
         </View>
       </View>
