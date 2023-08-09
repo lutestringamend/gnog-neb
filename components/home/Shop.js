@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: colors.black,
     flexDirection: "row",
-    height: 40,
+    height: 54,
   },
   containerLogo: {
     flex: 1,
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   },
   containerCart: {
     backgroundColor: colors.daclen_gray,
-    paddingStart: 20,
+    paddingStart: 12,
     paddingEnd: 16,
     paddingVertical: 10,
     justifyContent: "center",

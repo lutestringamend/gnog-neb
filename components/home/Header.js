@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   image: {
     width: 60,
     height: 60,
-    aspectRatio: 1 / 1,
+    borderRadius: 30,
   },
   gear: {
     backgroundColor: "transparent",

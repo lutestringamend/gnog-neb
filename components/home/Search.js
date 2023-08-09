@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     paddingHorizontal: 8,
-    paddingVertical: 6,
+    paddingVertical: 4,
     backgroundColor: colors.white,
     borderRadius: 6,
     elevation: 4,
