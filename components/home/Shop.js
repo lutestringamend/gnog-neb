@@ -248,12 +248,14 @@ const styles = StyleSheet.create({
   containerSearchIcon: {
     backgroundColor: "transparent",
     alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    height: 54,
     marginEnd: 10,
   },
   containerCart: {
     backgroundColor: colors.daclen_gray,
-    paddingStart: 12,
-    paddingEnd: 16,
+    paddingHorizontal: 16,
     paddingVertical: 10,
     justifyContent: "center",
     borderTopStartRadius: 6,

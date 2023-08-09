@@ -80,15 +80,11 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   containerPhoto: {
-    height: 60,
-    width: 60,
-    borderRadius: 30,
-    borderWidth: 1,
-    overflow: "hidden",
-    borderColor: colors.daclen_bg,
     marginStart: 10,
     marginVertical: 10,
     alignSelf: "center",
+    backgroundColor: "center",
+    elevation: 4,
   },
   containerVertical: {
     marginHorizontal: 12,
