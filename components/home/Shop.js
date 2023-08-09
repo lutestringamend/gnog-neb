@@ -130,8 +130,8 @@ function Shop(props) {
             token === null ||
             currentUser === null ||
             currentUser?.id === undefined
-              ? 32
-              : 100,
+              ? 24
+              : 96,
         },
       ]}
     >

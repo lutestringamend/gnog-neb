@@ -53,7 +53,7 @@ function Home(props) {
           onSettingPress={() => navigation.navigate("Profile")}
         />
       ) : (
-        <Header goDashboard={() => openDashboard()} isHome={true} />
+        <Header goDashboard={() => openDashboard()} isHome={true} navigation={navigation} />
       )}
 
       <Shop />

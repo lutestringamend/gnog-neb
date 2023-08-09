@@ -120,17 +120,24 @@ function Cart(props) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => modifyCart(false)}>
+      <TouchableOpacity
+        style={styles.cartIcon}
+        onPress={() => modifyCart(false)}
+      >
         <MaterialCommunityIcons
           name="minus"
-          size={iconSize ? iconSize : 16}
-          style={styles.cartIcon}
+          size={iconSize ? iconSize : 14}
           disabled={loading}
-          color={colors.daclen_gray}
+          color={colors.daclen_graydark}
         />
       </TouchableOpacity>
 
-      <View style={styles.containerNumber}>
+      <View
+        style={[
+          styles.containerNumber,
+          { width: textSize ? textSize + 20 : 36 },
+        ]}
+      >
         {loading ? (
           <ActivityIndicator
             size="small"
@@ -146,13 +153,15 @@ function Cart(props) {
         )}
       </View>
 
-      <TouchableOpacity onPress={() => modifyCart(true)}>
+      <TouchableOpacity
+        style={styles.cartIcon}
+        onPress={() => modifyCart(true)}
+      >
         <MaterialCommunityIcons
           name="plus"
-          size={iconSize ? iconSize : 16}
-          style={styles.cartIcon}
+          size={iconSize ? iconSize : 14}
           disabled={loading}
-          color={colors.daclen_gray}
+          color={colors.daclen_graydark}
         />
       </TouchableOpacity>
     </View>
@@ -168,15 +177,16 @@ const styles = StyleSheet.create({
   },
   cartIcon: {
     backgroundColor: "transparent",
-    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 6,
     borderWidth: 0.5,
     borderColor: colors.daclen_gray,
-    borderRadius: 6,
+    borderRadius: 10,
   },
   containerNumber: {
     backgroundColor: "transparent",
-    paddingHorizontal: 12,
+    paddingHorizontal: 20,
     paddingVertical: 8,
     justifyContent: "center",
     alignItems: "center",
@@ -188,7 +198,7 @@ const styles = StyleSheet.create({
   textCart: {
     backgroundColor: "transparent",
     fontWeight: "bold",
-    color: colors.daclen_graydark,
+    color: colors.daclen_black,
     textAlign: "center",
   },
   textButton: {

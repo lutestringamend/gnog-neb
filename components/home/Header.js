@@ -7,20 +7,25 @@ import {
   Platform,
 } from "react-native";
 import { Image } from "expo-image";
-//import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { useNavigation } from "@react-navigation/native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
 import { colors } from "../../styles/base";
 
 const Header = (props) => {
-  const { username, currentUser, profileLock } = props;
-  const navigation = useNavigation();
+  const { currentUser, navigation } = props;
 
   function goDashboard() {
     if (props?.goDashboard === undefined || props?.goDashboard === null) {
       return;
     }
     props?.goDashboard();
+  }
+
+  function goCheckout() {
+    if (navigation === undefined || navigation === null) {
+      return;
+    }
+    navigation.navigate("History");
   }
 
   return (
@@ -51,9 +56,9 @@ const Header = (props) => {
           transition={100}
         />
       </TouchableOpacity>
-      
+
       <View style={styles.containerVertical}>
-      <Text style={styles.textName}>
+        <Text style={styles.textName}>
           {currentUser?.detail_user?.nama_lengkap
             ? currentUser?.detail_user?.nama_lengkap
             : currentUser?.name}
@@ -64,12 +69,35 @@ const Header = (props) => {
         </Text>
       </View>
 
-      <TouchableOpacity
-        onPress={() => goDashboard()}
-        style={styles.containerUser}
-      >
-        <Image source={require("../../assets/gear.png")} style={styles.gear} />
-      </TouchableOpacity>
+      <View style={styles.containerRight}>
+        <TouchableOpacity
+          onPress={() => goDashboard()}
+          style={styles.containerUser}
+        >
+          <Image
+            source={require("../../assets/gear.png")}
+            style={styles.gear}
+          />
+        </TouchableOpacity>
+        {currentUser === null ||
+        currentUser?.has_checkout === undefined ||
+        currentUser?.has_checkout === null ||
+        !currentUser?.has_checkout ? null : (
+          <TouchableOpacity
+            onPress={() => goCheckout()}
+            style={[styles.containerUser, {marginTop: 10}]}
+          >
+            <Text style={styles.textAlert}>
+            CHECKOUT
+            </Text>
+                    <MaterialCommunityIcons
+          name="alert"
+          size={20}
+          color={colors.daclen_yellow}
+        />
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
@@ -92,13 +120,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: "center",
   },
+  containerRight: {
+    marginVertical: 16,
+    marginEnd: 14,
+    backgroundColor: "transparent",
+    alignItems: "flex-end",
+  },
   containerUser: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "transparent",
-    alignSelf: "flex-start",
-    marginVertical: 16,
-    marginEnd: 14,
+    alignSelf: "flex-end",
   },
   image: {
     width: 60,
@@ -129,11 +161,11 @@ const styles = StyleSheet.create({
     color: colors.daclen_lightgrey,
     marginTop: 6,
   },
-  textLogin: {
+  textAlert: {
     fontSize: 12,
     fontWeight: "bold",
     textAlign: "center",
-    color: colors.daclen_light,
+    color: colors.daclen_yellow,
     marginEnd: 6,
   },
   textUsername: {
