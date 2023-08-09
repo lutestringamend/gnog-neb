@@ -3,11 +3,11 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  Image,
   Text,
   Platform,
 } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { Image } from "expo-image";
+//import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
 import { colors } from "../../styles/base";
