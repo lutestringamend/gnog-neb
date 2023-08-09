@@ -19,13 +19,20 @@ const Header = (props) => {
 
   function onSettingPress() {
     if (props?.onSettingPress === undefined || props?.onSettingPress === null) {
-      if (profileLock && Platform.OS !== "web") {
+      if (
+        !profileLock ||
+        currentUser === null ||
+        currentUser?.id === undefined ||
+        currentUser?.isActive === undefined ||
+        currentUser?.isActive === null ||
+        !currentUser?.isActive
+      ) {
+        navigation.navigate("Profile", { username });
+      } else {
         if (props?.goDashboard === undefined || props?.goDashboard === null) {
           return;
         }
         props?.goDashboard();
-      } else {
-        navigation.navigate("Profile", { username });
       }
     } else {
       props.onSettingPress();
