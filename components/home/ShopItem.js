@@ -13,12 +13,19 @@ import Cart from "../cart/Cart";
 import { colors, blurhash } from "../../styles/base";
 
 const ShopItem = (props) => {
-  const { id, nama, harga_currency, foto_url } = props;
+  const { id, nama, harga_currency, foto_url, isPremium } = props;
   const navigation = useNavigation();
 
   const openProduct = () => {
     navigation.navigate("Product", { id, nama });
   };
+
+  function goDashboard() {
+    if (props?.goDashboard === undefined || props?.goDashboard === null) {
+      return;
+    }
+    props?.goDashboard();
+  }
 
   return (
     <View style={styles.containerItem} key={id}>
@@ -74,8 +81,10 @@ const ShopItem = (props) => {
         >
           <Cart
             isShop={true}
+            isPremium={isPremium}
             produk_id={id}
             navigation={navigation}
+            openDashboard={() => goDashboard()}
           />
         </View>
       </View>

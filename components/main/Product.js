@@ -81,7 +81,14 @@ function Product(props) {
             <Text style={styles.text}>{name}</Text>
             <View style={styles.containerTitle}>
               <Text style={styles.textPrice}>Rp {product?.harga_currency}</Text>
-              <Cart produk_id={product?.id} />
+              {token === null ||
+              currentUser === null ||
+              currentUser?.id === undefined ||
+              currentUser?.isActive === undefined ||
+              currentUser?.isActive === null ||
+              !currentUser?.isActive ? null : (
+                <Cart produk_id={product?.id} />
+              )}
             </View>
 
             {product?.tag_produk === undefined ||
@@ -91,7 +98,9 @@ function Product(props) {
               <View style={styles.containerCategory}>
                 <Text style={styles.textCategory}>Kategori</Text>
                 {product?.tag_produk.map(({ nama }) => (
-                  <Text key={nama} style={styles.textTag}>{nama}</Text>
+                  <Text key={nama} style={styles.textTag}>
+                    {nama}
+                  </Text>
                 ))}
               </View>
             )}
@@ -105,7 +114,17 @@ function Product(props) {
         </ScrollView>
       )}
 
-      {token && product !== null && props.cart?.jumlah_produk > 0 && (
+      {token === null ||
+      currentUser === null ||
+      currentUser?.id === undefined ||
+      currentUser?.isActive === undefined ||
+      currentUser?.isActive === null ||
+      !currentUser?.isActive ||
+      product === null ||
+      props.cart === null ||
+      props.cart?.jumlah_produk === undefined ||
+      props.cart?.jumlah_produk === null ||
+      props.cart?.jumlah_produk < 1 ? null : (
         <TouchableOpacity
           style={styles.containerCheckout}
           onPress={() =>

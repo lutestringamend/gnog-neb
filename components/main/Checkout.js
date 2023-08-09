@@ -25,7 +25,7 @@ import CartItem from "../cart/CartItem";
 import CartDetails from "../cart/CartDetails";
 import CartAction from "../cart/CartAction";
 import Separator from "../profile/Separator";
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 
 function Checkout(props) {
   const [products, setProducts] = useState([]);
@@ -64,7 +64,14 @@ function Checkout(props) {
       backHome();
     }
 
-    if (token === null || currentUser === null) {
+    if (
+      token === null ||
+      currentUser === null ||
+      currentUser?.id === undefined ||
+      currentUser?.isActive === undefined ||
+      currentUser?.isActive === null ||
+      !currentUser?.isActive
+    ) {
       backHome();
     }
 

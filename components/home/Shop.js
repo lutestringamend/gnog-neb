@@ -121,6 +121,13 @@ function Shop(props) {
     setSearch((isSearch) => !isSearch);
   }
 
+  function openDashboard() {
+    if (props?.goDashboard === undefined || props?.goDashboard === null) {
+      return;
+    }
+    props?.goDashboard();
+  }
+
   return (
     <View
       style={[
@@ -129,7 +136,10 @@ function Shop(props) {
           paddingBottom:
             token === null ||
             currentUser === null ||
-            currentUser?.id === undefined
+            currentUser?.id === undefined ||
+            currentUser?.isActive === undefined ||
+            currentUser?.isActive === null ||
+            !currentUser?.isActive
               ? 24
               : 96,
         },
@@ -233,6 +243,14 @@ function Shop(props) {
                 nama={item?.nama}
                 harga_currency={item?.harga_currency}
                 foto_url={item?.foto_url}
+                isPremium={
+                  !(
+                    currentUser?.status_member === undefined ||
+                    currentUser?.status_member === null ||
+                    currentUser?.status_member !== "premium"
+                  )
+                }
+                goDashboard={() => openDashboard()}
               />
             )}
           />

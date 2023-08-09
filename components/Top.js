@@ -71,9 +71,9 @@ const Top = ({ token, currentUser }) => {
         {token === null ||
         currentUser === null ||
         currentUser?.id === undefined ||
-        currentUser?.nomor_telp_verified_at === undefined ||
-        currentUser?.nomor_telp_verified_at === null ||
-        currentUser?.nomor_telp_verified_at === "" ? null : (
+        currentUser?.isActive === undefined ||
+        currentUser?.isActive === null ||
+        !currentUser?.isActive ? null : (
           <TabButton
             tab={tab}
             key="mediakit"

@@ -29,6 +29,7 @@ function Cart(props) {
     textSize,
     cartError,
     isShop,
+    isPremium,
     navigation,
   } = props;
 
@@ -83,6 +84,11 @@ function Cart(props) {
   function onShopButtonPress() {
     if (token === null && !(navigation === undefined || navigation === null)) {
       navigation.navigate("Login");
+    } else if (isShop && !isPremium) {
+      if (props?.goDashboard === undefined || props?.goDashboard === null) {
+        return;
+      }
+      props?.goDashboard();
     } else {
       modifyCart(true);
     }
@@ -107,7 +113,9 @@ function Cart(props) {
           <Text style={styles.textButton}>
             {token === null
               ? `Login\nuntuk Belanja`
-              : `Tambahkan\nke Keranjang`}
+              : isPremium
+              ? `Tambahkan\nke Keranjang`
+              : `Upgrade\nke Premium`}
           </Text>
         )}
       </TouchableOpacity>
@@ -135,7 +143,8 @@ function Cart(props) {
       <View
         style={[
           styles.containerNumber,
-          { width: textSize ? textSize + 20 : 36,
+          {
+            width: textSize ? textSize + 20 : 36,
             height: textSize ? textSize + 20 : 36,
           },
         ]}

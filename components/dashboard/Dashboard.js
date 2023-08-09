@@ -32,6 +32,7 @@ import DashboardLock from "./components/DashboardLock";
 import DashboardLogout from "./components/DashboardLogout";
 import DashboardVerification from "./components/DashboardVerification";
 import DashboardCreatePIN from "./components/DashboardCreatePIN";
+import DashboardUpgrade from "./components/DashboardUpgrade";
 
 const Dashboard = (props) => {
   const [message, setMessage] = useState({
@@ -170,6 +171,10 @@ const Dashboard = (props) => {
         currentUser?.id === undefined ||
         currentUser?.name === undefined ? (
           <DashboardLogout />
+        ) : currentUser?.status_member === undefined ||
+        currentUser?.status_member === null ||
+        currentUser?.status_member !== "premium" ? (
+          <DashboardUpgrade />
         ) : profilePIN === null || profilePIN === "" ? (
           <DashboardCreatePIN />
         ) : currentUser?.nomor_telp_verified_at === null ||
@@ -209,7 +214,6 @@ const Dashboard = (props) => {
       profileLock === null ||
       profileLock ? null : (
         <DashboardBottom
-          username={currentUser?.name}
           isSharingAvailable={Platform.OS !== "web"}
           setMessage={(text, isError) =>
             setMessage({

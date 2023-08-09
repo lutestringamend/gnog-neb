@@ -50,11 +50,7 @@ export default function TabNavigator(props) {
           title: "BELANJA",
           tabBarColor: bottomNav.activeColor,
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon
-              title="BELANJA"
-              iconName="shopping"
-              focused={focused}
-            />
+            <TabBarIcon title="BELANJA" iconName="shopping" focused={focused} />
           ),
         }}
       />
@@ -62,9 +58,9 @@ export default function TabNavigator(props) {
       {token === null ||
       currentUser === null ||
       currentUser?.id === undefined ||
-      currentUser?.nomor_telp_verified_at === undefined ||
-      currentUser?.nomor_telp_verified_at === null ||
-      currentUser?.nomor_telp_verified_at === "" ? null : (
+      currentUser?.isActive === undefined ||
+      currentUser?.isActive === null ||
+      !currentUser?.isActive ? null : (
         <Tab.Screen
           name="MediaKitTab"
           key="MediaKit"
@@ -106,4 +102,3 @@ export default function TabNavigator(props) {
     </Tab.Navigator>
   );
 }
-

@@ -108,6 +108,14 @@ export const user = (state = initialState, action) => {
               nama: checkEmpty(action.data?.detail_user?.bank?.nama),
             },
           },
+          isActive: !(
+            action.data?.status_member === undefined ||
+            action.data?.status_member === null ||
+            action.data?.status_member !== "premium" ||
+            action.data?.nomor_telp_verified_at === undefined ||
+            action.data?.nomor_telp_verified_at === null ||
+            action.data?.nomor_telp_verified_at === ""
+          ),
         },
       };
     case USER_TOKEN_STATE_CHANGE:
@@ -149,7 +157,7 @@ export const user = (state = initialState, action) => {
       return {
         ...state,
         saldo: action.data,
-    };
+      };
     case USER_CART_STATE_CHANGE:
       return {
         ...state,

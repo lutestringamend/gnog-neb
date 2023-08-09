@@ -56,17 +56,11 @@ function Home(props) {
         <Header goDashboard={() => openDashboard()} isHome={true} navigation={navigation} />
       )}
 
-      <Shop />
+      <Shop goDashboard={() => openDashboard()} />
 
       <DashboardBottom
-        username={currentUser?.name}
         isSharingAvailable={Platform.OS !== "web"}
-        setMessage={(text, isError) =>
-          setMessage({
-            text,
-            isError,
-          })
-        }
+        setMessage={null}
       />
     </View>
   );

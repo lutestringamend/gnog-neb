@@ -10,6 +10,7 @@ import {
   ToastAndroid,
 } from "react-native";
 import * as Clipboard from "expo-clipboard";
+import { connect } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors } from "../../../styles/base";
@@ -20,20 +21,21 @@ import {
 import { sentryLog } from "../../../sentry";
 
 const DashboardBottom = (props) => {
+  const { token, currentUser } = props;
   const navigation = useNavigation();
 
   function openQRLink() {
     navigation.navigate("QRScreen", {
-      text: `${personalwebsiteurl}${props?.username}`,
-    })
+      text: `${personalwebsiteurl}${currentUser?.name}`,
+    });
   }
 
   function openPersonalWebsite() {
-    Linking.openURL(`${personalwebsiteurl}${props?.username}`);
+    Linking.openURL(`${personalwebsiteurl}${currentUser?.name}`);
   }
 
   const shareURL = async () => {
-    let fullLink = `${personalwebsiteurl}${props?.username}`;
+    let fullLink = `${personalwebsiteurl}${currentUser?.name}`;
 
     if (props?.isSharingAvailable) {
       /*await Sharing.shareAsync(fullLink, {
@@ -64,7 +66,7 @@ const DashboardBottom = (props) => {
   };
 
   const copytoClipboard = async () => {
-    await Clipboard.setStringAsync(`${personalwebsiteurl}${props?.username}`);
+    await Clipboard.setStringAsync(`${personalwebsiteurl}${currentUser?.name}`);
     if (Platform.OS === "android") {
       ToastAndroid.show(
         "Link Personal Website tersalin ke Clipboard",
@@ -77,9 +79,12 @@ const DashboardBottom = (props) => {
   };
 
   if (
-    props?.username === undefined ||
-    props?.username === null ||
-    props?.username === ""
+    token === null ||
+    currentUser === null ||
+    currentUser?.id === undefined ||
+    currentUser?.isActive === undefined ||
+    currentUser?.isActive === null ||
+    !currentUser?.isActive
   ) {
     return null;
   }
@@ -109,9 +114,13 @@ const DashboardBottom = (props) => {
           </Text>
         </TouchableOpacity>
       </View>
-      <Text style={styles.textLink}>
-        {`${personalwebsiteurlshort}${props?.username}`}
-      </Text>
+      {currentUser === null ||
+      currentUser?.name === undefined ||
+      currentUser?.name === null ? null : (
+        <Text style={styles.textLink}>
+          {`${personalwebsiteurlshort}${currentUser?.name}`}
+        </Text>
+      )}
     </View>
   );
 };
@@ -163,4 +172,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DashboardBottom;
+const mapStateToProps = (store) => ({
+  currentUser: store.userState.currentUser,
+  token: store.userState.token,
+});
+
+export default connect(mapStateToProps, null)(DashboardBottom);

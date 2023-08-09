@@ -41,7 +41,11 @@ import {
 import WatermarkPhotos from "./WatermarkPhotos";
 import WatermarkVideos from "./WatermarkVideos";
 import { sentryLog } from "../../sentry";
-import { ASYNC_MEDIA_WATERMARK_DATA_KEY, ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../asyncstorage/constants";
+import {
+  ASYNC_MEDIA_WATERMARK_DATA_KEY,
+  ASYNC_MEDIA_WATERMARK_PHOTOS_KEY,
+  ASYNC_WATERMARK_PHOTOS_PDF_KEY,
+} from "../asyncstorage/constants";
 import Header from "../DashboardHeader";
 import BSPopup from "../bottomsheets/BSPopup";
 import { WatermarkData } from "./constants";
@@ -104,7 +108,7 @@ function MediaKitFiles(props) {
     const [sharingAvailability, setSharingAvailability] = useState(null);
     const [tempWatermarkData, setTempWatermarkData] = useState(WatermarkData);
 
-    const { currentUser, photoError, watermarkData } = props;
+    const { token, currentUser, photoError, watermarkData } = props;
     const rbSheet = useRef();
     const navigation = useNavigation();
 
@@ -125,7 +129,11 @@ function MediaKitFiles(props) {
     }, []);
 
     useEffect(() => {
-      if (currentUser === null || currentUser?.name === undefined || currentUser?.id === undefined) {
+      if (
+        currentUser === null ||
+        currentUser?.name === undefined ||
+        currentUser?.id === undefined
+      ) {
         return;
       }
       if (watermarkData === null) {
@@ -173,7 +181,7 @@ function MediaKitFiles(props) {
         setTempWatermarkData(newData);
         props.updateReduxMediaKitWatermarkData(newData);
       }
-    }
+    };
 
     function getWatermarkDataFromCurrentUser() {
       return {
@@ -226,7 +234,7 @@ function MediaKitFiles(props) {
       props.updateReduxMediaKitPhotosUri([]);
       setLoading(false);
       rbSheet.current.close();
-    }
+    };
 
     return (
       <View style={styles.container}>
@@ -234,46 +242,54 @@ function MediaKitFiles(props) {
           settingText="SETTING WATERMARK"
           onSettingPress={() => rbSheet.current.open()}
         />
-        <ScrollView style={styles.scrollView}>
-          {currentUser?.id === 8054 ? (
-            <View style={styles.tabView}>
-              <HistoryTabItem
-                activeTab={activeTab}
-                name={WATERMARK_PHOTO}
-                icon={watermarkphotoicon}
-                onPress={() => setActiveTab(WATERMARK_PHOTO)}
-              />
-              <HistoryTabItem
-                activeTab={activeTab}
-                name={WATERMARK_VIDEO}
-                icon={watermarkvideoicon}
-                onPress={() => setActiveTab(WATERMARK_VIDEO)}
-              />
-            </View>
-          ) : null}
+        {token === null ||
+        currentUser === null ||
+        currentUser?.id === undefined ||
+        currentUser?.isActive === undefined ||
+        currentUser?.isActive === null ||
+        !currentUser?.isActive ? null : (
+          <ScrollView style={styles.scrollView}>
+            {currentUser?.id === 8054 ? (
+              <View style={styles.tabView}>
+                <HistoryTabItem
+                  activeTab={activeTab}
+                  name={WATERMARK_PHOTO}
+                  icon={watermarkphotoicon}
+                  onPress={() => setActiveTab(WATERMARK_PHOTO)}
+                />
+                <HistoryTabItem
+                  activeTab={activeTab}
+                  name={WATERMARK_VIDEO}
+                  icon={watermarkvideoicon}
+                  onPress={() => setActiveTab(WATERMARK_VIDEO)}
+                />
+              </View>
+            ) : null}
 
-          {watermarkData === null ? (
-            <ActivityIndicator
-              size="large"
-              color={colors.daclen_orange}
-              style={styles.spinner}
-            />
-          ) : activeTab === WATERMARK_VIDEO ? (
-            <WatermarkVideos
-              watermarkData={watermarkData}
-              userId={currentUser?.id}
-              videos={tempvideoarray}
-            />
-          ) : (
-            <WatermarkPhotos
-              userId={currentUser?.id}
-              loading={photoLoading}
-              error={photoError}
-              sharingAvailability={sharingAvailability}
-              photos={props.mediaKitPhotos}
-            />
-          )}
-        </ScrollView>
+            {watermarkData === null ? (
+              <ActivityIndicator
+                size="large"
+                color={colors.daclen_orange}
+                style={styles.spinner}
+              />
+            ) : activeTab === WATERMARK_VIDEO ? (
+              <WatermarkVideos
+                watermarkData={watermarkData}
+                userId={currentUser?.id}
+                videos={tempvideoarray}
+              />
+            ) : (
+              <WatermarkPhotos
+                userId={currentUser?.id}
+                loading={photoLoading}
+                error={photoError}
+                sharingAvailability={sharingAvailability}
+                photos={props.mediaKitPhotos}
+              />
+            )}
+          </ScrollView>
+        )}
+
         <RBSheet
           ref={rbSheet}
           openDuration={250}
