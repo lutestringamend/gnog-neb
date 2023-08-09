@@ -34,7 +34,7 @@ export default function DashboardUser(props) {
               : require("../../../assets/user.png")
           }
           alt={currentUser?.name}
-          contentFit="contain"
+          contentFit="cover"
           placeholder={null}
           transition={100}
         />

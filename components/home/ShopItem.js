@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Text,
   ActivityIndicator,
-  TouchableHighlight,
 } from "react-native";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
@@ -50,7 +49,7 @@ const ShopItem = (props) => {
       )}
 
       <View style={styles.containerRight}>
-        <TouchableHighlight
+        <TouchableOpacity
           style={[
             styles.containerRightButton,
             {
@@ -59,11 +58,10 @@ const ShopItem = (props) => {
               borderTopEndRadius: 10,
             },
           ]}
-          underlayColor={colors.daclen_gray}
           onPress={() => openProduct()}
         >
           <Text style={styles.textButton}>DETAIL</Text>
-        </TouchableHighlight>
+        </TouchableOpacity>
         <View
           style={[
             styles.containerRightButton,
@@ -77,9 +75,7 @@ const ShopItem = (props) => {
           <Cart
             isShop={true}
             produk_id={id}
-            zeroDisplay={
-              <Text style={styles.textButton}>{`Tambahkan\nke Keranjang`}</Text>
-            }
+            navigation={navigation}
           />
         </View>
       </View>
@@ -128,7 +124,6 @@ const styles = StyleSheet.create({
     width: 120,
     fontSize: 14,
     color: colors.daclen_black,
-    height: 48,
     alignSelf: "flex-start",
   },
   image: {

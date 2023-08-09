@@ -117,69 +117,85 @@ function Shop(props) {
   function toggleSearchIcon() {
     if (isSearch) {
       props.updateProductSearchFilter(null);
-    } 
+    }
     setSearch((isSearch) => !isSearch);
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.containerHeader}>
-        <View style={styles.containerLogo}>
-          {isSearch ? (
-            <Search />
-          ) : (
-            <TouchableOpacity onPress={() => navigation.navigate("About")}>
-              <Image
-                source={require("../../assets/splashsmall.png")}
-                style={styles.imageLogo}
-              />
-            </TouchableOpacity>
-          )}
-        </View>
-        <TouchableOpacity
-          style={styles.containerSearchIcon}
-          onPress={() => toggleSearchIcon()}
-        >
-          <MaterialCommunityIcons
-            name={isSearch ? "close" : "magnify"}
-            size={20}
-            color={colors.daclen_light}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() =>
-            openCheckout(
-              navigation,
-              false,
-              token,
-              currentUser,
-              cart?.jumlah_produk,
-              null
-            )
-          }
-          style={styles.containerCart}
-          disabled={
+    <View
+      style={[
+        styles.container,
+        {
+          paddingBottom:
             token === null ||
+            currentUser === null ||
+            currentUser?.id === undefined
+              ? 32
+              : 100,
+        },
+      ]}
+    >
+      {token === null ||
+      currentUser === null ||
+      currentUser?.id === undefined ? null : (
+        <View style={styles.containerHeader}>
+          <View style={styles.containerLogo}>
+            {isSearch ? (
+              <Search />
+            ) : (
+              <TouchableOpacity onPress={() => navigation.navigate("About")}>
+                <Image
+                  source={require("../../assets/splashsmall.png")}
+                  style={styles.imageLogo}
+                />
+              </TouchableOpacity>
+            )}
+          </View>
+          <TouchableOpacity
+            style={styles.containerSearchIcon}
+            onPress={() => toggleSearchIcon()}
+          >
+            <MaterialCommunityIcons
+              name={isSearch ? "close" : "magnify"}
+              size={20}
+              color={colors.daclen_light}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              openCheckout(
+                navigation,
+                false,
+                token,
+                currentUser,
+                cart?.jumlah_produk,
+                null
+              )
+            }
+            style={styles.containerCart}
+            disabled={
+              token === null ||
+              cart?.jumlah_produk === 0 ||
+              cart?.jumlah_produk === undefined ||
+              cart?.jumlah_produk === null
+            }
+          >
+            <MaterialCommunityIcons
+              name="cart"
+              size={28}
+              color={colors.daclen_light}
+            />
+            {token === null ||
             cart?.jumlah_produk === 0 ||
             cart?.jumlah_produk === undefined ||
-            cart?.jumlah_produk === null
-          }
-        >
-          <MaterialCommunityIcons
-            name="cart"
-            size={24}
-            color={colors.daclen_light}
-          />
-          {token === null ||
-          cart?.jumlah_produk === 0 ||
-          cart?.jumlah_produk === undefined ||
-          cart?.jumlah_produk === null ? null : (
-            <View style={styles.containerNumber}>
-              <Text style={styles.textCartNumber}>{cart?.jumlah_produk}</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      </View>
+            cart?.jumlah_produk === null ? null : (
+              <View style={styles.containerNumber}>
+                <Text style={styles.textCartNumber}>{cart?.jumlah_produk}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
 
       <View style={styles.containerFlatlist}>
         {loading ? (
@@ -230,7 +246,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "flex-start",
-    paddingBottom: 100,
+    backgroundColor: "transparent",
   },
   containerHeader: {
     width: "100%",
@@ -346,7 +362,7 @@ const mapStateToProps = (store) => ({
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
-        updateProductSearchFilter,
+      updateProductSearchFilter,
     },
     dispatch
   );

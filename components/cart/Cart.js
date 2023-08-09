@@ -21,7 +21,16 @@ function Cart(props) {
   const [loading, setLoading] = useState(false);
   const [item, setItem] = useState(null);
   const [itemSize, setItemSize] = useState(0);
-  const { cart, token, produk_id, iconSize, textSize, cartError, isShop, zeroDisplay } = props;
+  const {
+    cart,
+    token,
+    produk_id,
+    iconSize,
+    textSize,
+    cartError,
+    isShop,
+    navigation,
+  } = props;
 
   useEffect(() => {
     setLoading(true);
@@ -46,7 +55,7 @@ function Cart(props) {
     if (loading) {
       console.log("cartError", cart);
       setLoading(false);
-    } 
+    }
     /*else {
       props.clearCartError();
     }*/
@@ -71,16 +80,42 @@ function Cart(props) {
     }
   };
 
-  if (token === null) {
-    return null;
+  function onShopButtonPress() {
+    if (token === null && !(navigation === undefined || navigation === null)) {
+      navigation.navigate("Login");
+    } else {
+      modifyCart(true);
+    }
   }
 
-  if (isShop && itemSize < 1 && !(zeroDisplay === undefined || zeroDisplay === null)) {
+  if (isShop && itemSize < 1) {
     return (
-      <TouchableOpacity style={styles.container} onPress={() => modifyCart(true)}>
-      {zeroDisplay}
-    </TouchableOpacity>
-    )
+      <TouchableOpacity
+        style={styles.container}
+        onPress={() => onShopButtonPress()}
+        disabled={
+          token === null && (navigation === undefined || navigation === null)
+        }
+      >
+        {loading ? (
+          <ActivityIndicator
+            size="small"
+            color={colors.daclen_gray}
+            style={{ alignSelf: "center" }}
+          />
+        ) : (
+          <Text style={styles.textButton}>
+            {token === null
+              ? `Login\nuntuk Belanja`
+              : `Tambahkan\nke Keranjang`}
+          </Text>
+        )}
+      </TouchableOpacity>
+    );
+  }
+
+  if (token === null) {
+    return null;
   }
 
   return (
@@ -96,19 +131,21 @@ function Cart(props) {
       </TouchableOpacity>
 
       <View style={styles.containerNumber}>
-      {loading ? (
+        {loading ? (
           <ActivityIndicator
             size="small"
             color={colors.daclen_gray}
             style={{ alignSelf: "center" }}
           />
         ) : (
-          <Text style={[styles.textCart, { fontSize: textSize ? textSize : 16 }]}>
-          {itemSize}
+          <Text
+            style={[styles.textCart, { fontSize: textSize ? textSize : 16 }]}
+          >
+            {itemSize}
           </Text>
         )}
       </View>
-      
+
       <TouchableOpacity onPress={() => modifyCart(true)}>
         <MaterialCommunityIcons
           name="plus"
@@ -131,28 +168,35 @@ const styles = StyleSheet.create({
   },
   cartIcon: {
     backgroundColor: "transparent",
+    alignSelf: "center",
+    padding: 6,
     borderWidth: 0.5,
     borderColor: colors.daclen_gray,
     borderRadius: 6,
-    alignSelf: "center",
-    padding: 6,
   },
   containerNumber: {
     backgroundColor: "transparent",
     paddingHorizontal: 12,
     paddingVertical: 8,
+    justifyContent: "center",
+    alignItems: "center",
     borderColor: colors.daclen_graydark,
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderRadius: 6,
-    justifyContent: "center",
-    alignItems: "center",
   },
   textCart: {
-    backgroundColor: "transparent",  
+    backgroundColor: "transparent",
     fontWeight: "bold",
     color: colors.daclen_graydark,
     textAlign: "center",
+  },
+  textButton: {
+    fontSize: 14,
+    color: colors.daclen_black,
+    textAlign: "center",
+    textAlignVertical: "center",
+    alignSelf: "center",
   },
 });
 

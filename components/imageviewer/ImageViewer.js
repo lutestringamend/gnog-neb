@@ -174,9 +174,9 @@ const ImageViewer = (props) => {
         html,
       });
       if (result?.uri) {
-        setSuccess(true);
+        /*setSuccess(true);
         setError(newUri);
-        //setError("PDF siap dibagikan");
+        setError("PDF siap dibagikan");*/
         setPdfUri(result?.uri);
       } else {
         setSuccess(false);
@@ -205,7 +205,7 @@ const ImageViewer = (props) => {
           mimeType ? mimeType : "image/jpeg"
         )
           .then(async (safUri) => {
-            setError(safUri);
+            //setError(safUri);
             try {
               await FileSystem.writeAsStringAsync(safUri, base64, {
                 encoding: FileSystem.EncodingType.Base64,
