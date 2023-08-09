@@ -135,7 +135,9 @@ function Cart(props) {
       <View
         style={[
           styles.containerNumber,
-          { width: textSize ? textSize + 20 : 36 },
+          { width: textSize ? textSize + 20 : 36,
+            height: textSize ? textSize + 20 : 36,
+          },
         ]}
       >
         {loading ? (
@@ -186,8 +188,6 @@ const styles = StyleSheet.create({
   },
   containerNumber: {
     backgroundColor: "transparent",
-    paddingHorizontal: 20,
-    paddingVertical: 8,
     justifyContent: "center",
     alignItems: "center",
     borderColor: colors.daclen_graydark,
@@ -200,6 +200,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: colors.daclen_black,
     textAlign: "center",
+    textAlignVertical: "center",
+    alignSelf: "center",
+    fontSize: 16,
+    zIndex: 4,
   },
   textButton: {
     fontSize: 14,
