@@ -299,8 +299,8 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
   },
   imageLogo: {
-    width: 72,
-    height: 18,
+    width: 76,
+    height: 20,
     backgroundColor: "transparent",
   },
   textHeader: {
