@@ -129,14 +129,21 @@ function Cart(props) {
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={styles.cartIcon}
+        style={[
+          styles.cartIcon,
+          {
+            height: textSize ? textSize + 20 : 36,
+            borderTopStartRadius: 4,
+            borderBottomStartRadius: 4,
+          },
+        ]}
         onPress={() => modifyCart(false)}
       >
         <MaterialCommunityIcons
           name="minus"
-          size={iconSize ? iconSize : 14}
+          size={iconSize ? iconSize : 16}
           disabled={loading}
-          color={colors.daclen_graydark}
+          color={colors.daclen_gray}
         />
       </TouchableOpacity>
 
@@ -144,7 +151,7 @@ function Cart(props) {
         style={[
           styles.containerNumber,
           {
-            width: textSize ? textSize + 20 : 36,
+            width: textSize ? textSize + 28 : 44,
             height: textSize ? textSize + 20 : 36,
           },
         ]}
@@ -165,14 +172,21 @@ function Cart(props) {
       </View>
 
       <TouchableOpacity
-        style={styles.cartIcon}
+        style={[
+          styles.cartIcon,
+          {
+            height: textSize ? textSize + 20 : 36,
+            borderTopEndRadius: 4,
+            borderBottomEndRadius: 4,
+          },
+        ]}
         onPress={() => modifyCart(true)}
       >
         <MaterialCommunityIcons
           name="plus"
-          size={iconSize ? iconSize : 14}
+          size={iconSize ? iconSize : 16}
           disabled={loading}
-          color={colors.daclen_graydark}
+          color={colors.daclen_gray}
         />
       </TouchableOpacity>
     </View>
@@ -191,18 +205,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 6,
-    borderWidth: 0.5,
+    borderWidth: 1,
     borderColor: colors.daclen_gray,
-    borderRadius: 10,
   },
   containerNumber: {
     backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
-    borderColor: colors.daclen_graydark,
+    borderColor: colors.daclen_gray,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderRadius: 6,
   },
   textCart: {
     backgroundColor: "transparent",
