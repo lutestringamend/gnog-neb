@@ -21,7 +21,7 @@ function Cart(props) {
   const [loading, setLoading] = useState(false);
   const [item, setItem] = useState(null);
   const [itemSize, setItemSize] = useState(0);
-  const { cart, token, produk_id, iconSize, textSize, cartError } = props;
+  const { cart, token, produk_id, iconSize, textSize, cartError, isShop, zeroDisplay } = props;
 
   useEffect(() => {
     setLoading(true);
@@ -73,6 +73,14 @@ function Cart(props) {
 
   if (token === null) {
     return null;
+  }
+
+  if (isShop && itemSize < 1 && !(zeroDisplay === undefined || zeroDisplay === null)) {
+    return (
+      <TouchableOpacity style={styles.container} onPress={() => modifyCart(true)}>
+      {zeroDisplay}
+    </TouchableOpacity>
+    )
   }
 
   return (

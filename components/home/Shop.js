@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
@@ -18,6 +19,7 @@ import Search from "./Search";
 import { getObjectAsync } from "../asyncstorage";
 import { ASYNC_PRODUCTS_ARRAY_KEY } from "../asyncstorage/constants";
 import { productpaginationnumber } from "../../axios/constants";
+import { updateProductSearchFilter } from "../../axios/product";
 import { openCheckout } from "../main/CheckoutScreen";
 
 function Shop(props) {
@@ -112,101 +114,38 @@ function Shop(props) {
     return filteredProducts;
   }
 
-  /*
-      <View style={styles.containerHorizontal}>
-        <Text
-          style={[
-            styles.textHeader,
-            {
-              color: category === "" ? colors.daclen_black : colors.daclen_blue,
-            },
-          ]}
-        >
-          {category ? category : "Semua Produk"}
-        </Text>
-        <View style={styles.containerCategory}>
-          <TouchableOpacity onPress={() => setCategory("")}>
-            <Image
-              source={require("../../assets/all.png")}
-              style={[
-                styles.image,
-                {
-                  backgroundColor:
-                    category === "" ? colors.daclen_light : "transparent",
-                },
-              ]}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setCategory("Slingbag")}>
-            <Image
-              source={require("../../assets/slingbag.png")}
-              style={[
-                styles.image,
-                {
-                  backgroundColor:
-                    category === "Slingbag"
-                      ? colors.daclen_cyan
-                      : "transparent",
-                },
-              ]}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setCategory("Backpack")}>
-            <Image
-              source={require("../../assets/backpack.png")}
-              style={[
-                styles.image,
-                {
-                  backgroundColor:
-                    category === "Backpack"
-                      ? colors.daclen_cyan
-                      : "transparent",
-                },
-              ]}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setCategory("Waistbag")}>
-            <Image
-              source={require("../../assets/waistbag.png")}
-              style={[
-                styles.image,
-                {
-                  backgroundColor:
-                    category === "Waistbag"
-                      ? colors.daclen_cyan
-                      : "transparent",
-                },
-              ]}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-
-              <View
-          style={[
-            styles.containerCounter,
-            { opacity: products?.length < 1 ? 1 : 0 },
-          ]}
-        >
-          <ShopPages
-            disabled={products?.length > 0}
-            storageProducts={storageProducts}
-          />
-        </View>
-*/
+  function toggleSearchIcon() {
+    if (isSearch) {
+      props.updateProductSearchFilter(null);
+    } 
+    setSearch((isSearch) => !isSearch);
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.containerHeader}>
         <View style={styles.containerLogo}>
-          <TouchableOpacity onPress={() => navigation.navigate("About")}>
-            <Image
-              source={require("../../assets/splashsmall.png")}
-              style={styles.imageLogo}
-            />
-          </TouchableOpacity>
+          {isSearch ? (
+            <Search />
+          ) : (
+            <TouchableOpacity onPress={() => navigation.navigate("About")}>
+              <Image
+                source={require("../../assets/splashsmall.png")}
+                style={styles.imageLogo}
+              />
+            </TouchableOpacity>
+          )}
         </View>
+        <TouchableOpacity
+          style={styles.containerSearchIcon}
+          onPress={() => toggleSearchIcon()}
+        >
+          <MaterialCommunityIcons
+            name={isSearch ? "close" : "magnify"}
+            size={20}
+            color={colors.daclen_light}
+          />
+        </TouchableOpacity>
         <TouchableOpacity
           onPress={() =>
             openCheckout(
@@ -236,14 +175,11 @@ function Shop(props) {
           cart?.jumlah_produk === undefined ||
           cart?.jumlah_produk === null ? null : (
             <View style={styles.containerNumber}>
-              <Text style={styles.textCartNumber}>
-                {cart?.jumlah_produk}
-              </Text>
+              <Text style={styles.textCartNumber}>{cart?.jumlah_produk}</Text>
             </View>
           )}
         </TouchableOpacity>
       </View>
-      {isSearch ? <Search /> : null}
 
       <View style={styles.containerFlatlist}>
         {loading ? (
@@ -300,6 +236,7 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: colors.black,
     flexDirection: "row",
+    height: 40,
   },
   containerLogo: {
     flex: 1,
@@ -307,6 +244,11 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     alignSelf: "center",
     backgroundColor: "transparent",
+  },
+  containerSearchIcon: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
+    marginEnd: 10,
   },
   containerCart: {
     backgroundColor: colors.daclen_gray,
@@ -318,11 +260,10 @@ const styles = StyleSheet.create({
     borderBottomStartRadius: 6,
   },
   containerNumber: {
-    padding: 4,
     backgroundColor: colors.daclen_orange,
-    width: 16,
-    height: 16,
-    borderRadius: 8,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     position: "absolute",
     top: 2,
     end: 2,
@@ -383,9 +324,11 @@ const styles = StyleSheet.create({
   },
   textUid: {
     fontSize: 12,
-    marginBottom: 12,
-    color: colors.daclen_graydark,
-    marginHorizontal: 20,
+    fontWeight: "bold",
+    marginVertical: 20,
+    textAlign: "center",
+    color: colors.daclen_light,
+    marginHorizontal: 12,
   },
 });
 
@@ -398,4 +341,12 @@ const mapStateToProps = (store) => ({
   cart: store.userState.cart,
 });
 
-export default connect(mapStateToProps, null)(Shop);
+const mapDispatchProps = (dispatch) =>
+  bindActionCreators(
+    {
+        updateProductSearchFilter,
+    },
+    dispatch
+  );
+
+export default connect(mapStateToProps, mapDispatchProps)(Shop);

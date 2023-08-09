@@ -25,21 +25,14 @@ function Search(props) {
     }
   }, [filter]);
 
-  return (
-    <View style={styles.container}>
+  /*
       <MaterialCommunityIcons
         name="magnify"
         color={colors.daclen_gray}
         size={20}
       />
-      <TextInput
-        style={styles.textInput}
-        value={filter}
-        onChangeText={text => setFilter(text)}
-        placeholderTextColor={colors.daclen_gray}
-        placeholder="Cari Produk"
-      />
-      {searchFilter === null || searchFilter === "" ? null : (
+
+            {searchFilter === null || searchFilter === "" ? null : (
         <TouchableOpacity onPress={() => setFilter("")}>
           <MaterialCommunityIcons
             name="close"
@@ -48,6 +41,17 @@ function Search(props) {
           />
         </TouchableOpacity>
       )}
+  */
+
+  return (
+    <View style={styles.container}>
+      <TextInput
+        style={styles.textInput}
+        value={filter}
+        onChangeText={text => setFilter(text)}
+        placeholderTextColor={colors.daclen_gray}
+        placeholder="Cari Produk"
+      />
     </View>
   );
 }
@@ -55,14 +59,10 @@ function Search(props) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    marginHorizontal: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     paddingVertical: 6,
-    backgroundColor: "white",
-    marginBottom: 10,
+    backgroundColor: colors.white,
     borderRadius: 6,
-    borderColor: colors.daclen_gray,
-    borderWidth: 1,
     elevation: 4,
     alignItems: "center",
   },
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     height: "100%",
     marginStart: 10,
     fontSize: 12,
-    color: colors.daclen_graydark,
+    color: colors.black,
     backgroundColor: "white",
   },
 });
