@@ -112,10 +112,10 @@ function Cart(props) {
         ) : (
           <Text style={styles.textButton}>
             {token === null
-              ? `Login\nuntuk Belanja`
+              ? `Login/Register\nAkun`
               : isPremium
               ? `Tambahkan\nke Keranjang`
-              : `Upgrade\nke Premium`}
+              : `Bergabung\nSekarang`}
           </Text>
         )}
       </TouchableOpacity>

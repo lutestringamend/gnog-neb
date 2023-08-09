@@ -59,17 +59,17 @@ function Search(props) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    alignItems: "center",
     backgroundColor: colors.white,
+    height: 32,
     borderRadius: 6,
     elevation: 4,
     alignItems: "center",
   },
   textInput: {
     flex: 1,
-    height: "100%",
-    marginStart: 10,
+    alignSelf: "center",
+    marginHorizontal: 10,
     fontSize: 12,
     color: colors.black,
     backgroundColor: "white",

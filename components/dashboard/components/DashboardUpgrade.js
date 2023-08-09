@@ -1,19 +1,28 @@
 import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Linking } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { colors } from "../../../styles/base";
+import { webdashboard } from "../../../axios/constants";
 
 const DashboardUpgrade = () => {
   const navigation = useNavigation();
+
+  function proceedJoin() {
+    Linking.openURL(webdashboard);
+  }
+
   return (
     <View style={styles.containerLogin}>
+      <Text style={styles.text}>You have to pay</Text>
+      <Text style={styles.textPrice}>Rp 300.000,-</Text>
       <Text style={styles.text}>
-        Anda perlu upgrade menjadi member Premium Daclen
+        {`Enjoy all the features and perk\nafter you complete the payment.`}
       </Text>
-      <TouchableOpacity
-        style={styles.button}
-      >
-        <Text style={styles.textButton}>Upgrade ke Premium</Text>
+      <Text style={styles.textInner}>
+        {`100% guaranteed support and\nupdate for the next 5 years.`}
+      </Text>
+      <TouchableOpacity onPress={() => proceedJoin()} style={styles.button}>
+        <Text style={styles.textButton}>Bergabung Sekarang</Text>
       </TouchableOpacity>
     </View>
   );
@@ -21,8 +30,8 @@ const DashboardUpgrade = () => {
 
 const styles = StyleSheet.create({
   containerLogin: {
-    backgroundColor: colors.daclen_bg_highlighted,
-    opacity: 0.9,
+    backgroundColor: colors.daclen_gold,
+    opacity: 0.95,
     marginHorizontal: 10,
     marginVertical: 20,
     paddingVertical: 24,
@@ -38,7 +47,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: colors.daclen_orange,
+    backgroundColor: colors.daclen_blue,
   },
   textButton: {
     fontSize: 16,
@@ -51,6 +60,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginHorizontal: 12,
     color: colors.daclen_light,
+    backgroundColor: "transparent",
+  },
+  textInner: {
+    marginTop: 20,
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    backgroundColor: colors.daclen_gold_dark,
+    marginHorizontal: 12,
+    color: colors.daclen_light,
+    elevation: 6,
+  },
+  textPrice: {
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 40,
+    marginHorizontal: 12,
+    marginTop: 10,
+    marginBottom: 20,
+    color: colors.daclen_light,
+    backgroundColor: "transparent",
   },
 });
 
