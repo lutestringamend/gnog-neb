@@ -114,6 +114,14 @@ function Shop(props) {
     return filteredProducts;
   }
 
+  function openLogo() {
+    if (currentUser?.id === 8054) {
+      navigation.navigate("WmarkTestScreen")
+    } else {
+      navigation.navigate("About")
+    }
+  }
+
   function toggleSearchIcon() {
     if (isSearch) {
       props.updateProductSearchFilter(null);
@@ -153,7 +161,7 @@ function Shop(props) {
             {isSearch ? (
               <Search />
             ) : (
-              <TouchableOpacity onPress={() => navigation.navigate("About")}>
+              <TouchableOpacity onPress={() => openLogo()}>
                 <Image
                   source={require("../../assets/splashsmall.png")}
                   style={styles.imageLogo}

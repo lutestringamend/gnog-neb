@@ -48,23 +48,23 @@ export function setBasicFFMPEGCommand(
   return `-y -i ${sourceVideo} -i ${watermarkFile} ${filter} ${resultVideo}`;
 }
 
-export function setFilterFFMPEG(flag, padding) {
+export function setFilterFFMPEG(flag, paddingX, paddingY) {
   let filterComplex = "";
   switch (flag) {
     case "bottom-left":
-      filterComplex = `overlay=x=${padding}:y=(main_h-overlay_h-${padding})`;
+      filterComplex = `overlay=x=${paddingX}:y=(main_h-overlay_h-${paddingY})`;
       break;
     case "top-left":
-      filterComplex = `overlay=x=${padding}:y=${padding}`;
+      filterComplex = `overlay=x=${paddingX}:y=${paddingY}`;
       break;
     case "top-right":
-      filterComplex = `overlay=x=(main_w-overlay_w-${padding}):y=${padding}`;
+      filterComplex = `overlay=x=(main_w-overlay_w-${paddingX}):y=${paddingY}`;
       break;
     case "center":
       filterComplex = `overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2`;
       break;
     default:
-      filterComplex = `overlay=x=(main_w-overlay_w-${padding}):y=(main_h-overlay_h-${padding})`;
+      filterComplex = `overlay=x=(main_w-overlay_w-${paddingX}):y=(main_h-overlay_h-${paddingY})`;
       break;
   }
   return `-filter_complex "${filterComplex}"`;

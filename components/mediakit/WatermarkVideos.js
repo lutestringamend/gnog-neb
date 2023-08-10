@@ -19,7 +19,7 @@ import {
 } from "../../axios/mediakit";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { ASYNC_MEDIA_WATERMARK_VIDEOS_KEY } from "../asyncstorage/constants";
-import { tempmediakitvideothumbnail, tempmediakitvideouri, tempvideoarray } from "./constants";
+import { tempmediakitvideothumbnail, tempmediakitvideouri, tempvideoarray, vwmarkdefaultsourceheight, vwmarkdefaultsourcewidth } from "./constants";
 
 const WatermarkVideos = (props) => {
   const navigation = useNavigation();
@@ -27,7 +27,8 @@ const WatermarkVideos = (props) => {
 
   useEffect(() => {
     if (mediaKitVideos?.length === undefined || mediaKitVideos?.length < 1) {
-      checkAsyncMediaKitVideos();
+      //checkAsyncMediaKitVideos();
+      props.getMediaKitVideos(token);
       return;
     }
     setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, mediaKitVideos);
@@ -59,8 +60,8 @@ const WatermarkVideos = (props) => {
       uri: tempmediakitvideouri,
       thumbnail: tempmediakitvideothumbnail,
       title: item?.nama ? item?.nama : "Video Promosi",
-      width: item?.width ? item?.width : 480,
-      height: item?.height ? item?.height : 270,
+      width: 480,
+      height: 270,
     });
   }
 

@@ -4,6 +4,29 @@ export const WatermarkData = {
   url: "",
 }
 
+export const vwmarktemplatewidth = 3508;
+export const vwmarktemplateheight = 762;
+
+export const vwmarktextnamefontsize = 200;
+export const vwmarktextnametop = 60;
+export const vwmarktextnamestart = 1350;
+export const vwmarktextnamecharlimit = 14;
+
+export const vwmarktextphonefontsize = 320;
+export const vwmarktextphonetop = 290;
+export const vwmarktextphonestart = 510;
+export const vwmarktextphonecharlimit = 13;
+
+export const vwmarkdefaultsourcewidth = 1080;
+export const vwmarkdefaultsourceheight = 720;
+
+export const vwmarkdefaultwmarktovideotruewidthratio = 0.25;
+export const vwmarkdefaultpositiontoptovideotrueheightratio = 0.11;
+export const vmwarkdefaultpositionendtovideotruewidthratio = 0.15;
+export const vwmarkrenderenlargementconstant = 2;
+export const vwmarkrenderendratioconstant = 0.125;
+
+
 export const tempvideoarray = [
   {
     uri: "https://daclen.com/mp4/source.mp4",

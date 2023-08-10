@@ -31,28 +31,59 @@ import {
   setFFMPEGCommand,
   setFilterFFMPEG,
   updateWatermarkVideo,
+  overwriteWatermarkVideos,
 } from "../media";
 import MainHeader from "../main/MainHeader";
 import { useNavigation } from "@react-navigation/native";
-import { WATERMARK_VIDEO } from "../dashboard/constants";
 //import { useScreenDimensions } from "../../hooks/useScreenDimensions";
-import WatermarkModel from "../media/WatermarkModel";
+import VWatermarkModel from "../media/VWatermarkModel";
 import { defaultffmpegcodec, sharingOptionsMP4 } from "../media/constants";
 import { sentryLog } from "../../sentry";
 import { setObjectAsync } from "../asyncstorage";
 import { ASYNC_MEDIA_WATERMARK_VIDEOS_KEY } from "../asyncstorage/constants";
+import {
+  vmwarkdefaultpositionendtovideotruewidthratio,
+  vwmarkdefaultpositiontoptovideotrueheightratio,
+  vwmarkdefaultsourceheight,
+  vwmarkdefaultsourcewidth,
+  vwmarkdefaultwmarktovideotruewidthratio,
+  vwmarkrenderendratioconstant,
+  vwmarkrenderenlargementconstant,
+  vwmarktemplateheight,
+  vwmarktemplatewidth,
+} from "../mediakit/constants";
 
 function VideoPlayer(props) {
-  const { title, uri, width, height, thumbnail, userId } =
-    props.route?.params;
-  let ratio = width / height;
+  const { title, uri, width, height, thumbnail, userId } = props.route?.params;
+  const watermarkLayout = {
+    width,
+    height
+  };
+  const ratio =
+    width === null || height === null
+      ? vwmarkdefaultsourcewidth / vwmarkdefaultsourceheight
+      : width / height;
+  const trueWatermarkRatio =
+    (vwmarkdefaultwmarktovideotruewidthratio * width) / vwmarktemplatewidth;
+  const trueWatermarkPositionEnd =
+    vmwarkdefaultpositionendtovideotruewidthratio * width;
+  const trueWatermarkPositionStart =
+    width -
+    trueWatermarkPositionEnd -
+    (trueWatermarkRatio * vwmarktemplatewidth) / 2;
+  const trueWatermarkPositionTop =
+    vwmarkdefaultpositiontoptovideotrueheightratio * height;
+  const watermarkSize = {
+    width: Math.ceil(trueWatermarkRatio * vwmarktemplatewidth) * vwmarkrenderenlargementconstant,
+    height: Math.ceil(trueWatermarkRatio * vwmarktemplateheight) * vwmarkrenderenlargementconstant,
+  };
+
   const video = useRef(null);
   const waterRef = useRef(null);
   const navigation = useNavigation();
-  const { watermarkData, watermarkLayout, watermarkVideos } = props;
+  const { watermarkData, watermarkVideos } = props;
   const videoDir = FileSystem.documentDirectory;
   const fileName = getFileName(uri);
-  let captureFailure = false;
 
   const [permissionResponse, requestPermission] = usePermissions();
 
@@ -65,7 +96,7 @@ function VideoPlayer(props) {
         : Dimensions.get("window").width / ratio,
     };
     const [videoSize, setVideoSize] = useState(initialVideoSize);*/
-  const initialVideoSize = {
+  const videoSize = {
     isLandscape:
       Dimensions.get("window").width > Dimensions.get("window").height,
     videoWidth: Dimensions.get("window").width,
@@ -74,15 +105,28 @@ function VideoPlayer(props) {
         ? Dimensions.get("window").height
         : Dimensions.get("window").width / ratio,
   };
-  const [videoSize, setVideoSize] = useState(initialVideoSize);
+  const displayWatermarkRatio =
+    (vwmarkdefaultwmarktovideotruewidthratio * Dimensions.get("window").width) /
+    vwmarktemplatewidth;
+  const displayWatermarkPositionEnd =
+    vmwarkdefaultpositionendtovideotruewidthratio *
+    Dimensions.get("window").width;
+  const displayWatermarkPositionStart =
+    Dimensions.get("window").width -
+    displayWatermarkPositionEnd -
+    (displayWatermarkRatio * vwmarktemplatewidth) / 2;
+  const displayWatermarkPositionTop =
+    (vwmarkdefaultpositiontoptovideotrueheightratio *
+      Dimensions.get("window").width) /
+    ratio;
+
+  //const [videoSize, setVideoSize] = useState(initialVideoSize);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [videoLoading, setVideoLoading] = useState(false);
-  const [watermarkSize, setWatermarkSize] = useState({
-    width,
-    height,
-  });
+  const [captureFailure, setCaptureFailure] = useState(false);
+  //const [watermarkSize, setWatermarkSize] = useState();
   const [watermarkLoading, setWatermarkLoading] = useState(true);
   const [status, setStatus] = useState({ isLoaded: false });
   const [watermarkImage, setWatermarkImage] = useState(null);
@@ -95,7 +139,11 @@ function VideoPlayer(props) {
 
   //debugging ffmpeg
   const [customFilter, setCustomFilter] = useState(
-    `${setFilterFFMPEG("top-left", Math.round(ratio))} ${defaultffmpegcodec}`
+    `${setFilterFFMPEG(
+      "top-left",
+      Math.ceil(trueWatermarkPositionStart),
+      Math.ceil(trueWatermarkPositionTop)
+    )} ${defaultffmpegcodec}`
   );
 
   useEffect(() => {
@@ -114,9 +162,29 @@ function VideoPlayer(props) {
 
     if (uri === undefined || uri === null) {
       setError("Tidak ada Uri");
+      return;
     } else {
       requestPermission();
       checkSharing();
+    }
+
+    console.log("videoSize", videoSize, "ratio", ratio, "userId", userId);
+    if (videoSize.isLandscape === undefined || videoSize.isLandscape === null) {
+      setError("unknown screen orientation");
+    } else if (
+      videoSize.videoWidth === undefined ||
+      videoSize.videoWidth === null ||
+      videoSize.videoWidth < 1
+    ) {
+      setError(`unknown videoWidth ${videoSize.videoWidth}`);
+    } else if (
+      videoSize.videoHeight === undefined ||
+      videoSize.videoHeight === null ||
+      videoSize.videoHeight < 1
+    ) {
+      setError(`unknown videoHeight ${videoSize.videoHeight}`);
+    } else if (videoLoading) {
+      setVideoLoading(false);
     }
   }, [uri]);
 
@@ -168,24 +236,7 @@ function VideoPlayer(props) {
     }, [screenData]);*/
 
   useEffect(() => {
-    console.log("videoSize", videoSize, "ratio", ratio, "userId", userId);
-    if (videoSize.isLandscape === undefined || videoSize.isLandscape === null) {
-      setError("unknown screen orientation");
-    } else if (
-      videoSize.videoWidth === undefined ||
-      videoSize.videoWidth === null ||
-      videoSize.videoWidth < 1
-    ) {
-      setError(`unknown videoWidth ${videoSize.videoWidth}`);
-    } else if (
-      videoSize.videoHeight === undefined ||
-      videoSize.videoHeight === null ||
-      videoSize.videoHeight < 1
-    ) {
-      setError(`unknown videoHeight ${videoSize.videoHeight}`);
-    } else if (videoLoading) {
-      setVideoLoading(false);
-    }
+
     /*if (userId === 8054 && Platform.OS === "android") {
         ToastAndroid.show(`videoSize ${JSON.stringify(videoSize)}`,
           ToastAndroid.LONG
@@ -200,7 +251,7 @@ function VideoPlayer(props) {
     }
   }, [resultUri]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (watermarkLayout !== null) {
       //console.log("mediastate watermarkLayout", watermarkLayout);
       setWatermarkSize({
@@ -212,7 +263,7 @@ function VideoPlayer(props) {
           `${output}\nwatermarkLayout ${JSON.stringify(watermarkLayout)}`
       );
     }
-  }, [watermarkLayout]);
+  }, [watermarkLayout]);*/
 
   useEffect(() => {
     if (captureFailure) {
@@ -240,7 +291,7 @@ function VideoPlayer(props) {
         (output) => `${output}\nwatermarkSize ${JSON.stringify(watermarkSize)}`
       );
     }
-  }, [watermarkSize]);
+  }, [captureFailure]);
 
   useEffect(() => {
     setOutput((output) => `${output}\nwatermarkImage ${watermarkImage}`);
@@ -263,11 +314,13 @@ function VideoPlayer(props) {
   }, [status.isLoaded]);
 
   const resetResultUri = async () => {
+    setRawUri(null);
     setResultUri(null);
     setOutput("resultUri reset");
     setFullLogs(null);
     setUpdateStorage(true);
-    props.updateWatermarkVideo(uri, rawUri, null);
+    props.overwriteWatermarkVideos([]);
+    //props.updateWatermarkVideo(uri, rawUri, null);
   };
 
   function updateReduxRawUri() {
@@ -390,7 +443,7 @@ function VideoPlayer(props) {
 
   const onCaptureFailure = useCallback((e) => {
     if (!captureFailure) {
-      captureFailure = true;
+      setCaptureFailure(true);
       onManualCaptureFailure(e);
     } else {
       console.log("onCaptureFailure", e);
@@ -610,10 +663,10 @@ function VideoPlayer(props) {
         ref={waterRef}
         options={{
           fileName: "wtext",
-          format: "jpg",
+          format: "png",
           quality: 1,
-          width: watermarkSize.width / (Platform.OS === "ios" ? 4 : 2),
-          height: watermarkSize.height / (Platform.OS === "ios" ? 4 : 2),
+          width: watermarkSize.width / (Platform.OS === "ios" ? 2 : 1),
+          height: watermarkSize.height / (Platform.OS === "ios" ? 2 : 1),
         }}
         style={[
           styles.containerViewShot,
@@ -626,18 +679,10 @@ function VideoPlayer(props) {
         onCapture={onCapture}
         onCaptureFailure={onCaptureFailure}
       >
-        <WatermarkModel
+        <VWatermarkModel
           watermarkData={watermarkData}
-          ratio={ratio}
-          fontSize={Math.round(16 / ratio)}
-          backgroundColor={colors.daclen_gray}
-          color={colors.daclen_light}
-          paddingHorizontal={3}
-          paddingVertical={3}
-          borderRadius={4}
-          text_x={0}
-          text_y={0}
-          getLayout={true}
+          ratio={trueWatermarkRatio}
+          getLayout={false}
         />
       </ViewShot>
 
@@ -735,26 +780,25 @@ function VideoPlayer(props) {
             {watermarkLoading && Platform.OS !== "web" ? (
               <ActivityIndicator
                 size="small"
-                color={colors.daclen_graydark}
+                color={colors.daclen_orange}
                 style={{
                   position: "absolute",
-                  top: 10,
-                  start: 10,
+                  top: displayWatermarkPositionTop,
+                  start: displayWatermarkPositionStart,
                   zIndex: 3,
                 }}
               />
             ) : (
-              <WatermarkModel
+              <VWatermarkModel
                 watermarkData={watermarkData}
-                ratio={1}
-                fontSize={Math.round(16 / ratio)}
-                backgroundColor={colors.daclen_black}
-                color={colors.daclen_orange}
-                paddingHorizontal={3}
-                paddingVertical={3}
-                borderRadius={4}
-                style={{ zIndex: 3 }}
+                ratio={displayWatermarkRatio}
                 getLayout={false}
+                style={{
+                  position: "absolute",
+                  zIndex: 4,
+                  top: displayWatermarkPositionTop,
+                  start: displayWatermarkPositionStart,
+                }}
               />
             )}
 
@@ -1025,7 +1069,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     start: 0,
-    backgroundColor: colors.daclen_gray,
+    backgroundColor: "transparent",
   },
   containerPanelPortrait: {
     width: "100%",
@@ -1135,16 +1179,10 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (store) => ({
   watermarkData: store.mediaKitState.watermarkData,
-  watermarkLayout: store.mediaState.watermarkLayout,
   watermarkVideos: store.mediaState.watermarkVideos,
 });
 
 const mapDispatchProps = (dispatch) =>
-  bindActionCreators({ updateWatermarkVideo }, dispatch);
+  bindActionCreators({ updateWatermarkVideo, overwriteWatermarkVideos }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchProps)(VideoPlayer);
-
-
-
-
-

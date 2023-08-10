@@ -9,6 +9,7 @@ import {
   MEDIA_KIT_WATERMARK_DATA_STATE_CHANGE,
   MEDIA_KIT_VIDEOS_STATE_CHANGE,
   MEDIA_KIT_VIDEOS_ERROR_STATE_CHANGE,
+  MEDIA_WATERMARK_VIDEOS_OVERWRITE,
 } from "../../redux/constants";
 import { sentryLog } from "../../sentry";
 

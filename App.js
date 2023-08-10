@@ -72,6 +72,7 @@ import CreatePIN from "./components/profile/CreatePIN";
 import UserRoots from "./components/dashboard/UserRoots";
 import BonusRoot from "./components/dashboard/BonusRoot";
 import SaldoReport from "./components/dashboard/SaldoReport";
+import WmarkTestScreen from "./components/media/WmarkTestScreen";
 
 import { appname } from "./axios/constants";
 import { colors, staticDimensions } from "./styles/base";
@@ -318,6 +319,11 @@ export default function App() {
                 name="VideoLogsScreen"
                 component={VideoLogs}
                 options={{ ...defaultOptions, title: "Logs" }}
+              />
+              <Stack.Screen
+                name="WmarkTestScreen"
+                component={WmarkTestScreen}
+                options={{ ...defaultOptions, title: "Test" }}
               />
             </Stack.Navigator>
           </NavigationContainer>
