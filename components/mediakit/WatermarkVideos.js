@@ -57,11 +57,11 @@ const WatermarkVideos = (props) => {
   function openVideo(item) {
     navigation.navigate("VideoPlayerScreen", {
       userId,
-      uri: tempmediakitvideouri,
+      uri: "https://daclen.com/video/watermark/aurora_army_hs1.mp4",
       thumbnail: tempmediakitvideothumbnail,
       title: item?.nama ? item?.nama : "Video Promosi",
-      width: 480,
-      height: 270,
+      width: 720,
+      height: 1080,
     });
   }
 

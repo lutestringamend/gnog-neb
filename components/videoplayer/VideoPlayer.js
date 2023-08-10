@@ -42,12 +42,8 @@ import { sentryLog } from "../../sentry";
 import { setObjectAsync } from "../asyncstorage";
 import { ASYNC_MEDIA_WATERMARK_VIDEOS_KEY } from "../asyncstorage/constants";
 import {
-  vmwarkdefaultpositionendtovideotruewidthratio,
-  vwmarkdefaultpositiontoptovideotrueheightratio,
   vwmarkdefaultsourceheight,
   vwmarkdefaultsourcewidth,
-  vwmarkdefaultwmarktovideotruewidthratio,
-  vwmarktemplatewidth,
 } from "../mediakit/constants";
 import VideoLargeWatermarkModel from "../media/VideoLargeWatermarkModel";
 
@@ -98,9 +94,7 @@ function VideoPlayer(props) {
       Dimensions.get("window").width > Dimensions.get("window").height,
     videoWidth: Dimensions.get("window").width,
     videoHeight:
-      Dimensions.get("window").width > Dimensions.get("window").height
-        ? Dimensions.get("window").height
-        : Dimensions.get("window").width / ratio,
+      Dimensions.get("window").width * height / width ,
   };
   /*const displayWatermarkRatio =
     (vwmarkdefaultwmarktovideotruewidthratio * Dimensions.get("window").width) /
