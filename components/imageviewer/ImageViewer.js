@@ -73,6 +73,19 @@ const ImageViewer = (props) => {
   const imageRef = useRef();
 
   useEffect(() => {
+    if (title !== null && title !== undefined && title !== "") {
+      props.navigation.setOptions({ title });
+    }
+
+    if (
+      id === undefined ||
+      id === null ||
+      watermarkData === undefined ||
+      watermarkData === null
+    ) {
+      return;
+    }
+
     if (
       sharingAvailability === undefined ||
       sharingAvailability === null ||
@@ -81,11 +94,7 @@ const ImageViewer = (props) => {
       setError("Perangkat tidak mengizinkan untuk membagikan file");
     }
 
-    if (title !== null && title !== undefined && title !== "") {
-      props.navigation.setOptions({ title });
-    }
-
-    console.log("ImageViewer route params", props.route.params);
+    //console.log("ImageViewer route params", props.route.params);
   }, [uri]);
 
   useEffect(() => {
@@ -295,11 +304,14 @@ const ImageViewer = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {watermarkData === undefined || watermarkData === null ? null : (
+      {id === undefined ||
+      id === null ||
+      watermarkData === undefined ||
+      watermarkData === null ? null : (
         <ViewShot
           ref={imageRef}
           options={{
-            fileName: `daclenwatermarkfoto_${id.toString()}`,
+            fileName: `daclenwatermarkfoto_${id ? id.toString() : ""}`,
             format: "jpg",
             quality: 1,
             result: "tmpfile",

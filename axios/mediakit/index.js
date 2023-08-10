@@ -1,12 +1,14 @@
 import Axios from "../index";
 
-import { mediakitphoto } from "../constants";
+import { mediakitphoto, mediakitvideo } from "../constants";
 import {
   MEDIA_KIT_CLEAR_DATA,
   MEDIA_KIT_PHOTOS_STATE_CHANGE,
   MEDIA_KIT_PHOTOS_ERROR_STATE_CHANGE,
   MEDIA_KIT_PHOTOS_URI_STATE_CHANGE,
   MEDIA_KIT_WATERMARK_DATA_STATE_CHANGE,
+  MEDIA_KIT_VIDEOS_STATE_CHANGE,
+  MEDIA_KIT_VIDEOS_ERROR_STATE_CHANGE,
 } from "../../redux/constants";
 import { sentryLog } from "../../sentry";
 
@@ -24,6 +26,13 @@ export function clearMediaKitPhotosError() {
   };
 }
 
+export function clearMediaKitVideosError() {
+  return (dispatch) => {
+    console.log("clearMediaKitVideosError");
+    dispatch({ type: MEDIA_KIT_VIDEOS_ERROR_STATE_CHANGE, data: null });
+  };
+}
+
 export function updateReduxMediaKitWatermarkData(data) {
   return (dispatch) => {
     console.log("updateReduxMediaKitWatermarkData", data);
@@ -38,6 +47,13 @@ export function updateReduxMediaKitPhotosUri(data) {
   };
 }
 
+export function updateReduxMediaKitVideosUri(data) {
+  return (dispatch) => {
+    console.log("updateReduxMediaKitVideosUri", data);
+    dispatch({ type: MEDIA_KIT_PHOTOS_URI_STATE_CHANGE, data });
+  };
+}
+
 export function updateReduxMediaKitPhotos(data) {
   return (dispatch) => {
     console.log("updateReduxMediaKitPhotos", data);
@@ -45,9 +61,63 @@ export function updateReduxMediaKitPhotos(data) {
   };
 }
 
-export function getMediaKitPhotos() {
+export function updateReduxMediaKitVideos(data) {
   return (dispatch) => {
-    Axios.get(mediakitphoto)
+    console.log("updateReduxMediaKitVideos", data);
+    dispatch({ type: MEDIA_KIT_VIDEOS_STATE_CHANGE, data });
+  };
+}
+
+export function getMediaKitVideos(token) {
+  if (token === undefined || token === null) {
+    return;
+  }
+  return (dispatch) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    };
+    Axios.get(mediakitvideo, config)
+        .then((response) => {
+          try {
+            const data = response?.data?.data;
+            console.log("getMediaKitVideos", data);
+            dispatch({ type: MEDIA_KIT_VIDEOS_STATE_CHANGE, data });
+          } catch (e) {
+            sentryLog(e);
+            dispatch({
+              type: MEDIA_KIT_VIDEOS_ERROR_STATE_CHANGE,
+              data: e.toString(),
+            });
+          } 
+
+        })
+        .catch((error) => {
+          sentryLog(error);
+        dispatch({
+          type: MEDIA_KIT_VIDEOS_ERROR_STATE_CHANGE,
+          data: error.toString(),
+        });
+        });
+  }
+
+ /* ;*/
+}
+
+export function getMediaKitPhotos(token) {
+  if (token === undefined || token === null) {
+    return;
+  }
+  return (dispatch) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    };
+    Axios.get(mediakitphoto, config)
       .then((response) => {
         //console.log(config);
         try {

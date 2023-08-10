@@ -7,23 +7,60 @@ import {
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors, blurhash, staticDimensions } from "../../styles/base";
+import {
+  getMediaKitVideos,
+  updateReduxMediaKitVideos,
+  clearMediaKitVideosError,
+} from "../../axios/mediakit";
+import { getObjectAsync, setObjectAsync } from "../asyncstorage";
+import { ASYNC_MEDIA_WATERMARK_VIDEOS_KEY } from "../asyncstorage/constants";
+import { tempmediakitvideothumbnail, tempmediakitvideouri, tempvideoarray } from "./constants";
 
-const WatermarkVideos = ({ videos, userId }) => {
+const WatermarkVideos = (props) => {
   const navigation = useNavigation();
+  const { mediaKitVideos, videoError, videosUri, userId, token } = props;
 
   useEffect(() => {
-    if (videos?.length > 0) {
-      console.log({ videos });
+    if (mediaKitVideos?.length === undefined || mediaKitVideos?.length < 1) {
+      checkAsyncMediaKitVideos();
+      return;
     }
-  }, [videos]);
+    setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, mediaKitVideos);
+    console.log("redux media kit videos", mediaKitVideos);
+  }, [mediaKitVideos]);
+
+  const checkAsyncMediaKitVideos = async () => {
+    const storageVideos = await getObjectAsync(
+      ASYNC_MEDIA_WATERMARK_VIDEOS_KEY
+    );
+    if (
+      storageVideos === undefined ||
+      storageVideos === null ||
+      storageVideos?.length === undefined ||
+      storageVideos?.length < 1
+    ) {
+      if (token === undefined || token === null) {
+        return;
+      }
+      props.getMediaKitVideos(token);
+    } else {
+      props.updateReduxMediaKitVideos(storageVideos);
+    }
+  };
 
   function openVideo(item) {
     navigation.navigate("VideoPlayerScreen", {
-      ...item,
       userId,
+      uri: tempmediakitvideouri,
+      thumbnail: tempmediakitvideothumbnail,
+      title: item?.nama ? item?.nama : "Video Promosi",
+      width: item?.width ? item?.width : 480,
+      height: item?.height ? item?.height : 270,
     });
   }
 
@@ -38,7 +75,7 @@ const WatermarkVideos = ({ videos, userId }) => {
 
   return (
     <View style={styles.containerFlatlist}>
-      {videos?.length === undefined || videos?.length < 1 ? (
+      {mediaKitVideos?.length === undefined || mediaKitVideos?.length < 1 ? (
         <ActivityIndicator
           size="large"
           color={colors.daclen_orange}
@@ -49,19 +86,20 @@ const WatermarkVideos = ({ videos, userId }) => {
           estimatedItemSize={12}
           horizontal={false}
           numColumns={3}
-          data={videos}
-          renderItem={({ item }) => (
+          data={mediaKitVideos}
+          renderItem={({ item, index }) => (
             <TouchableHighlight
+              key={index}
               onPress={() => openVideo(item)}
               underlayColor={colors.daclen_orange}
               style={styles.containerImage}
             >
               <Image
                 style={styles.imageList}
-                source={item?.thumbnail}
+                source={tempmediakitvideothumbnail}
                 contentFit="cover"
                 placeholder={blurhash}
-                transition={0}
+                transition={100}
               />
             </TouchableHighlight>
           )}
@@ -91,4 +129,20 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WatermarkVideos;
+const mapStateToProps = (store) => ({
+  videosUri: store.mediaKitState.videosUri,
+  mediaKitVideos: store.mediaKitState.videos,
+  videoError: store.mediaKitState.videoError,
+});
+
+const mapDispatchProps = (dispatch) =>
+  bindActionCreators(
+    {
+      getMediaKitVideos,
+      clearMediaKitVideosError,
+      updateReduxMediaKitVideos,
+    },
+    dispatch
+  );
+
+export default connect(mapStateToProps, mapDispatchProps)(WatermarkVideos);

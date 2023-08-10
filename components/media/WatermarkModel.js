@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text } from "react-native";
 
 import { connect } from "react-redux";
@@ -6,7 +6,6 @@ import { bindActionCreators } from "redux";
 
 import { updateWatermarkLayout } from ".";
 import { watermarkStyle } from "./constants";
-import { styles } from "react-native-image-slider-banner/src/style";
 
 function WatermarkModel(props) {
   const {
@@ -67,10 +66,12 @@ function WatermarkModel(props) {
     textAlignVertical: "center",
     fontWeight: "bold",
   };
+  const [layoutDone, setLayoutDone] = useState(false);
 
   function sendToParent(e) {
-    if (getLayout) {
+    if (getLayout && !layoutDone) {
       //console.log("watermarkmodel layout", e);
+      setLayoutDone(true);
       props.updateWatermarkLayout(e);
     }
   }

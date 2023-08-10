@@ -36,7 +36,6 @@ import {
   watermarkvideoicon,
   WATERMARK_PHOTO,
   WATERMARK_VIDEO,
-  tempvideoarray,
 } from "../dashboard/constants";
 import WatermarkPhotos from "./WatermarkPhotos";
 import WatermarkVideos from "./WatermarkVideos";
@@ -203,7 +202,7 @@ function MediaKitFiles(props) {
         props.clearMediaKitData();
         if (!photoLoading) {
           setPhotoLoading(true);
-          props.getMediaKitPhotos();
+          props.getMediaKitPhotos(token);
         }
       } else {
         props.updateReduxMediaKitPhotos(storagePhotos);
@@ -276,7 +275,7 @@ function MediaKitFiles(props) {
               <WatermarkVideos
                 watermarkData={watermarkData}
                 userId={currentUser?.id}
-                videos={tempvideoarray}
+                token={token}
               />
             ) : (
               <WatermarkPhotos

@@ -87,12 +87,4 @@ export const withdrawalexplanation = `
 - Transfer uang akan diproses admin pada waktu kerja dari hari senin - jumat, pada pukul 8:00 WIB - 17:00 WIB
 `
 
-export const tempvideoarray = [
-  {
-    uri: "https://daclen.com/mp4/source.mp4",
-    thumbnail: "https://daclen.com/mp4/source_tb.jpg",
-    width: 480,
-    height: 270,
-    title: "Tara Laptop Backpack",
-  },
-];
+

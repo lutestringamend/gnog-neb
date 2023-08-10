@@ -177,8 +177,13 @@ export const takePicture = async (ref) => {
 };
 
 export function getFileName(uri) {
-  const uriSplit = uri.split("/");
-  return uriSplit[uriSplit.length - 1];
+  try {
+    const uriSplit = uri.split("/");
+    return uriSplit[uriSplit.length - 1];
+  } catch (e) {
+    console.error(e);
+    return "video.mp4";
+  }
 }
 
 export const prepareRatio = async (ref) => {

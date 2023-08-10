@@ -48,6 +48,7 @@ export const dashboardhtml = "api/mobile/dashboard/webview"
 export const contentslider = "api/mobile/content/slider"
 export const contentbannertiga = "api/mobile/content/tiga-banner"
 export const mediakitphoto = "api/mobile/media-kit/foto"
+export const mediakitvideo = "api/admin/media-kit/video"
 
 export const personalwebsiteurl = "https://daclen.com/id/"
 export const personalwebsiteurlshort = "daclen.com/id/"
