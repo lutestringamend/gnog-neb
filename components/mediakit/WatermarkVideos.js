@@ -19,11 +19,15 @@ import {
 } from "../../axios/mediakit";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { ASYNC_MEDIA_WATERMARK_VIDEOS_KEY } from "../asyncstorage/constants";
-import { tempmediakitvideothumbnail, tempmediakitvideouri, tempvideoarray, vwmarkdefaultsourceheight, vwmarkdefaultsourcewidth } from "./constants";
+import {
+  tempmediakitvideothumbnail,
+  vwmarkdefaultsourceheight,
+  vwmarkdefaultsourcewidth,
+} from "./constants";
 
 const WatermarkVideos = (props) => {
   const navigation = useNavigation();
-  const { mediaKitVideos, videoError, videosUri, userId, token } = props;
+  const { mediaKitVideos, userId, token } = props;
 
   useEffect(() => {
     if (mediaKitVideos?.length === undefined || mediaKitVideos?.length < 1) {
@@ -57,22 +61,14 @@ const WatermarkVideos = (props) => {
   function openVideo(item) {
     navigation.navigate("VideoPlayerScreen", {
       userId,
-      uri: "https://daclen.com/video/watermark/aurora_army_hs1.mp4",
+      id: item?.id ? item?.id : item?.video,
+      uri: item?.video ? item?.video : null,
       thumbnail: tempmediakitvideothumbnail,
       title: item?.nama ? item?.nama : "Video Promosi",
-      width: 720,
-      height: 1080,
+      width: item?.width ? item?.width : vwmarkdefaultsourcewidth,
+      height: item?.height ? item?.height : vwmarkdefaultsourceheight,
     });
   }
-
-  /*
- width: item?.width,
-      height: item?.height,
-      text_align: item?.text_align,
-      text_x: item?.text_x,
-      text_y: item?.text_y,
-      font: item?.font,
-  */
 
   return (
     <View style={styles.containerFlatlist}>

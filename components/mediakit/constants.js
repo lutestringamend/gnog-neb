@@ -7,13 +7,13 @@ export const WatermarkData = {
 export const vwmarktemplatewidth = 3508;
 export const vwmarktemplateheight = 762;
 
-export const vwmarktextnamefontsize = 180;
-export const vwmarktextnametop = 60;
+export const vwmarktextnamefontsize = 190;
+export const vwmarktextnametop = 55;
 export const vwmarktextnamestart = 1350;
 export const vwmarktextnamecharlimit = 14;
 
 export const vwmarktextphonefontsize = 310;
-export const vwmarktextphonetop = 290;
+export const vwmarktextphonetop = 300;
 export const vwmarktextphonestart = 510;
 export const vwmarktextphonecharlimit = 13;
 

@@ -25,6 +25,7 @@ import {
   updateReduxMediaKitWatermarkData,
   updateReduxMediaKitPhotosUri,
 } from "../../axios/mediakit";
+import { overwriteWatermarkVideos } from "../media";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { colors, dimensions, staticDimensions } from "../../styles/base";
 import { privacypolicy } from "../profile/constants";
@@ -43,6 +44,7 @@ import { sentryLog } from "../../sentry";
 import {
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
   ASYNC_MEDIA_WATERMARK_PHOTOS_KEY,
+  ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY,
   ASYNC_WATERMARK_PHOTOS_PDF_KEY,
 } from "../asyncstorage/constants";
 import Header from "../DashboardHeader";
@@ -230,7 +232,9 @@ function MediaKitFiles(props) {
     const changingWatermarkData = async () => {
       await setObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY, watermarkData);
       await setObjectAsync(ASYNC_WATERMARK_PHOTOS_PDF_KEY, null);
+      await setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY, null);
       props.updateReduxMediaKitPhotosUri([]);
+      props.overwriteWatermarkVideos([]);
       setLoading(false);
       rbSheet.current.close();
     };
@@ -448,6 +452,7 @@ const mapDispatchProps = (dispatch) =>
       updateReduxMediaKitPhotosUri,
       clearMediaKitPhotosError,
       clearMediaKitData,
+      overwriteWatermarkVideos
     },
     dispatch
   );

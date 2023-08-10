@@ -36,11 +36,10 @@ import {
 import MainHeader from "../main/MainHeader";
 import { useNavigation } from "@react-navigation/native";
 //import { useScreenDimensions } from "../../hooks/useScreenDimensions";
-import VWatermarkModel from "../media/VWatermarkModel";
 import { defaultffmpegcodec, sharingOptionsMP4 } from "../media/constants";
 import { sentryLog } from "../../sentry";
-import { setObjectAsync } from "../asyncstorage";
-import { ASYNC_MEDIA_WATERMARK_VIDEOS_KEY } from "../asyncstorage/constants";
+import { getObjectAsync, setObjectAsync } from "../asyncstorage";
+import { ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY } from "../asyncstorage/constants";
 import {
   vwmarkdefaultsourceheight,
   vwmarkdefaultsourcewidth,
@@ -48,7 +47,7 @@ import {
 import VideoLargeWatermarkModel from "../media/VideoLargeWatermarkModel";
 
 function VideoPlayer(props) {
-  const { title, uri, width, height, thumbnail, userId } = props.route?.params;
+  const { id, title, uri, width, height, thumbnail, userId } = props.route?.params;
 
   const ratio =
     width === null || height === null
@@ -56,16 +55,6 @@ function VideoPlayer(props) {
       : width / height;
 
   const videoToScreenRatio = width / Dimensions.get("window").width;
-  /*const trueWatermarkRatio =
-    (vwmarkdefaultwmarktovideotruewidthratio * width) / vwmarktemplatewidth;
-  const trueWatermarkPositionEnd =
-    vmwarkdefaultpositionendtovideotruewidthratio * width;
-  const trueWatermarkPositionStart =
-    width -
-    trueWatermarkPositionEnd -
-    (trueWatermarkRatio * vwmarktemplatewidth) / 2;
-  const trueWatermarkPositionTop =
-    vwmarkdefaultpositiontoptovideotrueheightratio * height;*/
   const watermarkSize = {
     width,
     height,
@@ -93,23 +82,8 @@ function VideoPlayer(props) {
     isLandscape:
       Dimensions.get("window").width > Dimensions.get("window").height,
     videoWidth: Dimensions.get("window").width,
-    videoHeight:
-      Dimensions.get("window").width * height / width ,
+    videoHeight: (Dimensions.get("window").width * height) / width,
   };
-  /*const displayWatermarkRatio =
-    (vwmarkdefaultwmarktovideotruewidthratio * Dimensions.get("window").width) /
-    vwmarktemplatewidth;
-  const displayWatermarkPositionEnd =
-    vmwarkdefaultpositionendtovideotruewidthratio *
-    Dimensions.get("window").width;
-  const displayWatermarkPositionStart =
-    Dimensions.get("window").width -
-    displayWatermarkPositionEnd -
-    (displayWatermarkRatio * vwmarktemplatewidth) / 2;
-  const displayWatermarkPositionTop =
-    (vwmarkdefaultpositiontoptovideotrueheightratio *
-      Dimensions.get("window").width) /
-    ratio;*/
 
   //const [videoSize, setVideoSize] = useState(initialVideoSize);
   const [error, setError] = useState(null);
@@ -185,18 +159,16 @@ function VideoPlayer(props) {
   }, [permissionResponse]);
 
   useEffect(() => {
-    console.log("watermarkVideos", watermarkVideos);
+    console.log("redux savedWatermarkVideos", watermarkVideos);
     if (watermarkVideos?.length === undefined || watermarkVideos?.length < 1) {
-      setOutput((output) => `${output}\nredux data null}`);
-      setUpdateStorage(true);
-      props.updateWatermarkVideo(uri, null, null);
+      checkAsyncWatermarkVideosSaved();
     } else {
       /*setOutput(
         (output) => `${output}\nredux ${JSON.stringify(watermarkVideos)}`
       );*/
       if (updateStorage) {
         setUpdateStorage(false);
-        setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, watermarkVideos);
+        setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY, watermarkVideos);
       }
       checkRedux();
     }
@@ -222,18 +194,18 @@ function VideoPlayer(props) {
       }
     }, [screenData]);*/
 
-  useEffect(() => {
-    /*if (userId === 8054 && Platform.OS === "android") {
+  /*useEffect(() => {
+    if (userId === 8054 && Platform.OS === "android") {
         ToastAndroid.show(`videoSize ${JSON.stringify(videoSize)}`,
           ToastAndroid.LONG
         );
-      }*/
-  }, [videoSize]);
+      }
+  }, [videoSize]);*/
 
   useEffect(() => {
     if (resultUri !== null) {
       setUpdateStorage(true);
-      props.updateWatermarkVideo(uri, rawUri, resultUri);
+      props.updateWatermarkVideo(id, rawUri, resultUri);
     }
   }, [resultUri]);
 
@@ -309,6 +281,24 @@ function VideoPlayer(props) {
     //props.updateWatermarkVideo(uri, rawUri, null);
   };
 
+  const checkAsyncWatermarkVideosSaved = async () => {
+    const storageWatermarkVideosSaved = await getObjectAsync(
+      ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY
+    );
+    if (
+      storageWatermarkVideosSaved === undefined ||
+      storageWatermarkVideosSaved === null ||
+      storageWatermarkVideosSaved?.length === undefined ||
+      storageWatermarkVideosSaved?.length < 1
+    ) {
+      setOutput((output) => `${output}\nredux data null}`);
+      setUpdateStorage(true);
+      props.updateWatermarkVideo(id, null, null);
+    } else {
+      props.overwriteWatermarkVideos(storageWatermarkVideosSaved);
+    }
+  };
+
   function updateReduxRawUri() {
     if (watermarkVideos?.length === undefined || watermarkVideos?.length < 1) {
       return;
@@ -319,13 +309,13 @@ function VideoPlayer(props) {
       if (check === undefined || check === null) {
         if (rawUri !== null) {
           setUpdateStorage(true);
-          props.updateWatermarkVideo(uri, rawUri, resultUri);
+          props.updateWatermarkVideo(id, rawUri, resultUri);
         }
       } else {
         if (check?.rawUri === undefined || check?.rawUri === null) {
           if (rawUri !== null) {
             setUpdateStorage(true);
-            props.updateWatermarkVideo(uri, rawUri, resultUri);
+            props.updateWatermarkVideo(id, rawUri, resultUri);
           }
         } else if (rawUri === null) {
           setRawUri(check?.rawUri);
@@ -761,6 +751,10 @@ function VideoPlayer(props) {
               resizeMode={
                 videoSize.isLandscape ? ResizeMode.STRETCH : ResizeMode.CONTAIN
               }
+              videoStyle={{
+                width: videoSize.videoWidth,
+                height: videoSize.videoHeight,
+              }}
               onPlaybackStatusUpdate={(status) => setStatus(() => status)}
             />
 
