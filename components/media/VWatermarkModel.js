@@ -1,10 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-
-import { updateWatermarkLayout } from ".";
 import { colors } from "../../styles/base";
 import {
   vwmarktemplateheight,
@@ -20,17 +16,7 @@ import {
 } from "../mediakit/constants";
 
 function VWatermarkModel(props) {
-  const { watermarkData, ratio, style, getLayout } = props;
-
-  const [layoutDone, setLayoutDone] = useState(false);
-
-  function sendToParent(e) {
-    if (getLayout && !layoutDone) {
-      //console.log("watermarkmodel layout", e);
-      setLayoutDone(true);
-      props.updateWatermarkLayout(e);
-    }
-  }
+  const { watermarkData, ratio, style } = props;
 
   if (
     watermarkData === undefined ||
@@ -44,7 +30,6 @@ function VWatermarkModel(props) {
   return (
     <View
       style={[styles.container, style ? style : null]}
-      onLayout={(e) => sendToParent(e.nativeEvent.layout)}
     >
       <Image
         source={require("../../assets/vwmark.png")}
@@ -134,11 +119,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (store) => ({
-  watermarkLayout: store.mediaState.watermarkLayout,
-});
-
-const mapDispatchProps = (dispatch) =>
-  bindActionCreators({ updateWatermarkLayout }, dispatch);
-
-export default connect(mapStateToProps, mapDispatchProps)(VWatermarkModel);
+export default VWatermarkModel

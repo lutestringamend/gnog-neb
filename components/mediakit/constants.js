@@ -7,18 +7,24 @@ export const WatermarkData = {
 export const vwmarktemplatewidth = 3508;
 export const vwmarktemplateheight = 762;
 
-export const vwmarktextnamefontsize = 200;
+export const vwmarktextnamefontsize = 180;
 export const vwmarktextnametop = 60;
 export const vwmarktextnamestart = 1350;
 export const vwmarktextnamecharlimit = 14;
 
-export const vwmarktextphonefontsize = 320;
+export const vwmarktextphonefontsize = 310;
 export const vwmarktextphonetop = 290;
 export const vwmarktextphonestart = 510;
 export const vwmarktextphonecharlimit = 13;
 
 export const vwmarkdefaultsourcewidth = 1080;
 export const vwmarkdefaultsourceheight = 720;
+
+export const vwmarkurlpaddinghorizontal = 8;
+export const vwmarkurlpaddingvertical = 4;
+export const vwmarkurlmargintop = 8;
+export const vwmarkurlborderradius = 4;
+export const vwmarkurlfontsize = 10;
 
 export const vwmarkdefaultwmarktovideotruewidthratio = 0.25;
 export const vwmarkdefaultpositiontoptovideotrueheightratio = 0.11;

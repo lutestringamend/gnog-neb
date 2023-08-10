@@ -47,23 +47,20 @@ import {
   vwmarkdefaultsourceheight,
   vwmarkdefaultsourcewidth,
   vwmarkdefaultwmarktovideotruewidthratio,
-  vwmarkrenderendratioconstant,
-  vwmarkrenderenlargementconstant,
-  vwmarktemplateheight,
   vwmarktemplatewidth,
 } from "../mediakit/constants";
+import VideoLargeWatermarkModel from "../media/VideoLargeWatermarkModel";
 
 function VideoPlayer(props) {
   const { title, uri, width, height, thumbnail, userId } = props.route?.params;
-  const watermarkLayout = {
-    width,
-    height
-  };
+
   const ratio =
     width === null || height === null
       ? vwmarkdefaultsourcewidth / vwmarkdefaultsourceheight
       : width / height;
-  const trueWatermarkRatio =
+
+  const videoToScreenRatio = width / Dimensions.get("window").width;
+  /*const trueWatermarkRatio =
     (vwmarkdefaultwmarktovideotruewidthratio * width) / vwmarktemplatewidth;
   const trueWatermarkPositionEnd =
     vmwarkdefaultpositionendtovideotruewidthratio * width;
@@ -72,10 +69,10 @@ function VideoPlayer(props) {
     trueWatermarkPositionEnd -
     (trueWatermarkRatio * vwmarktemplatewidth) / 2;
   const trueWatermarkPositionTop =
-    vwmarkdefaultpositiontoptovideotrueheightratio * height;
+    vwmarkdefaultpositiontoptovideotrueheightratio * height;*/
   const watermarkSize = {
-    width: Math.ceil(trueWatermarkRatio * vwmarktemplatewidth) * vwmarkrenderenlargementconstant,
-    height: Math.ceil(trueWatermarkRatio * vwmarktemplateheight) * vwmarkrenderenlargementconstant,
+    width,
+    height,
   };
 
   const video = useRef(null);
@@ -105,7 +102,7 @@ function VideoPlayer(props) {
         ? Dimensions.get("window").height
         : Dimensions.get("window").width / ratio,
   };
-  const displayWatermarkRatio =
+  /*const displayWatermarkRatio =
     (vwmarkdefaultwmarktovideotruewidthratio * Dimensions.get("window").width) /
     vwmarktemplatewidth;
   const displayWatermarkPositionEnd =
@@ -118,7 +115,7 @@ function VideoPlayer(props) {
   const displayWatermarkPositionTop =
     (vwmarkdefaultpositiontoptovideotrueheightratio *
       Dimensions.get("window").width) /
-    ratio;
+    ratio;*/
 
   //const [videoSize, setVideoSize] = useState(initialVideoSize);
   const [error, setError] = useState(null);
@@ -139,11 +136,7 @@ function VideoPlayer(props) {
 
   //debugging ffmpeg
   const [customFilter, setCustomFilter] = useState(
-    `${setFilterFFMPEG(
-      "top-left",
-      Math.ceil(trueWatermarkPositionStart),
-      Math.ceil(trueWatermarkPositionTop)
-    )} ${defaultffmpegcodec}`
+    `${setFilterFFMPEG("top-left", 0, 0)} ${defaultffmpegcodec}`
   );
 
   useEffect(() => {
@@ -236,7 +229,6 @@ function VideoPlayer(props) {
     }, [screenData]);*/
 
   useEffect(() => {
-
     /*if (userId === 8054 && Platform.OS === "android") {
         ToastAndroid.show(`videoSize ${JSON.stringify(videoSize)}`,
           ToastAndroid.LONG
@@ -679,10 +671,11 @@ function VideoPlayer(props) {
         onCapture={onCapture}
         onCaptureFailure={onCaptureFailure}
       >
-        <VWatermarkModel
+        <VideoLargeWatermarkModel
+          width={width}
+          height={height}
+          videoToScreenRatio={videoToScreenRatio}
           watermarkData={watermarkData}
-          ratio={trueWatermarkRatio}
-          getLayout={false}
         />
       </ViewShot>
 
@@ -789,15 +782,16 @@ function VideoPlayer(props) {
                 }}
               />
             ) : (
-              <VWatermarkModel
+              <VideoLargeWatermarkModel
+                width={videoSize.videoWidth}
+                height={videoSize.videoHeight}
+                videotoScreenRatio={1}
                 watermarkData={watermarkData}
-                ratio={displayWatermarkRatio}
-                getLayout={false}
                 style={{
                   position: "absolute",
                   zIndex: 4,
-                  top: displayWatermarkPositionTop,
-                  start: displayWatermarkPositionStart,
+                  top: 0,
+                  start: 0,
                 }}
               />
             )}
@@ -1183,6 +1177,9 @@ const mapStateToProps = (store) => ({
 });
 
 const mapDispatchProps = (dispatch) =>
-  bindActionCreators({ updateWatermarkVideo, overwriteWatermarkVideos }, dispatch);
+  bindActionCreators(
+    { updateWatermarkVideo, overwriteWatermarkVideos },
+    dispatch
+  );
 
 export default connect(mapStateToProps, mapDispatchProps)(VideoPlayer);
