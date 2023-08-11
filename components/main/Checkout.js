@@ -17,7 +17,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { clearUserData, getCurrentUser } from "../../axios/user";
-import { clearKeranjang, storeCheckout } from "../../axios/cart";
+import { clearKeranjang, formatPrice, storeCheckout } from "../../axios/cart";
 import { callMasterkurir, getKurirData } from "../../axios/courier";
 import { clearHistoryData } from "../../axios/history";
 
@@ -26,6 +26,7 @@ import CartDetails from "../cart/CartDetails";
 import CartAction from "../cart/CartAction";
 import Separator from "../profile/Separator";
 import { colors, staticDimensions } from "../../styles/base";
+import { checkoutsubtotalcommissionpercentage } from "./constants";
 
 function Checkout(props) {
   const [products, setProducts] = useState([]);
@@ -475,7 +476,15 @@ function Checkout(props) {
               courierSlug={courierSlug}
               courierService={courierService}
               courierLoading={courierLoading}
-              cashback={props.cart?.cashback}
+              cashback={
+                props.cart?.subtotal
+                  ? formatPrice(
+                      (checkoutsubtotalcommissionpercentage *
+                        props.cart?.subtotal) /
+                        100
+                    )
+                  : 0
+              }
               addressComplete={addressComplete}
             />
 

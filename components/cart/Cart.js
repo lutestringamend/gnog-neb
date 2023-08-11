@@ -151,7 +151,7 @@ function Cart(props) {
         style={[
           styles.containerNumber,
           {
-            width: textSize ? textSize + 28 : 44,
+            width: textSize ? textSize + 24 : 40,
             height: textSize ? textSize + 20 : 36,
           },
         ]}
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
-    padding: 6,
+    padding: 2,
     borderWidth: 1,
     borderColor: colors.daclen_gray,
   },

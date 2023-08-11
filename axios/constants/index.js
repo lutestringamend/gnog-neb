@@ -1,6 +1,8 @@
 export const appname = "Daclen"
 export const mainhttp = "https://daclen.com/"
 export const mainhttpcookie = "https://daclen.com"
+export const localisationID = "id-ID";
+export const defaultcurrency = "IDR";
 
 export const googleAPIkey = "AIzaSyDA_Ic-vzspmforQy-i41WlbjepnPoZl78"
 export const MIDTRANS_CLIENT_KEY = "Mid-client-BqXWNDpvPhUU7fB1"

@@ -25,6 +25,8 @@ import {
   postPembayaran,
   clearUserCheckoutData,
 } from "../../axios/history";
+import { formatPrice } from "../../axios/cart";
+import { checkoutsubtotalcommissionpercentage } from "../main/constants";
 
 function CheckoutItem(props) {
   const { checkout, token, userCheckout } = props;
@@ -49,7 +51,10 @@ function CheckoutItem(props) {
       console.log("checkout is null");
     } else {
       console.log("checkout", checkout);
-      if (checkout?.status === null || checkout?.status.toLowerCase() === "tertunda") {
+      if (
+        checkout?.status === null ||
+        checkout?.status.toLowerCase() === "tertunda"
+      ) {
         props.postPembayaran(token, checkout?.id);
       }
     }
@@ -160,7 +165,15 @@ function CheckoutItem(props) {
               priceDiscount={(
                 checkout?.kurir?.harga - checkout.kurir?.gratis_ongkir
               ).toString()}
-              cashback={checkout?.keranjang?.cashback}
+              cashback={
+                checkout?.keranjang?.subtotal
+                  ? formatPrice(
+                      (checkoutsubtotalcommissionpercentage *
+                        checkout?.keranjang?.subtotal) /
+                        100
+                    )
+                  : 0
+              }
             />
           </View>
         )}

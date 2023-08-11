@@ -128,14 +128,18 @@ export default function CartDetails(props) {
 
       <Separator thickness={1} />
 
-      <View style={[styles.containerEntry, { marginVertical: 20 }]}>
-        <Text style={[styles.textEntryHeader, styles.textCashback]}>
-          Cashback
-        </Text>
-        <Text style={[styles.textEntry, styles.textCashback]}>
-          Rp {props?.cashback}
-        </Text>
-      </View>
+      {props?.cashback === undefined ||
+      props?.cashback === null ||
+      props?.cashback <= 0 ? null : (
+        <View style={[styles.containerEntry, { marginVertical: 20 }]}>
+          <Text style={[styles.textEntryHeader, styles.textCashback]}>
+            Komisi Penjualan
+          </Text>
+          <Text style={[styles.textEntry, styles.textCashback]}>
+            {props?.cashback}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -161,7 +165,7 @@ const styles = StyleSheet.create({
   },
   textEntryHeader: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 14,
     color: colors.daclen_graydark,
     marginHorizontal: 10,
   },
@@ -171,7 +175,7 @@ const styles = StyleSheet.create({
   },
   textEntry: {
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 14,
     marginHorizontal: 10,
     color: colors.daclen_graydark,
     alignSelf: "flex-end",
@@ -180,7 +184,7 @@ const styles = StyleSheet.create({
     color: colors.daclen_orange,
   },
   textDiscount: {
-    fontSize: 18,
+    fontSize: 16,
     color: colors.daclen_red,
   },
   textIncompleteAddress: {

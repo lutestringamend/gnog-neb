@@ -5,7 +5,9 @@ import {
   clearkeranjang,
   postkeranjang,
   deletekeranjang,
-  storecheckout
+  storecheckout,
+  localisationID,
+  defaultcurrency
 } from "../constants";
 import {
   USER_CART_STATE_CHANGE,
@@ -63,9 +65,8 @@ export function deleteKeranjang(token, produk_id, itemSize) {
 
     Axios.post(deletekeranjang, params, config)
       .then((response) => {
-        console.log("deleteKeranjang with params and header:");
-        console.log({ params, config });
         const data = response.data?.data;
+        console.log("deleteKeranjang", data);
         if (data === undefined) {
           dispatch({ type: USER_CART_STATE_ERROR, data: "API response undefined" });
         } else {
@@ -109,9 +110,8 @@ export function postKeranjang(token, produk_id, itemSize) {
 
     Axios.post(postkeranjang, params, config)
       .then((response) => {
-        console.log("postKeranjang with params and header:");
-        console.log({ params, config });
         const data = response.data?.data;
+        console.log("postKeranjang", data);
 
         if (data === undefined) {
           dispatch({ type: USER_CART_STATE_ERROR, data: "API response undefined" });
@@ -138,9 +138,8 @@ export function clearKeranjang(token) {
 
     Axios.post(clearkeranjang, null, config)
       .then((response) => {
-        console.log("clearKeranjang with header:");
-        console.log(config);
         const data = response.data?.data;
+        console.log("clearKeranjang", data);
         if (data === undefined) {
           dispatch({ type: USER_CART_STATE_ERROR, data: "API response undefined" });
         } else {
@@ -169,8 +168,8 @@ export function getKeranjang(token) {
 
     Axios.get(getkeranjang, config)
       .then((response) => {
-        console.log("getKeranjang with header");
         const data = response.data.data;
+        console.log("getKeranjang", data);
         if (data === undefined) {
           dispatch({ type: USER_CART_STATE_ERROR, data: "API response undefined" });
         } else {
@@ -183,4 +182,26 @@ export function getKeranjang(token) {
         dispatch({ type: USER_CART_STATE_ERROR, data: error.toString() });
       });
   };
+}
+
+export const formatPrice = (num) => {
+  if (checkNumberEmpty(num) > 0) {
+    return new Intl.NumberFormat(localisationID, {
+      style: "currency",
+      currency: defaultcurrency,
+      minimumFractionDigits: 0,
+    }).format(num);
+  } else {
+    return "GRATIS";
+  }
+};
+
+export function checkNumberEmpty(num) {
+  if (num === undefined || num === null || num < 0) {
+    return 0;
+  } else if (isNaN(num)) {
+    return parseInt(num);
+  } else {
+    return num;
+  }
 }
