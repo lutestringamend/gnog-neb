@@ -32,6 +32,7 @@ import {
   setFilterFFMPEG,
   updateWatermarkVideo,
   overwriteWatermarkVideos,
+  setSkipWatermarkFFMPEGCommand,
 } from "../media";
 import MainHeader from "../main/MainHeader";
 import { useNavigation } from "@react-navigation/native";
@@ -47,7 +48,8 @@ import {
 import VideoLargeWatermarkModel from "../media/VideoLargeWatermarkModel";
 
 function VideoPlayer(props) {
-  const { id, title, uri, width, height, thumbnail, userId } = props.route?.params;
+  const { id, title, uri, width, height, thumbnail, userId } =
+    props.route?.params;
 
   const ratio =
     width === null || height === null
@@ -82,7 +84,8 @@ function VideoPlayer(props) {
     isLandscape:
       Dimensions.get("window").width > Dimensions.get("window").height,
     videoWidth: Dimensions.get("window").width,
-    videoHeight: (Dimensions.get("window").width * height) / width,
+    videoHeight: Math.ceil((Dimensions.get("window").width * height) / width),
+    videoOrientation: height > width ? "portrait" : "landscape",
   };
 
   //const [videoSize, setVideoSize] = useState(initialVideoSize);
@@ -305,7 +308,8 @@ function VideoPlayer(props) {
     }
 
     try {
-      const check = watermarkVideos.find(({ id }) => id === uri);
+      const check = watermarkVideos.find(({ id }) => id === id);
+      console.log("redux watermarkvideos uri check", check);
       if (check === undefined || check === null) {
         if (rawUri !== null) {
           setUpdateStorage(true);
@@ -319,6 +323,15 @@ function VideoPlayer(props) {
           }
         } else if (rawUri === null) {
           setRawUri(check?.rawUri);
+          if (
+            !(
+              check?.uri === undefined ||
+              check?.uri === null ||
+              check?.uri === ""
+            )
+          ) {
+            setResultUri(check?.uri);
+          }
         }
       }
     } catch (e) {
@@ -484,23 +497,27 @@ function VideoPlayer(props) {
     if (rawUri === undefined || rawUri === null) {
       sourceVideo = await startDownload();
     }
-    //const sourceVideo = await startDownload();
 
-    const ffmpegCommand =
-      userId === 8054
+    const ffmpegCommand = setFFMPEGCommand(
+      sourceVideo,
+      watermarkImage,
+      resultVideo,
+      "top-left",
+      0,
+      0
+    );
+
+    /*videoSize.videoOrientation === "portrait"
+    ? setSkipWatermarkFFMPEGCommand(sourceVideo, resultVideo)
+    : s
+    
+    *userId === 8054
         ? setBasicFFMPEGCommand(
             sourceVideo,
             watermarkImage,
             resultVideo,
             customFilter
-          )
-        : setFFMPEGCommand(
-            sourceVideo,
-            watermarkImage,
-            resultVideo,
-            "top-left",
-            Math.round(ratio)
-          );
+          )*/
     setOutput((output) => `${output}\nffmpeg ${ffmpegCommand}`);
 
     setLoading(true);
@@ -641,8 +658,8 @@ function VideoPlayer(props) {
           fileName: "wtext",
           format: "png",
           quality: 1,
-          width: watermarkSize.width / (Platform.OS === "ios" ? 2 : 1.5),
-          height: watermarkSize.height / (Platform.OS === "ios" ? 2 : 1.5),
+          width: watermarkSize.width / (Platform.OS === "ios" ? 2 : 1),
+          height: watermarkSize.height / (Platform.OS === "ios" ? 2 : 1),
         }}
         style={[
           styles.containerViewShot,
@@ -664,52 +681,56 @@ function VideoPlayer(props) {
       </ViewShot>
 
       {!videoSize.isLandscape ? (
-        <MainHeader
-          icon="arrow-left"
-          title={title}
-          onBackPress={() => onBackPress()}
-          disabled={loading}
-        />
+        <View style={styles.containerHeader}>
+          <TouchableOpacity
+            onPress={() => onBackPress()}
+            disabled={loading || videoLoading}
+          >
+            <MaterialCommunityIcons
+              name={Platform.OS === "ios" ? "chevron-left" : "arrow-left"}
+              size={24}
+              color={colors.daclen_light}
+              style={{ alignSelf: "center" }}
+            />
+          </TouchableOpacity>
+
+          <View style={styles.containerHeaderText}>
+            <Text style={styles.textHeaderLandscape}>
+              {title ? title : "Video Watermark"}
+            </Text>
+            <Text style={styles.textError}>{error}</Text>
+          </View>
+          {error ? (
+            <MaterialCommunityIcons
+              name="alert-circle"
+              size={20}
+              color={colors.daclen_red}
+              style={{ alignSelf: "center" }}
+            />
+          ) : null}
+        </View>
       ) : null}
 
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={
-          videoSize.isLandscape
+          videoSize.videoOrientation === "portrait"
+            ? styles.containerBodyVideoPortrait
+            : videoSize.isLandscape
             ? styles.containerBodyLandscape
             : styles.containerBodyPortrait
         }
       >
-        {error ? (
-          <View
-            style={[
-              styles.containerHeader,
-              { position: videoSize.isLandscape ? "absolute" : "relative" },
-            ]}
-          >
-            <Text
-              style={[
-                styles.textError,
-                {
-                  backgroundColor: success
-                    ? colors.daclen_green
-                    : colors.daclen_red,
-                  width: videoSize.videoWidth,
-                },
-              ]}
-            >
-              {error}
-            </Text>
-          </View>
-        ) : videoSize.isLandscape ? (
+        {videoSize.isLandscape ? (
           <View
             style={[
               styles.containerHeader,
               {
-                position: "absolute",
-                backgroundColor: colors.daclen_light,
-                opacity: 0.4,
+                backgroundColor: colors.daclen_black,
                 padding: 10,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
               },
             ]}
           >
@@ -719,7 +740,11 @@ function VideoPlayer(props) {
               onPress={() => onBackPress()}
               disabled={loading}
             >
-              <MaterialCommunityIcons name="close" size={16} color="white" />
+              <MaterialCommunityIcons
+                name="close"
+                size={16}
+                color={colors.daclen_black}
+              />
             </TouchableOpacity>
           </View>
         ) : null}
@@ -731,6 +756,10 @@ function VideoPlayer(props) {
               {
                 position: videoSize.isLandscape ? "absolute" : "relative",
                 width: "100%",
+                height:
+                  videoSize.videoOrientation === "landscape"
+                    ? videoSize.videoHeight
+                    : Dimensions.get("window").height,
                 flex: 1,
               },
             ]}
@@ -740,8 +769,11 @@ function VideoPlayer(props) {
               style={[
                 styles.video,
                 {
-                  width: "100%",
-                  height: Math.ceil(height * Dimensions.get("window").width / width),
+                  width: videoSize.videoWidth,
+                  height:
+                    videoSize.videoOrientation === "landscape"
+                      ? videoSize.videoHeight
+                      : Dimensions.get("window").height,
                 },
               ]}
               source={{
@@ -749,15 +781,22 @@ function VideoPlayer(props) {
               }}
               useNativeControls
               resizeMode={
-                videoSize.isLandscape ? ResizeMode.STRETCH : ResizeMode.CONTAIN
+                videoSize.videoOrientation === "portrait"
+                  ? ResizeMode.STRETCH
+                  : ResizeMode.COVER
               }
               videoStyle={{
-                width: "100%",
-                height: Math.ceil(height * Dimensions.get("window").width / width),
+                width: videoSize.videoWidth,
+                height: videoSize.videoHeight,
               }}
-              onReadyForDisplay={params => {
-                params.naturalSize.orientation = width > height ? "landscape" : "portrait";
-                console.log("onReadyForDisplay", params.naturalSize.orientation);
+              onReadyForDisplay={(params) => {
+                if (Platform.OS !== "web") {
+                  params.naturalSize.orientation = videoSize.videoOrientation;
+                  console.log(
+                    "onReadyForDisplay",
+                    params.naturalSize.orientation
+                  );
+                }
               }}
               onPlaybackStatusUpdate={(status) => setStatus(() => status)}
             />
@@ -801,6 +840,9 @@ function VideoPlayer(props) {
                   backgroundColor: colors.daclen_light,
                   opacity: status.isLoaded ? 0 : 0.9,
                 },
+                videoSize.videoOrientation === "portrait" && {
+                  top: 0,
+                },
               ]}
               resizeMode="cover"
             >
@@ -815,7 +857,14 @@ function VideoPlayer(props) {
 
         <View
           style={
-            videoSize.isLandscape
+            videoSize.videoOrientation === "portrait"
+              ? [
+                  styles.containerPanelVideoPortrait,
+                  {
+                    top: Dimensions.get("window").height - 120,
+                  },
+                ]
+              : videoSize.isLandscape
               ? styles.containerPanelLandscape
               : styles.containerPanelPortrait
           }
@@ -907,7 +956,7 @@ function VideoPlayer(props) {
           </TouchableOpacity>
         </View>
 
-        {userId === 8054 && !videoSize.isLandscape ? (
+        {userId === 8054 && Platform.OS === "web" && !videoSize.isLandscape ? (
           <TextInput
             style={styles.textInput}
             value={customFilter}
@@ -915,7 +964,7 @@ function VideoPlayer(props) {
           />
         ) : null}
 
-        {userId === 8054 && !videoSize.isLandscape ? (
+        {userId === 8054 && Platform.OS === "web" && !videoSize.isLandscape ? (
           <Text
             style={[
               styles.textUid,
@@ -1071,6 +1120,25 @@ const styles = StyleSheet.create({
     zIndex: 6,
     marginEnd: 20,
   },
+  containerPanelVideoPortrait: {
+    width: "100%",
+    position: "absolute",
+    flexDirection: "row",
+    justifyContent: "center",
+    backgroundColor: "transparent",
+    start: 0,
+    zIndex: 6,
+  },
+  containerBodyVideoPortrait: {
+    position: "absolute",
+    top: 0,
+    start: 0,
+    width: "100%",
+    flex: 1,
+    zIndex: 1,
+    justifyContent: "center",
+    alignItems: "flex-end",
+  },
   containerBodyLandscape: {
     justifyContent: "center",
     alignItems: "flex-end",
@@ -1080,19 +1148,27 @@ const styles = StyleSheet.create({
   },
   containerHeader: {
     zIndex: 4,
+    elevation: 4,
+    backgroundColor: colors.daclen_black,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     width: "100%",
     top: 0,
     start: 0,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+  },
+  containerHeaderText: {
+    marginHorizontal: 10,
+    alignSelf: "center",
+    flex: 1,
+    backgroundColor: "transparent",
   },
   video: {
-    top: 0,
-    start: 0,
     backgroundColor: colors.black,
     justifyContent: "center",
     alignItems: "center",
+    alignSelf: "center",
   },
   button: {
     flexDirection: "row",
@@ -1116,17 +1192,15 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 12,
-    backgroundColor: colors.daclen_black,
-    borderColor: colors.daclen_gray,
-    borderWidth: 0.5,
+    backgroundColor: colors.daclen_light,
     justifyContent: "center",
     alignItems: "center",
   },
   textHeaderLandscape: {
     backgroundColor: "transparent",
     fontWeight: "bold",
-    color: colors.daclen_black,
-    fontSize: 16,
+    color: colors.daclen_light,
+    fontSize: 12,
   },
   textButton: {
     fontSize: 16,
@@ -1135,14 +1209,13 @@ const styles = StyleSheet.create({
     marginStart: 6,
   },
   textError: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "white",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: colors.daclen_danger,
-    textAlign: "center",
-    zIndex: 6,
+    marginTop: 2,
+    fontSize: 10,
+    color: colors.daclen_light,
+    backgroundColor: "transparent",
+    textAlignVertical: "center",
+    zIndex: 4,
+    height: 16,
   },
   textUid: {
     fontSize: 10,

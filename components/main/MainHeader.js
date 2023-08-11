@@ -24,16 +24,16 @@ export default function MainHeader(props) {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, props?.style ? props.style : null]}>
       <TouchableOpacity onPress={() => backArrow()} disabled={props?.disabled}>
         <MaterialCommunityIcons
           name={props?.icon === "arrow-left" && Platform.OS === "ios" ? "chevron-left" : props?.icon}
-          size={24}
+          size={props?.iconSize ? props?.iconSize : 24}
           color={colors.daclen_light}
           style={{ alignSelf: "center" }}
         />
       </TouchableOpacity>
-      <Text style={styles.text}>{props?.title}</Text>
+      <Text style={[styles.text, { fontSize: props?.textSize ? props?.textSize : null }]}>{props?.title}</Text>
     </View>
   );
 }

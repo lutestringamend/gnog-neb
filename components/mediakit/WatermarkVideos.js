@@ -59,12 +59,19 @@ const WatermarkVideos = (props) => {
   };
 
   function openVideo(item) {
+    let title = item?.nama ? item?.nama : "Video Promosi";
+    try {
+      let items = title.split("/");
+      title = items[items?.length - 1];
+    } catch (e) {
+      console.error(e);
+    }
     navigation.navigate("VideoPlayerScreen", {
       userId,
       id: item?.id ? item?.id : item?.video,
       uri: item?.video ? item?.video : null,
       thumbnail: tempmediakitvideothumbnail,
-      title: item?.nama ? item?.nama : "Video Promosi",
+      title,
       width: item?.width ? item?.width : vwmarkdefaultsourcewidth,
       height: item?.height ? item?.height : vwmarkdefaultsourceheight,
     });

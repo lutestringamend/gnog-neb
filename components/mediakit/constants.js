@@ -20,11 +20,11 @@ export const vwmarktextphonecharlimit = 13;
 export const vwmarkdefaultsourcewidth = 1080;
 export const vwmarkdefaultsourceheight = 720;
 
-export const vwmarkurlpaddinghorizontal = 8;
+export const vwmarkurlpaddinghorizontal = 6;
 export const vwmarkurlpaddingvertical = 4;
-export const vwmarkurlmargintop = 8;
+export const vwmarkurlmargintop = 4;
 export const vwmarkurlborderradius = 4;
-export const vwmarkurlfontsize = 10;
+export const vwmarkurlfontsize = 12;
 
 export const vwmarkdefaultwmarktovideotruewidthratio = 0.25;
 export const vwmarkdefaultpositiontoptovideotrueheightratio = 0.11;

@@ -39,6 +39,13 @@ export const foto = {
   name: "",
 };
 
+export function setSkipWatermarkFFMPEGCommand(
+  sourceVideo,
+  resultVideo
+) {
+  return `-y -i ${sourceVideo} ${resultVideo}`;
+}
+
 export function setBasicFFMPEGCommand(
   sourceVideo,
   watermarkFile,
@@ -75,13 +82,14 @@ export function setFFMPEGCommand(
   watermarkFile,
   resultVideo,
   flag,
-  padding
+  paddingX,
+  paddingY,
 ) {
   return setBasicFFMPEGCommand(
     sourceVideo,
     watermarkFile,
     resultVideo,
-    setFilterFFMPEG(flag, padding)
+    setFilterFFMPEG(flag, paddingX, paddingY)
   );
 }
 
