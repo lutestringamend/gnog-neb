@@ -181,7 +181,7 @@ function CheckoutItem(props) {
 
       <CartAction
         isCart={false}
-        totalPrice={checkout?.total_currency}
+        totalPrice={checkout?.total}
         buttonAction={() => openMidtrans()}
         buttonText={checkout?.status}
         buttonDisabled={snapToken === null || loadingSnap}
@@ -240,12 +240,12 @@ const styles = StyleSheet.create({
   },
   textInvoice: {
     fontWeight: "bold",
-    fontSize: 12,
+    fontSize: 10,
     color: colors.daclen_black,
     marginBottom: 4,
   },
   textEntry: {
-    fontSize: 12,
+    fontSize: 10,
     color: colors.daclen_gray,
   },
   textUid: {

@@ -211,12 +211,12 @@ const styles = StyleSheet.create({
   },
   textInvoice: {
     fontWeight: "bold",
-    fontSize: 12,
+    fontSize: 10,
     color: colors.daclen_black,
     marginBottom: 4,
   },
   textEntry: {
-    fontSize: 12,
+    fontSize: 10,
     color: colors.daclen_gray,
   },
   textUid: {

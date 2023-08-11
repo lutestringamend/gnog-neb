@@ -37,7 +37,7 @@ function VideoLargeWatermarkModel(props) {
       displayWatermarkPositionTop,
       displayWatermarkPositionStart,
       videotoScreenRatio,
-      videotoScreenRatio * vwmarkurlmargintop,
+      videotoScreenRatio * vwmarkurlmargintop
     );
   }, []);
 
@@ -86,10 +86,17 @@ function VideoLargeWatermarkModel(props) {
             styles.containerUrl,
             {
               paddingHorizontal:
-                videotoScreenRatio * vwmarkurlpaddinghorizontal,
-              paddingVertical: videotoScreenRatio * vwmarkurlpaddingvertical,
-              marginTop: videotoScreenRatio * vwmarkurlmargintop,
-              borderRadius: videotoScreenRatio * vwmarkurlborderradius,
+                (videotoScreenRatio ? videotoScreenRatio : 1) *
+                vwmarkurlpaddinghorizontal,
+              paddingVertical:
+                (videotoScreenRatio ? videotoScreenRatio : 1) *
+                vwmarkurlpaddingvertical,
+              marginTop:
+                (videotoScreenRatio ? videotoScreenRatio : 1) *
+                vwmarkurlmargintop,
+              borderRadius:
+                (videotoScreenRatio ? videotoScreenRatio : 1) *
+                vwmarkurlborderradius,
             },
           ]}
         >
@@ -97,7 +104,9 @@ function VideoLargeWatermarkModel(props) {
             style={[
               styles.textUrl,
               {
-                fontSize: videotoScreenRatio * vwmarkurlfontsize,
+                fontSize:
+                  (videotoScreenRatio ? videotoScreenRatio : 1) *
+                  vwmarkurlfontsize,
               },
             ]}
           >

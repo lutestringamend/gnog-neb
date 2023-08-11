@@ -641,8 +641,8 @@ function VideoPlayer(props) {
           fileName: "wtext",
           format: "png",
           quality: 1,
-          width: watermarkSize.width / (Platform.OS === "ios" ? 2 : 1),
-          height: watermarkSize.height / (Platform.OS === "ios" ? 2 : 1),
+          width: watermarkSize.width / (Platform.OS === "ios" ? 2 : 1.5),
+          height: watermarkSize.height / (Platform.OS === "ios" ? 2 : 1.5),
         }}
         style={[
           styles.containerViewShot,
@@ -730,8 +730,8 @@ function VideoPlayer(props) {
               styles.video,
               {
                 position: videoSize.isLandscape ? "absolute" : "relative",
-                width: videoSize.videoWidth,
-                height: videoSize.videoHeight,
+                width: "100%",
+                flex: 1,
               },
             ]}
           >
@@ -740,8 +740,8 @@ function VideoPlayer(props) {
               style={[
                 styles.video,
                 {
-                  width: videoSize.videoWidth,
-                  height: videoSize.videoHeight,
+                  width: "100%",
+                  height: Math.ceil(height * Dimensions.get("window").width / width),
                 },
               ]}
               source={{
@@ -752,8 +752,12 @@ function VideoPlayer(props) {
                 videoSize.isLandscape ? ResizeMode.STRETCH : ResizeMode.CONTAIN
               }
               videoStyle={{
-                width: videoSize.videoWidth,
-                height: videoSize.videoHeight,
+                width: "100%",
+                height: Math.ceil(height * Dimensions.get("window").width / width),
+              }}
+              onReadyForDisplay={params => {
+                params.naturalSize.orientation = width > height ? "landscape" : "portrait";
+                console.log("onReadyForDisplay", params.naturalSize.orientation);
               }}
               onPlaybackStatusUpdate={(status) => setStatus(() => status)}
             />
@@ -764,8 +768,8 @@ function VideoPlayer(props) {
                 color={colors.daclen_orange}
                 style={{
                   position: "absolute",
-                  top: displayWatermarkPositionTop,
-                  start: displayWatermarkPositionStart,
+                  top: 32,
+                  end: 20,
                   zIndex: 3,
                 }}
               />
@@ -773,7 +777,7 @@ function VideoPlayer(props) {
               <VideoLargeWatermarkModel
                 width={videoSize.videoWidth}
                 height={videoSize.videoHeight}
-                videotoScreenRatio={1}
+                videotoScreenRatio={parseInt(1)}
                 watermarkData={watermarkData}
                 style={{
                   position: "absolute",
@@ -1086,7 +1090,7 @@ const styles = StyleSheet.create({
   video: {
     top: 0,
     start: 0,
-    backgroundColor: colors.daclen_black,
+    backgroundColor: colors.black,
     justifyContent: "center",
     alignItems: "center",
   },

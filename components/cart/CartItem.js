@@ -33,8 +33,8 @@ const CartItem = (props) => {
             source={props?.item?.foto_url}
             onClick={() => openProduct(props?.item?.id)}
             contentFit="contain"
-            placeholder={blurhash}
-            transition={0}
+            placeholder={null}
+            transition={100}
           />
         </TouchableOpacity>
 
@@ -70,21 +70,20 @@ const styles = StyleSheet.create({
   },
   containerProductHeader: {
     flex: 1,
-    padding: 4,
-    marginStart: 20,
+    marginStart: 12,
+    backgroundColor: "transparent",
   },
   containerHorizontal: {
     backgroundColor: "transparent",
     flexDirection: "row",
-    marginBottom: 10,
+    marginBottom: 12,
   },
   containerImage: {
     backgroundColor: "transparent",
   },
   image: {
-    width: 60,
-    height: 60,
-    aspectRatio: 1 / 1,
+    width: 90,
+    height: 90,
     backgroundColor: "transparent",
     alignSelf: "center",
   },
@@ -94,7 +93,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.daclen_gray,
     textAlignVertical: "center",
-    marginEnd: 10,
+    backgroundColor: "transparent",
+    marginEnd: 12,
   },
   textProductPrice: {
     fontWeight: "bold",

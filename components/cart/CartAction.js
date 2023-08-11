@@ -9,6 +9,7 @@ import {
 } from "react-native";
 
 import { colors } from "../../styles/base";
+import { formatPrice } from "../../axios/cart";
 
 export default function CartAction(props) {
   const [color, setColor] = useState(colors.daclen_orange);
@@ -66,7 +67,7 @@ export default function CartAction(props) {
       <View style={styles.containerCheckoutDetails}>
         <Text style={[styles.textCheckoutDetail, { color }]}>Total</Text>
         <Text style={[styles.textCheckoutDetail, styles.textPrice, { color }]}>
-          Rp {props?.totalPrice}
+          {formatPrice(props?.totalPrice)}
         </Text>
       </View>
       <View style={styles.containerCheckoutAction}>
