@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   containerButtons: {
-    width: "80%",
+    width: "90%",
     flexDirection: "row",
     justifyContent: "space-around",
     backgroundColor: colors.daclen_light,

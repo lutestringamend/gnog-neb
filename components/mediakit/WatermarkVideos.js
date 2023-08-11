@@ -17,8 +17,12 @@ import {
   updateReduxMediaKitVideos,
   clearMediaKitVideosError,
 } from "../../axios/mediakit";
+import { overwriteWatermarkVideos } from "../media";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
-import { ASYNC_MEDIA_WATERMARK_VIDEOS_KEY } from "../asyncstorage/constants";
+import {
+  ASYNC_MEDIA_WATERMARK_VIDEOS_KEY,
+  ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY,
+} from "../asyncstorage/constants";
 import {
   tempmediakitvideothumbnail,
   vwmarkdefaultsourceheight,
@@ -27,17 +31,25 @@ import {
 
 const WatermarkVideos = (props) => {
   const navigation = useNavigation();
-  const { mediaKitVideos, userId, token } = props;
+  const { mediaKitVideos, watermarkVideos, userId, token } = props;
 
   useEffect(() => {
     if (mediaKitVideos?.length === undefined || mediaKitVideos?.length < 1) {
-      //checkAsyncMediaKitVideos();
-      props.getMediaKitVideos(token);
+      checkAsyncMediaKitVideos();
+      //props.getMediaKitVideos(token);
       return;
     }
     setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, mediaKitVideos);
     console.log("redux media kit videos", mediaKitVideos);
   }, [mediaKitVideos]);
+
+  useEffect(() => {
+    if (watermarkVideos?.length === undefined || watermarkVideos?.length < 1) {
+      checkAsyncWatermarkVideosSaved();
+      return;
+    }
+    console.log("redux media savedWatermarkVideos", watermarkVideos);
+  }, [watermarkVideos]);
 
   const checkAsyncMediaKitVideos = async () => {
     const storageVideos = await getObjectAsync(
@@ -58,7 +70,21 @@ const WatermarkVideos = (props) => {
     }
   };
 
-  function openVideo(item) {
+  const checkAsyncWatermarkVideosSaved = async () => {
+    const storageWatermarkVideosSaved = await getObjectAsync(
+      ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY
+    );
+    if (
+      !(storageWatermarkVideosSaved === undefined ||
+      storageWatermarkVideosSaved === null ||
+      storageWatermarkVideosSaved?.length === undefined ||
+      storageWatermarkVideosSaved?.length < 1)
+    ) {
+      props.overwriteWatermarkVideos(storageWatermarkVideosSaved);
+    }
+  };
+
+  function openVideo(item, index) {
     let title = item?.nama ? item?.nama : "Video Promosi";
     try {
       let items = title.split("/");
@@ -68,13 +94,30 @@ const WatermarkVideos = (props) => {
     }
     navigation.navigate("VideoPlayerScreen", {
       userId,
-      id: item?.id ? item?.id : item?.video,
+      videoId: item?.id ? item?.id : item?.video,
       uri: item?.video ? item?.video : null,
-      thumbnail: tempmediakitvideothumbnail,
+      thumbnail: getTempThumbnail(index),
       title,
       width: item?.width ? item?.width : vwmarkdefaultsourcewidth,
       height: item?.height ? item?.height : vwmarkdefaultsourceheight,
     });
+  }
+
+  function getTempThumbnail(index) {
+    try {
+      if (index === 3){
+        return "https://daclen.com/img/produk/1681188120.png";
+      } else if (index === 1) {
+        return "https://daclen.com/img/produk/1681180639.png";
+      } else if (index === 0) {
+        return "https://daclen.com/img/produk/1681187978.png";
+      } else if (index === 2) {
+        return "https://daclen.com/img/produk/1681187790.png";
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return require("../../assets/favicon.png");
   }
 
   return (
@@ -94,13 +137,13 @@ const WatermarkVideos = (props) => {
           renderItem={({ item, index }) => (
             <TouchableHighlight
               key={index}
-              onPress={() => openVideo(item)}
+              onPress={() => openVideo(item, index)}
               underlayColor={colors.daclen_orange}
               style={styles.containerImage}
             >
               <Image
                 style={styles.imageList}
-                source={tempmediakitvideothumbnail}
+                source={item?.thumbnail ? item?.thumbnail : getTempThumbnail(index)}
                 contentFit="cover"
                 placeholder={blurhash}
                 transition={100}
@@ -136,6 +179,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   videosUri: store.mediaKitState.videosUri,
   mediaKitVideos: store.mediaKitState.videos,
+  watermarkVideos: store.mediaState.watermarkVideos,
   videoError: store.mediaKitState.videoError,
 });
 
@@ -145,6 +189,7 @@ const mapDispatchProps = (dispatch) =>
       getMediaKitVideos,
       clearMediaKitVideosError,
       updateReduxMediaKitVideos,
+      overwriteWatermarkVideos,
     },
     dispatch
   );

@@ -22,9 +22,7 @@ import {
 } from "../axios/user";
 import { clearMediaKitData } from "../axios/mediakit";
 import { getObjectAsync, getTokenAsync } from "./asyncstorage";
-import { overwriteWatermarkVideos } from "./media";
 import {
-  ASYNC_MEDIA_WATERMARK_VIDEOS_KEY,
   ASYNC_PRODUCTS_ARRAY_KEY,
   ASYNC_USER_CURRENTUSER_KEY,
   ASYNC_USER_PROFILE_PIN_KEY,
@@ -123,10 +121,6 @@ function Main(props) {
         props.clearMediaKitData();
       } else {
         props.setNewToken(storageToken, storageCurrentUser);
-        const storageWatermarkVideos = await getObjectAsync(
-          ASYNC_MEDIA_WATERMARK_VIDEOS_KEY
-        );
-        props.overwriteWatermarkVideos(storageWatermarkVideos);
       }
     };
 
@@ -264,7 +258,6 @@ const mapDispatchProps = (dispatch) =>
       getCurrentUser,
       clearUserData,
       setNewToken,
-      overwriteWatermarkVideos,
       disableForceLogout,
       clearMediaKitData,
       clearCartError,

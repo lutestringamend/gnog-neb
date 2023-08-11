@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
 
 import { colors } from "../../styles/base";
 import {
@@ -18,7 +18,7 @@ import VWatermarkModel from "./VWatermarkModel";
 import { personalwebsiteurlshort } from "../../axios/constants";
 
 function VideoLargeWatermarkModel(props) {
-  const { watermarkData, style, width, height, videotoScreenRatio } = props;
+  const { watermarkData, style, width, height, videoToScreenRatio } = props;
   const ratio =
     (vwmarkdefaultwmarktovideotruewidthratio * width) / vwmarktemplatewidth;
 
@@ -31,15 +31,15 @@ function VideoLargeWatermarkModel(props) {
     vwmarkdefaultpositiontoptovideotrueheightratio * height
   );
 
-  useEffect(() => {
+  /*useEffect(() => {
     console.log(
       ratio,
       displayWatermarkPositionTop,
       displayWatermarkPositionStart,
-      videotoScreenRatio,
-      videotoScreenRatio * vwmarkurlmargintop
+      videoToScreenRatio,
+      (videoToScreenRatio ? videoToScreenRatio : 1) * vwmarkurlmargintop
     );
-  }, []);
+  }, []);*/
 
   if (
     watermarkData === undefined ||
@@ -86,16 +86,16 @@ function VideoLargeWatermarkModel(props) {
             styles.containerUrl,
             {
               paddingHorizontal:
-                (videotoScreenRatio ? videotoScreenRatio : 1) *
+                (videoToScreenRatio ? videoToScreenRatio : 1) *
                 vwmarkurlpaddinghorizontal,
               paddingVertical:
-                (videotoScreenRatio ? videotoScreenRatio : 1) *
+                (videoToScreenRatio ? videoToScreenRatio : 1) *
                 vwmarkurlpaddingvertical,
               marginTop:
-                (videotoScreenRatio ? videotoScreenRatio : 1) *
+                (videoToScreenRatio ? videoToScreenRatio : 1) *
                 vwmarkurlmargintop,
               borderRadius:
-                (videotoScreenRatio ? videotoScreenRatio : 1) *
+                (videoToScreenRatio ? videoToScreenRatio : 1) *
                 vwmarkurlborderradius,
             },
           ]}
@@ -105,7 +105,7 @@ function VideoLargeWatermarkModel(props) {
               styles.textUrl,
               {
                 fontSize:
-                  (videotoScreenRatio ? videotoScreenRatio : 1) *
+                  (videoToScreenRatio ? videoToScreenRatio : 1) *
                   vwmarkurlfontsize,
               },
             ]}

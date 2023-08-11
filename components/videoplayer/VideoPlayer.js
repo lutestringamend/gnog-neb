@@ -44,11 +44,15 @@ import { ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY } from "../asyncstorage/constant
 import {
   vwmarkdefaultsourceheight,
   vwmarkdefaultsourcewidth,
+  vwmarkrenderlandscapeheightcompressionconstant,
+  vwmarkrenderlandscapewidthcompressionconstant,
+  vwmarkrenderportraitheightcompressionconstant,
+  vwmarkrenderportraitwidthcompressionconstant,
 } from "../mediakit/constants";
 import VideoLargeWatermarkModel from "../media/VideoLargeWatermarkModel";
 
 function VideoPlayer(props) {
-  const { id, title, uri, width, height, thumbnail, userId } =
+  const { videoId, title, uri, width, height, thumbnail, userId } =
     props.route?.params;
 
   const ratio =
@@ -56,7 +60,17 @@ function VideoPlayer(props) {
       ? vwmarkdefaultsourcewidth / vwmarkdefaultsourceheight
       : width / height;
 
-  const videoToScreenRatio = width / Dimensions.get("window").width;
+  const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
+
+  const videoSize = {
+    isLandscape: screenWidth > screenHeight,
+    videoWidth: screenWidth,
+    videoHeight: Math.ceil((screenWidth * height) / width),
+    videoOrientation: height > width ? "portrait" : "landscape",
+  };
+
+  const videoToScreenRatio = parseFloat(width / screenWidth);
   const watermarkSize = {
     width,
     height,
@@ -80,13 +94,6 @@ function VideoPlayer(props) {
         : Dimensions.get("window").width / ratio,
     };
     const [videoSize, setVideoSize] = useState(initialVideoSize);*/
-  const videoSize = {
-    isLandscape:
-      Dimensions.get("window").width > Dimensions.get("window").height,
-    videoWidth: Dimensions.get("window").width,
-    videoHeight: Math.ceil((Dimensions.get("window").width * height) / width),
-    videoOrientation: height > width ? "portrait" : "landscape",
-  };
 
   //const [videoSize, setVideoSize] = useState(initialVideoSize);
   const [error, setError] = useState(null);
@@ -132,7 +139,20 @@ function VideoPlayer(props) {
       checkSharing();
     }
 
-    console.log("videoSize", videoSize, "ratio", ratio, "userId", userId);
+    console.log(
+      "videoId",
+      videoId,
+      "width",
+      width,
+      "height",
+      height,
+      "screenVideoSize",
+      videoSize,
+      "ratio",
+      ratio,
+      "videoToScreenRatio",
+      videoToScreenRatio
+    );
     if (videoSize.isLandscape === undefined || videoSize.isLandscape === null) {
       setError("unknown screen orientation");
     } else if (
@@ -208,7 +228,7 @@ function VideoPlayer(props) {
   useEffect(() => {
     if (resultUri !== null) {
       setUpdateStorage(true);
-      props.updateWatermarkVideo(id, rawUri, resultUri);
+      props.updateWatermarkVideo(videoId, rawUri, resultUri);
     }
   }, [resultUri]);
 
@@ -296,7 +316,7 @@ function VideoPlayer(props) {
     ) {
       setOutput((output) => `${output}\nredux data null}`);
       setUpdateStorage(true);
-      props.updateWatermarkVideo(id, null, null);
+      props.updateWatermarkVideo(videoId, null, null);
     } else {
       props.overwriteWatermarkVideos(storageWatermarkVideosSaved);
     }
@@ -308,18 +328,18 @@ function VideoPlayer(props) {
     }
 
     try {
-      const check = watermarkVideos.find(({ id }) => id === id);
-      console.log("redux watermarkvideos uri check", check);
+      const check = watermarkVideos.find(({ id }) => id === videoId);
+      console.log(`redux watermarkvideos id ${videoId} uri check`, check);
       if (check === undefined || check === null) {
         if (rawUri !== null) {
           setUpdateStorage(true);
-          props.updateWatermarkVideo(id, rawUri, resultUri);
+          props.updateWatermarkVideo(videoId, rawUri, resultUri);
         }
       } else {
         if (check?.rawUri === undefined || check?.rawUri === null) {
           if (rawUri !== null) {
             setUpdateStorage(true);
-            props.updateWatermarkVideo(id, rawUri, resultUri);
+            props.updateWatermarkVideo(videoId, rawUri, resultUri);
           }
         } else if (rawUri === null) {
           setRawUri(check?.rawUri);
@@ -658,8 +678,18 @@ function VideoPlayer(props) {
           fileName: "wtext",
           format: "png",
           quality: 1,
-          width: watermarkSize.width / (Platform.OS === "ios" ? 2 : 1),
-          height: watermarkSize.height / (Platform.OS === "ios" ? 2 : 1),
+          width:
+            watermarkSize.width /
+            ((videoSize.videoOrientation === "portrait"
+              ? vwmarkrenderportraitwidthcompressionconstant
+              : vwmarkrenderlandscapewidthcompressionconstant) *
+              (Platform.OS === "ios" ? 2 : 1)),
+          height:
+            watermarkSize.height /
+            ((videoSize.videoOrientation === "portrait"
+              ? vwmarkrenderportraitheightcompressionconstant
+              : vwmarkrenderlandscapeheightcompressionconstant) *
+              (Platform.OS === "ios" ? 2 : 1)),
         }}
         style={[
           styles.containerViewShot,
@@ -700,11 +730,17 @@ function VideoPlayer(props) {
             </Text>
             <Text style={styles.textError}>{error}</Text>
           </View>
-          {error ? (
+          {loading ? (
+            <ActivityIndicator
+              size="small"
+              color={colors.daclen_light}
+              style={{ alignSelf: "center" }}
+            />
+          ) : error ? (
             <MaterialCommunityIcons
-              name="alert-circle"
+              name={success ? "check-circle" : "alert-circle"}
               size={20}
-              color={colors.daclen_red}
+              color={success ? colors.daclen_green_light : colors.daclen_red}
               style={{ alignSelf: "center" }}
             />
           ) : null}
@@ -759,7 +795,7 @@ function VideoPlayer(props) {
                 height:
                   videoSize.videoOrientation === "landscape"
                     ? videoSize.videoHeight
-                    : Dimensions.get("window").height,
+                    : screenHeight,
                 flex: 1,
               },
             ]}
@@ -773,18 +809,14 @@ function VideoPlayer(props) {
                   height:
                     videoSize.videoOrientation === "landscape"
                       ? videoSize.videoHeight
-                      : Dimensions.get("window").height,
+                      : screenHeight,
                 },
               ]}
               source={{
                 uri,
               }}
               useNativeControls
-              resizeMode={
-                videoSize.videoOrientation === "portrait"
-                  ? ResizeMode.STRETCH
-                  : ResizeMode.COVER
-              }
+              resizeMode={ResizeMode.STRETCH}
               videoStyle={{
                 width: videoSize.videoWidth,
                 height: videoSize.videoHeight,
@@ -807,16 +839,17 @@ function VideoPlayer(props) {
                 color={colors.daclen_orange}
                 style={{
                   position: "absolute",
-                  top: 32,
-                  end: 20,
+                  top: 24,
+                  end: 24,
                   zIndex: 3,
+                  elevation: 3,
                 }}
               />
             ) : (
               <VideoLargeWatermarkModel
                 width={videoSize.videoWidth}
                 height={videoSize.videoHeight}
-                videotoScreenRatio={parseInt(1)}
+                videoToScreenRatio={1}
                 watermarkData={watermarkData}
                 style={{
                   position: "absolute",
@@ -861,7 +894,7 @@ function VideoPlayer(props) {
               ? [
                   styles.containerPanelVideoPortrait,
                   {
-                    top: Dimensions.get("window").height - 120,
+                    top: screenHeight - 120,
                   },
                 ]
               : videoSize.isLandscape

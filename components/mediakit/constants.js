@@ -20,17 +20,23 @@ export const vwmarktextphonecharlimit = 13;
 export const vwmarkdefaultsourcewidth = 1080;
 export const vwmarkdefaultsourceheight = 720;
 
-export const vwmarkurlpaddinghorizontal = 6;
+export const vwmarkurlpaddinghorizontal = 4;
 export const vwmarkurlpaddingvertical = 4;
 export const vwmarkurlmargintop = 4;
 export const vwmarkurlborderradius = 4;
-export const vwmarkurlfontsize = 12;
+export const vwmarkurlfontsize = 11;
 
 export const vwmarkdefaultwmarktovideotruewidthratio = 0.25;
 export const vwmarkdefaultpositiontoptovideotrueheightratio = 0.11;
 export const vmwarkdefaultpositionendtovideotruewidthratio = 0.15;
 export const vwmarkrenderenlargementconstant = 2;
 export const vwmarkrenderendratioconstant = 0.125;
+
+export const vwmarkrenderlandscapewidthcompressionconstant = 1;
+export const vwmarkrenderlandscapeheightcompressionconstant = 1;
+
+export const vwmarkrenderportraitwidthcompressionconstant = 1;
+export const vwmarkrenderportraitheightcompressionconstant = 3;
 
 
 export const tempvideoarray = [

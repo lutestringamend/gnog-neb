@@ -180,10 +180,10 @@ const Dashboard = (props) => {
         ) : currentUser?.nomor_telp_verified_at === null ||
           currentUser?.nomor_telp_verified_at === "" ? (
           <DashboardVerification />
-        ) : (profileLock === undefined ||
+        ) : profileLock === undefined ||
           profileLock === null ||
           profileLock ||
-          pinLoading) && Platform.OS !== "web" ? (
+          pinLoading ? (
           <DashboardLock receiveOTP={(e) => receiveOTP(e)} />
         ) : (
           <View style={styles.scrollView}>

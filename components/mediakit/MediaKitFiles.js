@@ -78,8 +78,7 @@ const WatermarkSettings = ({
         </TouchableOpacity>
       </View>
 
-      <View style={styles.containerBox}>
-        <Text style={styles.textCompulsory}>Nama*</Text>
+      <Text style={styles.textCompulsory}>Nama*</Text>
         <TextInput
           value={tempWatermarkData?.name}
           style={styles.textInput}
@@ -90,13 +89,12 @@ const WatermarkSettings = ({
         <Text style={styles.textCompulsory}>Nomor telepon*</Text>
         <TextInput
           value={tempWatermarkData?.phone}
-          style={styles.textInput}
+          style={[styles.textInput, {marginBottom: 0}]}
           inputMode="numeric"
           onChangeText={(phone) =>
             setTempWatermarkData({ ...tempWatermarkData, phone })
           }
         />
-      </View>
     </View>
   );
 };
@@ -296,7 +294,7 @@ function MediaKitFiles(props) {
         <RBSheet
           ref={rbSheet}
           openDuration={250}
-          height={dimensions.fullHeight - 32}
+          height={dimensions.fullHeight}
           onClose={() => closeBS()}
         >
           <BSPopup
@@ -358,11 +356,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_graydark,
   },
   containerInfo: {
-    height: dimensions.fullHeight - 200,
     backgroundColor: "transparent",
   },
   containerPrivacy: {
-    marginVertical: 20,
+    marginVertical: 12,
     marginHorizontal: 20,
     alignItems: "center",
   },
@@ -410,6 +407,7 @@ const styles = StyleSheet.create({
     color: colors.daclen_orange,
     fontSize: 12,
     fontWeight: "bold",
+    marginHorizontal: 20,
   },
   textChange: {
     color: colors.daclen_blue,
@@ -424,6 +422,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 10,
     marginTop: 2,
+    marginHorizontal: 20,
     marginBottom: 20,
     fontSize: 14,
   },
