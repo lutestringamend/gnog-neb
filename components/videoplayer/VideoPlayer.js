@@ -42,6 +42,7 @@ import { sentryLog } from "../../sentry";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY } from "../asyncstorage/constants";
 import {
+  vwmarkdebuguserid,
   vwmarkdefaultsourceheight,
   vwmarkdefaultsourcewidth,
   vwmarkrenderlandscapeheightcompressionconstant,
@@ -108,7 +109,9 @@ function VideoPlayer(props) {
   const [rawUri, setRawUri] = useState(null);
   const [resultUri, setResultUri] = useState(null);
   const [output, setOutput] = useState("VIDEO PROCESSING LOGS");
-  const [fullLogs, setFullLogs] = useState(userId === 8054 ? "test" : null);
+  const [fullLogs, setFullLogs] = useState(
+    userId === vwmarkdebuguserid ? "test" : null
+  );
   const [sharingAvailability, setSharingAvailability] = useState(false);
   const [updateStorage, setUpdateStorage] = useState(false);
 
@@ -208,7 +211,7 @@ function VideoPlayer(props) {
       if (screenData?.isLandscape !== videoSize.isLandscape) {
         console.log("new screenData", screenData);
         changeVideoOrientation(screenData?.isLandscape);
-        if (userId === 8054 && Platform.OS === "android") {
+        if (userId === vwmarkdebuguserid && Platform.OS === "android") {
           ToastAndroid.show(
             `change orientation ${JSON.stringify(screenData)}`,
             ToastAndroid.LONG
@@ -218,7 +221,7 @@ function VideoPlayer(props) {
     }, [screenData]);*/
 
   /*useEffect(() => {
-    if (userId === 8054 && Platform.OS === "android") {
+    if (userId === vwmarkdebuguserid && Platform.OS === "android") {
         ToastAndroid.show(`videoSize ${JSON.stringify(videoSize)}`,
           ToastAndroid.LONG
         );
@@ -300,8 +303,8 @@ function VideoPlayer(props) {
     setOutput("resultUri reset");
     setFullLogs(null);
     setUpdateStorage(true);
-    props.overwriteWatermarkVideos([]);
-    //props.updateWatermarkVideo(uri, rawUri, null);
+    //props.overwriteWatermarkVideos([]);
+    props.updateWatermarkVideo(id, null, null);
   };
 
   const checkAsyncWatermarkVideosSaved = async () => {
@@ -531,7 +534,7 @@ function VideoPlayer(props) {
     ? setSkipWatermarkFFMPEGCommand(sourceVideo, resultVideo)
     : s
     
-    *userId === 8054
+    *userId === vwmarkdebuguserid
         ? setBasicFFMPEGCommand(
             sourceVideo,
             watermarkImage,
@@ -756,6 +759,11 @@ function VideoPlayer(props) {
             ? styles.containerBodyLandscape
             : styles.containerBodyPortrait
         }
+        scrollEnabled={
+          videoSize.isLandscape &&
+          (videoSize.videoOrientation === "landscape" ||
+            videoSize.videoHeight > screenHeight)
+        }
       >
         {videoSize.isLandscape ? (
           <View
@@ -809,7 +817,9 @@ function VideoPlayer(props) {
                   height:
                     videoSize.videoOrientation === "landscape"
                       ? videoSize.videoHeight
-                      : screenHeight,
+                      : screenHeight > videoSize.videoHeight
+                      ? screenHeight
+                      : videoSize.videoHeight,
                 },
               ]}
               source={{
@@ -894,7 +904,7 @@ function VideoPlayer(props) {
               ? [
                   styles.containerPanelVideoPortrait,
                   {
-                    top: screenHeight - 120,
+                    top: screenHeight - 100,
                   },
                 ]
               : videoSize.isLandscape
@@ -989,7 +999,9 @@ function VideoPlayer(props) {
           </TouchableOpacity>
         </View>
 
-        {userId === 8054 && Platform.OS === "web" && !videoSize.isLandscape ? (
+        {userId === vwmarkdebuguserid &&
+        Platform.OS === "web" &&
+        !videoSize.isLandscape ? (
           <TextInput
             style={styles.textInput}
             value={customFilter}
@@ -997,7 +1009,9 @@ function VideoPlayer(props) {
           />
         ) : null}
 
-        {userId === 8054 && Platform.OS === "web" && !videoSize.isLandscape ? (
+        {userId === vwmarkdebuguserid &&
+        Platform.OS === "web" &&
+        !videoSize.isLandscape ? (
           <Text
             style={[
               styles.textUid,
@@ -1019,7 +1033,7 @@ function VideoPlayer(props) {
           </Text>
         ) : null}
 
-        {userId !== 8054 ||
+        {userId !== vwmarkdebuguserid ||
         fullLogs === null ||
         videoSize.isLandscape ? null : (
           <TouchableOpacity
@@ -1041,7 +1055,7 @@ function VideoPlayer(props) {
           </TouchableOpacity>
         )}
 
-        {userId === 8054 &&
+        {userId === vwmarkdebuguserid &&
         watermarkImage !== null &&
         !videoSize.isLandscape ? (
           <TouchableOpacity
@@ -1068,7 +1082,9 @@ function VideoPlayer(props) {
           </TouchableOpacity>
         ) : null}
 
-        {userId === 8054 && rawUri !== null && !videoSize.isLandscape ? (
+        {userId === vwmarkdebuguserid &&
+        rawUri !== null &&
+        !videoSize.isLandscape ? (
           <TouchableOpacity
             style={[
               videoSize.isLandscape ? styles.buttonCircle : styles.button,
@@ -1089,7 +1105,7 @@ function VideoPlayer(props) {
           </TouchableOpacity>
         ) : null}
 
-        {userId === 8054 &&
+        {userId === vwmarkdebuguserid &&
         rawUri !== null &&
         watermarkImage !== null &&
         !loading &&
@@ -1114,7 +1130,7 @@ function VideoPlayer(props) {
           </TouchableOpacity>
         ) : null}
 
-        {userId !== 8054 || videoSize.isLandscape ? null : (
+        {userId !== vwmarkdebuguserid || videoSize.isLandscape ? null : (
           <Text style={styles.textUid}>{output}</Text>
         )}
       </ScrollView>
@@ -1198,7 +1214,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   video: {
-    backgroundColor: colors.black,
+    backgroundColor: colors.daclen_black,
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "center",
