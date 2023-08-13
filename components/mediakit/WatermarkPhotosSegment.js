@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import {
   View,
   TouchableHighlight,
@@ -17,7 +17,7 @@ import { Image } from "expo-image";
 import { shareAsync } from "expo-sharing";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, blurhash } from "../../styles/base";
+import { colors } from "../../styles/base";
 import { sentryLog } from "../../sentry";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../asyncstorage/constants";
@@ -187,38 +187,28 @@ const WatermarkPhotosSegment = (props) => {
           />
         </TouchableOpacity>
         {expanded ? (
-          <Suspense
-            fallback={
-              <ActivityIndicator
-                size="small"
-                color={colors.daclen_orange}
-                style={styles.spinner}
-              />
-            }
-          >
-            <FlashList
-              estimatedItemSize={10}
-              horizontal={false}
-              numColumns={3}
-              data={photos}
-              renderItem={({ item, index }) => (
-                <TouchableHighlight
-                  key={index}
-                  onPress={() => openPhoto(item)}
-                  underlayColor={colors.daclen_orange}
-                  style={styles.containerImage}
-                >
-                  <Image
-                    style={styles.imageList}
-                    source={item?.foto}
-                    contentFit="cover"
-                    placeholder={blurhash}
-                    transition={100}
-                  />
-                </TouchableHighlight>
-              )}
-            />
-          </Suspense>
+          <FlashList
+            estimatedItemSize={6}
+            horizontal={false}
+            numColumns={3}
+            data={photos}
+            renderItem={({ item, index }) => (
+              <TouchableHighlight
+                key={index}
+                onPress={() => openPhoto(item)}
+                underlayColor={colors.daclen_orange}
+                style={styles.containerImage}
+              >
+                <Image
+                  style={styles.imageList}
+                  source={item?.foto}
+                  contentFit="cover"
+                  placeholder={null}
+                  transition={0}
+                />
+              </TouchableHighlight>
+            )}
+          />
         ) : null}
       </View>
     );
@@ -228,6 +218,20 @@ const WatermarkPhotosSegment = (props) => {
     return null;
   }
 };
+
+/*
+          <Suspense
+            fallback={
+              <ActivityIndicator
+                size="small"
+                color={colors.daclen_orange}
+                style={styles.spinner}
+              />
+            }
+          >
+            
+          </Suspense>
+*/
 
 const styles = StyleSheet.create({
   containerFlatlist: {
@@ -305,4 +309,4 @@ const mapStateToProps = (store) => ({
   watermarkData: store.mediaKitState.watermarkData,
 });
 
-export default connect(mapStateToProps, null)(WatermarkPhotosSegment);
+export default memo(connect(mapStateToProps, null)(WatermarkPhotosSegment));

@@ -27,7 +27,7 @@ import {
 import { getFileName } from "../media";
 import WatermarkModel from "../media/WatermarkModel";
 import { sentryLog } from "../../sentry";
-import { sharingOptionsJPEG } from "../media/constants";
+import { sharingOptionsJPEG, watermarkStyle } from "../media/constants";
 import {
   filePrintOptions,
   multiplephotoshtml,
@@ -94,7 +94,7 @@ const ImageViewer = (props) => {
       setError("Perangkat tidak mengizinkan untuk membagikan file");
     }
 
-    //console.log("ImageViewer route params", props.route.params);
+    console.log("ImageViewer route params", props.route.params);
   }, [uri]);
 
   useEffect(() => {
@@ -336,10 +336,9 @@ const ImageViewer = (props) => {
             watermarkData={watermarkData}
             ratio={ratio}
             text_align={text_align}
-            text_x={text_x / ratio}
-            text_y={text_y / ratio}
+            height={height - Math.ceil(watermarkStyle?.paddingBottom * ratio)}
             color={font?.color?.warna}
-            fontSize={Math.round(fontSize / ratio)}
+            fontSize={Math.ceil(fontSize / ratio)}
             paddingHorizontal={1}
             paddingVertical={1}
           />
@@ -490,8 +489,7 @@ const ImageViewer = (props) => {
                   watermarkData={watermarkData}
                   ratio={1}
                   text_align={text_align}
-                  text_x={text_x / ratio}
-                  text_y={text_y / ratio}
+                  height={productPhotoHeight - watermarkStyle.paddingBottom + watermarkStyle.displayExtraTop}
                   color={font?.color?.warna}
                   fontSize={Math.round(fontSize / ratio)}
                   paddingHorizontal={1}
@@ -565,6 +563,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
+    height: 48,
     paddingVertical: 12,
     paddingHorizontal: 32,
     backgroundColor: colors.daclen_orange,

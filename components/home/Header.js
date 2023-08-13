@@ -85,16 +85,16 @@ const Header = (props) => {
         !currentUser?.has_checkout ? null : (
           <TouchableOpacity
             onPress={() => goCheckout()}
-            style={[styles.containerUser, {marginTop: 10}]}
+            style={[styles.containerUser, { marginTop: 10 }]}
           >
-            <Text style={styles.textAlert}>
-            CHECKOUT
+            <Text style={[styles.textAlert, { color: colors.daclen_orange }]}>
+              RIWAYAT
             </Text>
-                    <MaterialCommunityIcons
-          name="alert"
-          size={20}
-          color={colors.daclen_yellow}
-        />
+            <MaterialCommunityIcons
+              name="history"
+              size={24}
+              color={colors.daclen_orange}
+            />
           </TouchableOpacity>
         )}
       </View>

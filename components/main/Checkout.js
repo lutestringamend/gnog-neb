@@ -42,7 +42,8 @@ function Checkout(props) {
   const [courier, setCourier] = useState(null);
   const [courierService, setCourierService] = useState(null);
   const [courierServices, setCourierServices] = useState([]);
-  const [packaging, setPackaging] = useState(null);
+  //const [packaging, setPackaging] = useState(null);
+  const packaging = "Box";
 
   const [points, setPoints] = useState(0);
   const [weight, setWeight] = useState(0);
@@ -389,14 +390,15 @@ function Checkout(props) {
   }
 
   function onPressRadioButtonPackaging(radioButtonsArray) {
-    try {
+    /*try {
       const chosenPackaging = radioButtonsArray.find(
         ({ selected }) => selected === true
       );
       setPackaging(chosenPackaging?.value);
     } catch (e) {
       console.log(e);
-    }
+    }*/
+    return;
   }
 
   return (

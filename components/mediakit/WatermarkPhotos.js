@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React from "react";
 import {
   View,
   StyleSheet,
@@ -12,8 +12,16 @@ import { webfotowatermark } from "../../axios/constants";
 import { ErrorView } from "../webview/WebviewChild";
 import WatermarkPhotosSegment from "./WatermarkPhotosSegment";
 import { sentryLog } from "../../sentry";
+import { FlashList } from "@shopify/flash-list";
 
-const WatermarkPhotos = ({ photos, userId, loading, error, sharingAvailability }) => {
+const WatermarkPhotos = ({
+  photos,
+  photoKeys,
+  userId,
+  loading,
+  error,
+  sharingAvailability,
+}) => {
   try {
     return (
       <View style={styles.container}>
@@ -22,7 +30,7 @@ const WatermarkPhotos = ({ photos, userId, loading, error, sharingAvailability }
             error="Mohon membuka website Daclen untuk melihat foto Media Kit"
             onOpenExternalLink={() => Linking.openURL(webfotowatermark)}
           />
-        ) : loading || sharingAvailability === undefined || sharingAvailability === null ? (
+        ) : loading ? (
           <ActivityIndicator
             size="large"
             color={colors.daclen_orange}
@@ -31,19 +39,22 @@ const WatermarkPhotos = ({ photos, userId, loading, error, sharingAvailability }
         ) : photos === undefined || photos === null ? (
           <Text style={styles.textUid}>Tidak ada foto Media Kit tersedia</Text>
         ) : (
-          Object.keys(photos)
-            .sort()
-            .reverse()
-            .map((keyName, i) => (
+          <FlashList
+            estimatedItemSize={10}
+            horizontal={false}
+            numColumns={1}
+            data={photoKeys}
+            renderItem={({ item, index }) => (
               <WatermarkPhotosSegment
-                isExpanded={i === 0 ? true : false}
-                key={keyName}
-                title={keyName}
-                photos={photos[keyName]}
+                isExpanded={index === 0 ? true : false}
+                key={item}
+                title={item}
+                photos={photos[item]}
                 userId={userId}
                 sharingAvailability={sharingAvailability}
               />
-            ))
+            )}
+          />
         )}
       </View>
     );
@@ -57,6 +68,15 @@ const WatermarkPhotos = ({ photos, userId, loading, error, sharingAvailability }
     );
   }
 };
+
+/*
+          Object.keys(photos)
+            .sort()
+            .reverse()
+            .map((keyName, i) => (
+              
+            ))
+*/
 
 const styles = StyleSheet.create({
   containerFlatlist: {

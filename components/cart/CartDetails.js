@@ -41,15 +41,9 @@ export default function CartDetails(props) {
       </View>
 
       {props?.isCart ? (
-        <View style={styles.containerRadio}>
+        <View style={styles.containerEntry}>
           <Text style={styles.textEntryHeader}>Pengemasan</Text>
-          <View style={styles.containerRadioGroup}>
-            <RadioGroup
-              radioButtons={defaultPackagingOptions}
-              onPress={props?.onPressRadioButtonPackaging}
-              layout="row"
-            />
-          </View>
+          <Text style={styles.textEntry}>Box</Text>
         </View>
       ) : null}
 
@@ -143,6 +137,16 @@ export default function CartDetails(props) {
     </View>
   );
 }
+
+/*
+          <View style={styles.containerRadioGroup}>
+            <RadioGroup
+              radioButtons={defaultPackagingOptions}
+              onPress={props?.onPressRadioButtonPackaging}
+              layout="row"
+            />
+          </View>
+*/
 
 const styles = StyleSheet.create({
   container: {

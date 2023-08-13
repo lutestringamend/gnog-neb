@@ -36,6 +36,7 @@ import { ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../asyncstorage/constants";
 import { updateReduxMediaKitPhotosUri } from "../../axios/mediakit";
 import { ErrorView } from "../webview/WebviewChild";
 import { webfotowatermark } from "../../axios/constants";
+import { watermarkStyle } from "../media/constants";
 
 const MultipleImageView = (props) => {
   const { title, photos, sharingAvailability, userId } =
@@ -495,8 +496,7 @@ const MultipleImageView = (props) => {
                       watermarkData={watermarkData}
                       ratio={width / productPhotoWidth}
                       text_align={null}
-                      text_x={(text_x * productPhotoWidth) / width}
-                      text_y={(text_y * productPhotoWidth) / width}
+                      height={height - Math.ceil(watermarkStyle?.paddingBottom * width / productPhotoWidth)}
                       color={null}
                       fontSize={Math.round(
                         ((fontSize ? fontSize : 16) * productPhotoWidth) / width

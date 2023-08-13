@@ -79,22 +79,22 @@ const WatermarkSettings = ({
       </View>
 
       <Text style={styles.textCompulsory}>Nama*</Text>
-        <TextInput
-          value={tempWatermarkData?.name}
-          style={styles.textInput}
-          onChangeText={(name) =>
-            setTempWatermarkData({ ...tempWatermarkData, name })
-          }
-        />
-        <Text style={styles.textCompulsory}>Nomor telepon*</Text>
-        <TextInput
-          value={tempWatermarkData?.phone}
-          style={[styles.textInput, {marginBottom: 0}]}
-          inputMode="numeric"
-          onChangeText={(phone) =>
-            setTempWatermarkData({ ...tempWatermarkData, phone })
-          }
-        />
+      <TextInput
+        value={tempWatermarkData?.name}
+        style={styles.textInput}
+        onChangeText={(name) =>
+          setTempWatermarkData({ ...tempWatermarkData, name })
+        }
+      />
+      <Text style={styles.textCompulsory}>Nomor telepon*</Text>
+      <TextInput
+        value={tempWatermarkData?.phone}
+        style={[styles.textInput, { marginBottom: 0 }]}
+        inputMode="numeric"
+        onChangeText={(phone) =>
+          setTempWatermarkData({ ...tempWatermarkData, phone })
+        }
+      />
     </View>
   );
 };
@@ -105,9 +105,11 @@ function MediaKitFiles(props) {
     const [photoLoading, setPhotoLoading] = useState(false);
     const [loading, setLoading] = useState(false);
     const [sharingAvailability, setSharingAvailability] = useState(null);
+    const [photoKeys, setPhotoKeys] = useState([]);
     const [tempWatermarkData, setTempWatermarkData] = useState(WatermarkData);
 
-    const { token, currentUser, photoError, watermarkData } = props;
+    const { token, currentUser, photoError, watermarkData, mediaKitPhotos } =
+      props;
     const rbSheet = useRef();
     const navigation = useNavigation();
 
@@ -146,16 +148,23 @@ function MediaKitFiles(props) {
     }, [watermarkData]);
 
     useEffect(() => {
-      if (props.mediaKitPhotos === undefined || props.mediaKitPhotos === null) {
+      if (mediaKitPhotos === undefined || mediaKitPhotos === null) {
         checkStorageMediaKitPhotos();
+      } else if (photoKeys?.length === undefined || photoKeys?.length < 1) {
+        setPhotoKeys(Object.keys(mediaKitPhotos).sort().reverse());
       } else {
         if (photoLoading) {
           setPhotoLoading(false);
         }
-        setObjectAsync(ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, props.mediaKitPhotos);
-        console.log("redux mediakitphotos", props.mediaKitPhotos);
+        setObjectAsync(ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, mediaKitPhotos);
+        console.log(
+          "redux mediakitphotos",
+          mediaKitPhotos,
+          "photoKeys",
+          photoKeys
+        );
       }
-    }, [props.mediaKitPhotos]);
+    }, [mediaKitPhotos, photoKeys]);
 
     useEffect(() => {
       if (photoError === null) {
@@ -163,8 +172,7 @@ function MediaKitFiles(props) {
       }
       if (
         photoLoading &&
-        (props.mediaKitPhotos?.length === undefined ||
-          props.mediaKitPhotos?.length < 1)
+        (mediaKitPhotos?.length === undefined || mediaKitPhotos?.length < 1)
       ) {
         setPhotoLoading(false);
       }
@@ -285,7 +293,8 @@ function MediaKitFiles(props) {
                 loading={photoLoading}
                 error={photoError}
                 sharingAvailability={sharingAvailability}
-                photos={props.mediaKitPhotos}
+                photos={mediaKitPhotos}
+                photoKeys={photoKeys}
               />
             )}
           </ScrollView>
@@ -451,7 +460,7 @@ const mapDispatchProps = (dispatch) =>
       updateReduxMediaKitPhotosUri,
       clearMediaKitPhotosError,
       clearMediaKitData,
-      overwriteWatermarkVideos
+      overwriteWatermarkVideos,
     },
     dispatch
   );

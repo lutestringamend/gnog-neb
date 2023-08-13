@@ -12,8 +12,7 @@ function WatermarkModel(props) {
     watermarkData,
     style,
     ratio,
-    text_x,
-    text_y,
+    height,
     text_align,
     paddingVertical,
     paddingHorizontal,
@@ -35,17 +34,26 @@ function WatermarkModel(props) {
           backgroundColor: backgroundColor
       ? backgroundColor
       : watermarkStyle.backgroundColor,
+
+      getLayout ? 0 : 
+
+          
   */
   const generalStyle = {
     ...watermarkStyle,
     position: "absolute",
     flexDirection: "row",
+    alignItems: "center",
     backgroundColor: backgroundColor
       ? backgroundColor
       : watermarkStyle.backgroundColor,
-    top: getLayout ? 0 : text_y ? text_y * ratio : watermarkStyle.top * ratio,
+
+    top: height ? height : watermarkStyle.top * ratio,
     start: 0,
     width: "100%",
+    height: fontSize
+    ? Math.ceil(fontSize * ratio * 3)
+    : Math.ceil(watermarkStyle.fontSize * ratio),
     paddingVertical: getLayout
       ? paddingVertical * ratio
       : watermarkStyle.paddingVertical * ratio,
@@ -60,8 +68,8 @@ function WatermarkModel(props) {
     backgroundColor: "transparent",
     color: color ? color : watermarkStyle.color,
     fontSize: fontSize
-      ? Math.round(fontSize * ratio)
-      : Math.round(watermarkStyle.fontSize * ratio),
+      ? Math.ceil(fontSize * ratio * 2.5)
+      : Math.ceil(watermarkStyle.fontSize * ratio),
     textAlign: text_align ? text_align : watermarkStyle.textAlign,
     textAlignVertical: "center",
     fontWeight: "bold",
