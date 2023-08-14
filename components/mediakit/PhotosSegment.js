@@ -29,6 +29,7 @@ import { webfotowatermark } from "../../axios/constants";
 const PhotosSegment = (props) => {
   const { title, photos, sharingAvailability } = props.route.params;
   const { photosUri, watermarkData, currentUser } = props;
+  const userId = currentUser?.id ? currentUser?.id : null;
 
   const [loading, setLoading] = useState(false);
   const [savedUri, setSavedUri] = useState(null);
@@ -60,7 +61,7 @@ const PhotosSegment = (props) => {
       font: item?.font,
       fontSize: item?.font ? item?.font?.ukuran : 16,
       watermarkData,
-      userId: currentUser?.id,
+      userId,
       sharingAvailability,
     });
   }

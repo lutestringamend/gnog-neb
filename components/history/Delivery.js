@@ -56,7 +56,7 @@ function Delivery(props) {
   const checkAsyncStorageHistory = async () => {
     setLoading(true);
     const storageHistory = await getObjectAsync(ASYNC_HISTORY_DELIVERY_KEY);
-    if (storageHistory === undefined || storageHistory === null) {
+    if (storageHistory === undefined || storageHistory === null || storageHistory?.length === undefined || storageHistory?.length < 1) {
       props.getDeliveries(token);
     } else {
       props.updateReduxHistoryDeliveries(storageHistory);

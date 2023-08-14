@@ -13,8 +13,11 @@ import {
   USER_CART_STATE_CHANGE,
   USER_CART_ITEM_STATE_CHANGE,
   USER_CHECKOUT_STATE_CHANGE,
-  USER_CART_STATE_ERROR
+  USER_CART_STATE_ERROR,
+  HISTORY_CHECKOUTS_STATE_CHANGE
 } from "../../redux/constants";
+import { setObjectAsync } from "../../components/asyncstorage";
+import { ASYNC_HISTORY_CHECKOUT_KEY } from "../../components/asyncstorage/constants";
 
 export function clearCartError() {
   return (dispatch) => {
@@ -40,7 +43,9 @@ export function storeCheckout(token, checkoutJson) {
         let clearCart = true;
         if (data?.snap_token === undefined || data?.snap_token === null) clearCart = false;
         console.log(data)
-        dispatch({ type: USER_CHECKOUT_STATE_CHANGE, data, clearCart })
+        dispatch({ type: USER_CHECKOUT_STATE_CHANGE, data, clearCart });
+        dispatch({ type: HISTORY_CHECKOUTS_STATE_CHANGE, data: null });
+        setObjectAsync(ASYNC_HISTORY_CHECKOUT_KEY, null);
       })
       .catch((error) => {
         console.log(error);

@@ -58,7 +58,7 @@ function Checkout(props) {
   const checkAsyncStorageHistory = async () => {
     setLoading(true);
     const storageHistory = await getObjectAsync(ASYNC_HISTORY_CHECKOUT_KEY);
-    if (storageHistory === undefined || storageHistory === null) {
+    if (storageHistory === undefined || storageHistory === null || storageHistory?.length === undefined || storageHistory?.length < 1) {
       props.getCheckouts(token);
     } else {
       props.updateReduxHistoryCheckouts(storageHistory);
@@ -107,7 +107,7 @@ function Checkout(props) {
             </Text>
           ) : (
             <FlashList
-              estimatedItemSize={10}
+              estimatedItemSize={20}
               numColumns={1}
               horizontal={false}
               data={checkouts}

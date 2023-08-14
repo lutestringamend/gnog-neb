@@ -16,6 +16,7 @@ const WatermarkPhotosSegment = (props) => {
   const {
     title,
     photos,
+    isLast,
   } = props;
   const navigation = useNavigation();
 
@@ -27,7 +28,7 @@ const WatermarkPhotosSegment = (props) => {
 
   return (
     <TouchableOpacity
-      style={styles.containerItem}
+      style={[styles.containerItem, {marginBottom: isLast ? 32 : 0}]}
       key={title}
       onPress={() => openSegmentScreen()}
     >
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     marginHorizontal: 10,
     marginTop: 10,
-    elevation: 4,
+    elevation: 2,
     borderWidth: 1,
     borderColor: colors.daclen_gray,
   },
@@ -120,10 +121,7 @@ const styles = StyleSheet.create({
   textPrice: {
     fontSize: 12,
     color: colors.daclen_orange,
-    position: "absolute",
-    zIndex: 2,
-    end: 10,
-    bottom: 0,
+    marginTop: 6,
   },
   textButton: {
     fontSize: 14,

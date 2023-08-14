@@ -156,6 +156,9 @@ function MediaKitFiles(props) {
         if (photoLoading) {
           setPhotoLoading(false);
         }
+        if (loading) {
+          setLoading(false);
+        }
         setObjectAsync(ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, mediaKitPhotos);
         console.log(
           "redux mediakitphotos",
@@ -290,7 +293,7 @@ function MediaKitFiles(props) {
             ) : (
               <WatermarkPhotos
                 userId={currentUser?.id}
-                loading={photoLoading}
+                loading={photoLoading || loading}
                 error={photoError}
                 sharingAvailability={sharingAvailability}
                 photos={mediaKitPhotos}

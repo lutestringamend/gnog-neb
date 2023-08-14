@@ -45,7 +45,7 @@ const WatermarkPhotos = ({
             data={photoKeys}
             renderItem={({ item, index }) => (
               <WatermarkPhotosSegment
-                isExpanded={index === 0 ? true : false}
+                isLast={index === photoKeys?.length - 1}
                 key={item}
                 title={item}
                 photos={photos[item]}

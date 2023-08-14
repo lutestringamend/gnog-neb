@@ -413,7 +413,7 @@ const ImageViewer = (props) => {
                     Platform.OS === "web" ||
                     !sharingAvailability
                       ? colors.daclen_gray
-                      : colors.daclen_red,
+                      : colors.daclen_blue,
                 },
               ]}
               disabled={
