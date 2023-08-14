@@ -17,7 +17,6 @@ import { FlashList } from "@shopify/flash-list";
 const WatermarkPhotos = ({
   photos,
   photoKeys,
-  userId,
   loading,
   error,
   sharingAvailability,
@@ -50,7 +49,6 @@ const WatermarkPhotos = ({
                 key={item}
                 title={item}
                 photos={photos[item]}
-                userId={userId}
                 sharingAvailability={sharingAvailability}
               />
             )}
@@ -83,7 +81,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     paddingBottom: staticDimensions.pageBottomPadding,
-    backgroundColor: "white",
+    backgroundColor: colors.daclen_light,
   },
   containerImage: {
     flex: 1,

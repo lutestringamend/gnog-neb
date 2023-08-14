@@ -61,6 +61,7 @@ import CameraView from "./components/media/CameraView";
 import ImageViewer from "./components/imageviewer/ImageViewer";
 import MultipleImageView from "./components/imageviewer/MultipleImageView";
 import MediaKitFiles from "./components/mediakit/MediaKitFiles";
+import PhotosSegment from "./components/mediakit/PhotosSegment";
 import QRScreen from "./components/qrscreen/QRScreen";
 import VideoPlayer from "./components/videoplayer/VideoPlayer";
 import VideoLogs from "./components/videoplayer/VideoLogs";
@@ -284,6 +285,11 @@ export default function App() {
                 name="MediaKitFiles"
                 component={MediaKitFiles}
                 options={{ ...defaultOptions, title: "Materi Promosi" }}
+              />
+              <Stack.Screen
+                name="PhotosSegment"
+                component={PhotosSegment}
+                options={{ ...defaultOptions, title: "Foto Promosi" }}
               />
               <Stack.Screen
                 name="PointReportScreen"
