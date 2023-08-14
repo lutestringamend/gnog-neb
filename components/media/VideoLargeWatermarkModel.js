@@ -4,8 +4,10 @@ import { View, Text, StyleSheet } from "react-native";
 import { colors } from "../../styles/base";
 import {
   vmwarkdefaultpositionendtovideotruewidthratio,
+  vmwarkportraittopenlargementconstant,
   vwmarkdefaultpositiontoptovideotrueheightratio,
   vwmarkdefaultwmarktovideotruewidthratio,
+  vwmarkportraitenlargementconstant,
   vwmarktemplatewidth,
   vwmarktextnamecharlimit,
   vwmarkurlborderradius,
@@ -18,17 +20,30 @@ import VWatermarkModel from "./VWatermarkModel";
 import { personalwebsiteurlshort } from "../../axios/constants";
 
 function VideoLargeWatermarkModel(props) {
-  const { watermarkData, style, width, height, videoToScreenRatio } = props;
+  const {
+    watermarkData,
+    style,
+    width,
+    height,
+    videoToScreenRatio,
+    orientation,
+  } = props;
+
+  const orientationConstant = orientation === "portrait" ? vwmarkportraitenlargementconstant : 1;
+  const topOrientationConstant = orientation === "portrait" ? vmwarkportraittopenlargementconstant : 1;
   const ratio =
-    (vwmarkdefaultwmarktovideotruewidthratio * width) / vwmarktemplatewidth;
+    (vwmarkdefaultwmarktovideotruewidthratio *
+      width *
+      orientationConstant) /
+    vwmarktemplatewidth;
 
   const displayWatermarkPositionEnd =
-    vmwarkdefaultpositionendtovideotruewidthratio * width;
+    vmwarkdefaultpositionendtovideotruewidthratio * width * orientationConstant;
   const displayWatermarkPositionStart = Math.ceil(
     width - displayWatermarkPositionEnd - (ratio * vwmarktemplatewidth) / 2
   );
   const displayWatermarkPositionTop = Math.ceil(
-    vwmarkdefaultpositiontoptovideotrueheightratio * height
+    vwmarkdefaultpositiontoptovideotrueheightratio * height * orientationConstant
   );
 
   /*useEffect(() => {
@@ -86,10 +101,10 @@ function VideoLargeWatermarkModel(props) {
             styles.containerUrl,
             {
               paddingHorizontal:
-                (videoToScreenRatio ? videoToScreenRatio : 1) *
+                (videoToScreenRatio ? videoToScreenRatio : 1) * topOrientationConstant *
                 vwmarkurlpaddinghorizontal,
               paddingVertical:
-                (videoToScreenRatio ? videoToScreenRatio : 1) *
+                (videoToScreenRatio ? videoToScreenRatio : 1) * topOrientationConstant *
                 vwmarkurlpaddingvertical,
               marginTop:
                 (videoToScreenRatio ? videoToScreenRatio : 1) *
@@ -105,7 +120,7 @@ function VideoLargeWatermarkModel(props) {
               styles.textUrl,
               {
                 fontSize:
-                  (videoToScreenRatio ? videoToScreenRatio : 1) *
+                  (videoToScreenRatio ? videoToScreenRatio : 1) * topOrientationConstant *
                   vwmarkurlfontsize,
               },
             ]}

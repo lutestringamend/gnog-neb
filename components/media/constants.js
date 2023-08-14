@@ -12,15 +12,15 @@ export const DEFAULT_ANDROID_CAMERA_RATIO = "4:3"
 export const watermarkStyle = {
     paddingVertical: 2,
     paddingHorizontal: 6,
-    paddingBottom: 22,
-    displayExtraTop: 2,
+    paddingBottom: 24,
+    displayExtraTop: 0,
     borderRadius: 1,
     textAlign: "center",
     top: 1,
     start: 1,
     backgroundColor: "transparent",
     color: colors.daclen_light,
-    fontSize: 16,
+    fontSize: 48,
     textHorizontalMargin: 0,
   };
 

@@ -15,10 +15,8 @@ function WatermarkModel(props) {
     height,
     text_align,
     paddingVertical,
-    paddingHorizontal,
     borderRadius,
     backgroundColor,
-    color,
     fontSize,
     getLayout,
   } = props;
@@ -39,11 +37,15 @@ function WatermarkModel(props) {
 
           
   */
+  const trueFontSize = fontSize
+    ? fontSize < 48
+      ? Math.ceil(fontSize * ratio * 3)
+      : Math.ceil(fontSize * 3)
+    : Math.ceil(watermarkStyle.fontSize * ratio);
   const generalStyle = {
     ...watermarkStyle,
     position: "absolute",
     flexDirection: "row",
-    alignItems: "center",
     backgroundColor: backgroundColor
       ? backgroundColor
       : watermarkStyle.backgroundColor,
@@ -51,9 +53,6 @@ function WatermarkModel(props) {
     top: height ? height : watermarkStyle.top * ratio,
     start: 0,
     width: "100%",
-    height: fontSize
-    ? Math.ceil(fontSize * ratio * 3)
-    : Math.ceil(watermarkStyle.fontSize * ratio),
     paddingVertical: getLayout
       ? paddingVertical * ratio
       : watermarkStyle.paddingVertical * ratio,
@@ -66,10 +65,9 @@ function WatermarkModel(props) {
     flex: 1,
     width: "50%",
     backgroundColor: "transparent",
-    color: color ? color : watermarkStyle.color,
-    fontSize: fontSize
-      ? Math.ceil(fontSize * ratio * 2.5)
-      : Math.ceil(watermarkStyle.fontSize * ratio),
+    color: watermarkStyle.color,
+    fontSize: trueFontSize,
+    height: "100%",
     textAlign: text_align ? text_align : watermarkStyle.textAlign,
     textAlignVertical: "center",
     fontWeight: "bold",
@@ -90,11 +88,17 @@ function WatermarkModel(props) {
       onLayout={(e) => sendToParent(e.nativeEvent.layout)}
     >
       <Text
-        style={[textStyle, { marginEnd: watermarkStyle.textHorizontalMargin * ratio }]}
-      >{`${watermarkData?.name}`}</Text>
+        style={[
+          textStyle,
+          { marginEnd: watermarkStyle.textHorizontalMargin * ratio },
+        ]}
+      >{`${watermarkData?.name ? watermarkData?.name : ""}`}</Text>
       <Text
-        style={[textStyle, { marginStart: watermarkStyle.textHorizontalMargin * ratio }]}
-      >{`${watermarkData?.phone}`}</Text>
+        style={[
+          textStyle,
+          { marginStart: watermarkStyle.textHorizontalMargin * ratio },
+        ]}
+      >{`${watermarkData?.phone ? watermarkData?.phone : ""}`}</Text>
     </View>
   );
 }

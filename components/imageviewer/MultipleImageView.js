@@ -447,7 +447,7 @@ const MultipleImageView = (props) => {
             ? null
             : photos.map(
                 (
-                  { id, foto, width, height, text_x, text_y, fontSize },
+                  { id, foto, width, height, fontSize },
                   index
                 ) => (
                   <ViewShot

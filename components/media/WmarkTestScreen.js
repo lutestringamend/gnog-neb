@@ -10,6 +10,7 @@ const WmarkTestScreen = () => {
         width={Dimensions.get("window").width}
         height={vwmarkdefaultsourceheight * Dimensions.get("window").width / vwmarkdefaultsourcewidth}
         videotoScreenRatio={1}
+        orientation="landscape"
         watermarkData={
           {
             name: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",

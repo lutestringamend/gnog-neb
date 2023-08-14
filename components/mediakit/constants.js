@@ -26,6 +26,8 @@ export const vwmarkurlmargintop = 2;
 export const vwmarkurlborderradius = 4;
 export const vwmarkurlfontsize = 10;
 
+export const vwmarkportraitenlargementconstant = 1.4;
+export const vmwarkportraittopenlargementconstant = 1.15;
 export const vwmarkdefaultwmarktovideotruewidthratio = 0.25;
 export const vwmarkdefaultpositiontoptovideotrueheightratio = 0.11;
 export const vmwarkdefaultpositionendtovideotruewidthratio = 0.15;

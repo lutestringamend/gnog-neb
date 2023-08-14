@@ -710,6 +710,7 @@ function VideoPlayer(props) {
           height={height}
           videoToScreenRatio={videoToScreenRatio}
           watermarkData={watermarkData}
+          orientation={videoSize?.videoOrientation}
         />
       </ViewShot>
 
@@ -861,6 +862,7 @@ function VideoPlayer(props) {
                 height={videoSize.videoHeight}
                 videoToScreenRatio={1}
                 watermarkData={watermarkData}
+                orientation={videoSize?.videoOrientation}
                 style={{
                   position: "absolute",
                   zIndex: 4,
