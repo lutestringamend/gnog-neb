@@ -6,7 +6,7 @@ import {
   View,
   Platform,
 } from "react-native";
-import { colors } from "../styles/base";
+import { colors, dimensions, staticDimensions } from "../styles/base";
 import MediaKitFiles from "./mediakit/MediaKitFiles";
 import Dashboard from "./dashboard/Dashboard";
 import Home from "./home/Home";
@@ -49,7 +49,7 @@ const Top = ({ token, currentUser }) => {
         {
           backgroundColor:
             Platform.OS === "web" ? colors.daclen_bg : "transparent",
-        },
+        }
       ]}
     >
       {tab === "mediakit" ? (
@@ -59,7 +59,14 @@ const Top = ({ token, currentUser }) => {
       ) : (
         <Home goDashboard={() => setTab("profile")} />
       )}
-      <View style={styles.containerNav}>
+      <View style={[styles.containerNav, ,
+        Platform.OS === "web" && 
+        {
+          position: "absolute",
+          zIndex: 12,
+          start: 0,
+          top: dimensions.fullHeight - 60,
+        }]}>
         <TabButton
           tab={tab}
           key="home"
