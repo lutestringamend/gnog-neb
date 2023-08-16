@@ -28,6 +28,7 @@ import {
   USER_PROFILE_LOCK_STATE_CHANGE,
   USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE,
   USER_PROFILE_PIN_STATE_CHANGE,
+  USER_REGISTER_SNAP_TOKEN_STATE_CHANGE,
 } from "../constants";
 
 import { mainhttp } from "../../axios/constants";
@@ -35,6 +36,7 @@ import { mainhttp } from "../../axios/constants";
 export const initialState = {
   token: null,
   currentUser: null,
+  registerSnapToken: null,
   profileLock: true,
   profileLockTimeout: null,
   profilePIN: null,
@@ -123,6 +125,11 @@ export const user = (state = initialState, action) => {
         ...state,
         token: action.token,
       };
+    case USER_REGISTER_SNAP_TOKEN_STATE_CHANGE:
+      return {
+        ...state,
+        registerSnapToken: action.data,
+      }
     case USER_PROFILE_LOCK_STATE_CHANGE:
       return {
         ...state,

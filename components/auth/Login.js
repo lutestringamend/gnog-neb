@@ -250,9 +250,9 @@ function Login(props) {
             {isChangePassword ? (
               <ChangePasswordBox />
             ) : isLogin ? (
-              <LoginBox username={props.route.params?.username} />
+              <LoginBox />
             ) : (
-              <RegisterBox username={props.route.params?.username} />
+              <RegisterBox />
             )}
 
             <TouchableOpacity

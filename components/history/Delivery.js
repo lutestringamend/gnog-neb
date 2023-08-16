@@ -26,6 +26,7 @@ import {
 import { colors, dimensions } from "../../styles/base";
 import Separator from "../profile/Separator";
 import { ASYNC_HISTORY_DELIVERY_KEY } from "../asyncstorage/constants";
+import { capitalizeFirstLetter } from "../../axios/cart";
 
 function Delivery(props) {
   const { token, deliveries, delivery, deliveryStatus } = props;
@@ -61,10 +62,6 @@ function Delivery(props) {
     } else {
       props.updateReduxHistoryDeliveries(storageHistory);
     }
-  }
-
-  function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
   function openItem(id) {

@@ -10,6 +10,7 @@ import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
 import { colors } from "../../styles/base";
+import { capitalizeFirstLetter } from "../../axios/cart";
 
 const Header = (props) => {
   const { currentUser, navigation } = props;
@@ -63,7 +64,7 @@ const Header = (props) => {
             ? currentUser?.detail_user?.nama_lengkap
             : currentUser?.name}
         </Text>
-        <Text style={styles.text}>Reseller Daclen</Text>
+        <Text style={styles.text}>{`${currentUser?.status ? capitalizeFirstLetter(currentUser?.status) : "Reseller"} Daclen`}</Text>
         <Text style={styles.textReferral}>
           {`Referral Id: ${currentUser?.name}`}
         </Text>

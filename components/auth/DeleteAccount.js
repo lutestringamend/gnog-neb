@@ -38,7 +38,7 @@ function DeleteAccount(props) {
   });
 
   const attemptLogout = async () => {
-    await userLogOut(props);
+    await userLogOut(null);
     navigation.navigate("Main");
   };
 

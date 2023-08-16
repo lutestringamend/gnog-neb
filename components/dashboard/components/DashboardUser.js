@@ -4,6 +4,7 @@ import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors } from "../../../styles/base";
+import { capitalizeFirstLetter } from "../../../axios/cart";
 
 export default function DashboardUser(props) {
   const { currentUser } = props;
@@ -56,7 +57,7 @@ export default function DashboardUser(props) {
           </Text>
         ) : null}
 
-        <Text style={styles.text}>Reseller Daclen</Text>
+        <Text style={styles.text}>{`${currentUser?.status ? capitalizeFirstLetter(currentUser?.status) : "Reseller"} Daclen`}</Text>
         <Text style={styles.textReferral}>
           {`Referral Id: ${currentUser?.name}`}
         </Text>

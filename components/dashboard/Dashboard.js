@@ -21,11 +21,16 @@ import {
   getCurrentUser,
   getHPV,
   updateReduxProfileLockStatus,
+  getRegisterSnapToken,
+  updateReduxRegisterSnapToken,
 } from "../../axios/user";
 import DashboardUser from "./components/DashboardUser";
 import DashboardStats from "./components/DashboardStats";
-import { setObjectAsync } from "../asyncstorage";
-import { ASYNC_USER_HPV_KEY } from "../asyncstorage/constants";
+import { getObjectAsync, setObjectAsync } from "../asyncstorage";
+import {
+  ASYNC_USER_HPV_KEY,
+  ASYNC_USER_REGISTER_SNAP_TOKEN_KEY,
+} from "../asyncstorage/constants";
 import DashboardButtons from "./components/DashboardButtons";
 import DashboardBottom from "./components/DashboardBottom";
 import DashboardLock from "./components/DashboardLock";
@@ -42,7 +47,14 @@ const Dashboard = (props) => {
   const [pinLoading, setPinLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  const { currentUser, token, hpv, profileLock, profilePIN } = props;
+  const {
+    currentUser,
+    token,
+    registerSnapToken,
+    hpv,
+    profileLock,
+    profilePIN,
+  } = props;
 
   /*const [isSharingAvailable, setSharingAvailable] = useState(false);
   useEffect(() => {
@@ -64,6 +76,23 @@ const Dashboard = (props) => {
       return;
     }
   }, [token, currentUser]);
+
+  useEffect(() => {
+    console.log("redux registerSnapToken", registerSnapToken);
+    if (
+      token === null ||
+      currentUser === null ||
+      currentUser?.status_member === undefined ||
+      currentUser?.status_member === "premium"
+    ) {
+      return;
+    }
+    if (registerSnapToken === null) {
+      checkAsyncSnapToken();
+      return;
+    }
+    setObjectAsync(ASYNC_USER_REGISTER_SNAP_TOKEN_KEY, registerSnapToken);
+  }, [registerSnapToken]);
 
   useEffect(() => {
     if (hpv === undefined || hpv === null || hpv?.data === undefined) {
@@ -96,6 +125,21 @@ const Dashboard = (props) => {
       isError: false,
     });
   }, [profileLock, pinLoading]);
+
+  const checkAsyncSnapToken = async () => {
+    const storageSnapToken = await getObjectAsync(
+      ASYNC_USER_REGISTER_SNAP_TOKEN_KEY
+    );
+    if (
+      storageSnapToken === undefined ||
+      storageSnapToken === null ||
+      storageSnapToken?.snap_token === undefined
+    ) {
+      props.getRegisterSnapToken(currentUser?.id, token);
+    } else {
+      props.updateReduxRegisterSnapToken(storageSnapToken);
+    }
+  };
 
   function fetchHPV() {
     if (
@@ -172,9 +216,9 @@ const Dashboard = (props) => {
         currentUser?.name === undefined ? (
           <DashboardLogout />
         ) : currentUser?.status_member === undefined ||
-        currentUser?.status_member === null ||
-        currentUser?.status_member !== "premium" ? (
-          <DashboardUpgrade />
+          currentUser?.status_member === null ||
+          currentUser?.status_member !== "premium" ? (
+          <DashboardUpgrade registerSnapToken={registerSnapToken} />
         ) : profilePIN === null || profilePIN === "" ? (
           <DashboardCreatePIN />
         ) : currentUser?.nomor_telp_verified_at === null ||
@@ -265,6 +309,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
+  registerSnapToken: store.userState.registerSnapToken,
   profilePIN: store.userState.profilePIN,
   profileLock: store.userState.profileLock,
   hpv: store.userState.hpv,
@@ -277,6 +322,8 @@ const mapDispatchProps = (dispatch) =>
       getCurrentUser,
       getHPV,
       updateReduxProfileLockStatus,
+      getRegisterSnapToken,
+      updateReduxRegisterSnapToken,
     },
     dispatch
   );

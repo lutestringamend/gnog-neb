@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   View,
   TextInput,
@@ -15,12 +15,6 @@ import TextInputPassword from "./TextInputPassword";
 import { colors } from "../../styles/base";
 
 function RegisterBox(props) {
-  useEffect(() => {
-    if (props?.username !== null && props?.username !== undefined) {
-      props.setAuthData({...props.authData, name: props?.username, email: null })
-    }
-  }, [props?.username]);
-
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Username* (digunakan untuk referral Anda)</Text>

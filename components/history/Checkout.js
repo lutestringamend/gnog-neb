@@ -28,6 +28,7 @@ import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { colors, dimensions } from "../../styles/base";
 import Separator from "../profile/Separator";
 import { ASYNC_HISTORY_CHECKOUT_KEY } from "../asyncstorage/constants";
+import { capitalizeFirstLetter } from "../../axios/cart";
 
 function Checkout(props) {
   const { token, checkouts, checkout } = props;
@@ -71,10 +72,6 @@ function Checkout(props) {
       props.getCheckoutItem(id);*/
       navigation.navigate("CheckoutItem", { id });
     }
-  }
-
-  function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
   if (loading) {

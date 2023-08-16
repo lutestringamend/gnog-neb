@@ -48,9 +48,9 @@ import { openWhatsapp } from "../whatsapp/Whatsapp";
 import { adminWA, adminWAtemplate } from "./constants";
 import { sentryLog } from "../../sentry";
 
-export const userLogOut = async (props) => {
+export const userLogOut = async (username) => {
   try {
-    await userLogout();
+    await userLogout(username);
     props.setNewToken(null, null);
     props.clearUserData(true);
   } catch (e) {
@@ -163,7 +163,7 @@ function Profile(props) {
           buttonNegativeColor={colors.daclen_gray}
           icon="logout"
           closeThis={() => rbSheet.current.close()}
-          onPress={() => userLogOut(props)}
+          onPress={() => userLogOut(currentUser?.name)}
         />
       </RBSheet>
     </SafeAreaView>

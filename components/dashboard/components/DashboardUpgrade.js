@@ -1,14 +1,40 @@
 import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Linking } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Linking,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
+
 import { colors } from "../../../styles/base";
 import { webdashboard } from "../../../axios/constants";
 
-const DashboardUpgrade = () => {
+const DashboardUpgrade = ({ registerSnapToken }) => {
   const navigation = useNavigation();
 
   function proceedJoin() {
-    Linking.openURL(webdashboard);
+    if (
+      registerSnapToken === null ||
+      registerSnapToken?.snap_token === undefined
+    ) {
+      Linking.openURL(webdashboard);
+      return;
+    }
+    let snap_url = `https://app.midtrans.com/snap/v3/redirection/${registerSnapToken?.snap_token}`;
+    try {
+      const params = {
+        snapToken: registerSnapToken?.snap_token,
+        snap_url,
+        checkoutId: registerSnapToken?.bayar_register_id,
+      };
+      console.log("open snap", params);
+      navigation.navigate("OpenMidtrans", params);
+    } catch (e) {
+      console.log(e);
+      Linking.openURL(snap_url);
+    }
   }
 
   return (
@@ -21,7 +47,19 @@ const DashboardUpgrade = () => {
       <Text style={styles.textInner}>
         {`100% guaranteed support and\nupdate for the next 5 years.`}
       </Text>
-      <TouchableOpacity onPress={() => proceedJoin()} style={styles.button}>
+      <TouchableOpacity
+        onPress={() => proceedJoin()}
+        style={[
+          styles.button,
+          {
+            backgroundColor:
+              registerSnapToken === null
+                ? colors.daclen_grey
+                : colors.daclen_blue,
+          },
+        ]}
+        disabled={registerSnapToken === null}
+      >
         <Text style={styles.textButton}>Bergabung Sekarang</Text>
       </TouchableOpacity>
     </View>
@@ -32,7 +70,7 @@ const styles = StyleSheet.create({
   containerLogin: {
     backgroundColor: colors.daclen_gold,
     opacity: 0.95,
-    marginHorizontal: 10,
+    marginHorizontal: 12,
     marginVertical: 20,
     paddingVertical: 24,
     borderRadius: 6,

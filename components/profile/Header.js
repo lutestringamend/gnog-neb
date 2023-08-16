@@ -57,8 +57,7 @@ export default function Header(props) {
 
   const openLogin = () => {
     if (!login) {
-      console.log(`login prev username ${userData?.username}`);
-      navigation.navigate("Login", { username: userData?.username });
+      navigation.navigate("Login");
     }
   };
 

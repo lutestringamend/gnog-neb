@@ -18,6 +18,7 @@ import {
   resetpassword,
   laporansaldo,
   PROFILE_LOCK_TIMEOUT_IN_MILISECONDS,
+  registergetsnaptoken,
 } from "../constants";
 import { getKeranjang } from "../cart";
 import { initialState } from "../../redux/reducers/user";
@@ -46,6 +47,7 @@ import {
   USER_PROFILE_LOCK_STATE_CHANGE,
   USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE,
   USER_PROFILE_PIN_STATE_CHANGE,
+  USER_REGISTER_SNAP_TOKEN_STATE_CHANGE,
 } from "../../redux/constants";
 import {
   calculateBase64SizeInBytes,
@@ -60,7 +62,7 @@ import {
   setObjectAsync,
   setTokenAsync,
 } from "../../components/asyncstorage";
-import { ASYNC_HISTORY_CHECKOUT_KEY, ASYNC_HISTORY_DELIVERY_KEY, ASYNC_MEDIA_WATERMARK_DATA_KEY, ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY, ASYNC_USER_CURRENTUSER_KEY, ASYNC_USER_PROFILE_PIN_KEY, ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../../components/asyncstorage/constants";
+import { ASYNC_HISTORY_CHECKOUT_KEY, ASYNC_HISTORY_DELIVERY_KEY, ASYNC_MEDIA_WATERMARK_DATA_KEY, ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY, ASYNC_USER_CURRENTUSER_KEY, ASYNC_USER_PREVIOUS_USERNAME, ASYNC_USER_PROFILE_PIN_KEY, ASYNC_USER_REGISTER_SNAP_TOKEN_KEY, ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../../components/asyncstorage/constants";
 import { MAXIMUM_FILE_SIZE_IN_BYTES } from "../../components/media/constants";
 import { sentryLog } from "../../sentry";
 
@@ -68,11 +70,12 @@ export const resetPassword = () => {
   Linking.openURL(resetpassword);
 };
 
-export const userLogout = async () => {
-  console.log("userLogout");
+export const userLogout = async (username) => {
+  console.log("userLogout", username);
   await setTokenAsync(null);
   await setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, null);
   await setObjectAsync(ASYNC_USER_PROFILE_PIN_KEY, null);
+  await setObjectAsync(ASYNC_USER_REGISTER_SNAP_TOKEN_KEY, null);
   await setObjectAsync(ASYNC_HISTORY_CHECKOUT_KEY, null);
   await setObjectAsync(ASYNC_HISTORY_DELIVERY_KEY, null);
   await setObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY, null);
@@ -80,6 +83,7 @@ export const userLogout = async () => {
   await setObjectAsync(ASYNC_WATERMARK_PHOTOS_PDF_KEY, null);
   await setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, null);
   await setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY, null);
+  await setObjectAsync(ASYNC_USER_PREVIOUS_USERNAME, username === undefined || username === null ? null : username);
   //await clearStorage();
 };
 
@@ -103,6 +107,13 @@ export function updateReduxProfileLockStatus(data) {
       dispatch({ type: USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE, data: date.getTime() });
       console.log("updateReduxProfileLockTimeout", date.getTime());
     }
+  };
+}
+
+export function updateReduxRegisterSnapToken(data) {
+  return (dispatch) => {
+    console.log("updateReduxRegisterSnapToken", data);
+    dispatch({ type: USER_REGISTER_SNAP_TOKEN_STATE_CHANGE, data });
   };
 }
 
@@ -665,6 +676,33 @@ export function setAuthData(data) {
   return (dispatch) => {
     dispatch({ type: USER_AUTH_DATA_STATE_CHANGE, data });
   };
+}
+
+export function getRegisterSnapToken (id, token) {
+  return (dispatch) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    };
+    const url = registergetsnaptoken + "/" + id.toString();
+  
+    Axios.post(url, config)
+      .then((response) => {
+        const data = response?.data;
+        console.log("getRegisterSnapToken", data);
+        dispatch({ type: USER_REGISTER_SNAP_TOKEN_STATE_CHANGE, data });
+      })
+      .catch((error) => {
+        console.error(error);
+        sentryLog(error);
+        dispatch({ type: USER_REGISTER_SNAP_TOKEN_STATE_CHANGE, data: {
+          error: error.toString()
+        } });
+      });
+  }
+
 }
 
 export function changePassword(authData, id, token) {

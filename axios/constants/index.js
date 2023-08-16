@@ -12,6 +12,7 @@ export const finalblognumber = 9999
 export const productpaginationnumber = 100
 export const PROFILE_LOCK_TIMEOUT_IN_MILISECONDS = 6000000
 
+export const registergetsnaptoken = "api/mobile/auth/member/bayar"
 export const productfetchlink = "api/mobile/produk"
 export const showproduct = "api/mobile/produk/show"
 export const loginlink = "api/mobile/auth/login"

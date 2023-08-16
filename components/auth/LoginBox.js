@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   TextInput,
   StyleSheet,
   Text,
   TouchableOpacity,
-  Platform,
+  ActivityIndicator,
 } from "react-native";
 import TextInputPassword from "./TextInputPassword";
 
@@ -14,19 +14,41 @@ import { bindActionCreators } from "redux";
 
 import { resetPassword, setAuthData } from "../../axios/user";
 import { colors } from "../../styles/base";
+import { getObjectAsync } from "../asyncstorage";
+import { ASYNC_USER_PREVIOUS_USERNAME } from "../asyncstorage/constants";
 
 function LoginBox(props) {
+  const [previousUsername, setPreviousUsername] = useState(null);
+
   useEffect(() => {
-    if (props?.username !== null && props?.username !== undefined) {
-      props.setAuthData({...props.authData, email: props?.username })
+    checkAsyncPreviousUsername();
+  }, []);
+
+  const checkAsyncPreviousUsername = async () => {
+    const storagePreviousUsername = await getObjectAsync(ASYNC_USER_PREVIOUS_USERNAME);
+    if (storagePreviousUsername === undefined || storagePreviousUsername === null || storagePreviousUsername === "") {
+      setPreviousUsername("");
+      return;
     }
-  }, [props?.username]);
+    setPreviousUsername(storagePreviousUsername);
+    props.setAuthData({...props.authData, email: storagePreviousUsername });
+  }
+
+  if (previousUsername === null) {
+    return (
+      <ActivityIndicator
+        size="large"
+        color={colors.daclen_orange}
+        style={styles.spinner}
+      />
+    )
+  }
   
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Username / Email</Text>
       <TextInput
-        placeholder={Platform.OS === "ios" && props.authData?.email ? props.authData?.email : ""}
+        placeholder={previousUsername}
         style={styles.textInput}
         onChangeText={(email) => props.setAuthData({...props.authData, email })}
       />
@@ -70,6 +92,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 14,
   },
+  spinner: {
+    alignSelf: "center",
+    marginVertical: 20,
+  }
 });
 
 const mapStateToProps = (store) => ({

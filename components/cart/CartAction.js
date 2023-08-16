@@ -9,7 +9,7 @@ import {
 } from "react-native";
 
 import { colors } from "../../styles/base";
-import { formatPrice } from "../../axios/cart";
+import { capitalizeFirstLetter, formatPrice } from "../../axios/cart";
 
 export default function CartAction(props) {
   const [color, setColor] = useState(colors.daclen_orange);
@@ -45,14 +45,6 @@ export default function CartAction(props) {
     }
     console.log("CartAction buttonDisabled: " + props?.buttonDisabled);
   }, [props?.buttonDisabled]);
-
-  function capitalizeFirstLetter(string) {
-    try {
-      return string.charAt(0).toUpperCase() + string.slice(1);
-    } catch (e) {
-      return string;
-    }
-  }
 
   function onButtonPressed() {
     if (!loading) {

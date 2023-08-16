@@ -4,6 +4,8 @@ import { useNavigation } from "@react-navigation/native";
 
 import { colors } from "../../../styles/base";
 import { monthNames } from "../../../axios/constants";
+import { formatPrice } from "../../../axios/cart";
+import { sentryLog } from "../../../sentry";
 
 export default function DashboardStats(props) {
   const { currentUser } = props;
@@ -34,61 +36,90 @@ export default function DashboardStats(props) {
     navigation.navigate("PointReportScreen");
   }
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.textHeader}>
-        {`${monthNames[new Date().getMonth()]} ${new Date()
-          .getFullYear()
-          .toString()}`}
-      </Text>
-
-      <View style={styles.containerHorizontal}>
-        <View style={styles.containerVertical}>
-          <Text style={styles.text}>Penjualan Bulan Ini</Text>
-          <Text style={styles.textYellow}>{`0 Invoice`}</Text>
-          <Text style={styles.textYellow}>{`Rp 0`}</Text>
+  try {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.textHeader}>
+          {`${monthNames[new Date().getMonth()]} ${new Date()
+            .getFullYear()
+            .toString()}`}
+        </Text>
+  
+        <View style={styles.containerHorizontal}>
+          <View style={styles.containerVertical}>
+            <Text style={styles.text}>Penjualan Bulan Ini</Text>
+            <Text style={styles.textYellow}>{`${
+              currentUser?.jumlah_invoice ? currentUser?.jumlah_invoice : "0"
+            } Invoice`}</Text>
+            <Text style={styles.textYellow}>
+              {currentUser?.total_nominal_penjualan
+                ? formatPrice(currentUser?.total_nominal_penjualan)
+                : "Rp 0"}
+            </Text>
+          </View>
+          <TouchableOpacity style={styles.button} onPress={() => openHistory()}>
+            <Text style={styles.textButton}>{`Riwayat\nTransaksi`}</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.button} onPress={() => openHistory()}>
-          <Text style={styles.textButton}>{`Riwayat\nTransaksi`}</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.containerHorizontal}>
-        <View style={styles.containerVertical}>
-          <Text style={styles.text}>Home Point Value</Text>
-          <Text style={styles.text}>{`${currentUser?.poin_user?.hpv ? currentUser?.poin_user?.hpv : "0"} Point`}</Text>
+  
+        <View style={styles.containerHorizontal}>
+          <View style={styles.containerVertical}>
+            <Text style={styles.text}>Home Point Value</Text>
+            <Text style={styles.text}>{`${
+              currentUser?.poin_user?.hpv ? currentUser?.poin_user?.hpv : "0"
+            } Point`}</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => openSyaratBonusRoot()}
+          >
+            <Text style={styles.textButton}>{`Syarat\nBonus Root`}</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.button} onPress={() => openSyaratBonusRoot()}>
-          <Text style={styles.textButton}>{`Syarat\nBonus Root`}</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.containerHorizontal}>
-        <View style={styles.containerVertical}>
-          <Text style={styles.text}>Point Akumulasi</Text>
-          <Text style={styles.text}>{`${currentUser?.poin_user?.total ? currentUser?.poin_user?.total : "0"} Point`}</Text>
+  
+        <View style={styles.containerHorizontal}>
+          <View style={styles.containerVertical}>
+            <Text style={styles.text}>Point Akumulasi</Text>
+            <Text style={styles.text}>{`${
+              currentUser?.poin_user?.total ? currentUser?.poin_user?.total : "0"
+            } Point`}</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => openLaporanPoint()}
+          >
+            <Text style={styles.textButton}>{`Laporan\nPoint`}</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.button} onPress={() => openLaporanPoint()}>
-          <Text style={styles.textButton}>{`Laporan\nPoint`}</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.containerHorizontal}>
-        <View style={styles.containerVertical}>
-          <Text style={[styles.textYellow, {color: colors.daclen_green_pale}]}>{`Bonus Jaringan Level A`}</Text>
-          <Text style={styles.text}>{`Agen Anda: 0 Orang`}</Text>
-          <Text style={styles.text}>{`Reseller Anda: 0 Orang`}</Text>
+  
+        <View style={styles.containerHorizontal}>
+          <View style={styles.containerVertical}>
+            <Text
+              style={[styles.textYellow, { color: colors.daclen_green_pale }]}
+            >{`Bonus Jaringan Level A`}</Text>
+            <Text style={styles.text}>{`Agen Anda: ${
+              currentUser?.jumlah_agen ? currentUser?.jumlah_agen : "0"
+            } Orang`}</Text>
+            <Text style={styles.text}>{`Reseller Anda: ${
+              currentUser?.jumlah_reseller ? currentUser?.jumlah_reseller : "0"
+            } Orang`}</Text>
+          </View>
+          <TouchableOpacity style={styles.button} onPress={() => openUserRoots()}>
+            <Text style={styles.textButton}>{`Tampilkan\nAgen & Reseller`}</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.button} onPress={() => openUserRoots()}>
-          <Text style={styles.textButton}>{`Tampilkan\nAgen & Reseller`}</Text>
-        </TouchableOpacity>
+  
+        <Text style={styles.textBottom}>
+          {`Minimal Rekruitment Bulan Ini: 0 Reseller`}
+        </Text>
       </View>
+    );
+  } catch (e) {
+    console.error(e);
+    sentryLog(e);
+    return null;
+  }
 
-      <Text style={styles.textBottom}>
-        {`Minimal Rekruitment Bulan Ini: 0 Reseller`}
-      </Text>
-    </View>
-  );
 }
 
 const styles = StyleSheet.create({

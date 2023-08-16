@@ -8,7 +8,7 @@ export function openCheckout(
 ) {
   console.log({jumlah_produk, currentUser, validationOTP});
   if (token === null || token === "") {
-    navigation.navigate("Login", { username: currentUser?.name });
+    navigation.navigate("Login");
   } else if (
     (currentUser?.nomor_telp_verified_at === "" ||
       currentUser?.nomor_telp_verified_at === null ||

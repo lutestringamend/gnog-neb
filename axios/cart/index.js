@@ -26,6 +26,18 @@ export function clearCartError() {
   }
 }
 
+export function capitalizeFirstLetter(string) {
+  if (string === undefined || string === null || string === "") {
+    return "";
+  }
+  try {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  } catch (e) {
+    console.error(e);
+    return string.toString();
+  }
+}
+
 export function storeCheckout(token, checkoutJson) {
   return (dispatch) => {
     const config = {
