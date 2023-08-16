@@ -83,7 +83,7 @@ export const userLogout = async (username) => {
   await setObjectAsync(ASYNC_WATERMARK_PHOTOS_PDF_KEY, null);
   await setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, null);
   await setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY, null);
-  await setObjectAsync(ASYNC_USER_PREVIOUS_USERNAME, username === undefined || username === null ? null : username);
+  setObjectAsync(ASYNC_USER_PREVIOUS_USERNAME, username === undefined || username === null ? null : username);
   //await clearStorage();
 };
 

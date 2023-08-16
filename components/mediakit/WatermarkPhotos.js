@@ -5,6 +5,7 @@ import {
   Text,
   ActivityIndicator,
   Linking,
+  RefreshControl,
 } from "react-native";
 
 import { colors, staticDimensions } from "../../styles/base";
@@ -20,10 +21,12 @@ const WatermarkPhotos = ({
   loading,
   error,
   sharingAvailability,
+  refreshPage
 }) => {
   try {
+
     return (
-      <View style={styles.container}>
+      <View style={styles.containerFlatlist}>
         {error ? (
           <ErrorView
             error="Mohon membuka website Daclen untuk melihat foto Media Kit"
@@ -43,6 +46,13 @@ const WatermarkPhotos = ({
             horizontal={false}
             numColumns={1}
             data={photoKeys}
+            style={styles.containerFlatlist}
+            refreshControl={
+              <RefreshControl
+                refreshing={loading}
+                onRefresh={() => refreshPage()}
+              />
+            }
             renderItem={({ item, index }) => (
               <WatermarkPhotosSegment
                 isLast={index === photoKeys?.length - 1}
@@ -80,8 +90,7 @@ const styles = StyleSheet.create({
   containerFlatlist: {
     flex: 1,
     width: "100%",
-    paddingBottom: staticDimensions.pageBottomPadding,
-    backgroundColor: colors.daclen_light,
+    backgroundColor: "transparent",
   },
   containerImage: {
     flex: 1,

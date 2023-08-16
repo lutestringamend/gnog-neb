@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: 94,
-    height: 94,
+    height: 125,
     borderRadius: 6,
     alignSelf: "center",
     backgroundColor: "transparent",

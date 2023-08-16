@@ -12,7 +12,7 @@ export const DEFAULT_ANDROID_CAMERA_RATIO = "4:3"
 export const watermarkStyle = {
     paddingVertical: 2,
     paddingHorizontal: 6,
-    paddingBottom: 24,
+    paddingBottom: 25,
     displayExtraTop: 0,
     borderRadius: 1,
     textAlign: "center",

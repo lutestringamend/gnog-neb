@@ -212,13 +212,17 @@ function MediaKitFiles(props) {
         props.clearMediaKitPhotosError();
         props.clearMediaKitData();
         if (!photoLoading) {
-          setPhotoLoading(true);
-          props.getMediaKitPhotos(token);
+          refreshPhotos();
         }
       } else {
         props.updateReduxMediaKitPhotos(storagePhotos);
       }
     };
+
+    const refreshPhotos = () => {
+      setPhotoLoading(true);
+      props.getMediaKitPhotos(token);
+    }
 
     function closeBS() {}
 
@@ -254,52 +258,50 @@ function MediaKitFiles(props) {
           settingText="SETTING WATERMARK"
           onSettingPress={() => rbSheet.current.open()}
         />
-        {token === null ||
-        currentUser === null ||
-        currentUser?.id === undefined ||
-        currentUser?.isActive === undefined ||
-        currentUser?.isActive === null ||
-        !currentUser?.isActive ? null : (
-          <ScrollView style={styles.scrollView}>
-            <View style={styles.tabView}>
-                <HistoryTabItem
-                  activeTab={activeTab}
-                  name={WATERMARK_PHOTO}
-                  icon={watermarkphotoicon}
-                  onPress={() => setActiveTab(WATERMARK_PHOTO)}
-                />
-                <HistoryTabItem
-                  activeTab={activeTab}
-                  name={WATERMARK_VIDEO}
-                  icon={watermarkvideoicon}
-                  onPress={() => setActiveTab(WATERMARK_VIDEO)}
-                />
-              </View>
-
-            {watermarkData === null ? (
-              <ActivityIndicator
-                size="large"
-                color={colors.daclen_orange}
-                style={styles.spinner}
-              />
-            ) : activeTab === WATERMARK_VIDEO ? (
-              <WatermarkVideos
-                watermarkData={watermarkData}
-                userId={currentUser?.id}
-                token={token}
-              />
-            ) : (
-              <WatermarkPhotos
-                userId={currentUser?.id}
-                loading={photoLoading || loading}
-                error={photoError}
-                sharingAvailability={sharingAvailability}
-                photos={mediaKitPhotos}
-                photoKeys={photoKeys}
-              />
-            )}
-          </ScrollView>
-        )}
+        <View style={styles.tabView}>
+          <HistoryTabItem
+            activeTab={activeTab}
+            name={WATERMARK_PHOTO}
+            icon={watermarkphotoicon}
+            onPress={() => setActiveTab(WATERMARK_PHOTO)}
+          />
+          <HistoryTabItem
+            activeTab={activeTab}
+            name={WATERMARK_VIDEO}
+            icon={watermarkvideoicon}
+            onPress={() => setActiveTab(WATERMARK_VIDEO)}
+          />
+        </View>
+        <View style={styles.scrollView}>
+          {token === null ||
+          currentUser === null ||
+          currentUser?.id === undefined ||
+          currentUser?.isActive === undefined ||
+          currentUser?.isActive === null ||
+          !currentUser?.isActive ? null : watermarkData === null ? (
+            <ActivityIndicator
+              size="large"
+              color={colors.daclen_orange}
+              style={styles.spinner}
+            />
+          ) : activeTab === WATERMARK_VIDEO ? (
+            <WatermarkVideos
+              watermarkData={watermarkData}
+              userId={currentUser?.id}
+              token={token}
+            />
+          ) : (
+            <WatermarkPhotos
+              userId={currentUser?.id}
+              loading={photoLoading || loading}
+              error={photoError}
+              sharingAvailability={sharingAvailability}
+              photos={mediaKitPhotos}
+              photoKeys={photoKeys}
+              refreshPage={() => refreshPhotos()}
+            />
+          )}
+        </View>
 
         <RBSheet
           ref={rbSheet}
@@ -357,8 +359,8 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    width: "100%",
     backgroundColor: colors.white,
-    paddingBottom: staticDimensions.pageBottomPadding,
   },
   containerHeader: {
     flexDirection: "row",

@@ -47,12 +47,15 @@ import BSPopup from "../bottomsheets/BSPopup";
 import { openWhatsapp } from "../whatsapp/Whatsapp";
 import { adminWA, adminWAtemplate } from "./constants";
 import { sentryLog } from "../../sentry";
+import { useNavigation } from "@react-navigation/native";
 
 export const userLogOut = async (username) => {
   try {
     await userLogout(username);
     props.setNewToken(null, null);
     props.clearUserData(true);
+    const navigation = useNavigation();
+    navigation.navigate("Main");
   } catch (e) {
     sentryLog(e);
   }

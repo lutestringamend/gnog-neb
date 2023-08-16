@@ -54,7 +54,7 @@ const DashboardUpgrade = ({ registerSnapToken }) => {
           {
             backgroundColor:
               registerSnapToken === null
-                ? colors.daclen_grey
+                ? colors.daclen_gray
                 : colors.daclen_blue,
           },
         ]}
