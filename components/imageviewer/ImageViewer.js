@@ -16,6 +16,8 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import ViewShot from "react-native-view-shot";
 import * as FileSystem from "expo-file-system";
 import * as Print from "expo-print";
+import * as ImageManipulator from "expo-image-manipulator";
+//import * as MediaLibrary from "expo-media-library";
 import { shareAsync } from "expo-sharing";
 
 import {
@@ -32,6 +34,7 @@ import {
   filePrintOptions,
   multiplephotoshtml,
   multiplephotosimgtag,
+  multiplephotosimgtagcustomwidthheight,
   pdfpageheight,
   pdfpagewidth,
 } from "./constants";
@@ -48,10 +51,13 @@ const ImageViewer = (props) => {
     font,
     sharingAvailability,
   } = props.route.params;
+  const resizedImgWidth = pdfpagewidth - 20;
+  const resizedImgHeight = Math.ceil((height * resizedImgWidth) / width);
 
   let productPhotoWidth =
     dimensions.fullWidth - staticDimensions.productPhotoWidthMargin;
-  let ratio = width / productPhotoWidth;
+  const ratio = width / productPhotoWidth;
+  const pdfRatio = resizedImgWidth / productPhotoWidth;
   let fontSize = font?.size?.ukuran
     ? font?.size?.ukuran > 32
       ? font?.size?.ukuran / 2
@@ -62,6 +68,7 @@ const ImageViewer = (props) => {
   const productPhotoHeight = isSquare ? productPhotoWidth : height / ratio;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [sharing, setSharing] = useState(false);
   const [success, setSuccess] = useState(false);
   const [transformedImage, setTransformedImage] = useState(null);
   const [pdfUri, setPdfUri] = useState(null);
@@ -99,11 +106,6 @@ const ImageViewer = (props) => {
     if (transformedImage === null) {
       return;
     }
-    /*let uriText = transformedImage;
-    if (uriText?.length > 50) {
-      uriText = uriText.substring(0,47) + "..."
-    }
-    setError(uriText);*/
     if (Platform.OS !== "web") {
       renderPDF(transformedImage);
     }
@@ -118,9 +120,6 @@ const ImageViewer = (props) => {
       imageRef.current
         .capture()
         .then((uri) => {
-          if (currentUser?.id === 8054 && Platform.OS === "ios") {
-            setError("tranformImage uri created");
-          }
           console.log(uri);
           setTransformedImage(uri);
           setLoading(false);
@@ -134,10 +133,11 @@ const ImageViewer = (props) => {
   };
 
   const creatingErrorLogDebug = (e) => {
+    setSuccess(false);
     setError(e.toString());
     setLoading(false);
     sentryLog(e);
-  }
+  };
 
   const sharePhotoAsync = async (uri) => {
     if (!sharingAvailability) {
@@ -146,14 +146,9 @@ const ImageViewer = (props) => {
     }
 
     try {
-      /*if (Platform.OS === "ios" && currentUser?.id === 8054) {
-        let displayUri = uri.toString();
-        if (displayUri?.length > 100) {
-          displayUri = displayUri.substring(0, 98);
-        }
-        setError(displayUri);
-      }*/
+      setSharing(true);
       await shareAsync(uri, sharingOptionsJPEG);
+      setSharing(false);
     } catch (e) {
       console.error(e);
       setError(e?.message);
@@ -171,17 +166,39 @@ const ImageViewer = (props) => {
       }
 
       let newUri = await FileSystem.getContentUriAsync(uri);
-      let imgTag = `${multiplephotosimgtag
+
+      /*
+
+        Platform.OS === "ios"
+          ? `${multiplephotosimgtag
+              .replace("#URI#", newUri)
+              .replace("#WIDTH#", pdfpagewidth)
+              .replace(
+                "#HEIGHT#",
+                pdfpageheight > resizedImgHeight
+                  ? pdfpageheight
+                  : resizedImgHeight
+              )}`
+          : 
+      */
+
+      let imgTag = `${multiplephotosimgtagcustomwidthheight
         .replace("#URI#", newUri)
-        .replace("#WIDTH#", Platform.OS === "ios" ? pdfpagewidth : imageWidth)
-        .replace("#HEIGHT#", Platform.OS === "ios" ? pdfpageheight : imageHeight)}`;
+        .replace("#WIDTH#", resizedImgWidth)
+        .replace(
+          "#HEIGHT#",
+          pdfpageheight > resizedImgHeight ? pdfpageheight : resizedImgHeight
+        )
+        .replace("#IMGWIDTH#", resizedImgWidth)
+        .replace("#IMGHEIGHT#", resizedImgHeight)}`;
       const html = multiplephotoshtml
         .replace("#TITLE#", title)
         .replace("#IMGTAGS#", imgTag);
-        if (currentUser?.id === 8054 && Platform.OS === "ios") {
-          setSuccess(true);
-          setError(`html\n${html}`);
-        }
+      if (currentUser?.id === 8054 && Platform.OS === "ios") {
+        /*setSuccess(true);
+        setError(`html\n${html}`);*/
+        console.log("pdf html", html);
+      }
       const result = await Print.printToFileAsync({
         ...filePrintOptions,
         ...{ width: width - 20, height: height - 20 },
@@ -259,8 +276,30 @@ const ImageViewer = (props) => {
         setSuccess(false);
         setError("Anda tidak memberikan izin untuk mengakses penyimpanan");
       }
-    } else {
+    } else if (Platform.OS === "ios") {
+      //sharePhotoAsync()
       renderPDF(uri);
+    }
+  };
+
+  const shareJPGApple = async () => {
+    const fileName = `daclen_foto_${id ? id.toString() : ""}.jpg`;
+    try {
+      const newUri = await FileSystem.getContentUriAsync(transformedImage);
+      const imageProc = await ImageManipulator.manipulateAsync(newUri);
+      let uri = `${FileSystem.documentDirectory}/${fileName}`;
+      await FileSystem.copyAsync({
+        from: imageProc?.uri ? imageProc?.uri : newUri,
+        to: uri,
+      });
+      setSharing(true);
+      await shareAsync(imageProc?.uri, sharingOptionsJPEG);
+      setSharing(false);
+    } catch (error) {
+      creatingErrorLogDebug(error);
+      setSharing(true);
+      await shareAsync(newUri, sharingOptionsJPEG);
+      setSharing(false);
     }
   };
 
@@ -304,6 +343,12 @@ const ImageViewer = (props) => {
     }
   };
 
+  const sharePDF = async () => {
+    setSharing(true);
+    await shareAsync(pdfUri);
+    setSharing(false);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {id === undefined ||
@@ -313,18 +358,23 @@ const ImageViewer = (props) => {
         <ViewShot
           ref={imageRef}
           options={{
-            fileName: `daclenwatermarkfoto_${id ? id.toString() : ""}`,
+            fileName: `daclenw_${id ? id.toString() : ""}`,
             format: "jpg",
             quality: 1,
             result: "tmpfile",
           }}
-          style={[styles.containerLargeImage, { width, height }]}
+          style={[
+            styles.containerLargeImage,
+            Platform.OS === "web"
+              ? { width: resizedImgWidth, height: resizedImgHeight }
+              : { width, height },
+          ]}
         >
           <Image
             source={uri}
             style={{
-              width,
-              height,
+              width: Platform.OS === "web" ? resizedImgWidth : width,
+              height: Platform.OS === "web" ? resizedImgHeight : height,
               position: "absolute",
               top: 0,
               start: 0,
@@ -336,17 +386,24 @@ const ImageViewer = (props) => {
           />
           <WatermarkModel
             watermarkData={watermarkData}
-            ratio={ratio}
+            ratio={Platform.OS === "web" ? pdfRatio : ratio}
             text_align={text_align}
-            height={height - Math.ceil(watermarkStyle?.paddingBottom * ratio)}
+            height={
+              height -
+              Math.ceil(
+                watermarkStyle?.paddingBottom *
+                  (Platform.OS === "web" ? pdfRatio : ratio)
+              )
+            }
             color={font?.color?.warna}
-            fontSize={Math.ceil(fontSize / ratio)}
+            fontSize={Math.ceil(
+              fontSize / (Platform.OS === "web" ? pdfRatio : ratio)
+            )}
             paddingHorizontal={1}
             paddingVertical={1}
           />
         </ViewShot>
       )}
-
       {error ? (
         <Text
           style={[
@@ -360,17 +417,21 @@ const ImageViewer = (props) => {
 
       {watermarkData === null || watermarkData === undefined ? null : (
         <View style={styles.containerHorizontal}>
-          {Platform.OS === "ios" ? null : (
+          {Platform.OS === "web" ? null : (
             <View style={styles.containerButton}>
               <TouchableOpacity
                 onPress={() =>
-                  startDownload(
-                    transformedImage !== null && transformedImage !== ""
-                  )
+                  Platform.OS === "ios"
+                    ? shareJPGApple()
+                    : startDownload(
+                        transformedImage !== null && transformedImage !== ""
+                      )
                 }
                 style={[
                   styles.button,
+
                   loading ||
+                    sharing ||
                     ((downloadUri !== null ||
                       transformedImage !== null ||
                       Platform.OS === "web") &&
@@ -380,23 +441,33 @@ const ImageViewer = (props) => {
                 ]}
                 disabled={
                   loading ||
+                  sharing ||
                   ((downloadUri !== null ||
                     transformedImage !== null ||
                     Platform.OS === "web") &&
                     !sharingAvailability)
                 }
               >
-                <MaterialCommunityIcons
-                  name={
-                    downloadUri !== null ||
-                    transformedImage !== null ||
-                    Platform.OS === "web"
-                      ? "share-variant"
-                      : "download"
-                  }
-                  size={18}
-                  color="white"
-                />
+                {sharing ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={colors.daclen_light}
+                    style={{ alignSelf: "center" }}
+                  />
+                ) : (
+                  <MaterialCommunityIcons
+                    name={
+                      downloadUri !== null ||
+                      transformedImage !== null ||
+                      Platform.OS === "web"
+                        ? "share-variant"
+                        : "download"
+                    }
+                    size={18}
+                    color="white"
+                  />
+                )}
+
                 <Text style={styles.textButton}>Share Foto</Text>
               </TouchableOpacity>
             </View>
@@ -404,12 +475,13 @@ const ImageViewer = (props) => {
 
           <View style={styles.containerButton}>
             <TouchableOpacity
-              onPress={() => shareAsync(pdfUri)}
+              onPress={() => sharePDF()}
               style={[
                 styles.button,
                 {
                   backgroundColor:
                     loading ||
+                    sharing ||
                     pdfUri === null ||
                     transformedImage === null ||
                     Platform.OS === "web" ||
@@ -420,13 +492,14 @@ const ImageViewer = (props) => {
               ]}
               disabled={
                 loading ||
+                sharing ||
                 pdfUri === null ||
                 transformedImage === null ||
                 Platform.OS === "web" ||
                 !sharingAvailability
               }
             >
-              {pdfUri === null && Platform.OS !== "web" ? (
+              {(pdfUri === null && Platform.OS !== "web") || sharing ? (
                 <ActivityIndicator
                   size="small"
                   color={colors.daclen_light}
@@ -491,7 +564,11 @@ const ImageViewer = (props) => {
                   watermarkData={watermarkData}
                   ratio={1}
                   text_align={text_align}
-                  height={productPhotoHeight - watermarkStyle.paddingBottom + watermarkStyle.displayExtraTop}
+                  height={
+                    productPhotoHeight -
+                    watermarkStyle.paddingBottom +
+                    watermarkStyle.displayExtraTop
+                  }
                   color={font?.color?.warna}
                   fontSize={Math.round(fontSize / ratio)}
                   paddingHorizontal={1}

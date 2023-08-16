@@ -18,6 +18,7 @@ import { adminWA, adminWAtemplate } from "../../profile/constants";
 import {
   commissionpointpdf,
   mainhttp,
+  personalwebsiteurl,
   webdashboard,
   webreferral,
 } from "../../../axios/constants";

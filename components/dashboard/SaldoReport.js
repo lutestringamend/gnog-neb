@@ -67,7 +67,8 @@ const SaldoReport = (props) => {
   }
 
   function openWithdrawal() {
-    navigation.navigate("Withdrawal");
+    //navigation.navigate("Withdrawal");
+    onOpenExternalLink();
   }
 
   function onOpenExternalLink() {

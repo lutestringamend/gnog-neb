@@ -30,6 +30,7 @@
     "expo-device": "~5.2.1",
     "expo-file-system": "~15.2.2",
     "expo-image": "~1.0.1",
+    "expo-image-manipulator": "^11.3.0",
     "expo-image-picker": "~14.1.1",
     "expo-media-library": "~15.2.3",
     "expo-navigation-bar": "~2.1.1",

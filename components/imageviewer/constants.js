@@ -8,6 +8,12 @@ export const multiplephotosimgtag = `
     </div>
 `;
 
+export const multiplephotosimgtagcustomwidthheight = `
+    <div align="center" style="width: #WIDTH# ; height: #HEIGHT# ; text-align: center; display: block; margin: auto">
+        <img src="#URI#" style="width: #IMGWIDTH#px; height: #IMGHEIGHT#px;" />
+    </div>
+`;
+
 export const multiplephotoshtml = `
 <html>
   <head>
