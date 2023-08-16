@@ -261,8 +261,7 @@ function MediaKitFiles(props) {
         currentUser?.isActive === null ||
         !currentUser?.isActive ? null : (
           <ScrollView style={styles.scrollView}>
-            {currentUser?.id === 8054 ? (
-              <View style={styles.tabView}>
+            <View style={styles.tabView}>
                 <HistoryTabItem
                   activeTab={activeTab}
                   name={WATERMARK_PHOTO}
@@ -276,7 +275,6 @@ function MediaKitFiles(props) {
                   onPress={() => setActiveTab(WATERMARK_VIDEO)}
                 />
               </View>
-            ) : null}
 
             {watermarkData === null ? (
               <ActivityIndicator

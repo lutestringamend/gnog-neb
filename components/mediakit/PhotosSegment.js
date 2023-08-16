@@ -137,7 +137,7 @@ const PhotosSegment = (props) => {
     return (
       <SafeAreaView style={styles.containerFlatlist}>
         <View style={styles.containerHeader}>
-          <Text style={styles.textHeader}>Download dan Share Foto</Text>
+          <Text style={styles.textHeader}>{savedUri === null || savedUri === "" ? "Share" : "Download dan Share Foto"}</Text>
           {savedUri === null || savedUri === "" ? null : (
             <TouchableOpacity
               onPress={() => shareFileAsync()}
