@@ -45,8 +45,6 @@ const ImageViewer = (props) => {
     width,
     height,
     text_align,
-    text_x,
-    text_y,
     font,
     sharingAvailability,
   } = props.route.params;
@@ -120,23 +118,26 @@ const ImageViewer = (props) => {
       imageRef.current
         .capture()
         .then((uri) => {
+          if (currentUser?.id === 8054 && Platform.OS === "ios") {
+            setError("tranformImage uri created");
+          }
           console.log(uri);
           setTransformedImage(uri);
           setLoading(false);
         })
-        .catch((e) => {
-          console.error(e);
-          setError(e.toString());
-          setLoading(false);
-          sentryLog(e);
+        .catch((err) => {
+          creatingErrorLogDebug(err);
         });
     } catch (e) {
-      console.error(e);
-      setError(e.toString());
-      setLoading(false);
-      sentryLog(e);
+      creatingErrorLogDebug(e);
     }
   };
+
+  const creatingErrorLogDebug = (e) => {
+    setError(e.toString());
+    setLoading(false);
+    sentryLog(e);
+  }
 
   const sharePhotoAsync = async (uri) => {
     if (!sharingAvailability) {
@@ -172,20 +173,21 @@ const ImageViewer = (props) => {
       let newUri = await FileSystem.getContentUriAsync(uri);
       let imgTag = `${multiplephotosimgtag
         .replace("#URI#", newUri)
-        .replace("#WIDTH#", imageWidth)
-        .replace("#HEIGHT#", imageHeight)}`;
-      let html = multiplephotoshtml
+        .replace("#WIDTH#", Platform.OS === "ios" ? pdfpagewidth : imageWidth)
+        .replace("#HEIGHT#", Platform.OS === "ios" ? pdfpageheight : imageHeight)}`;
+      const html = multiplephotoshtml
         .replace("#TITLE#", title)
         .replace("#IMGTAGS#", imgTag);
+        if (currentUser?.id === 8054 && Platform.OS === "ios") {
+          setSuccess(true);
+          setError(`html\n${html}`);
+        }
       const result = await Print.printToFileAsync({
         ...filePrintOptions,
         ...{ width: width - 20, height: height - 20 },
         html,
       });
       if (result?.uri) {
-        /*setSuccess(true);
-        setError(newUri);
-        setError("PDF siap dibagikan");*/
         setPdfUri(result?.uri);
       } else {
         setSuccess(false);
@@ -424,7 +426,7 @@ const ImageViewer = (props) => {
                 !sharingAvailability
               }
             >
-              {pdfUri === null ? (
+              {pdfUri === null && Platform.OS !== "web" ? (
                 <ActivityIndicator
                   size="small"
                   color={colors.daclen_light}
