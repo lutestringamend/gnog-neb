@@ -29,7 +29,7 @@ import {
 import { getFileName } from "../media";
 import WatermarkModel from "../media/WatermarkModel";
 import { sentryLog } from "../../sentry";
-import { sharingOptionsJPEG, watermarkStyle } from "../media/constants";
+import { sharingOptionsJPEG, sharingOptionsPDF, watermarkStyle } from "../media/constants";
 import {
   filePrintOptions,
   multiplephotoshtml,
@@ -200,8 +200,8 @@ const ImageViewer = (props) => {
         console.log("pdf html", html);
       }
       const result = await Print.printToFileAsync({
-        ...filePrintOptions,
-        ...{ width: width - 20, height: height - 20 },
+        width: resizedImgWidth, 
+        height: resizedImgHeight,
         html,
       });
       if (result?.uri) {
@@ -345,7 +345,7 @@ const ImageViewer = (props) => {
 
   const sharePDF = async () => {
     setSharing(true);
-    await shareAsync(pdfUri);
+    await shareAsync(pdfUri, sharingOptionsPDF);
     setSharing(false);
   };
 
@@ -362,6 +362,7 @@ const ImageViewer = (props) => {
             format: "jpg",
             quality: 1,
             result: "tmpfile",
+            useRenderInContext: true,
           }}
           style={[
             styles.containerLargeImage,

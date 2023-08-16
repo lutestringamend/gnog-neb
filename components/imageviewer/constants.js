@@ -10,7 +10,7 @@ export const multiplephotosimgtag = `
 
 export const multiplephotosimgtagcustomwidthheight = `
     <div align="center" style="width: #WIDTH# ; height: #HEIGHT# ; text-align: center; display: block; margin: auto">
-        <img src="#URI#" style="width: #IMGWIDTH#px; height: #IMGHEIGHT#px;" />
+        <img src="#URI#" style="width: #IMGWIDTH#; height: #IMGHEIGHT#;" />
     </div>
 `;
 

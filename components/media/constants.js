@@ -36,6 +36,12 @@ export const sharingOptionsMP4 = {
   mimeType: "video/mp4",
 }
 
+export const sharingOptionsPDF = {
+  UTI: ".pdf",
+  dialogTitle: "Share PDF Daclen",
+  mimeType: "application/pdf",
+};
+
 export const camerafail = "Error dengan kamera: "
 export const cameranopermissionmessage = "Anda tidak memberikan akses ke Kamera"
 export const imagepickerfail = "Error mengambil dari galeri "

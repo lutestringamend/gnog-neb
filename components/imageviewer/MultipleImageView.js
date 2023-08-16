@@ -36,7 +36,7 @@ import { ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../asyncstorage/constants";
 import { updateReduxMediaKitPhotosUri } from "../../axios/mediakit";
 import { ErrorView } from "../webview/WebviewChild";
 import { webfotowatermark } from "../../axios/constants";
-import { watermarkStyle } from "../media/constants";
+import { sharingOptionsPDF, watermarkStyle } from "../media/constants";
 
 const MultipleImageView = (props) => {
   const { title, photos, sharingAvailability, userId } =
@@ -416,10 +416,7 @@ const MultipleImageView = (props) => {
     const shareFileAsync = async (uri) => {
       if (sharingAvailability) {
         try {
-          let result = await shareAsync(uri, {
-            UTI: ".pdf",
-            mimeType: "application/pdf",
-          });
+          let result = await shareAsync(uri, sharingOptionsPDF);
           addLogs(`shareAsync ${JSON.stringify(result)}`);
         } catch (e) {
           console.error(e);
@@ -462,6 +459,7 @@ const MultipleImageView = (props) => {
                       format: "jpg",
                       quality: 1,
                       result: "tmpfile",
+                      useRenderInContext: true,
                     }}
                     style={[
                       styles.containerLargeImage,
