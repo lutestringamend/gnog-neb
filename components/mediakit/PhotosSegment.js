@@ -49,6 +49,7 @@ const PhotosSegment = (props) => {
 
   function openPhoto(item) {
     navigation.navigate("ImageViewer", {
+      disableWatermark: false,
       title: `Foto ${item?.id.toString()}`,
       id: item?.id,
       uri: item?.foto,

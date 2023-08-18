@@ -68,7 +68,45 @@ export function updateReduxMediaKitVideos(data) {
   };
 }
 
-export function getMediaKitVideos(token) {
+export const getVideoProductData = (item, products) => {
+  if (
+    products === undefined ||
+    products === null ||
+    products?.length === undefined ||
+    products?.length < 1 ||
+    item?.produk === undefined ||
+    item?.produk === null
+  ) {
+    return item;
+  }
+  if (typeof item?.produk === "string") {
+    const data = products.find(({ slug }) => slug === item?.produk);
+    if (data === undefined) {
+      return item;
+    }
+    return {
+      ...item,
+      produk_id: data?.id,
+      produk: data?.slug,
+      foto: data?.foto,
+    };
+  } else if (
+    item?.produk?.id === undefined ||
+    item?.produk?.slug === undefined ||
+    item?.produk?.foto === undefined
+  ) {
+    return item;
+  } else {
+    return {
+      ...item,
+      produk_id: item?.produk?.id,
+      produk: item?.produk?.slug,
+      foto: item?.produk?.foto,
+    };
+  }
+};
+
+export function getMediaKitVideos(token, products) {
   if (token === undefined || token === null) {
     return;
   }
@@ -80,30 +118,48 @@ export function getMediaKitVideos(token) {
       },
     };
     Axios.get(mediakitvideo, config)
-        .then((response) => {
-          try {
-            const data = response?.data?.data;
-            console.log("getMediaKitVideos", data);
-            dispatch({ type: MEDIA_KIT_VIDEOS_STATE_CHANGE, data });
-          } catch (e) {
-            sentryLog(e);
-            dispatch({
-              type: MEDIA_KIT_VIDEOS_ERROR_STATE_CHANGE,
-              data: e.toString(),
-            });
-          } 
-
-        })
-        .catch((error) => {
-          sentryLog(error);
+      .then((response) => {
+        try {
+          const data = response?.data?.data;
+          console.log("getMediaKitVideos", data);
+          let newData = [];
+          for (let i = 0; i < data?.length; i++) {
+            if (
+              data[i]?.video === undefined &&
+              data[i]?.videoWatermarks !== undefined
+            ) {
+              for (let j = 0; j < data[i]?.videoWatermarks.length; j++) {
+                let videoItem = getVideoProductData(
+                  data[i]?.videoWatermarks[j],
+                  products
+                );
+                newData.unshift(videoItem);
+              }
+            } else {
+              let videoItem = getVideoProductData(data[i], products);
+              newData.unshift(videoItem);
+            }
+          }
+          console.log("video watermark after product process", newData);
+          dispatch({ type: MEDIA_KIT_VIDEOS_STATE_CHANGE, data: newData });
+        } catch (e) {
+          sentryLog(e);
+          dispatch({
+            type: MEDIA_KIT_VIDEOS_ERROR_STATE_CHANGE,
+            data: e.toString(),
+          });
+        }
+      })
+      .catch((error) => {
+        sentryLog(error);
         dispatch({
           type: MEDIA_KIT_VIDEOS_ERROR_STATE_CHANGE,
           data: error.toString(),
         });
-        });
-  }
+      });
+  };
 
- /* ;*/
+  /* ;*/
 }
 
 export function getMediaKitPhotos(token) {

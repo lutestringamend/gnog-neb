@@ -28,6 +28,7 @@ import {
   vwmarkdefaultsourceheight,
   vwmarkdefaultsourcewidth,
 } from "./constants";
+import { mainhttp } from "../../axios/constants";
 
 const WatermarkVideos = (props) => {
   const navigation = useNavigation();
@@ -64,7 +65,7 @@ const WatermarkVideos = (props) => {
       if (token === undefined || token === null) {
         return;
       }
-      props.getMediaKitVideos(token);
+      props.getMediaKitVideos(token, props.products);
     } else {
       props.updateReduxMediaKitVideos(storageVideos);
     }
@@ -96,7 +97,7 @@ const WatermarkVideos = (props) => {
       userId,
       videoId: item?.id ? item?.id : item?.video,
       uri: item?.video ? item?.video : null,
-      thumbnail: getTempThumbnail(index),
+      thumbnail: item?.foto ? `${mainhttp}${item?.foto}` : getTempThumbnail(index),
       title,
       width: item?.width ? item?.width : vwmarkdefaultsourcewidth,
       height: item?.height ? item?.height : vwmarkdefaultsourceheight,
@@ -104,19 +105,6 @@ const WatermarkVideos = (props) => {
   }
 
   function getTempThumbnail(index) {
-    try {
-      if (index === 3){
-        return "https://daclen.com/img/produk/1681188120.png";
-      } else if (index === 1) {
-        return "https://daclen.com/img/produk/1681180639.png";
-      } else if (index === 0) {
-        return "https://daclen.com/img/produk/1681187978.png";
-      } else if (index === 2) {
-        return "https://daclen.com/img/produk/1681187790.png";
-      }
-    } catch (e) {
-      console.error(e);
-    }
     return require("../../assets/favicon.png");
   }
 
@@ -143,7 +131,7 @@ const WatermarkVideos = (props) => {
             >
               <Image
                 style={styles.imageList}
-                source={item?.thumbnail ? item?.thumbnail : getTempThumbnail(index)}
+                source={item?.foto ? `${mainhttp}${item?.foto}` : getTempThumbnail(index)}
                 contentFit="cover"
                 placeholder={blurhash}
                 transition={100}
@@ -181,6 +169,7 @@ const mapStateToProps = (store) => ({
   mediaKitVideos: store.mediaKitState.videos,
   watermarkVideos: store.mediaState.watermarkVideos,
   videoError: store.mediaKitState.videoError,
+  products: store.productState.products,
 });
 
 const mapDispatchProps = (dispatch) =>

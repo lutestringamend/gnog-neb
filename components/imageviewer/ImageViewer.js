@@ -54,6 +54,7 @@ const ImageViewer = (props) => {
     text_align,
     font,
     sharingAvailability,
+    disableWatermark,
   } = props.route.params;
   const resizedImgWidth = pdfpagewidth - 20;
   const resizedImgHeight = Math.ceil((height * resizedImgWidth) / width);
@@ -90,7 +91,8 @@ const ImageViewer = (props) => {
       id === undefined ||
       id === null ||
       watermarkData === undefined ||
-      watermarkData === null
+      watermarkData === null ||
+      disableWatermark
     ) {
       return;
     }
@@ -358,7 +360,7 @@ const ImageViewer = (props) => {
       {id === undefined ||
       id === null ||
       watermarkData === undefined ||
-      watermarkData === null ? null : (
+      watermarkData === null || disableWatermark ? null : (
         <ViewShot
           ref={imageRef}
           options={{
@@ -420,7 +422,7 @@ const ImageViewer = (props) => {
         </Text>
       ) : null}
 
-      {watermarkData === null || watermarkData === undefined ? null : (
+      {watermarkData === null || watermarkData === undefined || disableWatermark ? null : (
         <View style={styles.containerHorizontal}>
           {Platform.OS === "web" ? null : (
             <View style={styles.containerButton}>
@@ -524,7 +526,7 @@ const ImageViewer = (props) => {
       )}
 
       <ScrollView contentContainerStyle={styles.scrollView}>
-        {watermarkData === null || watermarkData === undefined ? (
+        {watermarkData === null || watermarkData === undefined || disableWatermark ? (
           <View style={[styles.containerImage, { width: productPhotoWidth }]}>
             <Image
               source={uri}

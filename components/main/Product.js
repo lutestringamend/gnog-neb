@@ -9,32 +9,32 @@ import {
   ActivityIndicator,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-//import { MaterialCommunityIcons } from '@expo/vector-icons';
-import RBSheet from "react-native-raw-bottom-sheet";
-
+//import RBSheet from "react-native-raw-bottom-sheet";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { useNavigation } from "@react-navigation/native";
+import { getObjectAsync } from "../asyncstorage";
 
 import { showProduct } from "../../axios/product";
 import Cart from "../cart/Cart";
-
 import ProductSlider from "./ProductSlider";
 import ProductDesc from "./ProductDesc";
 /*import ProductModal from "../modal/ProductModal";
-import useModal from "../../hook/useModal";*/
+import useModal from "../../hook/useModal";
 import BSPopup from "../bottomsheets/BSPopup";
-import BSProductBenefit from "../bottomsheets/BSProductBenefit";
+import BSProductBenefit from "../bottomsheets/BSProductBenefit";*/
 import { openCheckout } from "./CheckoutScreen";
 import { colors, staticDimensions } from "../../styles/base";
-import { useNavigation } from "@react-navigation/native";
+import { ASYNC_MEDIA_WATERMARK_PHOTOS_KEY } from "../asyncstorage/constants";
 
 function Product(props) {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(false);
-  const rbSheet = useRef();
+  const [mediaPhotos, setMediaPhotos] = useState(null);
+  //const rbSheet = useRef();
   const { token, currentUser } = props;
-  let name = props.route.params?.nama;
-  //const navigation = useNavigation();
+  const name = props.route.params?.nama;
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (props.route.params?.id === null) {
@@ -53,8 +53,8 @@ function Product(props) {
       setProduct(null);
       props.showProduct(props.route.params.id);
     } else {
-      console.log("productItem is found");
       setProduct(check);
+      checkAsyncProductMediaKitData(name ? name : check?.nama);
       setLoading(false);
     }
   }, [props.route.params?.id, props.productItems]);
@@ -65,6 +65,23 @@ function Product(props) {
       headerShown: true,
     });
   }, [name]);
+
+  const checkAsyncProductMediaKitData = async (name) => {
+    const storagePhotos = await getObjectAsync(ASYNC_MEDIA_WATERMARK_PHOTOS_KEY);
+    if (!(storagePhotos === undefined || storagePhotos === null)) {
+      setMediaPhotos(storagePhotos[name]);
+    }
+    setLoading(false);
+  }
+
+  const openPhotosSegment = () => {
+    navigation.navigate("PhotosSegment", {
+      isLast: false,
+      sharingAvailability: true,
+      title: name,
+      photos: mediaPhotos,
+    });
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -103,6 +120,19 @@ function Product(props) {
                   </Text>
                 ))}
               </View>
+            )}
+
+          {product?.poin_produk !== null && (   
+              <TouchableOpacity onPress={() => openPhotosSegment()}>
+                <View style={styles.containerBenefit}>
+                  <MaterialCommunityIcons
+                    name="image-multiple"
+                    size={20}
+                    color="white"
+                  />
+                  <Text style={styles.textBenefit}>Foto-foto Promosi</Text>
+                </View>
+              </TouchableOpacity>
             )}
 
             <ProductDesc
@@ -147,21 +177,6 @@ function Product(props) {
         </TouchableOpacity>
       )}
 
-      <RBSheet ref={rbSheet} openDuration={250} height={300}>
-        <BSPopup
-          title="Keuntungan"
-          content={
-            <BSProductBenefit
-              poin={product?.poin_produk?.poin}
-              komisi={product?.poin_produk?.komisi}
-              harga_value={product?.harga}
-            />
-          }
-          buttonNegative={null}
-          closeThis={() => rbSheet.current.close()}
-          onPress={null}
-        />
-      </RBSheet>
     </SafeAreaView>
   );
 }
@@ -179,6 +194,22 @@ function Product(props) {
                 </View>
               </TouchableOpacity>
             )}
+
+            <RBSheet ref={rbSheet} openDuration={250} height={300}>
+        <BSPopup
+          title="Keuntungan"
+          content={
+            <BSProductBenefit
+              poin={product?.poin_produk?.poin}
+              komisi={product?.poin_produk?.komisi}
+              harga_value={product?.harga}
+            />
+          }
+          buttonNegative={null}
+          closeThis={() => rbSheet.current.close()}
+          onPress={null}
+        />
+      </RBSheet>
 */
 
 const styles = StyleSheet.create({
@@ -292,6 +323,7 @@ const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
   cart: store.userState.cart,
+  watermarkData: store.mediaKitState.watermarkData,
 });
 
 const mapDispatchProps = (dispatch) =>

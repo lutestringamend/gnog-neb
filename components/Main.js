@@ -20,9 +20,14 @@ import {
   updateReduxProfileLockStatus,
   updateReduxProfilePIN,
 } from "../axios/user";
-import { clearMediaKitData } from "../axios/mediakit";
+import {
+  clearMediaKitData,
+  updateReduxMediaKitWatermarkData,
+  updateReduxMediaKitPhotosUri,
+} from "../axios/mediakit";
 import { getObjectAsync, getTokenAsync } from "./asyncstorage";
 import {
+  ASYNC_MEDIA_WATERMARK_DATA_KEY,
   ASYNC_PRODUCTS_ARRAY_KEY,
   ASYNC_USER_CURRENTUSER_KEY,
   ASYNC_USER_PROFILE_PIN_KEY,
@@ -31,12 +36,20 @@ import { clearCartError } from "../axios/cart";
 import { sentryLog } from "../sentry";
 import Top from "./Top";
 import { colors } from "../styles/base";
+import { webreferral } from "../axios/constants";
 
 function Main(props) {
   try {
     const [error, setError] = useState(null);
     const appState = useRef(AppState.currentState);
-    const { token, currentUser, profileLock, profileLockTimeout, profilePIN } = props;
+    const {
+      token,
+      currentUser,
+      profileLock,
+      profileLockTimeout,
+      profilePIN,
+      watermarkData,
+    } = props;
 
     useEffect(() => {
       const readStorageProducts = async () => {
@@ -79,6 +92,11 @@ function Main(props) {
       }
       //console.log("redux token", token);
       console.log("redux currentuser", currentUser);
+      if (watermarkData === null) {
+        checkWatermarkData();
+      } else {
+        console.log("Main redux WatermarkData", watermarkData);
+      }
       if (!profileLock) {
         const theAppState = AppState.addEventListener(
           "change",
@@ -106,6 +124,10 @@ function Main(props) {
       }
       checkProfileLockTimeout();
     }, [profileLock, profileLockTimeout]);
+
+    useEffect(() => {
+
+    }, [watermarkData]);
 
     const checkUserData = async () => {
       const storageToken = await readStorageToken();
@@ -173,7 +195,7 @@ function Main(props) {
       if (!(asyncPIN === undefined || asyncPIN === null || asyncPIN === "")) {
         props.updateReduxProfilePIN(asyncPIN);
       }
-    }
+    };
 
     const checkProfileLockTimeout = async () => {
       //console.log("checkProfileLockTimeout");
@@ -187,6 +209,21 @@ function Main(props) {
       } catch (err) {
         console.error(err);
         props.updateReduxProfileLockStatus(false);
+      }
+    };
+
+    const checkWatermarkData = async () => {
+      let newData = await getObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY);
+      if (!(newData === undefined || newData === null)) {
+        props.updateReduxMediaKitWatermarkData(newData);
+      } else if (currentUser !== null) {
+        props.updateReduxMediaKitWatermarkData({
+          name: currentUser?.name ? currentUser?.name : "",
+          phone: currentUser?.nomor_telp ? currentUser?.nomor_telp : "",
+          url: currentUser?.name
+            ? `https://${webreferral}${currentUser?.name}`
+            : "",
+        });
       }
     };
 
@@ -248,6 +285,7 @@ const mapStateToProps = (store) => ({
   maxIndex: store.productState.maxIndex,
   loginToken: store.userState.loginToken,
   registerToken: store.userState.registerToken,
+  watermarkData: store.mediaKitState.watermarkData,
 });
 
 const mapDispatchProps = (dispatch) =>
@@ -260,6 +298,8 @@ const mapDispatchProps = (dispatch) =>
       setNewToken,
       disableForceLogout,
       clearMediaKitData,
+      updateReduxMediaKitWatermarkData,
+      updateReduxMediaKitPhotosUri,
       clearCartError,
       updateReduxProfileLockStatus,
       updateReduxProfilePIN,

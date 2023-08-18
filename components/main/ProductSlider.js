@@ -62,6 +62,7 @@ function ProductSlider(props) {
     function openImageViewer() {
       if (mainPhoto !== null && mainPhoto !== undefined) {
         navigation.navigate("ImageViewer", {
+          disableWatermark: true,
           title: props?.title,
           uri: mainPhoto,
           isSquare: true,
