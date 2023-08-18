@@ -60,7 +60,7 @@ export const webreferral = "https://daclen.com/register/"
 export const webregister = "https://daclen.com/register"
 export const webshop = "https://daclen.com/shop"
 export const webcatalog = "https://daclen.com/home/katalog"
-export const webdashboard = "https://daclen.com/admin/dashboard"
+export const webdashboard = "https://daclen.com/adxwmin/dashboard"
 export const webmediakit = "https://daclen.com/home/media-kit"
 export const webfotowatermark = "https://daclen.com/admin/media-kit/foto-watermark"
 export const webvideowatermark = "https://daclen.com/admin/media-kit/video-watermark"
@@ -68,7 +68,13 @@ export const webcheckout = "https://daclen.com/admin/checkout"
 export const websaldo = "https://daclen.com/admin/penarikan/komisi/riwayat-penarikan"
 export const weblaporanpoin = "https://daclen.com/admin/laporan/poin-user/pengguna"
 export const websyaratbonus = "https://daclen.com/admin/setting/bonus-root/syarat"
-export const commissionpointpdf = "https://daclen.com/pdf/komisi-dan-point/Skema%20Bonus.pdf"
+
+//DASHBOARD PDF
+export const commissionpointpdf = "https://daclen.com/asset/HADIAH.pdf"
+export const dashboardhadiahpdf = "https://daclen.com/asset/HADIAH.pdf"
+export const dashboardkodeetikpdf = "https://daclen.com/asset/KE.pdf"
+export const dashboardpenjelasanbisnispdf = "https://daclen.com/asset/PB.pdf"
+
 
 export const monthNames = [
     "Januari",

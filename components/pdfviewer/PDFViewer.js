@@ -1,21 +1,7 @@
-import React, { useState } from "react";
-import {
-  Platform,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  ActivityIndicator,
-  Linking,
-} from "react-native";
-import * as Sentry from "sentry-expo";
-import { colors, dimensions } from "../../styles/base";
-
-import MainHeader from "../main/MainHeader";
-import { ErrorView } from "../webview/WebviewChild";
-
-import WebView from "react-native-webview";
-
-let Pdf = require("react-native-render-html").default;
+import React from "react";
+import { SafeAreaView, StyleSheet } from "react-native";
+import PDFReader from "@hashiprobr/expo-pdf-reader";
+import { colors } from "../../styles/base";
 
 function ErrorScreen({ title, message, uri }) {
   return (
@@ -35,98 +21,36 @@ function openExternalLink(uri) {
   }
 }
 
-export default function PDFViewer(props) {
-  let uri = props.route.params?.webKey;
-  let title = props.route.params?.text;
-  const [loading, setLoading] = useState(true);
+const PDFViewer = (props) => {
+  const title = props.route.params?.title ? props.route.params?.title : "Daclen";
+  const uri = props.route.params?.uri ? props.route.params?.uri : null;
+  const content = props.route.params?.content
+    ? props.route.params?.content
+    : null;
+  props.navigation.setOptions({
+    title,
+    headerShown: true,
+  });
 
-  if (Platform.OS === "web") {
+  try {
     return (
-      <ErrorScreen
-        title={props.route.params?.text}
-        message="Buka tab baru di Browser untuk membuka file PDF"
-        uri={uri}
-      />
+      <SafeAreaView style={styles.container}>
+        <PDFReader source={uri ? { uri } : content} />
+      </SafeAreaView>
     );
-  } else {
-    try {
-      Pdf = require("react-native-pdf").default;
-
-      return (
-        <SafeAreaView style={styles.container}>
-          <MainHeader title={title ? title : "Daclen"} icon="arrow-left" />
-          <ScrollView style={styles.webContainer}>
-            {loading ? (
-              <ActivityIndicator
-                size="large"
-                color={colors.daclen_orange}
-                style={{ alignSelf: "center", marginVertical: 20 }}
-              />
-            ) : null}
-
-            <Pdf
-              source={{ uri, cache: true }}
-              contentWidth={dimensions.webviewWidth}
-              onLoadComplete={(numberOfPages, filePath) => {
-                console.log({ numberOfPages, filePath });
-                setLoading(false);
-              }}
-              onPageChanged={(page, numberOfPages) => {
-                console.log({ page, numberOfPages });
-              }}
-              onError={(error) => {
-                console.error(error);
-                setLoading(false);
-              }}
-              onPressLink={(uri) => {
-                console.log({ uri });
-              }}
-              style={styles.pdf}
-            />
-          </ScrollView>
-        </SafeAreaView>
-      );
-    } catch (error) {
-      console.error(error);
-      if (Platform.OS === "web") {
-        Sentry.Browser.captureException(error);
-      } else {
-        Sentry.Native.captureException(error);
-      }
-      return (
-        <ErrorScreen
-          title={props.route.params?.text}
-          message={error?.message}
-          uri={uri}
-        />
-      );
-    }
+  } catch (e) {
+    console.error(e);
+    sentryLog(e);
+    return <ErrorScreen title={title} message="Baca PDF di website Daclen" uri={uri} />;
   }
-}
-
-/*
-
-<WebView
-              javaScriptEnabled={true}
-              style={{ flex: 1 }}
-              originWhitelist={["*"]}
-              source={{ uri }}
-              onLoadEnd={() => setLoading(false)}
-            />
-
-*/
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: "white",
-  },
-  webContainer: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  pdf: {
-    flex: 1,
+    backgroundColor: colors.white,
   },
 });
+
+export default PDFViewer;

@@ -16,7 +16,9 @@ import { colors, staticDimensions } from "../../../styles/base";
 import { openWhatsapp } from "../../whatsapp/Whatsapp";
 import { adminWA, adminWAtemplate } from "../../profile/constants";
 import {
-  commissionpointpdf,
+  dashboardhadiahpdf,
+  dashboardkodeetikpdf,
+  dashboardpenjelasanbisnispdf,
   mainhttp,
   personalwebsiteurl,
   webdashboard,
@@ -68,7 +70,7 @@ const DashboardButtons = ({ userId, username }) => {
   };
 
   const copytoClipboard = async () => {
-    await Clipboard.setStringAsync(`${personalwebsiteurl}${props?.username}`);
+    await Clipboard.setStringAsync(`${personalwebsiteurl}${username}`);
     if (Platform.OS === "android") {
       ToastAndroid.show(
         "Link Referral tersalin ke Clipboard",
@@ -94,7 +96,10 @@ const DashboardButtons = ({ userId, username }) => {
   }
 
   function openKodeEtik() {
-    Linking.openURL(mainhttp);
+    navigation.navigate("PDFViewer", {
+      title: "Kode Etik",
+      uri: dashboardkodeetikpdf,
+    })
   }
 
   function openBlog() {
@@ -106,7 +111,10 @@ const DashboardButtons = ({ userId, username }) => {
   }
 
   function openExplanation() {
-    Linking.openURL(mainhttp);
+    navigation.navigate("PDFViewer", {
+      title: "Penjelasan Bisnis",
+      uri: dashboardpenjelasanbisnispdf,
+    })
   }
 
   function openWebDashboard() {
@@ -114,7 +122,10 @@ const DashboardButtons = ({ userId, username }) => {
   }
 
   function openCatalog() {
-    Linking.openURL(commissionpointpdf);
+    navigation.navigate("PDFViewer", {
+      title: "Katalog Hadiah",
+      uri: dashboardhadiahpdf,
+    })
   }
 
   return (

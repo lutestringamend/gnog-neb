@@ -145,21 +145,11 @@ function Checkout(props) {
         setDisplayAddress(null);
         setAddressComplete(false);
       } else {
-        let text = "";
-        if (currentAddress?.nama_depan !== null)
-          text += currentAddress?.nama_depan;
-        if (currentAddress?.nama_belakang !== null) {
-          text += ` ${currentAddress?.nama_belakang} | `;
-        } else {
-          text += " | ";
-        }
-        if (currentAddress?.nomor_telp !== null)
-          text += `${currentAddress?.nomor_telp} | `;
-        if (currentAddress?.email !== null)
-          text += `${currentAddress?.email} | `;
-        if (currentAddress?.alamat !== null) text += currentAddress?.alamat;
-
-        setDisplayAddress(text);
+        setDisplayAddress(
+          `${currentAddress?.nama_depan} ${
+            currentAddress?.nama_belakang ? currentAddress?.nama_belakang : ""
+          } | ${currentAddress?.nomor_telp}\n${currentAddress?.alamat}`
+        );
         setAddressComplete(true);
       }
     }
@@ -404,15 +394,16 @@ function Checkout(props) {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <TouchableOpacity onPress={() => openAddress()}>
-          <View style={styles.containerHeader}>
-            <MaterialCommunityIcons
-              name="map"
-              size={18}
+        <TouchableOpacity onPress={() => openAddress()} style={styles.containerHeader}>
+        <MaterialCommunityIcons
+              name="map-plus"
+              size={20}
               color={colors.daclen_blue}
             />
             <View style={styles.containerTitle}>
-              <Text style={styles.textAddressHeader}>Alamat Pengiriman</Text>
+              <Text style={styles.textAddressHeader}>
+                Edit Alamat Pengiriman
+              </Text>
               <Text
                 style={[
                   styles.textAddressDetail,
@@ -424,7 +415,12 @@ function Checkout(props) {
                   : "Alamat Pengiriman belum lengkap"}
               </Text>
             </View>
-          </View>
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={24}
+              color={colors.daclen_blue}
+              style={styles.arrowAddress}
+            />
         </TouchableOpacity>
         <Separator thickness={10} />
 
@@ -540,14 +536,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   textAddressHeader: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: "bold",
     color: colors.daclen_blue,
     marginBottom: 6,
   },
   textAddressDetail: {
     fontSize: 12,
-    color: colors.daclen_black,
+    color: colors.daclen_gray,
   },
   textUid: {
     fontSize: 12,
@@ -556,6 +552,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     textAlign: "center",
   },
+  arrowAddress: {
+    marginStart: 10,
+    alignSelf: "center",
+  }
 });
 
 const mapStateToProps = (store) => ({

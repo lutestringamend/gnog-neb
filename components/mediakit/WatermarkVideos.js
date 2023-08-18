@@ -152,7 +152,7 @@ const WatermarkVideos = (props) => {
                 style={styles.imageList}
                 source={`${mainhttp}${item?.foto}`}
                 contentFit="cover"
-                placeholder={require("../../assets/favicon.png")}
+                placeholder={blurhash}
                 transition={100}
               />
             </TouchableHighlight>
@@ -183,9 +183,7 @@ const styles = StyleSheet.create({
   },
   imageList: {
     flex: 1,
-    width: "100%",
-    height: "100%",
-    aspectRatio: 1 / 1,
+    aspectRatio: 3 / 4,
   },
 });
 
