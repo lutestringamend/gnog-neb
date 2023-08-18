@@ -46,13 +46,16 @@ const WatermarkPhotosSegment = (props) => {
           photos?.length < 1 ||
           photos[0] === undefined ||
           photos[0] === null ||
+          ((photos[0]?.thumbnail === undefined ||
+          photos[0]?.thumbnail === null ||
+          photos[0]?.thumbnail === "") &&
           photos[0]?.foto === undefined ||
           photos[0]?.foto === null ||
-          photos[0]?.foto === "" ? null : (
+          photos[0]?.foto === "") ? null : (
             <Image
               key={title}
               style={styles.image}
-              source={photos[0]?.foto}
+              source={photos[0]?.thumbnail ? photos[0]?.thumbnail : photos[0]?.foto}
               onClick={() => openSegmentScreen()}
               contentFit="cover"
               placeholder={blurhash}

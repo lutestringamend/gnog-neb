@@ -48,6 +48,7 @@ const ImageViewer = (props) => {
     id,
     title,
     uri,
+    thumbnail,
     isSquare,
     width,
     height,
@@ -64,8 +65,8 @@ const ImageViewer = (props) => {
   const ratio = width / productPhotoWidth;
   const pdfRatio = resizedImgWidth / productPhotoWidth;
   let fontSize = font?.size?.ukuran
-    ? font?.size?.ukuran > 32
-      ? font?.size?.ukuran / 2
+    ? font?.size?.ukuran >= 48
+      ? font?.size?.ukuran / 3
       : font?.size?.ukuran
     : 16;
 
@@ -529,7 +530,7 @@ const ImageViewer = (props) => {
         {watermarkData === null || watermarkData === undefined || disableWatermark ? (
           <View style={[styles.containerImage, { width: productPhotoWidth }]}>
             <Image
-              source={uri}
+              source={thumbnail ? thumbnail : uri}
               style={[
                 styles.image,
                 { width: productPhotoWidth, height: productPhotoWidth },

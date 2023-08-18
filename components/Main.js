@@ -125,10 +125,6 @@ function Main(props) {
       checkProfileLockTimeout();
     }, [profileLock, profileLockTimeout]);
 
-    useEffect(() => {
-
-    }, [watermarkData]);
-
     const checkUserData = async () => {
       const storageToken = await readStorageToken();
       const storageCurrentUser = await readStorageCurrentUser();

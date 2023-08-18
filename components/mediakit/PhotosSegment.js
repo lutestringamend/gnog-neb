@@ -53,6 +53,7 @@ const PhotosSegment = (props) => {
       title: `Foto ${item?.id.toString()}`,
       id: item?.id,
       uri: item?.foto,
+      thumbnail: item?.thumbnail,
       isSquare: false,
       width: item?.width,
       height: item?.height,
@@ -205,7 +206,7 @@ const PhotosSegment = (props) => {
               >
                 <Image
                   style={styles.imageList}
-                  source={item?.foto}
+                  source={item?.thumbnail ? item?.thumbnail : item?.foto}
                   contentFit="cover"
                   placeholder={blurhash}
                   transition={100}
