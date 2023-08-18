@@ -122,7 +122,7 @@ function Product(props) {
               </View>
             )}
 
-          {product?.poin_produk !== null && (   
+          {mediaPhotos === null || mediaPhotos?.length === undefined || mediaPhotos?.length < 1 ? null : (   
               <TouchableOpacity onPress={() => openPhotosSegment()}>
                 <View style={styles.containerBenefit}>
                   <MaterialCommunityIcons

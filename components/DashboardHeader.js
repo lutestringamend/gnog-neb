@@ -18,22 +18,23 @@ const Header = (props) => {
   const navigation = useNavigation();
 
   function onSettingPress() {
-    if (props?.onSettingPress === undefined || props?.onSettingPress === null) {
-      if (
-        !profileLock ||
-        currentUser === null ||
-        currentUser?.id === undefined ||
-        currentUser?.isActive === undefined ||
-        currentUser?.isActive === null ||
-        !currentUser?.isActive
-      ) {
-        navigation.navigate("Profile", { username });
-      } else {
-        if (props?.goDashboard === undefined || props?.goDashboard === null) {
-          return;
-        }
-        props?.goDashboard();
+    if (
+      !profileLock ||
+      currentUser === null ||
+      currentUser?.id === undefined ||
+      currentUser?.isActive === undefined ||
+      currentUser?.isActive === null ||
+      !currentUser?.isActive
+    ) {
+      navigation.navigate("Profile");
+    } else if (
+      props?.onSettingPress === undefined ||
+      props?.onSettingPress === null
+    ) {
+      if (props?.goDashboard === undefined || props?.goDashboard === null) {
+        return;
       }
+      props?.goDashboard();
     } else {
       props.onSettingPress();
     }
@@ -90,6 +91,9 @@ const Header = (props) => {
       currentUser === null ||
       currentUser?.id === undefined ||
       currentUser?.name === undefined ||
+      currentUser?.isActive === undefined ||
+      currentUser?.isActive === null ||
+      !currentUser?.isActive ||
       props?.lockStatus === undefined ? null : (
         <TouchableOpacity
           style={styles.containerUser}

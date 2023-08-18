@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -62,16 +62,25 @@ export const userLogOut = async (props, username) => {
 
 function Profile(props) {
   const { currentUser, token } = props;
+  const [loggingOut, setLoggingOut] = useState(false);
   const appVersion = `Versi ${packageJson?.version}`;
   const rbSheet = useRef();
   const navigation = useNavigation();
 
   useEffect(() => {
     if (token === null || currentUser === null || currentUser?.id === undefined) {
-      rbSheet.current.close();
-      navigation.navigate("Main");
+      if (loggingOut) {
+        rbSheet.current.close();
+        setLoggingOut(false);
+        navigation.navigate("Main");
+      }
     }
   }, [currentUser, token]);
+  
+  const proceedLogout = () => {
+    setLoggingOut(true);
+    userLogOut(props, currentUser?.name);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -167,7 +176,7 @@ function Profile(props) {
           buttonNegativeColor={colors.daclen_gray}
           icon="logout"
           closeThis={() => rbSheet.current.close()}
-          onPress={() => userLogOut(props, currentUser?.name)}
+          onPress={() => proceedLogout()}
         />
       </RBSheet>
     </SafeAreaView>

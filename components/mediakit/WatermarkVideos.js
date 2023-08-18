@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   TouchableHighlight,
   StyleSheet,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
@@ -32,6 +33,7 @@ import { mainhttp } from "../../axios/constants";
 
 const WatermarkVideos = (props) => {
   const navigation = useNavigation();
+  const [refreshing, setRefreshing] = useState(false);
   const { mediaKitVideos, watermarkVideos, userId, token } = props;
 
   useEffect(() => {
@@ -41,6 +43,9 @@ const WatermarkVideos = (props) => {
       return;
     }
     setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, mediaKitVideos);
+    if (refreshing) {
+      setRefreshing(false);
+    }
     console.log("redux media kit videos", mediaKitVideos);
   }, [mediaKitVideos]);
 
@@ -85,6 +90,11 @@ const WatermarkVideos = (props) => {
     }
   };
 
+  const refreshPage = () => {
+    setRefreshing(true);
+    props.getMediaKitVideos(token, props.products);
+  }
+
   function openVideo(item, index) {
     let title = item?.nama ? item?.nama : "Video Promosi";
     try {
@@ -99,19 +109,19 @@ const WatermarkVideos = (props) => {
       userId,
       videoId: item?.id ? item?.id : item?.video,
       uri: item?.video ? item?.video : null,
-      thumbnail: item?.foto ? `${mainhttp}${item?.foto}` : getTempThumbnail(index),
+      thumbnail: item?.foto ? `${mainhttp}${item?.foto}` : getTempThumbnail(),
       title,
       width: item?.width ? item?.width : vwmarkdefaultsourcewidth,
       height: item?.height ? item?.height : vwmarkdefaultsourceheight,
     });
   }
 
-  function getTempThumbnail(index) {
+  function getTempThumbnail() {
     return require("../../assets/favicon.png");
   }
 
   return (
-    <View style={styles.containerFlatlist}>
+    <View style={styles.container}>
       {mediaKitVideos?.length === undefined || mediaKitVideos?.length < 1 ? (
         <ActivityIndicator
           size="large"
@@ -120,10 +130,17 @@ const WatermarkVideos = (props) => {
         />
       ) : (
         <FlashList
-          estimatedItemSize={12}
+          estimatedItemSize={6}
           horizontal={false}
           numColumns={3}
           data={mediaKitVideos}
+          style={styles.containerFlatlist}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => refreshPage()}
+            />
+          }
           renderItem={({ item, index }) => (
             <TouchableHighlight
               key={index}
@@ -133,9 +150,9 @@ const WatermarkVideos = (props) => {
             >
               <Image
                 style={styles.imageList}
-                source={item?.foto ? `${mainhttp}${item?.foto}` : getTempThumbnail(index)}
+                source={`${mainhttp}${item?.foto}`}
                 contentFit="cover"
-                placeholder={blurhash}
+                placeholder={require("../../assets/favicon.png")}
                 transition={100}
               />
             </TouchableHighlight>
@@ -147,10 +164,16 @@ const WatermarkVideos = (props) => {
 };
 
 const styles = StyleSheet.create({
-  containerFlatlist: {
+  container: {
+    flex: 1,
     width: "100%",
     paddingBottom: staticDimensions.pageBottomPadding,
-    backgroundColor: "white",
+    backgroundColor: colors.white,
+  },
+  containerFlatlist: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: "transparent",
   },
   containerImage: {
     flex: 1,
