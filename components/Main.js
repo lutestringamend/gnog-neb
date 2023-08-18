@@ -36,7 +36,7 @@ import { clearCartError } from "../axios/cart";
 import { sentryLog } from "../sentry";
 import Top from "./Top";
 import { colors } from "../styles/base";
-import { webreferral } from "../axios/constants";
+import { personalwebsiteurlshort } from "../axios/constants";
 
 function Main(props) {
   try {
@@ -221,7 +221,7 @@ function Main(props) {
           name: currentUser?.name ? currentUser?.name : "",
           phone: currentUser?.nomor_telp ? currentUser?.nomor_telp : "",
           url: currentUser?.name
-            ? `https://${webreferral}${currentUser?.name}`
+            ? `${personalwebsiteurlshort}${currentUser?.name}`
             : "",
         });
       }

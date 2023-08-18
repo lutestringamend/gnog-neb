@@ -79,30 +79,46 @@ export const getVideoProductData = (item, products) => {
   ) {
     return item;
   }
-  if (typeof item?.produk === "string") {
-    const data = products.find(({ slug }) => slug === item?.produk);
-    if (data === undefined) {
+
+  try {
+    if (typeof item?.produk === "string") {
+      const data = products.find(({ slug }) => slug === item?.produk);
+      if (data === undefined) {
+        return item;
+      }
+      let nama = item?.nama;
+      if (nama.includes("/") || nama.toLowerCase().includes("mp4")) {
+        nama = data?.nama ? data?.nama : nama;
+      }
+      return {
+        ...item,
+        nama,
+        produk_id: data?.id,
+        produk: data?.slug,
+        foto: data?.foto,
+      };
+    } else if (
+      item?.produk?.id === undefined ||
+      item?.produk?.slug === undefined ||
+      item?.produk?.foto === undefined
+    ) {
       return item;
+    } else {
+      let nama = item?.nama;
+      if (nama.includes("/") || nama.toLowerCase().includes("mp4")) {
+        nama = item?.produk?.nama ? item?.produk?.nama : nama;
+      }
+      return {
+        ...item,
+        nama,
+        produk_id: item?.produk?.id,
+        produk: item?.produk?.slug,
+        foto: item?.produk?.foto,
+      };
     }
-    return {
-      ...item,
-      produk_id: data?.id,
-      produk: data?.slug,
-      foto: data?.foto,
-    };
-  } else if (
-    item?.produk?.id === undefined ||
-    item?.produk?.slug === undefined ||
-    item?.produk?.foto === undefined
-  ) {
+  } catch (e) {
+    console.error(e);
     return item;
-  } else {
-    return {
-      ...item,
-      produk_id: item?.produk?.id,
-      produk: item?.produk?.slug,
-      foto: item?.produk?.foto,
-    };
   }
 };
 

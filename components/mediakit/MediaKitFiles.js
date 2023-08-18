@@ -26,11 +26,11 @@ import {
 } from "../../axios/mediakit";
 import { overwriteWatermarkVideos } from "../media";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, dimensions } from "../../styles/base";
 import { privacypolicy } from "../profile/constants";
 import { ErrorView } from "../webview/WebviewChild";
 import HistoryTabItem from "../history/HistoryTabItem";
-import { webreferral } from "../../axios/constants";
+import { personalwebsiteurlshort } from "../../axios/constants";
 import {
   watermarkphotoicon,
   watermarkvideoicon,
@@ -198,7 +198,7 @@ function MediaKitFiles(props) {
         name: currentUser?.name ? currentUser?.name : "",
         phone: currentUser?.nomor_telp ? currentUser?.nomor_telp : "",
         url: currentUser?.name
-          ? `https://${webreferral}${currentUser?.name}`
+          ? `${personalwebsiteurlshort}${currentUser?.name}`
           : "",
       };
     }

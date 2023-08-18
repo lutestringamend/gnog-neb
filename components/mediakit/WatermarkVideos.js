@@ -88,8 +88,10 @@ const WatermarkVideos = (props) => {
   function openVideo(item, index) {
     let title = item?.nama ? item?.nama : "Video Promosi";
     try {
-      let items = title.split("/");
-      title = items[items?.length - 1];
+      if (title.includes("/")) {
+        let items = title.split("/");
+        title = items[items?.length - 1];
+      }
     } catch (e) {
       console.error(e);
     }

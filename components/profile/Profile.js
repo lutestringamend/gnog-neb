@@ -49,13 +49,12 @@ import { adminWA, adminWAtemplate } from "./constants";
 import { sentryLog } from "../../sentry";
 import { useNavigation } from "@react-navigation/native";
 
-export const userLogOut = async (username) => {
+export const userLogOut = async (props, username) => {
   try {
     await userLogout(username);
     props.setNewToken(null, null);
     props.clearUserData(true);
-    const navigation = useNavigation();
-    navigation.navigate("Main");
+
   } catch (e) {
     sentryLog(e);
   }
@@ -65,10 +64,12 @@ function Profile(props) {
   const { currentUser, token } = props;
   const appVersion = `Versi ${packageJson?.version}`;
   const rbSheet = useRef();
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (token === null || currentUser === null || currentUser?.id === undefined) {
       rbSheet.current.close();
+      navigation.navigate("Main");
     }
   }, [currentUser, token]);
 
@@ -166,7 +167,7 @@ function Profile(props) {
           buttonNegativeColor={colors.daclen_gray}
           icon="logout"
           closeThis={() => rbSheet.current.close()}
-          onPress={() => userLogOut(currentUser?.name)}
+          onPress={() => userLogOut(props, currentUser?.name)}
         />
       </RBSheet>
     </SafeAreaView>

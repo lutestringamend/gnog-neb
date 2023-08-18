@@ -323,7 +323,6 @@ const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
   cart: store.userState.cart,
-  watermarkData: store.mediaKitState.watermarkData,
 });
 
 const mapDispatchProps = (dispatch) =>
