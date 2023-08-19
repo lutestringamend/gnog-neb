@@ -25,7 +25,7 @@ import {
   webreferral,
 } from "../../../axios/constants";
 
-const DashButton = (props) => {
+export const DashButton = (props) => {
   return (
     <TouchableOpacity style={styles.button} onPress={() => props?.onPress()}>
       {props?.icon ? (

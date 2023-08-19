@@ -835,11 +835,12 @@ export function getCurrentUser(token, storageCurrentUser) {
       },
     };
 
+    console.log("getCurrentUser", token);
     Axios.get(getcurrentuser, config)
       .then((response) => {
         const data = response.data?.data;
         if (data === undefined || data === null) {
-          console.log("getCurrentUser response data is null");
+          //console.log("getCurrentUser response data is null");
           dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
           dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });
           dispatch({ type: HISTORY_CLEAR_DATA });
@@ -850,7 +851,6 @@ export function getCurrentUser(token, storageCurrentUser) {
             sentryLog(e);
           }
         } else {
-          //console.log(`getCurrentUser token ${token}`, data);
           dispatch({ type: USER_STATE_CHANGE, data });
           dispatch({ type: USER_ADDRESS_STATE_CHANGE, data });
           dispatch({ type: HISTORY_CLEAR_DATA });
@@ -860,7 +860,7 @@ export function getCurrentUser(token, storageCurrentUser) {
         }
       })
       .catch((error) => {
-        console.log("getcurrentuser error");
+        console.error("getCurrentUser", error);
         sentryLog(error);
         dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
         dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });

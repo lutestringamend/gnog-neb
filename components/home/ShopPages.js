@@ -6,16 +6,12 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { getStorageProductData } from "../../axios/product";
 import { colors } from "../../styles/base";
-
-import { getCurrentUser } from "../../axios/user";
 
 function ShopPages(props) {
   const [loading, setLoading] = useState(false);
@@ -41,8 +37,6 @@ function ShopPages(props) {
       setLoading(true);
       props.getStorageProductData(storageProducts, currentIndex - 1);
       setCurrentIndex((currentIndex) => currentIndex - 1);
-      /*} else {
-      props.getCurrentUser("abc", "abc");*/
     }
   };
 
@@ -140,7 +134,6 @@ const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
       getStorageProductData,
-      getCurrentUser,
     },
     dispatch
   );

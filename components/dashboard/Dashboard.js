@@ -46,6 +46,7 @@ const Dashboard = (props) => {
   });
   const [pinLoading, setPinLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [fetchingToken, setFetchingToken] = useState(false);
 
   const {
     currentUser,
@@ -68,30 +69,28 @@ const Dashboard = (props) => {
 
   useEffect(() => {
     if (
-      token === null ||
       currentUser === null ||
       currentUser?.id === undefined ||
-      currentUser?.id === null
-    ) {
-      return;
-    }
-  }, [token, currentUser]);
-
-  useEffect(() => {
-    console.log("redux registerSnapToken", registerSnapToken);
-    if (
-      token === null ||
-      currentUser === null ||
+      currentUser?.id === null ||
       currentUser?.status_member === undefined ||
       currentUser?.status_member === "premium"
     ) {
       return;
     }
-    if (registerSnapToken === null) {
+
+    if (fetchingToken) {
+      props.getRegisterSnapToken(currentUser?.id, token);
+    } else if (registerSnapToken === null) {
       checkAsyncSnapToken();
-      return;
     }
-    setObjectAsync(ASYNC_USER_REGISTER_SNAP_TOKEN_KEY, registerSnapToken);
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (registerSnapToken !== null) {
+      setObjectAsync(ASYNC_USER_REGISTER_SNAP_TOKEN_KEY, registerSnapToken);
+      setFetchingToken(false);
+    }
+    //console.log("redux registerSnapToken", registerSnapToken);
   }, [registerSnapToken]);
 
   useEffect(() => {
@@ -127,6 +126,10 @@ const Dashboard = (props) => {
   }, [profileLock, pinLoading]);
 
   const checkAsyncSnapToken = async () => {
+    if (fetchingToken) {
+      return;
+    }
+    setFetchingToken(true);
     const storageSnapToken = await getObjectAsync(
       ASYNC_USER_REGISTER_SNAP_TOKEN_KEY
     );
@@ -140,6 +143,14 @@ const Dashboard = (props) => {
       props.updateReduxRegisterSnapToken(storageSnapToken);
     }
   };
+
+  const loadUpgradeData = async () => {
+    if (token === undefined || token === null) {
+      return;
+    }
+    setFetchingToken(true);
+    props.getCurrentUser(token, null);
+  }
 
   function fetchHPV() {
     if (
@@ -220,7 +231,8 @@ const Dashboard = (props) => {
           currentUser?.status_member !== "premium" ? (
           <DashboardUpgrade
             registerSnapToken={registerSnapToken}
-            loadData={() => props.getRegisterSnapToken(currentUser?.id, token)}
+            fetchingToken={fetchingToken}
+            loadData={() => loadUpgradeData()}
           />
         ) : profilePIN === null || profilePIN === "" ? (
           <DashboardCreatePIN />

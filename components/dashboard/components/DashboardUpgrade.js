@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   StyleSheet,
   Text,
@@ -8,28 +8,26 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors } from "../../../styles/base";
-import { webdashboard } from "../../../axios/constants";
+import { dashboardkodeetikpdf, webdashboard } from "../../../axios/constants";
 
 const DashboardUpgrade = (props) => {
-  const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
-  const { registerSnapToken } = props;
+  const { registerSnapToken, fetchingToken } = props;
 
   function loadData() {
     if (props?.loadData === undefined || props?.loadData === null) {
       return;
     }
-    setRefreshing(true);
     props?.loadData();
-    setRefreshing(false);
   }
 
   function proceedJoin() {
     if (
-      refreshing ||
+      fetchingToken ||
       registerSnapToken === null ||
       registerSnapToken?.snap_token === undefined
     ) {
@@ -51,11 +49,21 @@ const DashboardUpgrade = (props) => {
     }
   }
 
+  function openKodeEtik() {
+    navigation.navigate("PDFViewer", {
+      title: "Kode Etik",
+      uri: dashboardkodeetikpdf,
+    });
+  }
+
   return (
     <ScrollView
       style={styles.containerLogin}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={() => loadData()} />
+        <RefreshControl
+          refreshing={fetchingToken}
+          onRefresh={() => loadData()}
+        />
       }
     >
       <Text style={styles.text}>You have to pay</Text>
@@ -72,21 +80,71 @@ const DashboardUpgrade = (props) => {
           styles.button,
           {
             backgroundColor:
-              refreshing || registerSnapToken === null
+              fetchingToken || registerSnapToken === null
                 ? colors.daclen_gray
                 : colors.daclen_blue,
           },
         ]}
       >
-        {refreshing ? (
+        {fetchingToken ? (
           <ActivityIndicator
             color={colors.daclen_light}
             size="small"
             style={styles.spinner}
           />
         ) : (
-          <Text style={styles.textButton}>Bergabung Sekarang</Text>
+          <MaterialCommunityIcons
+            name="cursor-pointer"
+            size={20}
+            color={colors.daclen_light}
+          />
         )}
+        <Text style={styles.textButton}>Bergabung Sekarang</Text>
+      </TouchableOpacity>
+      {registerSnapToken === null ? null : (
+        <TouchableOpacity
+          onPress={() => loadData()}
+          style={[
+            styles.button,
+            {
+              backgroundColor:
+                fetchingToken || registerSnapToken === null
+                  ? colors.daclen_gray
+                  : colors.daclen_indigo,
+            },
+          ]}
+        >
+          {fetchingToken ? (
+            <ActivityIndicator
+              color={colors.daclen_light}
+              size="small"
+              style={styles.spinner}
+            />
+          ) : (
+            <MaterialCommunityIcons
+              name="refresh"
+              size={20}
+              color={colors.daclen_light}
+            />
+          )}
+          <Text style={styles.textButton}>Cek Status Pembayaran</Text>
+        </TouchableOpacity>
+      )}
+      <TouchableOpacity
+        onPress={() => openKodeEtik()}
+        style={[
+          styles.button,
+          {
+            backgroundColor: colors.daclen_gold_brown,
+          },
+        ]}
+      >
+        <MaterialCommunityIcons
+          name="file-document-multiple"
+          size={20}
+          color={colors.daclen_light}
+        />
+        <Text style={styles.textButton}>Kode Etik</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -98,13 +156,14 @@ const styles = StyleSheet.create({
     opacity: 0.95,
     marginHorizontal: 12,
     marginVertical: 20,
-    paddingVertical: 24,
+    paddingVertical: 20,
     borderRadius: 6,
     elevation: 2,
   },
   button: {
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: "row",
     marginHorizontal: 12,
     marginTop: 20,
     paddingVertical: 12,
@@ -117,6 +176,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: colors.daclen_light,
+    marginStart: 10,
   },
   text: {
     textAlign: "center",
