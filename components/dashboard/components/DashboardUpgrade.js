@@ -1,21 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
-  View,
   Text,
   TouchableOpacity,
   Linking,
+  ScrollView,
+  RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors } from "../../../styles/base";
 import { webdashboard } from "../../../axios/constants";
 
-const DashboardUpgrade = ({ registerSnapToken }) => {
+const DashboardUpgrade = (props) => {
+  const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
+  const { registerSnapToken } = props;
+
+  function loadData() {
+    if (props?.loadData === undefined || props?.loadData === null) {
+      return;
+    }
+    setRefreshing(true);
+    props?.loadData();
+    setRefreshing(false);
+  }
 
   function proceedJoin() {
     if (
+      refreshing ||
       registerSnapToken === null ||
       registerSnapToken?.snap_token === undefined
     ) {
@@ -38,7 +52,12 @@ const DashboardUpgrade = ({ registerSnapToken }) => {
   }
 
   return (
-    <View style={styles.containerLogin}>
+    <ScrollView
+      style={styles.containerLogin}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={() => loadData()} />
+      }
+    >
       <Text style={styles.text}>You have to pay</Text>
       <Text style={styles.textPrice}>Rp 300.000,-</Text>
       <Text style={styles.text}>
@@ -53,16 +72,23 @@ const DashboardUpgrade = ({ registerSnapToken }) => {
           styles.button,
           {
             backgroundColor:
-              registerSnapToken === null
+              refreshing || registerSnapToken === null
                 ? colors.daclen_gray
                 : colors.daclen_blue,
           },
         ]}
-        disabled={registerSnapToken === null}
       >
-        <Text style={styles.textButton}>Bergabung Sekarang</Text>
+        {refreshing ? (
+          <ActivityIndicator
+            color={colors.daclen_light}
+            size="small"
+            style={styles.spinner}
+          />
+        ) : (
+          <Text style={styles.textButton}>Bergabung Sekarang</Text>
+        )}
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -122,6 +148,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: colors.daclen_light,
     backgroundColor: "transparent",
+  },
+  spinner: {
+    alignSelf: "center",
   },
 });
 

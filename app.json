@@ -2,7 +2,7 @@
   "expo": {
     "name": "Daclen",
     "slug": "daclen",
-    "version": "1.1.97",
+    "version": "1.1.98",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
     "userInterfaceStyle": "light",
@@ -57,7 +57,7 @@
       ],
       "softwareKeyboardLayoutMode": "resize",
       "userInterfaceStyle": "light",
-      "versionCode": 60
+      "versionCode": 61
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -73,8 +73,8 @@
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 31,
-            "targetSdkVersion": 31,
+            "compileSdkVersion": 33,
+            "targetSdkVersion": 33,
             "minSdkVersion": 24,
             "buildToolsVersion": "31.0.0",
             "packagingOptions": {

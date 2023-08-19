@@ -218,7 +218,10 @@ const Dashboard = (props) => {
         ) : currentUser?.status_member === undefined ||
           currentUser?.status_member === null ||
           currentUser?.status_member !== "premium" ? (
-          <DashboardUpgrade registerSnapToken={registerSnapToken} />
+          <DashboardUpgrade
+            registerSnapToken={registerSnapToken}
+            loadData={() => props.getRegisterSnapToken(currentUser?.id, token)}
+          />
         ) : profilePIN === null || profilePIN === "" ? (
           <DashboardCreatePIN />
         ) : currentUser?.nomor_telp_verified_at === null ||

@@ -205,11 +205,11 @@ export function getMediaKitPhotos(token) {
               photo?.kategori[0] === undefined ||
               photo?.kategori[0]?.nama === undefined
             ) {
-              othersArray.push(photo);
+              othersArray.unshift(photo);
             } else {
               let category = photo?.kategori[0]?.nama;
               let theArray = data[category] ? data[category] : [];
-              theArray.push(photo);
+              theArray.unshift(photo);
               data[category] = theArray;
             }
           }
