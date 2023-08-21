@@ -2,7 +2,7 @@
   "expo": {
     "name": "Daclen",
     "slug": "daclen",
-    "version": "1.1.98",
+    "version": "1.1.99",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
     "userInterfaceStyle": "light",
@@ -57,40 +57,12 @@
       ],
       "softwareKeyboardLayoutMode": "resize",
       "userInterfaceStyle": "light",
-      "versionCode": 61
+      "versionCode": 62
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      [
-        "@config-plugins/ffmpeg-kit-react-native",
-        {
-          "package": "min-gpl"
-        }
-      ],
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "compileSdkVersion": 33,
-            "targetSdkVersion": 33,
-            "minSdkVersion": 24,
-            "buildToolsVersion": "31.0.0",
-            "packagingOptions": {
-              "pickFirst": [
-                "lib/arm64-v8a/libc++_shared.so",
-                "lib/armeabi-v7a/libc++_shared.so",
-                "lib/x86/libc++_shared.so",
-                "lib/x86_64/libc++_shared.so"
-              ]
-            }
-          },
-          "ios": {
-            "deploymentTarget": "13.0"
-          }
-        }
-      ],
       [
         "expo-camera",
         {

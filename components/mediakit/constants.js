@@ -4,6 +4,8 @@ export const WatermarkData = {
   url: "",
 }
 
+export const wmarkhorizontalmargin = 24;
+
 export const vwmarktemplatewidth = 3508;
 export const vwmarktemplateheight = 762;
 

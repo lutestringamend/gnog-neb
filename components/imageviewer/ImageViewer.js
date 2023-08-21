@@ -42,6 +42,7 @@ import {
   pdfpageheight,
   pdfpagewidth,
 } from "./constants";
+import ImageLargeWatermarkModel from "../media/ImageLargeWatermarkModel";
 
 const ImageViewer = (props) => {
   const {
@@ -53,6 +54,10 @@ const ImageViewer = (props) => {
     width,
     height,
     text_align,
+    text_x,
+    text_y,
+    link_x,
+    link_y,
     font,
     sharingAvailability,
     disableWatermark,
@@ -60,15 +65,11 @@ const ImageViewer = (props) => {
   const resizedImgWidth = pdfpagewidth - 20;
   const resizedImgHeight = Math.ceil((height * resizedImgWidth) / width);
 
-  let productPhotoWidth =
+  const productPhotoWidth =
     dimensions.fullWidth - staticDimensions.productPhotoWidthMargin;
   const ratio = width / productPhotoWidth;
   const pdfRatio = resizedImgWidth / productPhotoWidth;
-  let fontSize = font?.size?.ukuran
-    ? font?.size?.ukuran >= 48
-      ? font?.size?.ukuran / 3
-      : font?.size?.ukuran
-    : 16;
+  const fontSize = font?.size?.ukuran ? font?.size?.ukuran : 48;
 
   //const [productPhotoHeight, setProductPhotoHeight] = useState(0);
   const productPhotoHeight = isSquare ? productPhotoWidth : height / ratio;
@@ -361,7 +362,8 @@ const ImageViewer = (props) => {
       {id === undefined ||
       id === null ||
       watermarkData === undefined ||
-      watermarkData === null || disableWatermark ? null : (
+      watermarkData === null ||
+      disableWatermark ? null : (
         <ViewShot
           ref={imageRef}
           options={{
@@ -378,37 +380,18 @@ const ImageViewer = (props) => {
               : { width, height },
           ]}
         >
-          <Image
-            source={uri}
-            style={{
-              width: Platform.OS === "web" ? resizedImgWidth : width,
-              height: Platform.OS === "web" ? resizedImgHeight : height,
-              position: "absolute",
-              top: 0,
-              start: 0,
-            }}
-            contentFit="contain"
-            placeholder={null}
-            transition={0}
-            onLoadEnd={() => transformImage()}
-          />
-          <WatermarkModel
+          <ImageLargeWatermarkModel
+            width={width}
+            height={height}
+            displayWidth={Platform.OS === "web" ? resizedImgWidth : width}
+            displayHeight={Platform.OS === "web" ? resizedImgHeight : height}
+            uri={uri}
+            link_x={link_x}
+            link_y={link_y}
+            text_x={text_x}
+            text_y={text_y}
+            fontSize={fontSize}
             watermarkData={watermarkData}
-            ratio={Platform.OS === "web" ? pdfRatio : ratio}
-            text_align={text_align}
-            height={
-              height -
-              Math.ceil(
-                watermarkStyle?.paddingBottom *
-                  (Platform.OS === "web" ? pdfRatio : ratio)
-              )
-            }
-            color={font?.color?.warna}
-            fontSize={Math.ceil(
-              fontSize / (Platform.OS === "web" ? pdfRatio : ratio)
-            )}
-            paddingHorizontal={1}
-            paddingVertical={1}
           />
         </ViewShot>
       )}
@@ -423,7 +406,9 @@ const ImageViewer = (props) => {
         </Text>
       ) : null}
 
-      {watermarkData === null || watermarkData === undefined || disableWatermark ? null : (
+      {watermarkData === null ||
+      watermarkData === undefined ||
+      disableWatermark ? null : (
         <View style={styles.containerHorizontal}>
           {Platform.OS === "web" ? null : (
             <View style={styles.containerButton}>
@@ -527,7 +512,9 @@ const ImageViewer = (props) => {
       )}
 
       <ScrollView contentContainerStyle={styles.scrollView}>
-        {watermarkData === null || watermarkData === undefined || disableWatermark ? (
+        {watermarkData === null ||
+        watermarkData === undefined ||
+        disableWatermark ? (
           <View style={[styles.containerImage, { width: productPhotoWidth }]}>
             <Image
               source={thumbnail ? thumbnail : uri}
@@ -555,31 +542,18 @@ const ImageViewer = (props) => {
                   { width: productPhotoWidth, height: productPhotoHeight },
                 ]}
               >
-                <Image
-                  source={uri}
-                  style={{
-                    width: productPhotoWidth,
-                    height: productPhotoHeight,
-                    position: "absolute",
-                    zIndex: 0,
-                  }}
-                  contentFit="cover"
-                  placeholder={blurhash}
-                  transition={0}
-                />
-                <WatermarkModel
+                <ImageLargeWatermarkModel
+                  width={width}
+                  height={height}
+                  displayWidth={productPhotoWidth}
+                  displayHeight={productPhotoHeight}
+                  uri={uri}
+                  link_x={link_x}
+                  link_y={link_y}
+                  text_x={text_x}
+                  text_y={text_y}
+                  fontSize={fontSize}
                   watermarkData={watermarkData}
-                  ratio={1}
-                  text_align={text_align}
-                  height={
-                    productPhotoHeight -
-                    watermarkStyle.paddingBottom +
-                    watermarkStyle.displayExtraTop
-                  }
-                  color={font?.color?.warna}
-                  fontSize={Math.round(fontSize / ratio)}
-                  paddingHorizontal={1}
-                  paddingVertical={1}
                 />
               </View>
             )}
