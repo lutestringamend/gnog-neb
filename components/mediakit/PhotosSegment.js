@@ -65,7 +65,6 @@ const PhotosSegment = (props) => {
       font: item?.font,
       fontSize: item?.font ? item?.font?.ukuran : 48,
       watermarkData,
-      userId,
       sharingAvailability,
     });
   }

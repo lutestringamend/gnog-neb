@@ -294,6 +294,7 @@ function MediaKitFiles(props) {
               userId={currentUser?.id}
               loading={photoLoading || loading}
               error={photoError}
+              watermarkData={watermarkData}
               sharingAvailability={sharingAvailability}
               photos={mediaKitPhotos}
               photoKeys={photoKeys}

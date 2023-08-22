@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
   ActivityIndicator,
   SafeAreaView,
@@ -26,8 +26,6 @@ import {
   dimensions,
   blurhash,
 } from "../../styles/base";
-import { getFileName } from "../media";
-import WatermarkModel from "../media/WatermarkModel";
 import { sentryLog } from "../../sentry";
 import {
   sharingOptionsJPEG,
@@ -53,7 +51,6 @@ const ImageViewer = (props) => {
     isSquare,
     width,
     height,
-    text_align,
     text_x,
     text_y,
     link_x,
@@ -77,6 +74,7 @@ const ImageViewer = (props) => {
   const [error, setError] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [captureFailure, setCaptureFailure] = useState(false);
   const [transformedImage, setTransformedImage] = useState(null);
   const [pdfUri, setPdfUri] = useState(null);
   const [downloadUri, setDownloadUri] = useState(null);
@@ -226,7 +224,36 @@ const ImageViewer = (props) => {
     }
   };
 
-  const save = async (uri, mimeType) => {
+  /*function onManualCapture(uri) {
+    setTransformedImage(uri);
+  }
+
+  const onCapture = useCallback((uri) => {
+    onManualCapture(uri);
+  }, []);
+
+  const onManualCaptureFailure = (e) => {
+    if (captureFailure) {
+      console.log("onCaptureFailure", e);
+      if (Platform.OS === "android") {
+        ToastAndroid.show(e.toString(), ToastAndroid.LONG);
+      }
+    } else {
+      creatingErrorLogDebug(e);
+    }
+    setLoading(false);
+  };
+
+  const onCaptureFailure = useCallback((e) => {
+    if (!captureFailure) {
+      setCaptureFailure(true);
+      onManualCaptureFailure(e);
+    } else {
+      console.log("onCaptureFailure", e);
+    }
+  }, []);*/
+
+  /*const save = async (uri, mimeType) => {
     if (Platform.OS === "android") {
       const permissions =
         await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
@@ -271,14 +298,6 @@ const ImageViewer = (props) => {
                   e.toString()
               );
             }
-            /*if (Platform.OS === "android") {
-              ToastAndroid.show(
-                base64.substring(0, 64) +
-                  "\ncreateFileAsync catch\n" +
-                  e.toString(),
-                ToastAndroid.LONG
-              );
-            }*/
           });
       } else {
         setSuccess(false);
@@ -288,7 +307,7 @@ const ImageViewer = (props) => {
       //sharePhotoAsync()
       renderPDF(uri);
     }
-  };
+  };*/
 
   const shareJPGApple = async () => {
     const fileName = `daclen_foto_${id ? id.toString() : ""}.jpg`;
@@ -301,17 +320,22 @@ const ImageViewer = (props) => {
         to: uri,
       });
       setSharing(true);
-      await shareAsync(imageProc?.uri, sharingOptionsJPEG);
+      await sharePhotoAsync(imageProc?.uri);
       setSharing(false);
     } catch (error) {
       creatingErrorLogDebug(error);
-      setSharing(true);
-      await shareAsync(newUri, sharingOptionsJPEG);
-      setSharing(false);
+      shareJPGAndroid();
     }
   };
 
-  const startDownload = async (useWatermark) => {
+  const shareJPGAndroid = async () => {
+    setSharing(true);
+    //const newUri = await FileSystem.getContentUriAsync(transformedImage);
+    await sharePhotoAsync(transformedImage);
+    setSharing(false);
+  };
+
+  /*const startDownload = async (useWatermark) => {
     if (!loading) {
       if (downloadUri === null) {
         setError(null);
@@ -349,13 +373,15 @@ const ImageViewer = (props) => {
         sharePhotoAsync(downloadUri);
       }
     }
-  };
+  };*/
 
   const sharePDF = async () => {
     setSharing(true);
     await shareAsync(pdfUri, sharingOptionsPDF);
     setSharing(false);
   };
+
+  //startDownload(transformedImage !== null && transformedImage !== "")
 
   return (
     <SafeAreaView style={styles.container}>
@@ -371,21 +397,32 @@ const ImageViewer = (props) => {
             format: "jpg",
             quality: 1,
             result: "tmpfile",
-            useRenderInContext: true,
+            useRenderInContext: Platform.OS === "ios",
           }}
           style={[
             styles.containerLargeImage,
-            Platform.OS === "web"
-              ? { width: resizedImgWidth, height: resizedImgHeight }
-              : { width, height },
+            { width: resizedImgWidth, height: resizedImgHeight },
           ]}
+          captureMode=""
         >
+          <Image
+            source={uri}
+            style={[
+              styles.image,
+              { width: resizedImgWidth, height: resizedImgHeight, zIndex: 1 },
+            ]}
+            contentFit="contain"
+            placeholder={null}
+            transition={0}
+            onLoadEnd={() => transformImage()}
+          />
           <ImageLargeWatermarkModel
+            style={styles.image}
             width={width}
             height={height}
-            displayWidth={Platform.OS === "web" ? resizedImgWidth : width}
-            displayHeight={Platform.OS === "web" ? resizedImgHeight : height}
-            uri={uri}
+            displayWidth={resizedImgWidth}
+            displayHeight={resizedImgHeight}
+            uri={null}
             link_x={link_x}
             link_y={link_y}
             text_x={text_x}
@@ -414,33 +451,29 @@ const ImageViewer = (props) => {
             <View style={styles.containerButton}>
               <TouchableOpacity
                 onPress={() =>
-                  Platform.OS === "ios"
-                    ? shareJPGApple()
-                    : startDownload(
-                        transformedImage !== null && transformedImage !== ""
-                      )
+                  Platform.OS === "ios" ? shareJPGApple() : shareJPGAndroid()
                 }
                 style={[
                   styles.button,
-                  (loading ||
-                    sharing ||
-                    downloadUri !== null ||
-                    transformedImage !== null ||
-                    Platform.OS === "web") &&
-                    !sharingAvailability && {
-                      backgroundColor: colors.daclen_gray,
-                    },
+                  {
+                    backgroundColor:
+                      loading ||
+                      sharing ||
+                      transformedImage === null ||
+                      !sharingAvailability
+                        ? colors.daclen_gray
+                        : colors.daclen_orange,
+                  },
                 ]}
                 disabled={
                   loading ||
                   sharing ||
-                  ((downloadUri !== null ||
-                    transformedImage !== null ||
-                    Platform.OS === "web") &&
-                    !sharingAvailability)
+                  transformedImage === null ||
+                  Platform.OS === "web" ||
+                  !sharingAvailability
                 }
               >
-                {sharing ? (
+                {sharing || loading || transformedImage === null ? (
                   <ActivityIndicator
                     size="small"
                     color={colors.daclen_light}
@@ -448,15 +481,9 @@ const ImageViewer = (props) => {
                   />
                 ) : (
                   <MaterialCommunityIcons
-                    name={
-                      downloadUri !== null ||
-                      transformedImage !== null ||
-                      Platform.OS === "web"
-                        ? "share-variant"
-                        : "download"
-                    }
+                    name="share-variant"
                     size={18}
-                    color="white"
+                    color={colors.daclen_light}
                   />
                 )}
 
@@ -501,7 +528,7 @@ const ImageViewer = (props) => {
                 <MaterialCommunityIcons
                   name="file-download"
                   size={18}
-                  color="white"
+                  color={colors.daclen_light}
                 />
               )}
 
@@ -547,7 +574,7 @@ const ImageViewer = (props) => {
                   height={height}
                   displayWidth={productPhotoWidth}
                   displayHeight={productPhotoHeight}
-                  uri={uri}
+                  uri={thumbnail}
                   link_x={link_x}
                   link_y={link_y}
                   text_x={text_x}
@@ -606,7 +633,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   image: {
-    backgroundColor: "white",
+    position: "absolute",
+    top: 0,
+    start: 0,
+    backgroundColor: "transparent",
+    zIndex: 2,
     overflow: "visible",
   },
   containerHorizontal: {

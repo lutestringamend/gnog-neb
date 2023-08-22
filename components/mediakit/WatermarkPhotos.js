@@ -20,13 +20,14 @@ const WatermarkPhotos = ({
   photoKeys,
   loading,
   error,
+  watermarkData,
   sharingAvailability,
   refreshPage
 }) => {
   try {
 
     return (
-      <View style={styles.containerFlatlist}>
+      <View style={styles.container}>
         {error ? (
           <ErrorView
             error="Mohon membuka website Daclen untuk melihat foto Media Kit"
@@ -55,10 +56,12 @@ const WatermarkPhotos = ({
             }
             renderItem={({ item, index }) => (
               <WatermarkPhotosSegment
+                index={index}
                 isLast={index === photoKeys?.length - 1}
                 key={item}
                 title={item}
                 photos={photos[item]}
+                watermarkData={watermarkData}
                 sharingAvailability={sharingAvailability}
               />
             )}
@@ -87,6 +90,11 @@ const WatermarkPhotos = ({
 */
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: "transparent",
+  },
   containerFlatlist: {
     flex: 1,
     width: "100%",

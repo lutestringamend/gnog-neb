@@ -64,21 +64,23 @@ function ImageLargeWatermarkModel(props) {
         },
         style ? style : null,
       ]}
-    >
-      <Image
-        source={uri}
-        style={[
-          styles.image,
-          {
-            width: displayWidth ? displayWidth : width,
-            height: displayHeight ? displayHeight : height,
-          },
-        ]}
-        contentFit="contain"
-        placeholder={null}
-        transition={0}
-      />
-
+    > 
+    {uri === undefined || uri === null ? null : 
+    <Image
+    source={uri}
+    style={[
+      styles.image,
+      {
+        width: displayWidth ? displayWidth : width,
+        height: displayHeight ? displayHeight : height,
+      },
+    ]}
+    contentFit="contain"
+    placeholder={null}
+    transition={0}
+  />
+    }
+      
       <View
         style={[
           styles.containerUrl,
