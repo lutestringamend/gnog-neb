@@ -82,6 +82,16 @@ function Profile(props) {
     userLogOut(props, currentUser?.name);
   }
 
+  /*
+        <ProfileMenuItem
+          text={commissionpoint}
+          icon={commissionpointicon}
+          screen="PDFViewer"
+          thickness={3}
+          webKey={commissionpointpdf}
+        />
+  */
+
   return (
     <SafeAreaView style={styles.container}>
       <MainHeader icon="arrow-left" title="Setting Pengguna" />
@@ -119,14 +129,6 @@ function Profile(props) {
           screen={null}
           onItemClick={() => openWhatsapp(adminWA, adminWAtemplate)}
           thickness={2}
-        />
-
-        <ProfileMenuItem
-          text={commissionpoint}
-          icon={commissionpointicon}
-          screen="PDFViewer"
-          thickness={3}
-          webKey={commissionpointpdf}
         />
 
         <ProfileMenuItem

@@ -206,8 +206,8 @@ const ImageViewer = (props) => {
         console.log("pdf html", html);
       }
       const result = await Print.printToFileAsync({
-        width: resizedImgWidth,
-        height: resizedImgHeight,
+        width: resizedImgWidth - 60,
+        height: resizedImgHeight - 40,
         html,
       });
       if (result?.uri) {
@@ -445,10 +445,9 @@ const ImageViewer = (props) => {
 
       {watermarkData === null ||
       watermarkData === undefined ||
-      disableWatermark ? null : (
+      disableWatermark || !sharingAvailability || Platform.OS === "web" ? null : (
         <View style={styles.containerHorizontal}>
-          {Platform.OS === "web" ? null : (
-            <View style={styles.containerButton}>
+          <View style={styles.containerButton}>
               <TouchableOpacity
                 onPress={() =>
                   Platform.OS === "ios" ? shareJPGApple() : shareJPGAndroid()
@@ -459,8 +458,7 @@ const ImageViewer = (props) => {
                     backgroundColor:
                       loading ||
                       sharing ||
-                      transformedImage === null ||
-                      !sharingAvailability
+                      transformedImage === null
                         ? colors.daclen_gray
                         : colors.daclen_orange,
                   },
@@ -468,12 +466,10 @@ const ImageViewer = (props) => {
                 disabled={
                   loading ||
                   sharing ||
-                  transformedImage === null ||
-                  Platform.OS === "web" ||
-                  !sharingAvailability
+                  transformedImage === null
                 }
               >
-                {sharing || loading || transformedImage === null ? (
+                {loading || transformedImage === null ? (
                   <ActivityIndicator
                     size="small"
                     color={colors.daclen_light}
@@ -490,7 +486,6 @@ const ImageViewer = (props) => {
                 <Text style={styles.textButton}>Share Foto</Text>
               </TouchableOpacity>
             </View>
-          )}
 
           <View style={styles.containerButton}>
             <TouchableOpacity
@@ -502,9 +497,7 @@ const ImageViewer = (props) => {
                     loading ||
                     sharing ||
                     pdfUri === null ||
-                    transformedImage === null ||
-                    Platform.OS === "web" ||
-                    !sharingAvailability
+                    transformedImage === null 
                       ? colors.daclen_gray
                       : colors.daclen_blue,
                 },
@@ -513,12 +506,10 @@ const ImageViewer = (props) => {
                 loading ||
                 sharing ||
                 pdfUri === null ||
-                transformedImage === null ||
-                Platform.OS === "web" ||
-                !sharingAvailability
+                transformedImage === null
               }
             >
-              {(pdfUri === null && Platform.OS !== "web") || sharing ? (
+              {loading || transformedImage === null || pdfUri === null ? (
                 <ActivityIndicator
                   size="small"
                   color={colors.daclen_light}

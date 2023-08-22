@@ -48,6 +48,7 @@ import {
   USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE,
   USER_PROFILE_PIN_STATE_CHANGE,
   USER_REGISTER_SNAP_TOKEN_STATE_CHANGE,
+  MEDIA_CLEAR_DATA,
 } from "../../redux/constants";
 import {
   calculateBase64SizeInBytes,
@@ -409,7 +410,7 @@ export function updateUserPhoto(id, token, uri) {
         const fileSize = calculateBase64SizeInBytes(uri);
         if (fileSize >= MAXIMUM_FILE_SIZE_IN_BYTES) {
           dispatch(sendProfilePhotoUnusable(true));
-          dispatch(clearMediaData());
+          dispatch({ type: MEDIA_CLEAR_DATA });
           return;
         }
 
@@ -454,7 +455,6 @@ export function updateUserPhoto(id, token, uri) {
             }*/
           if (data?.session === "success") {
             dispatch({ type: USER_UPDATE_STATE_CHANGE, data: data });
-            dispatch(getCurrentUser(token));
           } else if (data?.errors !== undefined) {
             if (data?.errors?.foto !== undefined) {
               dispatch({
@@ -482,7 +482,7 @@ export function updateUserPhoto(id, token, uri) {
               },
             });
           }
-          dispatch(clearMediaData());
+          dispatch({ type: MEDIA_CLEAR_DATA });
         })
         .catch((error) => {
           console.error(error);
@@ -523,7 +523,7 @@ export function updateUserPhoto(id, token, uri) {
   }
 }
 
-export function updateUserData(id, userData, address, token, currentUser) {
+export function updateUserData(id, userData, address, token, currentUser, foto) {
   try {
     return (dispatch) => {
       const config = {
@@ -591,9 +591,7 @@ export function updateUserData(id, userData, address, token, currentUser) {
                 detail_user: {
                   ...currentUser?.detail_user,
                   ...params,
-                  foto: currentUser?.detail_user?.foto
-                    ? currentUser?.detail_user?.foto
-                    : null,
+                  foto: foto ? foto : currentUser?.detail_user?.foto,
                   bank: {
                     ...currentUser?.detail_user?.bank,
                     id: params?.bank_id,

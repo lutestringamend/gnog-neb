@@ -100,6 +100,8 @@ const WatermarkPhotosSegment = (props) => {
                       styles.image,
                       {
                         borderRadius: 2,
+                        borderWidth: 1,
+                        borderColor: colors.daclen_lightgrey,
                         marginStart: 0,
                         alignSelf: "flex-start",
                         elevation: 4,

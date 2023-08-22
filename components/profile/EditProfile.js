@@ -20,8 +20,13 @@ import moment from "moment";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { updateUserData, getBank, updateUserPhoto } from "../../axios/user";
-import { clearMediaData, getMimeType, getProfilePictureName } from "../media";
+import {
+  updateUserData,
+  getBank,
+  updateUserPhoto,
+  getCurrentUser,
+} from "../../axios/user";
+import { clearMediaData } from "../media";
 import UserData from "./UserData";
 import Separator from "./Separator";
 import BSTextInput from "../bottomsheets/BSTextInput";
@@ -37,23 +42,32 @@ import {
 import { colors, blurhash, staticDimensions } from "../../styles/base";
 import { intiialPermissions, checkMediaPermissions } from "../media";
 import BSMedia from "../bottomsheets/BSMedia";
+import { setObjectAsync } from "../asyncstorage";
+import { ASYNC_USER_CURRENTUSER_KEY } from "../asyncstorage/constants";
 
 function EditProfile(props) {
   const [user, setUser] = useState(UserData);
   const [loading, setLoading] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState({
+    pending: false,
+    uploading: false,
+  });
   const [bottomList, setBottomList] = useState([]);
   const [genderArray, setGenderArray] = useState(genderchoices);
   const [bankName, setBankName] = useState("");
 
+  const { token, currentUser, currentAddress, userUpdate } = props;
   const navigation = useNavigation();
   const rbSheet = useRef();
   const rbSheetMedia = useRef();
   const rbSheetAddress = useRef();
 
   const [permissions, setPermissions] = useState(intiialPermissions);
-  const exitRightAway = props.route.params?.exitRightAway ? props.route.params?.exitRightAway : false;
+  const exitRightAway = props.route.params?.exitRightAway
+    ? props.route.params?.exitRightAway
+    : false;
 
   useEffect(() => {
     const initiatePermission = async () => {
@@ -66,40 +80,60 @@ function EditProfile(props) {
     }
   }, []);
 
-  useEffect(() => {
+  /*useEffect(() => {
     console.log({ permissions });
-  }, [permissions]);
+  }, [permissions]);*/
 
   useEffect(() => {
-    if (props.currentUser === undefined || props.currentUser === null || props.currentUser?.id === undefined) {
+    if (
+      currentUser === undefined ||
+      currentUser === null ||
+      currentUser?.id === undefined
+    ) {
       setLoading(false);
       return;
     }
     setLoading(true);
-      setUser({
-        nama_lengkap: props.currentUser?.detail_user?.nama_lengkap,
-        email: props.currentUser?.email,
-        nomor_telp: props.currentUser?.nomor_telp,
-        jenis_kelamin: props.currentUser?.detail_user?.jenis_kelamin,
-        tanggal_lahir: props.currentUser?.detail_user?.tanggal_lahir,
-        nomor_rekening: props.currentUser?.detail_user?.nomor_rekening,
-        bank_name: props.currentUser?.detail_user?.bank?.nama,
-        bank_id: props.currentUser?.detail_user?.bank?.id,
-        cabang_bank: props.currentUser?.detail_user?.cabang_bank,
-        nama_depan: props.currentUser?.detail_user?.nama_depan,
-        nama_belakang: props.currentUser?.detail_user?.nama_belakang,
+    if (uploadingPhoto?.pending) {
+      setUploadingPhoto({
+        pending: false,
+        uploading: true,
       });
-      setGenderArray(
-        genderArray.map((item) =>
-          item.value === props.currentUser?.detail_user?.jenis_kelamin
-            ? { ...item, selected: true }
-            : { ...item, selected: false }
-        )
-      );
-    console.log("EditProfile currentUser", props.currentUser);
-    let newBankId = props.currentUser?.detail_user?.bank?.id;
-    if (props.banks?.length === undefined || props.banks?.length < 1 || newBankId === undefined || newBankId === null) {
-      setBankName(props.currentUser?.detail_user?.bank?.nama);
+      executeUploadPhoto();
+    }
+    /*if (userUpdate?.session === "success") {
+      setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, currentUser);
+    }*/
+
+    setUser({
+      nama_lengkap: currentUser?.detail_user?.nama_lengkap,
+      email: currentUser?.email,
+      nomor_telp: currentUser?.nomor_telp,
+      jenis_kelamin: currentUser?.detail_user?.jenis_kelamin,
+      tanggal_lahir: currentUser?.detail_user?.tanggal_lahir,
+      nomor_rekening: currentUser?.detail_user?.nomor_rekening,
+      bank_name: currentUser?.detail_user?.bank?.nama,
+      bank_id: currentUser?.detail_user?.bank?.id,
+      cabang_bank: currentUser?.detail_user?.cabang_bank,
+      nama_depan: currentUser?.detail_user?.nama_depan,
+      nama_belakang: currentUser?.detail_user?.nama_belakang,
+    });
+    setGenderArray(
+      genderArray.map((item) =>
+        item.value === currentUser?.detail_user?.jenis_kelamin
+          ? { ...item, selected: true }
+          : { ...item, selected: false }
+      )
+    );
+    console.log("EditProfile currentUser", currentUser);
+    let newBankId = currentUser?.detail_user?.bank?.id;
+    if (
+      props.banks?.length === undefined ||
+      props.banks?.length < 1 ||
+      newBankId === undefined ||
+      newBankId === null
+    ) {
+      setBankName(currentUser?.detail_user?.bank?.nama);
       return;
     }
     for (let bank of props.banks) {
@@ -108,7 +142,7 @@ function EditProfile(props) {
         return;
       }
     }
-  }, [props.currentUser]);
+  }, [currentUser]);
 
   useEffect(() => {
     //console.log(user?.bank_id, user?.bank_name);
@@ -117,30 +151,41 @@ function EditProfile(props) {
 
   useEffect(() => {
     //debug purposes
-    if (props.currentUser?.id === 8054 && props.profilePicture !== null) {
+    /*if (currentUser?.id === 8054 && props.profilePicture !== null) {
       let uri = Platform.OS === "web" ? "base64" : props.profilePicture;
       let type = getMimeType(props.profilePicture);
       let name = getProfilePictureName(
-        props.currentUser?.id,
+        currentUser?.id,
         type,
         props.profilePicture
       );
       setError(`uri ${uri}\ntype ${type}\nname ${name}`);
+    }*/
+    if (uploadingPhoto.uploading) {
+      setUploadingPhoto({
+        pending: false,
+        uploading: false,
+      });
     }
+    console.log(
+      "redux media profilePicture",
+      props.profilePicture === null ? null : "not null"
+    );
   }, [props.profilePicture]);
 
   useEffect(() => {
     if (loading) {
-      if (props.userUpdate?.session === "success") {
+      if (userUpdate?.session === "success") {
+        props.getCurrentUser(token);
         setSuccess(true);
-        setError(props.userUpdate?.message);
+        setError(userUpdate?.message);
         if (exitRightAway) {
           navigation.goBack();
         }
       } else {
         setSuccess(false);
         let errorHeader = "Gagal update data user\n";
-        switch (props.userUpdate?.session) {
+        switch (userUpdate?.session) {
           case "photoError":
             errorHeader = "Gagal upload foto\n";
             break;
@@ -153,14 +198,14 @@ function EditProfile(props) {
           default:
             break;
         }
-        setError(`${errorHeader}${props.userUpdate?.message}`);
+        setError(`${errorHeader}${userUpdate?.message}`);
       }
       setLoading(false);
-    } else if (props.userUpdate?.session === "photoError") {
+    } else if (userUpdate?.session === "photoError") {
       setSuccess(false);
-      setError("Error mengambil foto baru\n" + props.userUpdate?.message);
+      setError("Error mengambil foto baru\n" + userUpdate?.message);
     }
-  }, [props.userUpdate]);
+  }, [userUpdate]);
 
   useEffect(() => {
     if (loading) {
@@ -187,27 +232,29 @@ function EditProfile(props) {
       if (props.banks?.length > 0) {
         setBottomList(props.banks);
         rbSheet.current.open();
-      } else if (props.token !== null) {
+      } else if (token !== null) {
         setLoading(true);
-        props.getBank(props.token);
+        props.getBank(token);
       }
     }
   }
 
   function getBSValue(item) {
     if (
-      !(item?.id === undefined ||
-      item?.id === null ||
-      item?.nama === undefined ||
-      item?.nama === null ||
-      item?.id == user?.bank_id)
+      !(
+        item?.id === undefined ||
+        item?.id === null ||
+        item?.nama === undefined ||
+        item?.nama === null ||
+        item?.id == user?.bank_id
+      )
     ) {
       setUser({
         ...user,
         bank_id: item?.id,
         bank_name: item?.nama,
       });
-      setBankName(item?.nama)
+      setBankName(item?.nama);
     }
     //console.log(JSON.stringify(item));
     rbSheet.current.close();
@@ -229,32 +276,38 @@ function EditProfile(props) {
       setError("Nama Bank harus dipilih");
     } else if (user?.nomor_telp === "") {
       setError("Nomor Telepon harus diisi");
-    } else if (
-      !loading &&
-      props.token !== null &&
-      props.currentUser?.id !== undefined
-    ) {
+    } else if (!loading && token !== null && currentUser?.id !== undefined) {
       setLoading(true);
-      props.updateUserData(
-        props.currentUser?.id,
-        user,
-        props.currentAddress,
-        props.token,
-        props.currentUser
-      );
       if (
-        props.profilePicture !== null &&
-        props.profilePicture !== undefined &&
-        props.profilePicture !== ""
+        !(
+          props.profilePicture === null ||
+          props.profilePicture === undefined ||
+          props.profilePicture === ""
+        )
       ) {
-        props.updateUserPhoto(
-          props.currentUser?.id,
-          props.token,
-          props.profilePicture
-        );
+        setUploadingPhoto({
+          pending: true,
+          uploading: false,
+        });
       }
+      executeUploadData(currentUser?.detail_user?.foto);
     }
   }
+
+  const executeUploadPhoto = () => {
+    props.updateUserPhoto(currentUser?.id, token, props.profilePicture);
+  };
+
+  const executeUploadData = (foto) => {
+    props.updateUserData(
+      currentUser?.id,
+      user,
+      currentAddress,
+      token,
+      currentUser,
+      foto
+    );
+  };
 
   function openFillAddress() {
     rbSheetAddress.current.close();
@@ -265,49 +318,71 @@ function EditProfile(props) {
     return (
       <View style={styles.container}>
         {error ? (
-            <Text
-              style={[
-                styles.textError,
-                success && { backgroundColor: colors.daclen_green },
-              ]}
-            >
-              {error}
-            </Text>
-          ) : null}
+          <Text
+            style={[
+              styles.textError,
+              success && { backgroundColor: colors.daclen_green },
+            ]}
+          >
+            {error}
+          </Text>
+        ) : null}
         <ScrollView style={styles.scrollView}>
           <TouchableOpacity
-            style={styles.containerPhoto}
+            style={[
+              styles.containerPhoto,
+              {
+                opacity:
+                  uploadingPhoto.pending || uploadingPhoto.uploading ? 0.6 : 1,
+              },
+            ]}
             onPress={() => rbSheetMedia.current.open()}
           >
             <Image
               style={styles.image}
               source={
-                props.profilePicture !== null &&
-                props.profilePicture !== undefined
-                  ? props.profilePicture
-                  : props.currentUser?.detail_user?.foto !== ""
-                  ? props.currentUser?.detail_user?.foto
-                  : require("../../assets/user.png")
+                props.profilePicture === undefined ||
+                props.profilePicture === null ||
+                props.profilePicture === ""
+                  ? currentUser === null ||
+                    currentUser?.detail_user === undefined ||
+                    currentUser?.detail_user === null ||
+                    currentUser?.detail_user?.foto === undefined ||
+                    currentUser?.detail_user?.foto === null ||
+                    currentUser?.detail_user?.foto === ""
+                    ? require("../../assets/user.png")
+                    : currentUser?.detail_user?.foto
+                  : props.profilePicture
               }
               alt={user?.nama_lengkap}
               contentFit="cover"
               placeholder={blurhash}
-              transition={0}
+              transition={100}
             />
-            <View style={styles.containerEdit}>
-              <MaterialCommunityIcons
-                name="image-edit"
-                size={28}
-                color="white"
-              />
-            </View>
+            {uploadingPhoto.pending || uploadingPhoto.uploading ? (
+              <View style={styles.containerPhotoSpinner}>
+                <ActivityIndicator
+                  size="small"
+                  color={colors.daclen_orange}
+                  style={{ alignSelf: "center" }}
+                />
+              </View>
+            ) : (
+              <View style={styles.containerEdit}>
+                <MaterialCommunityIcons
+                  name="image-edit"
+                  size={28}
+                  color="white"
+                />
+              </View>
+            )}
           </TouchableOpacity>
 
           <Text style={styles.textCompulsory}>Nomor Telepon*</Text>
-          {props.currentUser?.nomor_telp_verified_at && (
+          {currentUser?.nomor_telp_verified_at && (
             <Text style={[styles.text, { marginBottom: 4 }]}>
               Telah diverifikasi pada
-              {moment(props.currentUser?.nomor_telp_verified_at).format(
+              {moment(currentUser?.nomor_telp_verified_at).format(
                 " MMM DD YYYY, HH:mm"
               )}
             </Text>
@@ -319,10 +394,10 @@ function EditProfile(props) {
           />
 
           <Text style={styles.textCompulsory}>Email*</Text>
-          {props.currentUser?.email_verified_at && (
+          {currentUser?.email_verified_at && (
             <Text style={[styles.text, { marginBottom: 4 }]}>
               Telah diverifikasi pada
-              {moment(props.currentUser?.email_verified_at).format(
+              {moment(currentUser?.email_verified_at).format(
                 " MMM DD YYYY, HH:mm"
               )}
             </Text>
@@ -428,11 +503,16 @@ function EditProfile(props) {
             onPress={() => updateUserData()}
             style={[
               styles.button,
-              loading && { backgroundColor: colors.daclen_gray },
+              {
+                backgroundColor:
+                  loading || uploadingPhoto.pending || uploadingPhoto.uploading
+                    ? colors.daclen_gray
+                    : colors.daclen_blue,
+              },
             ]}
             disabled={loading}
           >
-            {loading ? (
+            {loading || uploadingPhoto.pending || uploadingPhoto.uploading ? (
               <ActivityIndicator
                 size="small"
                 color={colors.daclen_light}
@@ -527,6 +607,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_orange,
     borderRadius: 100,
   },
+  containerPhotoSpinner: {
+    position: "absolute",
+    top: 0,
+    start: 0,
+    width: 202,
+    height: 202,
+    backgroundColor: "transparent",
+    zIndex: 6,
+    elevation: 6,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   containerEdit: {
     position: "absolute",
     end: 10,
@@ -589,9 +681,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     marginHorizontal: 20,
     marginBottom: 20,
-    borderRadius: 4,
+    borderRadius: 6,
     elevation: 3,
-    backgroundColor: colors.daclen_black,
+    backgroundColor: colors.daclen_blue,
   },
   textError: {
     fontSize: 14,
@@ -626,7 +718,13 @@ const mapStateToProps = (store) => ({
 
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
-    { updateUserData, getBank, updateUserPhoto, clearMediaData },
+    {
+      updateUserData,
+      getBank,
+      updateUserPhoto,
+      clearMediaData,
+      getCurrentUser,
+    },
     dispatch
   );
 
