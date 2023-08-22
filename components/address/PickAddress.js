@@ -1,17 +1,18 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
+  Image,
   Text,
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
   RefreshControl,
 } from "react-native";
-import * as Location from "expo-location";
+//import * as Location from "expo-location";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { FlashList } from "@shopify/flash-list";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -20,23 +21,21 @@ import { colors, staticDimensions } from "../../styles/base";
 import {
   updateReduxUserAddressId,
   updateReduxUserAddresses,
-} from "../../backend/user";
+} from "../../axios/user";
 import { sentryLog } from "../../sentry";
-import Separator from "../profile/Separator";
 import AddressItem from "./AddressItem";
 import { setObjectAsync } from "../asyncstorage";
 import { ASYNC_USER_PROFILE_ADDRESS_ID_KEY } from "../asyncstorage/constants";
 import { AddressData } from "./AddressData";
 import Header from "../profile/Header";
-import { locationnull, locationpermissionnotgranted } from "./constants";
-import { googleAPIdevkey } from "../../backend/constants";
-
-let foregroundSubscription = null;
+import { privacypolicy } from "../profile/constants";
 
 function PickAddress(props) {
   const navigation = useNavigation();
   const [originalId, setOriginalId] = useState(null);
   const [changeText, setChangeText] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const { currentUser, addressId, addresses } = props;
   const { isCheckout } = props.route.params;
 
@@ -70,8 +69,7 @@ function PickAddress(props) {
       if (navigation === undefined || navigation === null) {
         return;
       }
-      navigation.navigate("FillAddress", {
-        ...AddressData,
+      navigation.navigate("Address", {
         isCheckout,
         isNew: true,
         isRealtime: false,
@@ -108,18 +106,33 @@ function PickAddress(props) {
           </TouchableOpacity>
         ) : null}
         <ScrollView style={styles.containerScroll}>
-          <Text style={[styles.textUid, { textAlign: "left" }]}>
-            Anda bisa menggunakan lokasi handphone sekarang atau memilih salah
-            satu alamat yang tersimpan. Nakes akan mengunjungi Anda di alamat
-            yang dipilih.
+        <Image
+            source={require("../../assets/alamat.png")}
+            style={styles.logo}
+          />
+          <Text style={[styles.textUid, { textAlign: "start", marginBottom: 12, }]}>
+            Mohon mengisi alamat lengkap yang akan digunakan untuk informasi
+            Checkout Anda dan pengiriman barang. Informasi ini akan dibagikan ke
+            kurir pengiriman sebagai pihak ketiga apabila Anda telah melunasi
+            Checkout.
           </Text>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Webview", {
+                webKey: "privacy",
+                text: privacypolicy,
+              })
+            }
+            disabled={loading}
+          >
+            <Text style={styles.textChange}>Baca {privacypolicy}</Text>
+          </TouchableOpacity>
 
-          <Text style={styles.textHeader}>Alamat yang Tersimpan</Text>
           <TouchableOpacity style={styles.button} onPress={() => addAddress()}>
             <MaterialCommunityIcons
               name="map-plus"
               size={18}
-              color={colors.light_grey}
+              color={colors.daclen_light}
             />
             <Text style={styles.textButton}>Tambah Alamat Baru</Text>
           </TouchableOpacity>
@@ -154,7 +167,7 @@ function PickAddress(props) {
               )}
               refreshControl={
                 <RefreshControl
-                  refreshing={loading}
+                  refreshing={refreshing}
                   onRefresh={() => reloadUserData()}
                 />
               }
@@ -215,6 +228,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_red,
     textAlign: "center",
   },
+  textChange: {
+    color: colors.daclen_blue,
+    fontSize: 14,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginVertical: 4,
+    marginHorizontal: 20,
+  },
   textHeader: {
     fontSize: 16,
     fontWeight: "bold",
@@ -237,6 +258,12 @@ const styles = StyleSheet.create({
   },
   spinner: {
     marginTop: 20,
+    alignSelf: "center",
+  },
+  logo: {
+    width: 120,
+    height: 120,
+    backgroundColor: "transparent",
     alignSelf: "center",
   },
 });

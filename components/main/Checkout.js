@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -10,9 +10,8 @@ import {
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-
+import RBSheet from "react-native-raw-bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
-
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
@@ -26,7 +25,12 @@ import CartDetails from "../cart/CartDetails";
 import CartAction from "../cart/CartAction";
 import Separator from "../profile/Separator";
 import { colors, staticDimensions } from "../../styles/base";
-import { checkoutsubtotalcommissionpercentage } from "./constants";
+import {
+  checkoutdefaultsendername,
+  checkoutsubtotalcommissionpercentage,
+} from "./constants";
+import BSPopup from "../bottomsheets/BSPopup";
+import CheckoutSenderName from "./CheckoutSenderName";
 
 function Checkout(props) {
   const [products, setProducts] = useState([]);
@@ -45,6 +49,11 @@ function Checkout(props) {
   //const [packaging, setPackaging] = useState(null);
   const packaging = "Box";
 
+  const [senderName, setSenderName] = useState({
+    final: checkoutdefaultsendername,
+    temp: checkoutdefaultsendername,
+  });
+
   const [points, setPoints] = useState(0);
   const [weight, setWeight] = useState(0);
   const [weightVolume, setWeightVolume] = useState(0);
@@ -53,6 +62,7 @@ function Checkout(props) {
   const [checkoutJson, setCheckoutJson] = useState(null);
 
   const { currentUser, token, currentAddress, masterkurir, checkout } = props;
+  const rbSenderName = useRef();
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -391,36 +401,47 @@ function Checkout(props) {
     return;
   }
 
+  function changeSenderName() {
+    setSenderName((senderName) => ({
+      ...senderName,
+      final: senderName.temp,
+    }));
+    rbSenderName.current.close();
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <TouchableOpacity onPress={() => openAddress()} style={styles.containerHeader}>
-        <MaterialCommunityIcons
-              name="map-plus"
-              size={20}
-              color={colors.daclen_blue}
-            />
-            <View style={styles.containerTitle}>
-              <Text style={styles.textAddressHeader}>
-                Pilih Alamat Pengiriman
-              </Text>
-              <Text
-                style={[
-                  styles.textAddressDetail,
-                  !addressComplete && { color: colors.daclen_danger },
-                ]}
-              >
-                {addressComplete
-                  ? displayAddress
-                  : "Alamat Pengiriman belum lengkap"}
-              </Text>
-            </View>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={28}
-              color={colors.daclen_blue}
-              style={styles.arrowAddress}
-            />
+        <TouchableOpacity
+          onPress={() => openAddress()}
+          style={styles.containerHeader}
+        >
+          <MaterialCommunityIcons
+            name="map-plus"
+            size={20}
+            color={colors.daclen_blue}
+          />
+          <View style={styles.containerTitle}>
+            <Text style={styles.textAddressHeader}>
+              Pilih Alamat Pengiriman
+            </Text>
+            <Text
+              style={[
+                styles.textAddressDetail,
+                !addressComplete && { color: colors.daclen_danger },
+              ]}
+            >
+              {addressComplete
+                ? displayAddress
+                : "Alamat Pengiriman belum lengkap"}
+            </Text>
+          </View>
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={28}
+            color={colors.daclen_blue}
+            style={styles.arrowAddress}
+          />
         </TouchableOpacity>
         <Separator thickness={10} />
 
@@ -465,6 +486,8 @@ function Checkout(props) {
                   ? (weight / 1000).toFixed(2).toString()
                   : props.cart?.berat_formated
               }
+              senderName={senderName.final}
+              setSenderName={() => rbSenderName.current.open()}
               courierChoices={courierChoices}
               courierServices={courierServices}
               packaging={packaging}
@@ -505,6 +528,35 @@ function Checkout(props) {
           buttonDisabled={!allowCheckout}
         />
       )}
+      <RBSheet
+        ref={rbSenderName}
+        openDuration={250}
+        height={300}
+        onClose={() =>
+          setSenderName((senderName) => ({
+            ...senderName,
+            temp: senderName.final,
+          }))
+        }
+      >
+        <BSPopup
+          title="Ganti Nama Pengirim"
+          content={
+            <CheckoutSenderName
+              senderName={senderName.temp}
+              setSenderName={(temp) =>
+                setSenderName((senderName) => ({ ...senderName, temp }))
+              }
+            />
+          }
+          buttonPositive="Ganti"
+          buttonPositiveColor={colors.daclen_orange}
+          buttonNegative="Tutup"
+          buttonNegativeColor={colors.daclen_gray}
+          closeThis={() => rbSenderName.current.close()}
+          onPress={() => changeSenderName()}
+        />
+      </RBSheet>
     </SafeAreaView>
   );
 }
@@ -555,7 +607,7 @@ const styles = StyleSheet.create({
   arrowAddress: {
     marginStart: 10,
     alignSelf: "center",
-  }
+  },
 });
 
 const mapStateToProps = (store) => ({

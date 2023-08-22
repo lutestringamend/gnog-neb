@@ -4,7 +4,6 @@ import {
   TextInput,
   StyleSheet,
   Text,
-  Image,
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
@@ -24,7 +23,6 @@ import {
 import AddressData from "./AddressData";
 import BSTextInput from "../bottomsheets/BSTextInput";
 import BSContainer from "../bottomsheets/BSContainer";
-import { privacypolicy } from "../profile/constants";
 import { selectprovinsi, selectkota, selectkecamatan } from "./constants";
 import { colors, staticDimensions } from "../../styles/base";
 
@@ -250,39 +248,14 @@ function FillAddress(props) {
       ) : null}
     
       <ScrollView style={styles.scrollView}>
-        <View style={styles.container}>
-          <Image
-            source={require("../../assets/alamat.png")}
-            style={styles.logo}
-          />
-        </View>
-        <View style={styles.containerPrivacy}>
-          <Text style={styles.textUid}>
-            Mohon mengisi alamat lengkap yang akan digunakan untuk informasi
-            Checkout Anda dan pengiriman barang. Informasi ini akan dibagikan ke
-            kurir pengiriman sebagai pihak ketiga apabila Anda telah melunasi
-            Checkout.
-          </Text>
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("Webview", {
-                webKey: "privacy",
-                text: privacypolicy,
-              })
-            }
-            disabled={loading}
-          >
-            <Text style={styles.textChange}>Baca {privacypolicy}</Text>
-          </TouchableOpacity>
-        </View>
 
-        <Text style={styles.textCompulsory}>Nama depan*</Text>
+        <Text style={styles.textCompulsory}>Nama Depan Penerima*</Text>
         <TextInput
           value={address?.nama_depan}
           style={styles.textInput}
           onChangeText={(nama_depan) => setAddress({ ...address, nama_depan })}
         />
-        <Text style={styles.text}>Nama belakang (opsional)</Text>
+        <Text style={styles.text}>Nama Belakang Penerima (opsional)</Text>
         <TextInput
           value={address?.nama_belakang}
           style={styles.textInput}
@@ -429,14 +402,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginHorizontal: 20,
   },
-  textChange: {
-    color: colors.daclen_blue,
-    fontSize: 14,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginVertical: 4,
-    marginHorizontal: 20,
-  },
+
   textInput: {
     borderWidth: 1,
     borderColor: colors.daclen_gray,
@@ -478,11 +444,6 @@ const styles = StyleSheet.create({
     color: colors.daclen_gray,
     marginHorizontal: 20,
     textAlign: "center",
-  },
-  logo: {
-    width: 120,
-    height: 120,
-    alignSelf: "center",
   },
 });
 

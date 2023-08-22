@@ -6,12 +6,14 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
-import RadioGroup, { RadioButtonProps } from "react-native-radio-buttons-group";
+import RadioGroup from "react-native-radio-buttons-group";
 
 import Separator from "../profile/Separator";
 import { colors } from "../../styles/base";
-import { defaultPackagingOptions } from "./constants";
+//import { defaultPackagingOptions } from "./constants";
+import { checkoutdefaultsendername } from "../main/constants";
 
 export default function CartDetails(props) {
   const navigation = useNavigation();
@@ -25,6 +27,13 @@ export default function CartDetails(props) {
   const discountedDeliveryFee = props?.isCart
     ? props?.courierService?.cost[0]?.biaya.toString()
     : props?.priceDiscount;
+
+  function changeSenderName() {
+    if (props?.setSenderName === undefined || props?.setSenderName === null) {
+      return;
+    }
+    props?.setSenderName();
+  }
 
   return (
     <View style={styles.container}>
@@ -40,12 +49,32 @@ export default function CartDetails(props) {
         </Text>
       </View>
 
-      {props?.isCart ? (
-        <View style={styles.containerEntry}>
-          <Text style={styles.textEntryHeader}>Pengemasan</Text>
-          <Text style={styles.textEntry}>Box</Text>
-        </View>
-      ) : null}
+      <TouchableOpacity
+        onPress={() => changeSenderName()}
+        disabled={
+          props?.setSenderName === undefined || props?.setSenderName === null
+        }
+        style={styles.containerEntry}
+      >
+        <Text style={styles.textEntryHeader}>Nama Pengirim</Text>
+        <Text style={[styles.textEntry, { color: colors.daclen_blue }]}>
+          {props?.senderName ? props?.senderName : checkoutdefaultsendername}
+        </Text>
+
+        {props?.isCart ? (
+          <MaterialCommunityIcons
+            name="pencil"
+            size={14}
+            color={colors.daclen_blue}
+            style={{ alignSelf: "center" }}
+          />
+        ) : null}
+      </TouchableOpacity>
+
+      <View style={styles.containerEntry}>
+        <Text style={styles.textEntryHeader}>Pengemasan</Text>
+        <Text style={styles.textEntry}>Box</Text>
+      </View>
 
       {props?.isCart &&
         (props?.addressComplete ? (
