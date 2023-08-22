@@ -54,6 +54,7 @@ import FAQScreen from "./components/profile/FAQ";
 import AboutScreen from "./components/profile/About";
 import PDFViewer from "./components/pdfviewer/PDFViewer";
 import LoginScreen from "./components/auth/Login";
+import PickAddress from "./components/address/PickAddress";
 import FillAddressScreen from "./components/address/FillAddress";
 import EditProfileScreen from "./components/profile/EditProfile";
 import CameraView from "./components/media/CameraView";
@@ -174,6 +175,11 @@ export default function App() {
                 name="OTPScreen"
                 component={OTPScreen}
                 options={{ ...defaultOptions, title: "Isi OTP dari Whatsapp" }}
+              />
+              <Stack.Screen
+                name="PickAddress"
+                component={PickAddress}
+                options={{ ...defaultOptions, title: "Pilih Alamat" }}
               />
               <Stack.Screen
                 name="Address"

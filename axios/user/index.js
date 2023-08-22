@@ -1,5 +1,6 @@
 import Axios from "../index";
 import { Linking, Platform, ToastAndroid } from "react-native";
+import * as Crypto from "expo-crypto";
 
 import {
   getcurrentuser,
@@ -49,6 +50,8 @@ import {
   USER_PROFILE_PIN_STATE_CHANGE,
   USER_REGISTER_SNAP_TOKEN_STATE_CHANGE,
   MEDIA_CLEAR_DATA,
+  USER_ADDRESSES_STATE_CHANGE,
+  USER_ADDRESS_ID_STATE_CHANGE,
 } from "../../redux/constants";
 import {
   calculateBase64SizeInBytes,
@@ -94,6 +97,11 @@ export const userLogout = async (username) => {
   };
 }*/
 
+export function generateUuid() {
+  const UUID = Crypto.randomUUID();
+  return UUID;
+}
+
 export const updateReduxCurrentUserData = (data) => {
   return (dispatch) => {
     dispatch({ type: USER_STATE_CHANGE, data });
@@ -134,6 +142,20 @@ export function updateReduxProfilePIN(data) {
   return (dispatch) => {
     console.log("updateReduxProfilePIN", data);
     dispatch({ type: USER_PROFILE_PIN_STATE_CHANGE, data });
+  };
+}
+
+export function updateReduxUserAddresses(data) {
+  return (dispatch) => {
+    console.log("updateReduxUserAddresses", data);
+    dispatch({ type: USER_ADDRESSES_STATE_CHANGE, data });
+  };
+}
+
+export function updateReduxUserAddressId(data) {
+  return (dispatch) => {
+    console.log("updateReduxUserAddressId", data);
+    dispatch({ type: USER_ADDRESS_ID_STATE_CHANGE, data });
   };
 }
 

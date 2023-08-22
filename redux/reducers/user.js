@@ -8,6 +8,7 @@ import {
   USER_RAJAONGKIR_STATE_CHANGE,
   USER_COURIERS_STATE_CHANGE,
   USER_CHECKOUT_STATE_CHANGE,
+  USER_ADDRESSES_STATE_CHANGE,
   USER_ADDRESS_STATE_CLEAR,
   USER_AUTH_DATA_STATE_CHANGE,
   USER_AUTH_ERROR_STATE_CHANGE,
@@ -29,6 +30,7 @@ import {
   USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE,
   USER_PROFILE_PIN_STATE_CHANGE,
   USER_REGISTER_SNAP_TOKEN_STATE_CHANGE,
+  USER_ADDRESS_ID_STATE_CHANGE,
 } from "../constants";
 
 import { mainhttp } from "../../axios/constants";
@@ -40,6 +42,8 @@ export const initialState = {
   profileLock: true,
   profileLockTimeout: null,
   profilePIN: null,
+  addresses: [],
+  addressId: null,
   hpv: null,
   points: null,
   syaratRoot: [],
@@ -186,6 +190,16 @@ export const user = (state = initialState, action) => {
             item.id === action.produk_id ? action.data : item
           ),
         },
+      };
+    case USER_ADDRESSES_STATE_CHANGE:
+      return {
+        ...state,
+        addresses: action.data,
+      };
+    case USER_ADDRESS_ID_STATE_CHANGE:
+      return {
+        ...state,
+        addressId: action.data,
       };
     case USER_ADDRESS_STATE_CHANGE:
       return {

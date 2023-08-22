@@ -143,9 +143,9 @@ function EditProfile(props) {
         return;
       }
     }
-    if (currentUser?.id === 8054 && !(currentUser?.detail_user === undefined || currentUser?.detail_user === null || currentUser?.detail_user?.foto === undefined)) {
+    /*if (currentUser?.id === 8054 && !(currentUser?.detail_user === undefined || currentUser?.detail_user === null || currentUser?.detail_user?.foto === undefined)) {
       setError(`foto ${currentUser?.detail_user?.foto}`);
-    }
+    }*/
   }, [currentUser]);
 
   useEffect(() => {

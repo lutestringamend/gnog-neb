@@ -238,6 +238,17 @@ function FillAddress(props) {
 
   return (
     <SafeAreaView style={styles.container}>
+      {error ? (
+        <Text
+          style={[
+            styles.textError,
+            success && { backgroundColor: colors.daclen_green },
+          ]}
+        >
+          {error}
+        </Text>
+      ) : null}
+    
       <ScrollView style={styles.scrollView}>
         <View style={styles.container}>
           <Image
@@ -264,22 +275,7 @@ function FillAddress(props) {
             <Text style={styles.textChange}>Baca {privacypolicy}</Text>
           </TouchableOpacity>
         </View>
-        {loading ? (
-        <ActivityIndicator
-          size="small"
-          color={colors.daclen_orange}
-          style={{ alignSelf: "center", marginVertical: 20 }}
-        />
-      ) : error ? (
-        <Text
-          style={[
-            styles.textError,
-            success && { backgroundColor: colors.daclen_green },
-          ]}
-        >
-          {error}
-        </Text>
-      ) : null}
+
         <Text style={styles.textCompulsory}>Nama depan*</Text>
         <TextInput
           value={address?.nama_depan}
@@ -364,6 +360,15 @@ function FillAddress(props) {
           )}
         </TouchableOpacity>
       </ScrollView>
+
+      {loading ? (
+        <View style={styles.containerLoading}>
+        <ActivityIndicator
+          size="large"
+          color={colors.daclen_orange}
+        />
+        </View>
+      ) : null}
       <RBSheet ref={rbSheet} openDuration={250} height={400}>
         <BSContainer
           title={bottomTitle}
@@ -395,6 +400,18 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 10,
     paddingBottom: staticDimensions.pageBottomPadding,
+  },
+  containerLoading: {
+    width: "100%",
+    height: "100%",
+    zIndex: 6,
+    position: "absolute",
+    top: 0,
+    start: 0,
+    backgroundColor: colors.daclen_light,
+    opacity: 0.8,
+    justifyContent: "center",
+    alignItems: "center",
   },
   containerPrivacy: {
     marginBottom: 20,

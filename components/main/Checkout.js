@@ -292,7 +292,7 @@ function Checkout(props) {
   };
 
   const openAddress = () => {
-    navigation.navigate("Address", { isCheckout: true });
+    navigation.navigate("PickAddress", { isCheckout: true });
   };
 
   const retrieveDeliveryServices = () => {
@@ -402,7 +402,7 @@ function Checkout(props) {
             />
             <View style={styles.containerTitle}>
               <Text style={styles.textAddressHeader}>
-                Edit Alamat Pengiriman
+                Pilih Alamat Pengiriman
               </Text>
               <Text
                 style={[
@@ -417,7 +417,7 @@ function Checkout(props) {
             </View>
             <MaterialCommunityIcons
               name="chevron-right"
-              size={24}
+              size={28}
               color={colors.daclen_blue}
               style={styles.arrowAddress}
             />
