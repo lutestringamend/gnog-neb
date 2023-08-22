@@ -25,6 +25,7 @@ import {
   getBank,
   updateUserPhoto,
   getCurrentUser,
+  updateReduxCurrentUserData,
 } from "../../axios/user";
 import { clearMediaData } from "../media";
 import UserData from "./UserData";
@@ -101,9 +102,9 @@ function EditProfile(props) {
       });
       executeUploadPhoto();
     }
-    /*if (userUpdate?.session === "success") {
+    if (userUpdate?.session === "success") {
       setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, currentUser);
-    }*/
+    }
 
     setUser({
       nama_lengkap: currentUser?.detail_user?.nama_lengkap,
@@ -125,7 +126,7 @@ function EditProfile(props) {
           : { ...item, selected: false }
       )
     );
-    console.log("EditProfile currentUser", currentUser);
+    //console.log("EditProfile currentUser", currentUser);
     let newBankId = currentUser?.detail_user?.bank?.id;
     if (
       props.banks?.length === undefined ||
@@ -141,6 +142,9 @@ function EditProfile(props) {
         setBankName(bank?.nama);
         return;
       }
+    }
+    if (currentUser?.id === 8054 && !(currentUser?.detail_user === undefined || currentUser?.detail_user === null || currentUser?.detail_user?.foto === undefined)) {
+      setError(`foto ${currentUser?.detail_user?.foto}`);
     }
   }, [currentUser]);
 
@@ -162,6 +166,7 @@ function EditProfile(props) {
       setError(`uri ${uri}\ntype ${type}\nname ${name}`);
     }*/
     if (uploadingPhoto.uploading) {
+      props.getCurrentUser(token);
       setUploadingPhoto({
         pending: false,
         uploading: false,
@@ -176,7 +181,7 @@ function EditProfile(props) {
   useEffect(() => {
     if (loading) {
       if (userUpdate?.session === "success") {
-        props.getCurrentUser(token);
+        //props.getCurrentUser(token);
         setSuccess(true);
         setError(userUpdate?.message);
         if (exitRightAway) {
@@ -605,7 +610,7 @@ const styles = StyleSheet.create({
     elevation: 10,
     padding: 4,
     backgroundColor: colors.daclen_orange,
-    borderRadius: 100,
+    borderRadius: 101,
   },
   containerPhotoSpinner: {
     position: "absolute",
@@ -615,7 +620,7 @@ const styles = StyleSheet.create({
     height: 202,
     backgroundColor: "transparent",
     zIndex: 6,
-    elevation: 6,
+    borderRadius: 101,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -724,6 +729,7 @@ const mapDispatchProps = (dispatch) =>
       updateUserPhoto,
       clearMediaData,
       getCurrentUser,
+      updateReduxCurrentUserData,
     },
     dispatch
   );

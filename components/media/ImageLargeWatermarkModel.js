@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 
-import { colors } from "../../styles/base";
+import { blurhash, colors } from "../../styles/base";
 import {
   vmwarkdefaultpositionendtovideotruewidthratio,
   vmwarkportraittopenlargementconstant,
@@ -76,8 +76,8 @@ function ImageLargeWatermarkModel(props) {
       },
     ]}
     contentFit="contain"
-    placeholder={null}
-    transition={0}
+    placeholder={blurhash}
+    transition={100}
   />
     }
       

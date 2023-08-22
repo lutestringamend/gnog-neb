@@ -195,19 +195,19 @@ const ImageViewer = (props) => {
           "#HEIGHT#",
           pdfpageheight > resizedImgHeight ? pdfpageheight : resizedImgHeight
         )
-        .replace("#IMGWIDTH#", resizedImgWidth)
+        .replace("#IMGWIDTH#", resizedImgWidth )
         .replace("#IMGHEIGHT#", resizedImgHeight)}`;
       const html = multiplephotoshtml
         .replace("#TITLE#", title)
         .replace("#IMGTAGS#", imgTag);
-      if (currentUser?.id === 8054 && Platform.OS === "ios") {
+      if (currentUser?.id === 8054) {
         /*setSuccess(true);
         setError(`html\n${html}`);*/
         console.log("pdf html", html);
       }
       const result = await Print.printToFileAsync({
-        width: resizedImgWidth - 60,
-        height: resizedImgHeight - 40,
+        width: resizedImgWidth,
+        height: resizedImgHeight,
         html,
       });
       if (result?.uri) {
@@ -565,7 +565,7 @@ const ImageViewer = (props) => {
                   height={height}
                   displayWidth={productPhotoWidth}
                   displayHeight={productPhotoHeight}
-                  uri={thumbnail}
+                  uri={uri}
                   link_x={link_x}
                   link_y={link_y}
                   text_x={text_x}

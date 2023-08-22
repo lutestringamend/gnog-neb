@@ -295,7 +295,8 @@ const MultipleImageView = (props) => {
     const printToFile = async () => {
       const result = await Print.printToFileAsync({
         ...filePrintOptions,
-        ...pageDimensions,
+        width: pageDimensions.width - 80,
+        height: pageDimensions.height - 100,
         html,
       });
       console.log("printToFileAsync", result);

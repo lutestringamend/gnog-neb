@@ -158,6 +158,7 @@ const PhotosSegment = (props) => {
           {!(
             photos?.length === undefined ||
             photos?.length < 1 ||
+            photos?.length > 4 ||
             watermarkData === undefined ||
             watermarkData === null
           ) ? (

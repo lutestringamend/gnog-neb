@@ -59,7 +59,6 @@ import {
   sendProfilePhotoUnusable,
 } from "../../components/media";
 import {
-  clearStorage,
   setObjectAsync,
   setTokenAsync,
 } from "../../components/asyncstorage";
@@ -94,6 +93,12 @@ export const userLogout = async (username) => {
     dispatch({ type: ENABLE_FORCE_LOGOUT });
   };
 }*/
+
+export const updateReduxCurrentUserData = (data) => {
+  return (dispatch) => {
+    dispatch({ type: USER_STATE_CHANGE, data });
+  }
+}
 
 export function updateReduxProfileLockStatus(data) {
   return (dispatch) => {
@@ -436,15 +441,15 @@ export function updateUserPhoto(id, token, uri) {
       };
 
       const url = updateuserphoto + "/" + id.toString();
-      if (Platform.OS === "android" && id === 8054) {
+      /*if (Platform.OS === "android" && id === 8054) {
         ToastAndroid.show(
           `updateUserPhoto ${url}\nname: ${name}\nuri: ${uri}\ntype: ${type}`,
           ToastAndroid.LONG
         );
-      } else {
-        console.log("updateUserPhoto " + url + " with formData and header");
-        console.log({ config, formData });
-      }
+        
+      }*/
+      console.log("updateUserPhoto " + url + " with formData and header");
+      //console.log({ config, formData });
 
       Axios.post(url, formData, config)
         .then((response) => {
