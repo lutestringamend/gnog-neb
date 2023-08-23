@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -10,8 +10,9 @@ import {
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import RBSheet from "react-native-raw-bottom-sheet";
+
 import { useNavigation } from "@react-navigation/native";
+
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
@@ -25,25 +26,13 @@ import CartDetails from "../cart/CartDetails";
 import CartAction from "../cart/CartAction";
 import Separator from "../profile/Separator";
 import { colors, staticDimensions } from "../../styles/base";
-import {
-  checkoutdefaultsendername,
-  checkoutsubtotalcommissionpercentage,
-} from "./constants";
-import BSPopup from "../bottomsheets/BSPopup";
-import CheckoutSenderName from "./CheckoutSenderName";
-import { sentryLog } from "../../sentry";
-import { ASYNC_HISTORY_CHECKOUT_KEY } from "../asyncstorage/constants";
-import { setObjectAsync } from "../asyncstorage";
+import { checkoutsubtotalcommissionpercentage } from "./constants";
 
 function Checkout(props) {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
-  const [error, setError] = useState(null);
-
-  const [customAddress, setCustomAddress] = useState(null);
   const [displayAddress, setDisplayAddress] = useState(null);
   const [addressComplete, setAddressComplete] = useState(false);
-
   const [allowCheckout, setAllowCheckout] = useState(false);
   const [afterCheckout, setAfterCheckout] = useState(false);
   const [courierLoading, setCourierLoading] = useState(false);
@@ -56,11 +45,6 @@ function Checkout(props) {
   //const [packaging, setPackaging] = useState(null);
   const packaging = "Box";
 
-  const [senderName, setSenderName] = useState({
-    final: checkoutdefaultsendername,
-    temp: checkoutdefaultsendername,
-  });
-
   const [points, setPoints] = useState(0);
   const [weight, setWeight] = useState(0);
   const [weightVolume, setWeightVolume] = useState(0);
@@ -68,16 +52,7 @@ function Checkout(props) {
   const [totalPrice, setTotalPrice] = useState(0);
   const [checkoutJson, setCheckoutJson] = useState(null);
 
-  const {
-    currentUser,
-    token,
-    currentAddress,
-    masterkurir,
-    checkout,
-    addresses,
-    addressId,
-  } = props;
-  const rbSenderName = useRef();
+  const { currentUser, token, currentAddress, masterkurir, checkout } = props;
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -157,42 +132,37 @@ function Checkout(props) {
   }, [props.cart]);
 
   useEffect(() => {
-    if (
-      addressId === null ||
-      addressId === "" ||
-      addressId === "default" ||
-      addresses?.length === undefined ||
-      addresses?.length < 1
-    ) {
-      console.log("addressId null addresses", addressId, addresses);
-      setDefaultAddress();
+    if (currentAddress === null || currentAddress === undefined) {
+      setAddressComplete(false);
+      setDisplayAddress(null);
     } else {
-      checkCustomAddress();
-      console.log("addressId", addressId);
+      if (
+        currentAddress?.alamat === "" ||
+        currentAddress?.provinsi?.id === "" ||
+        currentAddress?.kota?.id === "" ||
+        currentAddress?.kecamatan?.id === ""
+      ) {
+        setDisplayAddress(null);
+        setAddressComplete(false);
+      } else {
+        setDisplayAddress(
+          `${currentAddress?.nama_depan} ${
+            currentAddress?.nama_belakang ? currentAddress?.nama_belakang : ""
+          } | ${currentAddress?.nomor_telp}\n${currentAddress?.alamat}`
+        );
+        setAddressComplete(true);
+      }
     }
-  }, [addressId, addresses]);
+
+    console.log(currentAddress);
+  }, [currentAddress]);
 
   useEffect(() => {
-    if (customAddress === null) {
-      return;
-    }
-    clearOutDelivery();
-    setDisplayAddress(
-      `${customAddress?.nama_depan} ${
-        customAddress?.nama_belakang ? customAddress?.nama_belakang : ""
-      } | ${customAddress?.nomor_telp}\n${customAddress?.alamat}${
-        customAddress?.provinsi_name ? `, ${customAddress?.provinsi_name}` : ""
-      }${customAddress?.kota_name ? `, ${customAddress?.kota_name}` : ""}${
-        customAddress?.kecamatan_name
-          ? `, ${customAddress?.kecamatan_name}`
-          : ""
-      } ${customAddress?.kode_pos}`
-    );
-    setAddressComplete(true);
-  }, [customAddress]);
-
-  useEffect(() => {
-    clearOutDelivery();
+    setCourier(null);
+    setCourierSlug(null);
+    setCourierService(null);
+    setCourierServices([]);
+    setDeliveryFee(0);
 
     if (masterkurir === undefined || masterkurir.length < 1) {
       setCourierChoices([]);
@@ -316,102 +286,13 @@ function Checkout(props) {
     }
   }, [checkout]);
 
-  const setDefaultAddress = () => {
-    if (
-      currentAddress === null ||
-      currentAddress === undefined ||
-      currentAddress?.alamat === "" ||
-      currentAddress?.provinsi?.id === "" ||
-      currentAddress?.kota?.id === "" ||
-      currentAddress?.kecamatan?.id === ""
-    ) {
-      setAddressComplete(false);
-      setDisplayAddress(null);
-      return;
-    }
-    setCustomAddress(null);
-    setDisplayAddress(
-      `${currentAddress?.nama_depan} ${
-        currentAddress?.nama_belakang ? currentAddress?.nama_belakang : ""
-      } | ${currentAddress?.nomor_telp}\n${currentAddress?.alamat}${
-        currentAddress?.provinsi?.name
-          ? `, ${currentAddress?.provinsi?.name}`
-          : ""
-      }${currentAddress?.kota?.name ? `, ${currentAddress?.kota?.name}` : ""}${
-        currentAddress?.kecamatan?.name
-          ? `, ${currentAddress?.kecamatan?.name}`
-          : ""
-      } ${currentAddress?.kode_pos}`
-    );
-    setAddressComplete(true);
-    console.log("currentAddress set", currentAddress);
-  };
-
-  const checkCustomAddress = () => {
-    try {
-      for (let otherAddress of addresses) {
-        if (otherAddress?.id === addressId) {
-          clearOutDelivery();
-          let newAddress = {
-            ...otherAddress,
-            alamat_lain: true,
-            desa: "",
-            email: currentUser?.email
-              ? currentUser?.email
-              : currentAddress?.email
-              ? currentAddress?.email
-              : "",
-            provinsi: {
-              id: otherAddress?.provinsi_id,
-              name: otherAddress?.provinsi_name,
-            },
-            kota: {
-              provinsi_id: otherAddress?.provinsi_id,
-              id: otherAddress?.kota_id,
-              name: otherAddress?.kota_name,
-            },
-            kecamatan: {
-              kota_id: otherAddress?.kota_id,
-              id: otherAddress?.kecamatan_id,
-              name: otherAddress?.kecamatan_name,
-            },
-            lat: null,
-            long: null,
-          };
-          delete newAddress["id"];
-          delete newAddress["nama_lengkap"];
-          delete newAddress["provinsi_id"];
-          delete newAddress["provinsi_name"];
-          delete newAddress["kota_id"];
-          delete newAddress["kecamatan_id"];
-          delete newAddress["kota_name"];
-          delete newAddress["kecamatan_name"];
-          setCustomAddress(newAddress);
-        }
-      }
-    } catch (e) {
-      console.error(e);
-      sentryLog(e);
-      setDefaultAddress();
-    }
-  };
-
-  const clearOutDelivery = () => {
-    setCourier(null);
-    setCourierSlug(null);
-    setCourierService(null);
-    setCourierServices([]);
-    setDeliveryFee(0);
-    setError(null);
-  };
-
   const backHome = () => {
     console.log("backHome");
     navigation.navigate("Main");
   };
 
   const openAddress = () => {
-    navigation.navigate("PickAddress", { isCheckout: true });
+    navigation.navigate("Address", { isCheckout: true });
   };
 
   const retrieveDeliveryServices = () => {
@@ -430,12 +311,9 @@ function Checkout(props) {
   };
 
   const createCheckoutJson = () => {
+    let detail_checkout = { ...currentAddress };
+    delete detail_checkout["alamat_short"];
     try {
-      let detail_checkout =
-        addressId === "" || addressId === "default" || customAddress === null
-          ? currentAddress
-          : customAddress;
-
       const newCheckout = {
         checkout: {
           keranjang_id: props.cart.id,
@@ -458,28 +336,25 @@ function Checkout(props) {
       setCheckoutJson(newCheckout);
       setAllowCheckout(true);
     } catch (e) {
-      console.error(e);
-      sentryLog(e);
+      console.log(e);
       setCheckoutJson(null);
       setAllowCheckout(false);
     }
   };
 
-  const proceedCheckout = async () => {
-    if (token === null || checkoutJson === null) {
-      return;
-    }
-    try {
+  const proceedCheckout = () => {
+    if (token && checkoutJson !== null) {
+      setAllowCheckout(false);
+      //setDisplayAddress(true);
       setAfterCheckout(true);
       props.storeCheckout(token, checkoutJson);
-      await setObjectAsync(ASYNC_HISTORY_CHECKOUT_KEY, null);
-    } catch (e) {
-      console.error(e);
-      sentryLog(e);
-      setError(e.toString());
-      setAfterCheckout(false);
     }
   };
+
+  /*const formatPostTimestamp = (date) => {
+    return date.toDateString() + " " + date.toLocaleTimeString();
+  };
+*/
 
   function onPressRadioButtonCourier(radioButtonsArray) {
     try {
@@ -516,48 +391,36 @@ function Checkout(props) {
     return;
   }
 
-  function changeSenderName() {
-    setSenderName((senderName) => ({
-      ...senderName,
-      final: senderName.temp,
-    }));
-    rbSenderName.current.close();
-  }
-
   return (
     <SafeAreaView style={styles.container}>
-      {error ? <Text style={styles.textError}>{error}</Text> : null}
       <ScrollView style={styles.scrollView}>
-        <TouchableOpacity
-          onPress={() => openAddress()}
-          style={styles.containerHeader}
-        >
-          <MaterialCommunityIcons
-            name="map-plus"
-            size={20}
-            color={colors.daclen_blue}
-          />
-          <View style={styles.containerTitle}>
-            <Text style={styles.textAddressHeader}>
-              Pilih Alamat Pengiriman
-            </Text>
-            <Text
-              style={[
-                styles.textAddressDetail,
-                !addressComplete && { color: colors.daclen_danger },
-              ]}
-            >
-              {addressComplete
-                ? displayAddress
-                : "Alamat Pengiriman belum dipilih"}
-            </Text>
-          </View>
-          <MaterialCommunityIcons
-            name="chevron-right"
-            size={28}
-            color={colors.daclen_blue}
-            style={styles.arrowAddress}
-          />
+        <TouchableOpacity onPress={() => openAddress()} style={styles.containerHeader}>
+        <MaterialCommunityIcons
+              name="map-plus"
+              size={20}
+              color={colors.daclen_blue}
+            />
+            <View style={styles.containerTitle}>
+              <Text style={styles.textAddressHeader}>
+                Edit Alamat Pengiriman
+              </Text>
+              <Text
+                style={[
+                  styles.textAddressDetail,
+                  !addressComplete && { color: colors.daclen_danger },
+                ]}
+              >
+                {addressComplete
+                  ? displayAddress
+                  : "Alamat Pengiriman belum lengkap"}
+              </Text>
+            </View>
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={24}
+              color={colors.daclen_blue}
+              style={styles.arrowAddress}
+            />
         </TouchableOpacity>
         <Separator thickness={10} />
 
@@ -602,8 +465,6 @@ function Checkout(props) {
                   ? (weight / 1000).toFixed(2).toString()
                   : props.cart?.berat_formated
               }
-              senderName={senderName.final}
-              setSenderName={() => rbSenderName.current.open()}
               courierChoices={courierChoices}
               courierServices={courierServices}
               packaging={packaging}
@@ -641,38 +502,9 @@ function Checkout(props) {
           totalPrice={totalPrice}
           buttonAction={() => proceedCheckout()}
           buttonText={null}
-          buttonDisabled={!allowCheckout || afterCheckout}
+          buttonDisabled={!allowCheckout}
         />
       )}
-      <RBSheet
-        ref={rbSenderName}
-        openDuration={250}
-        height={300}
-        onClose={() =>
-          setSenderName((senderName) => ({
-            ...senderName,
-            temp: senderName.final,
-          }))
-        }
-      >
-        <BSPopup
-          title="Ganti Nama Pengirim"
-          content={
-            <CheckoutSenderName
-              senderName={senderName.temp}
-              setSenderName={(temp) =>
-                setSenderName((senderName) => ({ ...senderName, temp }))
-              }
-            />
-          }
-          buttonPositive="Ganti"
-          buttonPositiveColor={colors.daclen_orange}
-          buttonNegative="Tutup"
-          buttonNegativeColor={colors.daclen_gray}
-          closeThis={() => rbSenderName.current.close()}
-          onPress={() => changeSenderName()}
-        />
-      </RBSheet>
     </SafeAreaView>
   );
 }
@@ -720,20 +552,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     textAlign: "center",
   },
-
-  textError: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "white",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: colors.daclen_danger,
-    textAlign: "center",
-  },
   arrowAddress: {
     marginStart: 10,
     alignSelf: "center",
-  },
+  }
 });
 
 const mapStateToProps = (store) => ({
@@ -745,8 +567,6 @@ const mapStateToProps = (store) => ({
   masterkurir: store.userState.masterkurir,
   couriers: store.userState.couriers,
   checkout: store.userState.checkout,
-  addresses: store.userState.addresses,
-  addressId: store.userState.addressId,
 });
 
 const mapDispatchProps = (dispatch) =>

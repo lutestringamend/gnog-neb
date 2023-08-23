@@ -19,6 +19,8 @@ import {
   disableForceLogout,
   updateReduxProfileLockStatus,
   updateReduxProfilePIN,
+  updateReduxUserAddressId,
+  updateReduxUserAddresses,
 } from "../axios/user";
 import {
   clearMediaKitData,
@@ -29,7 +31,9 @@ import { getObjectAsync, getTokenAsync } from "./asyncstorage";
 import {
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
   ASYNC_PRODUCTS_ARRAY_KEY,
+  ASYNC_USER_ADDRESSES_KEY,
   ASYNC_USER_CURRENTUSER_KEY,
+  ASYNC_USER_PROFILE_ADDRESS_ID_KEY,
   ASYNC_USER_PROFILE_PIN_KEY,
 } from "./asyncstorage/constants";
 import { clearCartError } from "../axios/cart";
@@ -49,6 +53,8 @@ function Main(props) {
       profileLockTimeout,
       profilePIN,
       watermarkData,
+      addressId,
+      addresses,
     } = props;
 
     useEffect(() => {
@@ -124,6 +130,18 @@ function Main(props) {
       }
       checkProfileLockTimeout();
     }, [profileLock, profileLockTimeout]);
+
+    useEffect(() => {
+      if (addressId === null) {
+        checkStorageAddressId();
+      }
+    }, [addressId]);
+
+    useEffect(() => {
+      if (addresses === null) {
+        loadStorageAddresses();
+      }
+    }, [addresses]);
 
     const checkUserData = async () => {
       const storageToken = await readStorageToken();
@@ -208,6 +226,34 @@ function Main(props) {
       }
     };
 
+    const checkStorageAddressId = async () => {
+      const storageAddressId = await getObjectAsync(
+        ASYNC_USER_PROFILE_ADDRESS_ID_KEY
+      );
+      if (
+        storageAddressId === undefined ||
+        storageAddressId === null ||
+        storageAddressId === ""
+      ) {
+        props.updateReduxUserAddressId("default");
+      } else {
+        props.updateReduxUserAddressId(storageAddressId);
+      }
+    };
+
+    const loadStorageAddresses = async () => {
+      const storageAddresses = await getObjectAsync(ASYNC_USER_ADDRESSES_KEY);
+      if (
+        storageAddresses === null ||
+        storageAddresses?.length === undefined ||
+        storageAddresses?.length < 1
+      ) {
+        props.updateReduxUserAddresses([]);
+      } else {
+        props.updateReduxUserAddresses(storageAddresses);
+      }
+    };
+
     const checkWatermarkData = async () => {
       let newData = await getObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY);
       if (!(newData === undefined || newData === null)) {
@@ -275,6 +321,8 @@ const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
   profileLock: store.userState.profileLock,
+  addressId: store.userState.addressId,
+  addresses: store.userState.addresses,
   profileLockTimeout: store.userState.profileLockTimeout,
   profilePIN: store.userState.profilePIN,
   products: store.productState.products,
@@ -299,6 +347,8 @@ const mapDispatchProps = (dispatch) =>
       clearCartError,
       updateReduxProfileLockStatus,
       updateReduxProfilePIN,
+      updateReduxUserAddressId,
+      updateReduxUserAddresses,
     },
     dispatch
   );

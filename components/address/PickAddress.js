@@ -8,10 +8,10 @@ import {
   ActivityIndicator,
   ScrollView,
   RefreshControl,
+  FlatList,
 } from "react-native";
 //import * as Location from "expo-location";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { FlashList } from "@shopify/flash-list";
 import { useNavigation } from "@react-navigation/native";
 
 import { connect } from "react-redux";
@@ -24,11 +24,14 @@ import {
 } from "../../axios/user";
 import { sentryLog } from "../../sentry";
 import AddressItem from "./AddressItem";
-import { setObjectAsync } from "../asyncstorage";
-import { ASYNC_USER_PROFILE_ADDRESS_ID_KEY } from "../asyncstorage/constants";
-import { AddressData } from "./AddressData";
+import { getObjectAsync, setObjectAsync } from "../asyncstorage";
+import {
+  ASYNC_USER_ADDRESSES_KEY,
+  ASYNC_USER_PROFILE_ADDRESS_ID_KEY,
+} from "../asyncstorage/constants";
 import Header from "../profile/Header";
 import { privacypolicy } from "../profile/constants";
+import Separator from "../profile/Separator";
 
 function PickAddress(props) {
   const navigation = useNavigation();
@@ -36,27 +39,73 @@ function PickAddress(props) {
   const [changeText, setChangeText] = useState(null);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const { currentUser, addressId, addresses } = props;
-  const { isCheckout } = props.route.params;
+  const { currentUser, currentAddress, addressId, addresses } = props;
 
   try {
     useEffect(() => {
       if (addressId === undefined || addressId === null || addressId === "") {
-        return;
-      }
-
-      setOriginalId(addressId);
-    }, []);
-    useEffect(() => {
-      if (originalId === null || addressId === null) {
-        return;
-      }
-      if (originalId === addressId) {
-        setChangeText("Alamat Aktif telah dikembalikan");
+        setOriginalId("default");
       } else {
-        setChangeText("Anda mengganti Alamat Aktif");
+        setOriginalId(addressId);
       }
+    }, []);
+
+    useEffect(() => {
+      if (
+        addresses === null ||
+        addresses?.length === undefined ||
+        addresses?.length < 1
+      ) {
+        loadStorageAddresses();
+        return;
+      }
+      console.log("redux user addresses", addresses);
+    }, [addresses]);
+
+    useEffect(() => {
+      if (originalId === null || addressId === null || addressId === "") {
+        checkStorageAddressId();
+        return;
+      }
+      updatedAddressId();
     }, [addressId]);
+
+    const updatedAddressId = async () => {
+      await setObjectAsync(ASYNC_USER_PROFILE_ADDRESS_ID_KEY, addressId);
+      if (addressId === "default") {
+        setChangeText("Pengiriman dikirimkan ke Alamat Utama")
+      } else if (originalId === addressId) {
+        setChangeText("Alamat Pengiriman telah dikembalikan");
+      } else {
+        setChangeText("Anda mengganti Alamat Pengiriman");
+      }
+      navigation.goBack();
+    }
+
+    const loadStorageAddresses = async () => {
+      setLoading(true);
+      const storageAddresses = await getObjectAsync(ASYNC_USER_ADDRESSES_KEY);
+      if (
+        !(
+          storageAddresses === null ||
+          storageAddresses?.length === undefined ||
+          storageAddresses?.length < 1
+        )
+      ) {
+        props.updateReduxUserAddresses(storageAddresses);
+      }
+      setRefreshing(false);
+      setLoading(false);
+    };
+
+    const checkStorageAddressId = async() => {
+      const storageAddressId = await getObjectAsync(ASYNC_USER_PROFILE_ADDRESS_ID_KEY);
+      if (storageAddressId === undefined || storageAddressId === null || storageAddressId === "") {
+        props.updateReduxUserAddressId("default");
+      } else {
+        props.updateReduxUserAddressId(storageAddressId);
+      }
+    }
 
     const addAddress = async () => {
       /*if (addresses?.length === undefined || addresses?.length < 1) {
@@ -70,8 +119,8 @@ function PickAddress(props) {
         return;
       }
       navigation.navigate("Address", {
-        isCheckout,
         isNew: true,
+        isDefault: false,
         isRealtime: false,
       });
     };
@@ -82,7 +131,7 @@ function PickAddress(props) {
     };
 
     function onAddressPress(item) {
-      props.updateReduxUserAddressId(item?.id);
+      props.updateReduxUserAddressId(item);
     }
 
     if (currentUser === null || currentUser?.id === undefined) {
@@ -106,11 +155,13 @@ function PickAddress(props) {
           </TouchableOpacity>
         ) : null}
         <ScrollView style={styles.containerScroll}>
-        <Image
+          <Image
             source={require("../../assets/alamat.png")}
             style={styles.logo}
           />
-          <Text style={[styles.textUid, { textAlign: "start", marginBottom: 12, }]}>
+          <Text
+            style={[styles.textUid, { textAlign: "start", marginBottom: 12 }]}
+          >
             Mohon mengisi alamat lengkap yang akan digunakan untuk informasi
             Checkout Anda dan pengiriman barang. Informasi ini akan dibagikan ke
             kurir pengiriman sebagai pihak ketiga apabila Anda telah melunasi
@@ -128,6 +179,21 @@ function PickAddress(props) {
             <Text style={styles.textChange}>Baca {privacypolicy}</Text>
           </TouchableOpacity>
 
+          <AddressItem
+            onPress={(e) => onAddressPress(e)}
+            isRealtime={false}
+            isDefault={true}
+            addressId={addressId}
+            item={currentAddress}
+            style={{marginTop: 20}}
+          />
+
+          <Separator thickness={2} style={{ marginTop: 12 }} />
+
+          <Text style={styles.textHeader}>
+            Alamat Lainnya
+          </Text>
+
           <TouchableOpacity style={styles.button} onPress={() => addAddress()}>
             <MaterialCommunityIcons
               name="map-plus"
@@ -144,12 +210,9 @@ function PickAddress(props) {
               style={styles.spinner}
             />
           ) : addresses?.length === undefined || addresses?.length < 1 ? (
-            <Text style={styles.textUid}>
-              Tidak ada alamat terdaftar di akun Anda
-            </Text>
+            <Text style={styles.textUid}>Tidak ada alamat lain tersimpan.</Text>
           ) : (
-            <FlashList
-              estimatedItemSize={10}
+            <FlatList
               horizontal={false}
               numColumns={1}
               contentContainerStyle={styles.containerFlatlist}
@@ -158,17 +221,16 @@ function PickAddress(props) {
                 <AddressItem
                   onPress={(e) => onAddressPress(e)}
                   isRealtime={false}
-                  isSelected={addressId === item?.id}
+                  isDefault={false}
+                  addressId={addressId}
                   item={item}
-                  location={null}
-                  locationError={null}
                   style={{ marginTop: index === 0 ? 12 : 20 }}
                 />
               )}
               refreshControl={
                 <RefreshControl
                   refreshing={refreshing}
-                  onRefresh={() => reloadUserData()}
+                  onRefresh={() => loadStorageAddresses()}
                 />
               }
             />
@@ -222,10 +284,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "white",
-    fontFamily: "Montserrat-Light",
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: colors.daclen_red,
+    backgroundColor: colors.daclen_orange,
     textAlign: "center",
   },
   textChange: {
@@ -239,7 +300,7 @@ const styles = StyleSheet.create({
   textHeader: {
     fontSize: 16,
     fontWeight: "bold",
-    color: colors.daclen_black,
+    color: colors.daclen_gray,
     marginHorizontal: 20,
     marginTop: 20,
   },
@@ -270,6 +331,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (store) => ({
   currentUser: store.userState.currentUser,
+  currentAddress: store.userState.currentAddress,
   addresses: store.userState.addresses,
   addressId: store.userState.addressId,
 });

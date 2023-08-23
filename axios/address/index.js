@@ -15,13 +15,39 @@ export function clearAddressData() {
   };
 }
 
+export function changeAddress(addresses, id, newAddress) {
+  if (
+    addresses === undefined ||
+    addresses === null ||
+    addresses?.length === undefined ||
+    addresses?.length < 1
+  ) {
+    return addresses;
+  }
+  let newAddresses = [];
+  for (let address of addresses) {
+    if (address?.id === id) {
+      if (!(newAddress === undefined || newAddress === null)) {
+        newAddress.unshift(newAddress);
+      }
+    } else {
+      newAddresses.unshift(address);
+    }
+  }
+  return newAddresses;
+}
+
 export function clearRajaOngkir(clearKota, clearKecamatan) {
   return (dispatch) => {
     if (clearKota) {
       dispatch({ type: USER_RAJAONGKIR_STATE_CHANGE, data: null, key: "kota" });
     }
     if (clearKecamatan) {
-      dispatch({ type: USER_RAJAONGKIR_STATE_CHANGE, data: null, key: "kecamatan" });
+      dispatch({
+        type: USER_RAJAONGKIR_STATE_CHANGE,
+        data: null,
+        key: "kecamatan",
+      });
     }
   };
 }
@@ -34,7 +60,7 @@ export function callRajaOngkir(token, key, param, id) {
         Accept: "application/json",
       },
     };
-    
+
     let url = rajaongkirAPI + "/" + key.toString();
     if (id !== null && param !== null) {
       url += "?" + param.toString() + "=" + id.toString();
@@ -47,10 +73,18 @@ export function callRajaOngkir(token, key, param, id) {
         //console.log(data);
         dispatch({ type: USER_RAJAONGKIR_STATE_CHANGE, data, key });
         if (key === "provinsi" || key === "kota") {
-          dispatch({ type: USER_RAJAONGKIR_STATE_CHANGE, data: null, key: "kecamatan" });
+          dispatch({
+            type: USER_RAJAONGKIR_STATE_CHANGE,
+            data: null,
+            key: "kecamatan",
+          });
         }
         if (key === "provinsi") {
-          dispatch({ type: USER_RAJAONGKIR_STATE_CHANGE, data: null, key: "kota" });
+          dispatch({
+            type: USER_RAJAONGKIR_STATE_CHANGE,
+            data: null,
+            key: "kota",
+          });
         }
       })
       .catch((error) => {
@@ -81,7 +115,7 @@ export function updateUserAddressData(currentUser, address, token) {
       bank: currentUser?.detail_user?.bank,
       cabang_bank: currentUser?.detail_user?.cabang_bank,
     };
-    
+
     const url = updateuserdata + "/" + currentUser?.id.toString();
     console.log("updateUserData " + url + " with params and header");
     console.log({ config, params });

@@ -47,20 +47,18 @@ export function storeCheckout(token, checkoutJson) {
       },
     };
 
+    console.log("storeCheckout", checkoutJson);
     Axios.post(storecheckout, checkoutJson, config)
       .then((response) => {
-        console.log("storeCheckout with params and header");
-        console.log({ checkoutJson, config });
         const data = response.data;
         let clearCart = true;
         if (data?.snap_token === undefined || data?.snap_token === null) clearCart = false;
-        console.log(data)
+        console.log("storeCheckout response", data);
         dispatch({ type: USER_CHECKOUT_STATE_CHANGE, data, clearCart });
         dispatch({ type: HISTORY_CHECKOUTS_STATE_CHANGE, data: null });
-        setObjectAsync(ASYNC_HISTORY_CHECKOUT_KEY, null);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         sentryLog(error);
       });
   };

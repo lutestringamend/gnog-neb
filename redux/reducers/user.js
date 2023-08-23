@@ -31,6 +31,7 @@ import {
   USER_PROFILE_PIN_STATE_CHANGE,
   USER_REGISTER_SNAP_TOKEN_STATE_CHANGE,
   USER_ADDRESS_ID_STATE_CHANGE,
+  USER_ADDRESSES_INCREMENT,
 } from "../constants";
 
 import { mainhttp } from "../../axios/constants";
@@ -42,7 +43,7 @@ export const initialState = {
   profileLock: true,
   profileLockTimeout: null,
   profilePIN: null,
-  addresses: [],
+  addresses: null,
   addressId: null,
   hpv: null,
   points: null,
@@ -196,6 +197,11 @@ export const user = (state = initialState, action) => {
         ...state,
         addresses: action.data,
       };
+    case USER_ADDRESSES_INCREMENT:
+      return {
+        ...state,
+        addresses: [...state.addresses].concat(action.data),
+      };
     case USER_ADDRESS_ID_STATE_CHANGE:
       return {
         ...state,
@@ -208,7 +214,6 @@ export const user = (state = initialState, action) => {
           nomor_telp: checkEmpty(action.data?.nomor_telp),
           email: checkEmpty(action.data?.email),
           alamat: checkEmpty(action.data?.detail_user?.alamat),
-          alamat_short: checkEmpty(action.data?.detail_user?.alamat),
           nama_depan: checkEmpty(action.data?.detail_user?.nama_depan),
           nama_belakang: checkEmpty(action.data?.detail_user?.nama_belakang),
           desa: checkEmpty(action.data?.detail_user?.desa),
