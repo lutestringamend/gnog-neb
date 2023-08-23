@@ -47,11 +47,11 @@ export default function CartAction(props) {
   }, [props?.buttonDisabled]);
 
   function onButtonPressed() {
-    if (!loading) {
+    if (!loading && props.enableProcessing) {
       setLoading(true);
-      props?.buttonAction();
-      //setLoading(false);
+      return;
     }
+    props?.buttonAction();
   }
 
   return (
@@ -68,7 +68,7 @@ export default function CartAction(props) {
           disabled={props?.buttonDisabled}
           style={[styles.button, { backgroundColor: color }]}
         >
-          {loading ? (
+          {loading && props?.enableProcessing ? (
             <ActivityIndicator
               size="small"
               color={colors.daclen_light}

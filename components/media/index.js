@@ -54,7 +54,15 @@ export function setBasicFFMPEGCommand(
   width,
   height
 ) {
-  return `-y -i ${sourceVideo} -i ${watermarkFile} scale=${width ? width.toString() : "720"}:${height ? height.toString() : "1280"},setsar=1:1 ${filter} ${resultVideo}`;
+  // -scale=${width ? width.toString() : "720"}:${height ? height.toString() : "1280"},setsar=1:1   
+  //-movflags faststart
+  //-movflags use_metadata_tags
+  //-map_metadata 0
+  //-profile:v baseline -level 4.0 -pix_fmt yuv420p -movflags faststart -map_metadata 0
+  //${filter} 
+  //-metadata:s:v:0 rotate=90
+  //-vf scale="${width ? width.toString() : "720"}:-1" 
+  return `-y -i ${sourceVideo} -i ${watermarkFile} -vcodec libx264 -acodec aac -vtag avc1 -profile:v baseline -level 4.0 -pix_fmt yuv420p -preset ultrafast ${width < height ? "-metadata:s:v:0 rotate=180" : ""} ${resultVideo}`;
 }
 
 export function setFilterFFMPEG(flag, paddingX, paddingY) {

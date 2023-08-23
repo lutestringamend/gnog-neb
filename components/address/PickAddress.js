@@ -132,6 +132,9 @@ function PickAddress(props) {
 
     function onAddressPress(item) {
       props.updateReduxUserAddressId(item);
+      if (item === addressId) {
+        navigation.goBack();
+      }
     }
 
     if (currentUser === null || currentUser?.id === undefined) {
@@ -160,7 +163,7 @@ function PickAddress(props) {
             style={styles.logo}
           />
           <Text
-            style={[styles.textUid, { textAlign: "start", marginBottom: 12 }]}
+            style={[styles.textUid, { textAlign: "center", marginBottom: 12 }]}
           >
             Mohon mengisi alamat lengkap yang akan digunakan untuk informasi
             Checkout Anda dan pengiriman barang. Informasi ini akan dibagikan ke
@@ -215,7 +218,7 @@ function PickAddress(props) {
             <FlatList
               horizontal={false}
               numColumns={1}
-              contentContainerStyle={styles.containerFlatlist}
+              style={styles.containerFlatlist}
               data={addresses}
               renderItem={({ item, index }) => (
                 <AddressItem
@@ -262,6 +265,8 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   containerFlatlist: {
+    flex: 1,
+    width: "100%",
     backgroundColor: "transparent",
   },
   containerBottom: {

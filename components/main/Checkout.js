@@ -27,6 +27,7 @@ import Separator from "../profile/Separator";
 import { colors, staticDimensions } from "../../styles/base";
 import {
   checkoutdefaultsendername,
+  checkoutdisclaimer,
   checkoutsubtotalcommissionpercentage,
 } from "./constants";
 import BSPopup from "../bottomsheets/BSPopup";
@@ -77,6 +78,7 @@ function Checkout(props) {
     addresses,
     addressId,
   } = props;
+  const rbDisclaimer = useRef();
   const rbSenderName = useRef();
   const navigation = useNavigation();
 
@@ -142,8 +144,10 @@ function Checkout(props) {
         if (newWeight !== weight || newWeightvolume !== weightVolume)
           retrieveDeliveryData = true;
 
+        console.log("weight weightVolume", newWeight, newWeightVolume);
         setPoints(newPoints);
-        setWeight(newWeight);
+        //setWeight(newWeight);
+        setWeight(newWeightVolume);
         setWeightVolume(newWeightVolume);
 
         if (retrieveDeliveryData) {
@@ -268,7 +272,10 @@ function Checkout(props) {
     if (courierService !== null) {
       console.log(courierService);
       try {
-        const newDeliveryFee = courierService.cost[0].biaya;
+        const newDeliveryFee =
+          parseInt(courierService.cost[0].biaya) < 0
+            ? 0
+            : parseInt(courierService.cost[0].biaya);
         setDeliveryFee(newDeliveryFee);
         setTotalPrice(props.cart.subtotal + newDeliveryFee);
       } catch (e) {
@@ -466,6 +473,7 @@ function Checkout(props) {
   };
 
   const proceedCheckout = async () => {
+    rbDisclaimer.current.close();
     if (token === null || checkoutJson === null) {
       return;
     }
@@ -639,15 +647,23 @@ function Checkout(props) {
         <CartAction
           isCart={true}
           totalPrice={totalPrice}
-          buttonAction={() => proceedCheckout()}
+          buttonAction={() => rbDisclaimer.current.open()}
           buttonText={null}
           buttonDisabled={!allowCheckout || afterCheckout}
+          enableProcessing={false}
         />
       )}
+
+      {afterCheckout ? (
+        <View style={styles.containerLoading}>
+          <ActivityIndicator size="large" color={colors.daclen_orange} />
+        </View>
+      ) : null}
+
       <RBSheet
         ref={rbSenderName}
         openDuration={250}
-        height={300}
+        height={350}
         onClose={() =>
           setSenderName((senderName) => ({
             ...senderName,
@@ -673,6 +689,20 @@ function Checkout(props) {
           onPress={() => changeSenderName()}
         />
       </RBSheet>
+      <RBSheet ref={rbDisclaimer} openDuration={250} height={350}>
+        <BSPopup
+          title="Konfirmasi Checkout"
+          content={
+            <Text style={styles.textDisclaimer}>{checkoutdisclaimer}</Text>
+          }
+          buttonPositive="Setuju"
+          buttonPositiveColor={colors.daclen_orange}
+          buttonNegative="Tutup"
+          buttonNegativeColor={colors.daclen_gray}
+          closeThis={() => rbDisclaimer.current.close()}
+          onPress={() => proceedCheckout()}
+        />
+      </RBSheet>
     </SafeAreaView>
   );
 }
@@ -686,6 +716,18 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  containerLoading: {
+    width: "100%",
+    height: "100%",
+    zIndex: 10,
+    position: "absolute",
+    top: 0,
+    start: 0,
+    backgroundColor: colors.daclen_light,
+    opacity: 0.8,
+    justifyContent: "center",
+    alignItems: "center",
   },
   containerHeader: {
     paddingHorizontal: 10,
@@ -720,7 +762,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     textAlign: "center",
   },
-
   textError: {
     fontSize: 14,
     fontWeight: "bold",
@@ -729,6 +770,14 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: colors.daclen_danger,
     textAlign: "center",
+  },
+  textDisclaimer: {
+    backgroundColor: "transparent",
+    color: colors.daclen_gray,
+    textAlignVertical: "center",
+    marginTop: 20,
+    marginHorizontal: 24,
+    fontSize: 12,
   },
   arrowAddress: {
     marginStart: 10,

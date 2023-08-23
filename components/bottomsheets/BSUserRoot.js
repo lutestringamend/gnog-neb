@@ -7,6 +7,7 @@ import { phonenotverified } from "../dashboard/constants";
 import { userverified } from "../dashboard/constants";
 
 export default function BSUserRoot(props) {
+  const { data } = props;
   return (
     <View style={styles.container}>
       <View style={styles.containerHorizontal}>
@@ -26,26 +27,32 @@ export default function BSUserRoot(props) {
           />
         </View>
         <View style={styles.containerInfo}>
-          <Text style={styles.textName}>{props?.data?.name}</Text>
+          <Text style={styles.textName}>{data?.name}</Text>
           <Text
             style={[
               styles.textVerification,
               {
-                backgroundColor: props?.data?.nomor_telp_verified_at
+                backgroundColor: data?.nomor_telp_verified_at
                   ? colors.daclen_green
                   : colors.daclen_red,
               },
             ]}
           >
-            {props?.data?.nomor_telp_verified_at ? userverified : phonenotverified}
+            {data?.nomor_telp_verified_at ? data?.nomor_telp ? data?.nomor_telp : userverified : phonenotverified}
           </Text>
           <Text style={styles.text}>
-            RPV: {props?.data?.rpv ? props?.data?.rpv : "0"}
+            PV: {data?.pv ? data?.pv : "0"}
+          </Text>
+          <Text style={styles.text}>
+            RPV: {data?.rpv ? data?.rpv : "0"}
+          </Text>
+          <Text style={styles.text}>
+            HPV: {data?.hpv ? data?.hpv : "0"}
           </Text>
           <Text style={styles.text}>
             Poin Bulan Ini:{" "}
-            {props?.data?.user?.poin_user_this_month
-              ? props?.data?.user?.poin_user_this_month
+            {data?.user?.poin_user_this_month
+              ? data?.user?.poin_user_this_month
               : "0"}
           </Text>
         </View>

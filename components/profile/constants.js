@@ -32,7 +32,7 @@ export const ProfileHeaderUserData = {
   photo: null,
 };
 
-export const birthdateplaceholder = "YYYY-MM-DD";
+export const birthdateplaceholder = "Contoh: 1990-01-30";
 export const genderchoices = [
   {
     id: "l",
@@ -51,12 +51,12 @@ export const abouttext =
   `;
 export const copyrighttext = "Copyright 2023 Daclen";
 export const adminWA = "62811210555";
-export const adminWAtemplate = "Halo, Daclen Care! Saya adalah user dengan id #USERID# dan nama #USERNAME# menggunakan aplikasi #PLATFORM#.\n";
+export const adminWAtemplate = "Halo, Daclen Care! Saya adalah seller dengan id #I# (#P#).\n";
 export const referralWAtemplate =
   "Ayo ikut berjualan dan berbisnis bersama saya di daclen.com. Daftar disini ";
 export const sharereferral = "Bagikan Referral";
 export const bankinfodesc =
-  "Ketika saldo kamu nanti terisi kamu dapat mencairkan saldo kamu. Informasi rekening anda akan kami gunakan untuk keperluan pencairan saldo, admin akan mentransfer permintaan pencarian saldo anda ke informasi rekening yang kamu isi.";
+  "Ketika saldo kamu nanti terisi kamu dapat mencairkan saldo kamu. Informasi rekening anda akan kami gunakan untuk keperluan pencairan saldo, admin akan mentransfer permintaan pencairan saldo anda ke informasi rekening yang kamu isi.";
 
 export const instagramurl = "https://www.instagram.com/daclenofficial/";
 export const facebookurl = "https://www.facebook.com/daclenofficial/";

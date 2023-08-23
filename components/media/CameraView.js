@@ -169,7 +169,7 @@ function CameraView(props) {
               ? "Anda telah menolak memberikan izin akses kamera\nMohon buka manajemen aplikasi di pengaturan HP Anda dan berikan izin"
               : "Mohon berikan izin akses kamera"}
           </Text>
-          {permission?.status !== "denied" ? (
+          {permission?.status !== "granted" ? (
             <TouchableOpacity
               style={styles.button}
               onPress={() => startRecheckingPermissions()}

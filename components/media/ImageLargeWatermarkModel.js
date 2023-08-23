@@ -86,7 +86,7 @@ function ImageLargeWatermarkModel(props) {
           styles.containerUrl,
           {
             width: displayWidth,
-            top: Math.round(ratio * link_y),
+            top: Math.round(ratio * link_y) - 2,
             start: 0,
           },
         ]}
@@ -113,7 +113,7 @@ function ImageLargeWatermarkModel(props) {
           styles.containerUrl,
           {
             width: displayWidth,
-            top: Math.round(ratio * text_y),
+            top: Math.round(ratio * text_y) - 2,
             start: 0,
           },
         ]}

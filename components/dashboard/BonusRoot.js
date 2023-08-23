@@ -14,7 +14,6 @@ import {
   FlatList,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
@@ -127,6 +126,7 @@ function BonusRoot(props) {
 
   return (
     <SafeAreaView style={styles.container}>
+
       {loading ? (
         <ActivityIndicator
           size="large"

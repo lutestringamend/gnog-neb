@@ -908,7 +908,8 @@ function VideoPlayer(props) {
               ? [
                   styles.containerPanelVideoPortrait,
                   {
-                    top: screenHeight - 100,
+                    top: Platform.OS === "ios" ? screenHeight / 2 : screenHeight - 100,
+                    elevation: 10,
                   },
                 ]
               : videoSize.isLandscape
@@ -1180,7 +1181,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "transparent",
     start: 0,
-    zIndex: 6,
+    zIndex: 12,
   },
   containerBodyVideoPortrait: {
     position: "absolute",

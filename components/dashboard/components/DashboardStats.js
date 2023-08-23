@@ -79,7 +79,7 @@ export default function DashboardStats(props) {
   
         <View style={styles.containerHorizontal}>
           <View style={styles.containerVertical}>
-            <Text style={styles.text}>Point Akumulasi</Text>
+            <Text style={styles.text}>Akumulasi Poin</Text>
             <Text style={styles.text}>{`${
               currentUser?.poin_user?.total ? currentUser?.poin_user?.total : "0"
             } Point`}</Text>
@@ -110,7 +110,7 @@ export default function DashboardStats(props) {
         </View>
   
         <Text style={styles.textBottom}>
-          {`Minimal Rekruitment Bulan Ini: 0 Reseller`}
+          {`Minimal Rekrutmen Bulan Ini: 0 Reseller`}
         </Text>
       </View>
     );

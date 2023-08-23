@@ -28,7 +28,7 @@ export function changeAddress(addresses, id, newAddress) {
   for (let address of addresses) {
     if (address?.id === id) {
       if (!(newAddress === undefined || newAddress === null)) {
-        newAddress.unshift(newAddress);
+        newAddresses.unshift(newAddress);
       }
     } else {
       newAddresses.unshift(address);

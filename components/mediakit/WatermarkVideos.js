@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import {
   View,
-  TouchableHighlight,
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
+  Text,
+  TouchableOpacity,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Image } from "expo-image";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -81,10 +83,12 @@ const WatermarkVideos = (props) => {
       ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY
     );
     if (
-      !(storageWatermarkVideosSaved === undefined ||
-      storageWatermarkVideosSaved === null ||
-      storageWatermarkVideosSaved?.length === undefined ||
-      storageWatermarkVideosSaved?.length < 1)
+      !(
+        storageWatermarkVideosSaved === undefined ||
+        storageWatermarkVideosSaved === null ||
+        storageWatermarkVideosSaved?.length === undefined ||
+        storageWatermarkVideosSaved?.length < 1
+      )
     ) {
       props.overwriteWatermarkVideos(storageWatermarkVideosSaved);
     }
@@ -93,7 +97,7 @@ const WatermarkVideos = (props) => {
   const refreshPage = () => {
     setRefreshing(true);
     props.getMediaKitVideos(token, props.products);
-  }
+  };
 
   function openVideo(item, index) {
     let title = item?.nama ? item?.nama : "Video Promosi";
@@ -142,20 +146,45 @@ const WatermarkVideos = (props) => {
             />
           }
           renderItem={({ item, index }) => (
-            <TouchableHighlight
+            <TouchableOpacity
               key={index}
               onPress={() => openVideo(item, index)}
-              underlayColor={colors.daclen_orange}
               style={styles.containerImage}
             >
-              <Image
-                style={styles.imageList}
-                source={`${mainhttp}${item?.foto}`}
-                contentFit="cover"
-                placeholder={blurhash}
-                transition={100}
-              />
-            </TouchableHighlight>
+              <View style={styles.containerThumbnail}>
+                <Image
+                  style={styles.imageList}
+                  source={`${mainhttp}${item?.foto}`}
+                  contentFit="cover"
+                  placeholder={blurhash}
+                  transition={100}
+                />
+                <View
+                  style={[
+                    styles.containerOrientation,
+                    {
+                      backgroundColor:
+                        item?.width > item?.height
+                          ? colors.daclen_cyan
+                          : colors.daclen_blue,
+                    },
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name={
+                      item?.width > item?.height
+                        ? "crop-landscape"
+                        : "crop-portrait"
+                    }
+                    size={20}
+                    color={colors.daclen_light}
+                    style={{ alignSelf: "center" }}
+                  />
+                </View>
+              </View>
+
+              <Text style={styles.textHeader}>{item?.nama}</Text>
+            </TouchableOpacity>
           )}
         />
       )}
@@ -177,13 +206,40 @@ const styles = StyleSheet.create({
   },
   containerImage: {
     flex: 1,
-    backgroundColor: colors.daclen_light,
+    backgroundColor: colors.white,
     borderWidth: 0.5,
     borderColor: colors.daclen_lightgrey,
   },
+  containerThumbnail: {
+    flex: 1,
+    aspectRatio: 1 / 1,
+    backgroundColor: "transparent",
+  },
+  containerOrientation: {
+    position: "absolute",
+    bottom: 6,
+    end: 6,
+    zIndex: 4,
+    elevation: 4,
+    backgroundColor: colors.daclen_blue,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   imageList: {
     flex: 1,
-    aspectRatio: 3 / 4,
+    aspectRatio: 1 / 1,
+    backgroundColor: "transparent",
+  },
+  textHeader: {
+    backgroundColor: "transparent",
+    fontSize: 12,
+    fontWeight: "bold",
+    textAlign: "center",
+    paddingVertical: 4,
+    color: colors.daclen_black,
   },
 });
 

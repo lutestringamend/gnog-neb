@@ -130,7 +130,7 @@ function Product(props) {
                     size={20}
                     color="white"
                   />
-                  <Text style={styles.textBenefit}>Foto-foto Promosi</Text>
+                  <Text style={styles.textBenefit}>Foto Promosi</Text>
                 </View>
               </TouchableOpacity>
             )}

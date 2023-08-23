@@ -33,7 +33,6 @@ const AddressItem = (props) => {
       <TouchableOpacity
         style={[styles.container, props?.style ? props?.style : null]}
         onPress={() => pickAddress()}
-        disabled={isSelected}
       >
         <View
           style={[

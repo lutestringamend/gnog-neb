@@ -200,11 +200,12 @@ export function getSyaratRoot(token) {
         Accept: "application/json",
       },
     };
-    console.log("getSyaratRoot with header");
+    
 
     Axios.get(getsyaratroot, config)
       .then((response) => {
         const data = response.data?.data;
+        console.log("getSyaratRoot", data);
         dispatch({ type: USER_SYARAT_ROOT_STATE_CHANGE, data });
       })
       .catch((error) => {

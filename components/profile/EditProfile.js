@@ -272,6 +272,8 @@ function EditProfile(props) {
       setError("Email harus diisi");
     } else if (user?.nomor_rekening === "") {
       setError("Nomor Rekening harus diisi");
+    } else if (user?.tanggal_lahir === "") {
+      setError("Tanggal Lahir harus diisi");
     } else if (
       user?.bank_id === "" ||
       user?.bank_name === "" ||
@@ -281,6 +283,11 @@ function EditProfile(props) {
       setError("Nama Bank harus dipilih");
     } else if (user?.nomor_telp === "") {
       setError("Nomor Telepon harus diisi");
+    } else if (
+      user?.nomor_telp?.length === undefined ||
+      user?.nomor_telp?.length < 8
+    ) {
+      setError("Nomor Telepon yang anda masukkan salah");
     } else if (!loading && token !== null && currentUser?.id !== undefined) {
       setLoading(true);
       if (
@@ -395,6 +402,12 @@ function EditProfile(props) {
           <TextInput
             value={user?.nomor_telp}
             style={styles.textInput}
+            inputMode="decimal"
+            editable={!(
+              user?.nomor_telp === undefined ||
+              user?.nomor_telp === null ||
+              user?.nomor_telp === ""
+            )}
             onChangeText={(nomor_telp) => setUser({ ...user, nomor_telp })}
           />
 
@@ -410,6 +423,11 @@ function EditProfile(props) {
           <TextInput
             value={user?.email}
             style={styles.textInput}
+            editable={!(
+              user?.email === undefined ||
+              user?.email === null ||
+              user?.email === ""
+            )}
             onChangeText={(email) => setUser({ ...user, email })}
           />
 
@@ -418,6 +436,12 @@ function EditProfile(props) {
             value={user?.nama_depan}
             style={styles.textInput}
             onChangeText={(nama_depan) => setUser({ ...user, nama_depan })}
+            editable={!(
+              user?.nama_depan === undefined ||
+              user?.nama_depan === null ||
+              user?.nama_depan === ""
+            )
+            }
           />
           <Text style={styles.text}>Nama belakang (opsional)</Text>
           <TextInput
@@ -425,6 +449,13 @@ function EditProfile(props) {
             style={styles.textInput}
             onChangeText={(nama_belakang) =>
               setUser({ ...user, nama_belakang })
+            }
+            editable={
+              !(
+                user?.nama_belakang === undefined ||
+                user?.nama_belakang === null ||
+                user?.nama_belakang === ""
+              )
             }
           />
 
@@ -436,7 +467,7 @@ function EditProfile(props) {
             layout="row"
           />
 
-          <Text style={styles.text}>Tanggal Lahir (opsional)</Text>
+          <Text style={styles.textCompulsory}>Tanggal Lahir*</Text>
           <TextInput
             value={user?.tanggal_lahir}
             style={styles.textInput}
@@ -444,6 +475,11 @@ function EditProfile(props) {
             onChangeText={(tanggal_lahir) =>
               setUser({ ...user, tanggal_lahir })
             }
+            editable={!(
+              user?.bank_name === undefined ||
+              user?.bank_name === null ||
+              user?.bank_name === ""
+            )}
           />
 
           <Separator thickness={2} />
@@ -469,11 +505,24 @@ function EditProfile(props) {
             onChangeText={(nomor_rekening) =>
               setUser({ ...user, nomor_rekening })
             }
+            inputMode="decimal"
+            editable={
+              user?.nomor_rekening === undefined ||
+              user?.nomor_rekening === null ||
+              user?.nomor_rekening === ""
+            }
           />
 
           <Text style={styles.textCompulsory}>Nama Bank*</Text>
           <BSTextInput
-            disabled={loading}
+            disabled={
+              loading ||
+              !(
+                user?.bank_name === undefined ||
+                user?.bank_name === null ||
+                user?.bank_name === ""
+              )
+            }
             onPress={() => openBottomSheet()}
             value={bankName}
             style={styles.textInput}
@@ -484,6 +533,11 @@ function EditProfile(props) {
             value={user?.cabang_bank}
             style={styles.textInput}
             onChangeText={(cabang_bank) => setUser({ ...user, cabang_bank })}
+            editable={
+                user?.cabang_bank === undefined ||
+                user?.cabang_bank === null ||
+                user?.cabang_bank === ""
+            }
           />
 
           <View style={styles.containerPrivacy}>

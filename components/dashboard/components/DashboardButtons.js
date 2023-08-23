@@ -85,12 +85,12 @@ const DashboardButtons = ({ userId, username }) => {
   function openDaclenCare() {
     let template = adminWAtemplate;
     if (!(username === undefined || username === null)) {
-      template = template.replace("#USERNAME#", username);
+      template = template.replace("#I#", username);
     }
-    if (!(userId === undefined || userId === null)) {
+    /*if (!(userId === undefined || userId === null)) {
       template = template.replace("#USERID#", userId);
-    }
-    template = template.replace("#PLATFORM#", Platform.OS);
+    }*/
+    template = template.replace("#P#", Platform.OS);
     console.log("Daclen care intro", template);
     openWhatsapp(adminWA, template);
   }

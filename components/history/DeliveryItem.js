@@ -154,7 +154,7 @@ function DeliveryItem(props) {
                 <FlatList
                   numColumns={1}
                   horizontal={false}
-                  data={deliveryStatus?.manifest}
+                  data={deliveryStatus?.manifest.reverse()}
                   renderItem={({ item }) => (
                     <DeliveryManifest
                       item={item}

@@ -21,7 +21,11 @@ import {
   clearRajaOngkir,
   changeAddress,
 } from "../../axios/address";
-import { generateUuid, updateReduxUserAddresses, incrementReduxUserAddresses } from "../../axios/user";
+import {
+  generateUuid,
+  updateReduxUserAddresses,
+  incrementReduxUserAddresses,
+} from "../../axios/user";
 import AddressData, { AddressInputNamesData } from "./AddressData";
 import BSTextInput from "../bottomsheets/BSTextInput";
 import BSContainer from "../bottomsheets/BSContainer";
@@ -58,16 +62,6 @@ function FillAddress(props) {
 
   const navigation = useNavigation();
   const rbSheet = useRef();
-
-  /*useEffect(() => {
-    if (
-      token === null ||
-      token === undefined ||
-      token === ""
-    ) {
-      navigation.navigate("Login");
-    }
-  }, [token]);*/
 
   useEffect(() => {
     if (loading) {
@@ -137,9 +131,13 @@ function FillAddress(props) {
   }, [currentAddress]);
 
   useEffect(() => {
-    //console.log(address);
+    console.log("address", address);
     setLoading(false);
   }, [address]);
+
+  useEffect(() => {
+    console.log("inputNames", inputNames);
+  }, [inputNames]);
 
   useEffect(() => {
     if (loading) {
@@ -263,7 +261,7 @@ function FillAddress(props) {
       } else if (!loading && token !== null && currentUser?.id !== undefined) {
         setSuccess(true);
         setLoading(true);
-  
+
         if (isNew) {
           let newAddress = {
             ...address,
@@ -293,7 +291,7 @@ function FillAddress(props) {
   const updateStorageAddresses = async () => {
     await setObjectAsync(ASYNC_USER_ADDRESSES_KEY, addresses);
     navigation.navigate("PickAddress");
-  }
+  };
 
   const deleteAddressData = async () => {
     setLoading(true);
@@ -317,22 +315,31 @@ function FillAddress(props) {
       ) : null}
 
       <ScrollView style={styles.scrollView}>
-        <Text style={[styles.textCompulsory, { marginTop: 24 }]}>
-          Nama Depan Penerima*
-        </Text>
-        <TextInput
-          value={address?.nama_depan}
-          style={styles.textInput}
-          onChangeText={(nama_depan) => setAddress({ ...address, nama_depan })}
-        />
-        <Text style={styles.text}>Nama Belakang Penerima (opsional)</Text>
-        <TextInput
-          value={address?.nama_belakang}
-          style={styles.textInput}
-          onChangeText={(nama_belakang) =>
-            setAddress({ ...address, nama_belakang })
-          }
-        />
+        {isDefault ? null : (
+          <View style={styles.containerVertical}>
+            <Text style={[styles.textCompulsory, { marginTop: 24 }]}>
+              Nama Depan Penerima*
+            </Text>
+            <TextInput
+              value={address?.nama_depan}
+              style={styles.textInput}
+              onChangeText={(nama_depan) =>
+                setAddress({ ...address, nama_depan })
+              }
+              editable={!isDefault}
+            />
+            <Text style={styles.text}>Nama Belakang Penerima (opsional)</Text>
+            <TextInput
+              value={address?.nama_belakang}
+              style={styles.textInput}
+              onChangeText={(nama_belakang) =>
+                setAddress({ ...address, nama_belakang })
+              }
+              editable={!isDefault}
+            />
+          </View>
+        )}
+
         <Text style={styles.textCompulsory}>Alamat Lengkap*</Text>
         <TextInput
           value={address?.alamat}
@@ -355,17 +362,35 @@ function FillAddress(props) {
           onPress={() =>
             callRajaOngkir("kota", "provinsi_id", address?.provinsi_id)
           }
-          value={props.rajaongkir?.provinsi === null ? "Pilih Provinsi terlebih dahulu" : inputNames.kota}
+          value={
+            inputNames.kota === null || inputNames.kota === ""
+              ? props.rajaongkir?.provinsi === null
+                ? "Pilih Provinsi terlebih dahulu"
+                : "Tekan untuk memilih"
+              : inputNames.kota
+          }
           style={styles.textInput}
           onChangeText={(kota_id) => setAddress({ ...address, kota_id })}
         />
         <Text style={styles.textCompulsory}>Kecamatan*</Text>
         <BSTextInput
-          disabled={loading || props.rajaongkir?.provinsi === null || props.rajaongkir?.kota === null}
+          disabled={
+            loading ||
+            props.rajaongkir?.provinsi === null ||
+            props.rajaongkir?.kota === null
+          }
           onPress={() =>
             callRajaOngkir("kecamatan", "kota_id", address?.kota_id)
           }
-          value={props.rajaongkir?.provinsi === null ? "Pilih Provinsi terlebih dahulu" : props.rajaongkir?.kota === null ? "Pilih Kota/Kabupaten terlebih dahulu" : inputNames.kecamatan}
+          value={
+            inputNames.kecamatan === null || inputNames.kecamatan === ""
+              ? props.rajaongkir?.provinsi === null
+                ? "Pilih Provinsi terlebih dahulu"
+                : props.rajaongkir?.kota === null
+                ? "Pilih Kota/Kabupaten terlebih dahulu"
+                : "Tekan untuk memilih"
+              : inputNames.kecamatan
+          }
           style={styles.textInput}
           onChangeText={(kecamatan_id) =>
             setAddress({ ...address, kecamatan_id })
@@ -375,14 +400,24 @@ function FillAddress(props) {
         <TextInput
           value={address?.kode_pos}
           style={styles.textInput}
+          inputMode="decimal"
           onChangeText={(kode_pos) => setAddress({ ...address, kode_pos })}
         />
-        <Text style={styles.textCompulsory}>Nomor Telepon*</Text>
-        <TextInput
-          value={address?.nomor_telp}
-          style={styles.textInput}
-          onChangeText={(nomor_telp) => setAddress({ ...address, nomor_telp })}
-        />
+
+        {isDefault ? null : (
+          <View style={styles.containerVertical}>
+            <Text style={styles.textCompulsory}>Nomor Telepon*</Text>
+            <TextInput
+              value={address?.nomor_telp}
+              style={styles.textInput}
+              inputMode="decimal"
+              onChangeText={(nomor_telp) =>
+                setAddress({ ...address, nomor_telp })
+              }
+              editable={!isDefault}
+            />
+          </View>
+        )}
 
         <TouchableOpacity
           onPress={() => updateUserAddressData()}
@@ -480,6 +515,9 @@ const styles = StyleSheet.create({
     opacity: 0.8,
     justifyContent: "center",
     alignItems: "center",
+  },
+  containerVertical: {
+    backgroundColor: "transparent",
   },
   containerPrivacy: {
     marginBottom: 20,

@@ -185,6 +185,7 @@ function CheckoutItem(props) {
         buttonAction={() => openMidtrans()}
         buttonText={checkout?.status}
         buttonDisabled={snapToken === null || loadingSnap}
+        enableProcessing={true}
       />
     </SafeAreaView>
   );

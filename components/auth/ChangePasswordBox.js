@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  Linking,
 } from "react-native";
 import TextInputPassword from "./TextInputPassword";
 
@@ -12,8 +13,12 @@ import { bindActionCreators } from "redux";
 
 import { setAuthData } from "../../axios/user";
 import { colors } from "../../styles/base";
+import { resetpassword } from "../../axios/constants";
 
 function ChangePasswordBox(props) {
+  const resetPassword = () => {
+    Linking.openURL(resetpassword);
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Password Lama*</Text>
@@ -40,7 +45,7 @@ function ChangePasswordBox(props) {
           props.setAuthData({ ...props.authData, confirm_password })
         }
       />
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => resetPassword()}>
         <Text style={styles.textChange}>Lupa Password?</Text>
       </TouchableOpacity>
     </View>

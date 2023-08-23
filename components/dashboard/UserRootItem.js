@@ -4,6 +4,7 @@ import { colors } from "../../styles/base";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { emailnotverified, phonenotverified } from "./constants";
+import { capitalizeFirstLetter } from "../../axios/cart";
 
 export function VerticalLine({ style }) {
   return <View style={[styles.verticalLine, style]} />;
@@ -15,6 +16,7 @@ const UserRootItem = ({
   isLastItem,
   isVerified,
   isCurrentVerified,
+  status,
   onPress,
 }) => {
   function userPress() {
@@ -103,7 +105,7 @@ const UserRootItem = ({
           </View>
           <View style={styles.containerValue}>
             <Text style={styles.text}>
-              {userData?.rpv ? userData?.rpv : "0"}
+              {status ? capitalizeFirstLetter(status) : "Reseller"}
             </Text>
           </View>
         </View>
@@ -156,8 +158,9 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   text: {
-    fontSize: 16,
-    color: colors.daclen_graydark,
+    fontSize: 14,
+    fontWeight: "bold",
+    color: colors.daclen_black,
     backgroundColor: "transparent",
   },
 });

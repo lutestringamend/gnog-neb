@@ -5,17 +5,18 @@ import {
   StyleSheet,
   FlatList,
   ScrollView,
+  Text,
 } from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
-
 import { connect } from "react-redux";
 //import { bindActionCreators } from "redux";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import BSUserRoot from "../bottomsheets/BSUserRoot";
 import UserRootItem, { VerticalLine } from "./UserRootItem";
 import { colors, staticDimensions } from "../../styles/base";
-import UserRootHeaderItem from "./UserRootHeaderItem";
-import { notverified, userverified } from "./constants";
+/*import UserRootHeaderItem from "./UserRootHeaderItem";
+import { notverified, userverified } from "./constants";*/
 
 function checkVerification(userData) {
   if (
@@ -89,12 +90,21 @@ const UserRoots = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
+            <View style={styles.containerLeader}>
+      <MaterialCommunityIcons
+                  name="head"
+                  size={18}
+                  color={colors.daclen_light}
+                />
+                <Text style={styles.textLeader}>DACLEN</Text>
+      </View>
       <ScrollView style={styles.scrollView}>
         <View style={styles.containerMain}>
           <UserRootItem
             userData={currentUser}
             onPress={() => openUserPopup(currentUser)}
             isCurrentUser={true}
+            status={currentUser?.status}
             isLastItem={false}
             isVerified={checkVerification(currentUser)}
           />
@@ -162,6 +172,13 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: 12,
   },
+  containerLeader: {
+    backgroundColor: colors.daclen_black,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    flexDirection: "row",
+    alignItems: "center",
+  },
   scrollView: {
     flex: 1,
     width: "100%",
@@ -169,6 +186,12 @@ const styles = StyleSheet.create({
   },
   containerFlatlist: {
     justifyContent: "flex-start",
+  },
+  textLeader: {
+    marginStart: 6,
+    fontWeight: "bold",
+    fontSize: 14,
+    color: colors.daclen_light
   },
 });
 
