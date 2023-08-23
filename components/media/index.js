@@ -50,9 +50,11 @@ export function setBasicFFMPEGCommand(
   sourceVideo,
   watermarkFile,
   resultVideo,
-  filter
+  filter,
+  width,
+  height
 ) {
-  return `-y -i ${sourceVideo} -i ${watermarkFile} ${filter} ${resultVideo}`;
+  return `-y -i ${sourceVideo} -i ${watermarkFile} scale=${width ? width.toString() : "720"}:${height ? height.toString() : "1280"},setsar=1:1 ${filter} ${resultVideo}`;
 }
 
 export function setFilterFFMPEG(flag, paddingX, paddingY) {
@@ -84,12 +86,16 @@ export function setFFMPEGCommand(
   flag,
   paddingX,
   paddingY,
+  width,
+  height,
 ) {
   return setBasicFFMPEGCommand(
     sourceVideo,
     watermarkFile,
     resultVideo,
-    setFilterFFMPEG(flag, paddingX, paddingY)
+    setFilterFFMPEG(flag, paddingX, paddingY),
+    width,
+    height,
   );
 }
 
