@@ -61,8 +61,15 @@ export function setBasicFFMPEGCommand(
   //-profile:v baseline -level 4.0 -pix_fmt yuv420p -movflags faststart -map_metadata 0
   //${filter} 
   //-metadata:s:v:0 rotate=90
+  //-vcodec libx264 -acodec aac 
   //-vf scale="${width ? width.toString() : "720"}:-1" 
-  return `-y -i ${sourceVideo} -i ${watermarkFile} -vcodec libx264 -acodec aac -vtag avc1 -profile:v baseline -level 4.0 -pix_fmt yuv420p -preset ultrafast ${width < height ? "-metadata:s:v:0 rotate=180" : ""} ${resultVideo}`;
+  //-vf 'transpose=1' -metadata:s:v:0 rotate=0 -profile:v baseline -codec copy
+  //${width < height ? `-map_metadata 0 -metadata:s:v:0 rotate=90 -vf 'transpose=1'` : ""} 720 1080
+  //-vf scale=${width < height ? "720:1080" : "1080:720"}
+  //-vtag avc1 
+  //-profile:v baseline -level 4.0 -pix_fmt yuv420p -preset ultrafast
+  
+  return `-y -i ${sourceVideo} -i ${watermarkFile} ${resultVideo}`;
 }
 
 export function setFilterFFMPEG(flag, paddingX, paddingY) {
@@ -182,6 +189,7 @@ export const takePicture = async (ref) => {
         base64: true,
         imageType: ImageType.jpg,
         exif: true,
+        skipProcessing: false,
       };
       console.log("takePicture", options);
       const picture = await ref.takePictureAsync(options);

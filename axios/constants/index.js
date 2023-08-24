@@ -8,6 +8,20 @@ export const googleAPIkey = "AIzaSyDA_Ic-vzspmforQy-i41WlbjepnPoZl78"
 export const MIDTRANS_CLIENT_KEY = "Mid-client-BqXWNDpvPhUU7fB1"
 export const SB_MIDTRANS_CLIENT_KEY = "SB-Mid-client-xamInlBsiMBuJSWC"
 
+//export const googleAPIkey = "AIzaSyCrc_hstzOAPJiAwHa1sHMZbDN0vKFnOwM";
+export const placesAPIkey = "AIzaSyCrO4XypLwtYnTEaftUcbIq_VABIIQooH0";
+export const googleAPIdevkey = "AIzaSyDK1LZOoEtLWkcunXe40MKc-VO7oZjXQ7A";
+export const defaultlatitude = -6.921697335392908;
+export const defaultlongitude = 107.60708919873582;
+export const defaultlatitudedelta = 0.01214273;
+export const defaultlongitudedelta = 0.00759031;
+/*export const defaultbottomleftlat = -7.115984080856939;
+export const defaultbottomleftlong = 107.41366415523095;
+export const defaulttoprightlat = -6.776729021061178;
+export const defaulttoprightlong = 107.86793313814107;*/
+export const defaultlatitudelongbits = "-4603892706931430400";
+export const defaultlongitudelongbits = "4637272587357913000";
+
 export const finalblognumber = 9999
 export const productpaginationnumber = 100
 export const PROFILE_LOCK_TIMEOUT_IN_MILISECONDS = 6000000

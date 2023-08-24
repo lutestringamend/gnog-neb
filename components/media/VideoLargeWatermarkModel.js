@@ -27,6 +27,7 @@ function VideoLargeWatermarkModel(props) {
     height,
     videoToScreenRatio,
     orientation,
+    username,
   } = props;
 
   const orientationConstant = orientation === "portrait" ? vwmarkportraitenlargementconstant : 1;
@@ -126,9 +127,9 @@ function VideoLargeWatermarkModel(props) {
             ]}
           >
             {`${personalwebsiteurlshort}${
-              watermarkData?.name?.length > vwmarktextnamecharlimit
-                ? watermarkData?.name.substring(0, vwmarktextnamecharlimit)
-                : watermarkData?.name
+              username?.length > vwmarktextnamecharlimit
+                ? username.substring(0, vwmarktextnamecharlimit)
+                : username
             }`}
           </Text>
         </View>

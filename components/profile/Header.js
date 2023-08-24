@@ -79,7 +79,7 @@ export default function Header(props) {
                     : require("../../assets/user.png")
                 }
                 alt={userData?.username}
-                contentFit="contain"
+                contentFit="cover"
                 placeholder={blurhash}
                 transition={0}
               />

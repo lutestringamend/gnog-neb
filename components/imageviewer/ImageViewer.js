@@ -429,6 +429,7 @@ const ImageViewer = (props) => {
             text_y={text_y}
             fontSize={fontSize}
             watermarkData={watermarkData}
+            username={currentUser?.name}
           />
         </ViewShot>
       )}
@@ -572,6 +573,7 @@ const ImageViewer = (props) => {
                   text_y={text_y}
                   fontSize={fontSize}
                   watermarkData={watermarkData}
+                  username={currentUser?.name}
                 />
               </View>
             )}

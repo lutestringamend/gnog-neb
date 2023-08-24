@@ -23,6 +23,7 @@ import { Video, ResizeMode } from "expo-av";
 import { FFmpegKit, ReturnCode } from "ffmpeg-kit-react-native";
 import ViewShot from "react-native-view-shot";
 import { isAvailableAsync, shareAsync } from "expo-sharing";
+import { useNavigation } from "@react-navigation/native";
 
 import { colors, staticDimensions } from "../../styles/base";
 import {
@@ -32,10 +33,7 @@ import {
   setFilterFFMPEG,
   updateWatermarkVideo,
   overwriteWatermarkVideos,
-  setSkipWatermarkFFMPEGCommand,
 } from "../media";
-import MainHeader from "../main/MainHeader";
-import { useNavigation } from "@react-navigation/native";
 //import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 import { defaultffmpegcodec, sharingOptionsMP4 } from "../media/constants";
 import { sentryLog } from "../../sentry";
@@ -116,9 +114,9 @@ function VideoPlayer(props) {
   const [updateStorage, setUpdateStorage] = useState(false);
 
   //debugging ffmpeg
-  const [customFilter, setCustomFilter] = useState(
+  /*const [customFilter, setCustomFilter] = useState(
     `${setFilterFFMPEG("top-left", 0, 0)} ${defaultffmpegcodec}`
-  );
+  );*/
 
   useEffect(() => {
     const checkSharing = async () => {
@@ -489,11 +487,7 @@ function VideoPlayer(props) {
   const saveWatermarkVideo = async (resultUri) => {
     await saveMediaLibraryUri(resultUri);
     setSuccess(true);
-    if (Platform.OS === "android") {
-      setError(`Video dengan Watermark telah disimpan di Galeri`);
-    } else {
-      setError(`Video dengan Watermark telah disimpan di Camera Roll`);
-    }
+    setError(`Video dengan Watermark telah siap untuk dibagikan`);
     shareFileAsync(resultUri, sharingOptionsMP4);
   };
 
@@ -670,10 +664,10 @@ function VideoPlayer(props) {
     );
   };
 
-  const handleFilterChange = (e) => {
+  /*const handleFilterChange = (e) => {
     e.preventDefault();
     setCustomFilter(e.target.value);
-  };
+  };*/
 
   return (
     <SafeAreaView style={styles.container}>
@@ -732,18 +726,27 @@ function VideoPlayer(props) {
           </TouchableOpacity>
 
           <View style={styles.containerHeaderText}>
-            <Text style={styles.textHeaderLandscape}>
+            <Text
+              style={[
+                styles.textHeaderLandscape,
+                loading || error === null
+                  ? { fontSize: 16, paddingVertical: 9 }
+                  : null,
+              ]}
+            >
               {title ? title : "Video Watermark"}
             </Text>
-            <Text style={styles.textError}>{error}</Text>
+            {loading || error === null ? null : (
+              <Text style={styles.textError}>{error}</Text>
+            )}
           </View>
-          {loading ? (
+          {watermarkLoading || videoLoading ? (
             <ActivityIndicator
               size="small"
               color={colors.daclen_light}
               style={{ alignSelf: "center" }}
             />
-          ) : error ? (
+          ) : !loading && error ? (
             <MaterialCommunityIcons
               name={success ? "check-circle" : "alert-circle"}
               size={20}
@@ -910,8 +913,12 @@ function VideoPlayer(props) {
               ? [
                   styles.containerPanelVideoPortrait,
                   {
-                    top: Platform.OS === "ios" ? screenHeight / 2 : screenHeight - 100,
+                    top:
+                      Platform.OS === "ios"
+                        ? Dimensions.get("window").height - 120
+                        : screenHeight - 100,
                     elevation: 10,
+                    zIndex: 20,
                   },
                 ]
               : videoSize.isLandscape
@@ -953,7 +960,7 @@ function VideoPlayer(props) {
               videoSize.isLandscape ? styles.buttonCircle : styles.button,
               {
                 backgroundColor:
-                  videoLoading || !status.isLoaded || watermarkImage === null
+                  videoLoading || loading || !status.isLoaded || watermarkImage === null
                     ? colors.daclen_gray
                     : colors.daclen_orange,
                 flex: 1,
@@ -967,7 +974,7 @@ function VideoPlayer(props) {
               watermarkImage === null
             }
           >
-            {watermarkLoading || loading ? (
+            {watermarkLoading ? (
               <ActivityIndicator
                 size="small"
                 color="white"
@@ -1006,6 +1013,25 @@ function VideoPlayer(props) {
           </TouchableOpacity>
         </View>
 
+      </ScrollView>
+      {loading ? (
+        <View style={styles.containerLoading}>
+          <View style={styles.containerProgress}>
+            <ActivityIndicator
+              size="large"
+              color={colors.daclen_light}
+              style={{ alignSelf: "center" }}
+            />
+            {error ? <Text style={styles.textErrorLarge}>{error}</Text> : null}
+          </View>
+        </View>
+      ) : null}
+    </SafeAreaView>
+  );
+}
+
+/*
+
         {userId === vwmarkdebuguserid &&
         Platform.OS === "web" &&
         !videoSize.isLandscape ? (
@@ -1035,7 +1061,7 @@ function VideoPlayer(props) {
               "%RAWURI%",
               "%WTEXT%",
               "%RESULT%",
-              customFilter,
+              customFilter
             )}
           </Text>
         ) : null}
@@ -1140,10 +1166,7 @@ function VideoPlayer(props) {
         {userId !== vwmarkdebuguserid || videoSize.isLandscape ? null : (
           <Text style={styles.textUid}>{output}</Text>
         )}
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
+*/
 
 const styles = StyleSheet.create({
   container: {
@@ -1155,6 +1178,25 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: "white",
+  },
+  containerLoading: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+    zIndex: 30,
+    top: 0,
+    start: 0,
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  containerProgress: {
+    paddingHorizontal: 32,
+    paddingVertical: 20,
+    backgroundColor: colors.daclen_black,
+    elevation: 6,
+    alignItems: "center",
+    borderRadius: 6,
   },
   containerViewShot: {
     position: "absolute",
@@ -1215,7 +1257,8 @@ const styles = StyleSheet.create({
     start: 0,
   },
   containerHeaderText: {
-    marginHorizontal: 10,
+    marginStart: 16,
+    marginEnd: 10,
     alignSelf: "center",
     flex: 1,
     backgroundColor: "transparent",
@@ -1273,6 +1316,15 @@ const styles = StyleSheet.create({
     zIndex: 4,
     height: 16,
   },
+  textErrorLarge: {
+    marginTop: 10,
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: colors.daclen_light,
+    backgroundColor: "transparent",
+    textAlignVertical: "center",
+  },
   textUid: {
     fontSize: 10,
     width: "90%",
@@ -1293,7 +1345,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (store) => ({
-    currentUser: store.userState.currentUser,
+  currentUser: store.userState.currentUser,
   watermarkData: store.mediaKitState.watermarkData,
   watermarkVideos: store.mediaState.watermarkVideos,
 });

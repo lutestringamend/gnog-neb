@@ -36,6 +36,7 @@ function ImageLargeWatermarkModel(props) {
     text_x,
     text_y,
     fontSize,
+    username,
   } = props;
 
   const ratio = displayWidth / width;
@@ -101,9 +102,9 @@ function ImageLargeWatermarkModel(props) {
           ]}
         >
           {`${personalwebsiteurlshort}${
-            watermarkData?.name?.length > vwmarktextnamecharlimit
-              ? watermarkData?.name.substring(0, vwmarktextnamecharlimit)
-              : watermarkData?.name
+            username?.length > vwmarktextnamecharlimit
+              ? username?.substring(0, vwmarktextnamecharlimit)
+              : username
           }`}
         </Text>
       </View>

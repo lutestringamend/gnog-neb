@@ -220,7 +220,6 @@ const styles = StyleSheet.create({
     bottom: 6,
     end: 6,
     zIndex: 4,
-    elevation: 4,
     backgroundColor: colors.daclen_blue,
     width: 28,
     height: 28,
