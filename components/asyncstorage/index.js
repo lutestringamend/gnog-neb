@@ -24,10 +24,10 @@ export const setTokenAsync = async (token) => {
     ) {
       //await AsyncStorage.setItem(ASYNC_USER_TOKEN_KEY, null);
       await AsyncStorage.removeItem(ASYNC_USER_TOKEN_KEY);
-      console.log(`asyncstorage ${ASYNC_USER_TOKEN_KEY} set to null and removed`);
+      console.log(`storage token set to null`);
     } else {
       await AsyncStorage.setItem(ASYNC_USER_TOKEN_KEY, token);
-      console.log(`asyncstorage ${ASYNC_USER_TOKEN_KEY} saved`, token);
+      console.log(`storage token updated`);
     }
   } catch (error) {
     console.error(error);
@@ -45,14 +45,14 @@ export const getTokenAsync = async () => {
       token !== "" &&
       token !== "null"
     ) {
-      console.log(`asyncstorage ${ASYNC_USER_TOKEN_KEY} read`, token);
+      console.log(`storage token read`);
       return token;
     }
   } catch (error) {
     console.error(error);
     sentryLog(error);
   }
-  console.log(`asyncstorage ${ASYNC_USER_TOKEN_KEY} is null`);
+  console.log(`storage token null`);
   return null;
 };
 

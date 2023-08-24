@@ -104,20 +104,21 @@ function Login(props) {
   const onLogin = async () => {
     if (props.authData?.email === null || props.authData?.email === undefined) {
       setError("Anda belum mengisi username atau email Anda");
+      return;
     } else if (
       props.authData?.password === undefined ||
       props.authData?.password === null
     ) {
       setError("Anda belum mengisi password");
-    } else {
-      setError(null);
-      setLoading(true);
-      if (resetPIN) {
-        await setObjectAsync(ASYNC_USER_PROFILE_PIN_KEY, null);
-      }
-      props.login(props.authData?.email, props.authData?.password, resetPIN);
-      setResettingPin(resetPIN);
+      return;
     }
+    setError(null);
+    setLoading(true);
+    if (resetPIN) {
+      await setObjectAsync(ASYNC_USER_PROFILE_PIN_KEY, null);
+    }
+    props.login(props.authData?.email, props.authData?.password, resetPIN);
+    setResettingPin(resetPIN);
   };
 
   const onRegister = () => {

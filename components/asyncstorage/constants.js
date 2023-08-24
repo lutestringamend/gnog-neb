@@ -1,4 +1,6 @@
 export const ASYNC_USER_TOKEN_KEY = "@user_token"
+export const ASYNC_USER_KEY = "@user_key"
+
 export const ASYNC_PRODUCTS_ARRAY_KEY = "@products_array"
 export const ASYNC_USER_CURRENTUSER_KEY = "@user_currentUser"
 export const ASYNC_USER_REGISTER_SNAP_TOKEN_KEY = "@user_registerSnapToken"

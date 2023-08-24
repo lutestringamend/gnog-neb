@@ -13,6 +13,7 @@ import SplashScreen from "./Splash";
 import TabNavigator from "./bottomnav/TabNavigator";
 import { getProductData, clearData } from "../axios/product";
 import {
+  login,
   setNewToken,
   getCurrentUser,
   clearUserData,
@@ -21,6 +22,8 @@ import {
   updateReduxProfilePIN,
   updateReduxUserAddressId,
   updateReduxUserAddresses,
+  deriveUserKey,
+  userLogout,
 } from "../axios/user";
 import {
   clearMediaKitData,
@@ -86,17 +89,17 @@ function Main(props) {
     }, [props.maxIndex]);*/
 
     useEffect(() => {
-      if (
-        token === undefined ||
-        token === null ||
-        token === "" ||
-        currentUser === undefined ||
-        currentUser === null
-      ) {
+      if (token === undefined || token === null || token === "") {
         checkUserData();
         return;
       }
-      //console.log("redux token", token);
+    }, [token]);
+
+    useEffect(() => {
+      if (currentUser === undefined || currentUser === null) {
+        return;
+      }
+
       console.log("redux currentuser", currentUser);
       if (watermarkData === null) {
         checkWatermarkData();
@@ -110,7 +113,7 @@ function Main(props) {
         );
         return () => theAppState.remove();
       }
-    }, [token, currentUser, profileLock]);
+    }, [currentUser, profileLock]);
 
     useEffect(() => {
       if (profilePIN === null) {
@@ -146,17 +149,30 @@ function Main(props) {
     const checkUserData = async () => {
       const storageToken = await readStorageToken();
       const storageCurrentUser = await readStorageCurrentUser();
-      if (
-        storageToken === undefined ||
-        storageToken === null ||
-        storageCurrentUser === undefined ||
-        storageCurrentUser === null
-      ) {
+      const key = await deriveUserKey(storageToken);
+      try {
+        if (
+          storageToken === undefined ||
+          storageToken === null ||
+          key === null ||
+          storageCurrentUser === undefined ||
+          storageCurrentUser === null ||
+          storageCurrentUser?.name === undefined ||
+          storageCurrentUser?.name === null
+        ) {
+          props.setNewToken(null, null);
+          props.clearUserData();
+          props.clearMediaKitData();
+        } else {
+          props.setNewToken(storageToken, storageCurrentUser, key);
+          //props.login(storageCurrentUser?.name, key, false);
+        }
+      } catch (e) {
+        console.error(e);
+        userLogout();
         props.setNewToken(null, null);
         props.clearUserData();
         props.clearMediaKitData();
-      } else {
-        props.setNewToken(storageToken, storageCurrentUser);
       }
     };
 
@@ -339,6 +355,7 @@ const mapDispatchProps = (dispatch) =>
       clearData,
       getCurrentUser,
       clearUserData,
+      login,
       setNewToken,
       disableForceLogout,
       clearMediaKitData,

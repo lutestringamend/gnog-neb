@@ -1,5 +1,5 @@
 import Axios from "../index";
-import { Linking, Platform, ToastAndroid } from "react-native";
+import { Linking, Platform } from "react-native";
 import * as Crypto from "expo-crypto";
 
 import {
@@ -63,12 +63,30 @@ import {
   sendProfilePhotoUnusable,
 } from "../../components/media";
 import {
+  getObjectAsync,
   setObjectAsync,
   setTokenAsync,
 } from "../../components/asyncstorage";
-import { ASYNC_HISTORY_CHECKOUT_KEY, ASYNC_HISTORY_DELIVERY_KEY, ASYNC_MEDIA_WATERMARK_DATA_KEY, ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY, ASYNC_USER_ADDRESSES_KEY, ASYNC_USER_CURRENTUSER_KEY, ASYNC_USER_PREVIOUS_USERNAME, ASYNC_USER_PROFILE_ADDRESS_ID_KEY, ASYNC_USER_PROFILE_PIN_KEY, ASYNC_USER_REGISTER_SNAP_TOKEN_KEY, ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../../components/asyncstorage/constants";
+import {
+  ASYNC_HISTORY_CHECKOUT_KEY,
+  ASYNC_HISTORY_DELIVERY_KEY,
+  ASYNC_MEDIA_WATERMARK_DATA_KEY,
+  ASYNC_MEDIA_WATERMARK_PHOTOS_KEY,
+  ASYNC_MEDIA_WATERMARK_VIDEOS_KEY,
+  ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY,
+  ASYNC_USER_ADDRESSES_KEY,
+  ASYNC_USER_CURRENTUSER_KEY,
+  ASYNC_USER_KEY,
+  ASYNC_USER_PREVIOUS_USERNAME,
+  ASYNC_USER_PROFILE_ADDRESS_ID_KEY,
+  ASYNC_USER_PROFILE_PIN_KEY,
+  ASYNC_USER_REGISTER_SNAP_TOKEN_KEY,
+  ASYNC_USER_TOKEN_KEY,
+  ASYNC_WATERMARK_PHOTOS_PDF_KEY,
+} from "../../components/asyncstorage/constants";
 import { MAXIMUM_FILE_SIZE_IN_BYTES } from "../../components/media/constants";
 import { sentryLog } from "../../sentry";
+import { aes } from "./aes";
 
 export const resetPassword = () => {
   Linking.openURL(resetpassword);
@@ -77,6 +95,7 @@ export const resetPassword = () => {
 export const userLogout = async (username) => {
   console.log("userLogout", username);
   await setTokenAsync(null);
+  await setObjectAsync(ASYNC_USER_KEY, null);
   await setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, null);
   await setObjectAsync(ASYNC_USER_PROFILE_PIN_KEY, null);
   await setObjectAsync(ASYNC_USER_REGISTER_SNAP_TOKEN_KEY, null);
@@ -89,7 +108,10 @@ export const userLogout = async (username) => {
   await setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY, null);
   await setObjectAsync(ASYNC_USER_PROFILE_ADDRESS_ID_KEY, null);
   await setObjectAsync(ASYNC_USER_ADDRESSES_KEY, null);
-  setObjectAsync(ASYNC_USER_PREVIOUS_USERNAME, username === undefined || username === null ? null : username);
+  setObjectAsync(
+    ASYNC_USER_PREVIOUS_USERNAME,
+    username === undefined || username === null ? null : username
+  );
   //await clearStorage();
 };
 
@@ -108,8 +130,8 @@ export function generateUuid() {
 export const updateReduxCurrentUserData = (data) => {
   return (dispatch) => {
     dispatch({ type: USER_STATE_CHANGE, data });
-  }
-}
+  };
+};
 
 export function updateReduxProfileLockStatus(data) {
   return (dispatch) => {
@@ -121,7 +143,10 @@ export function updateReduxProfileLockStatus(data) {
     } else {
       let date = new Date();
       date.setTime(date.getTime() + PROFILE_LOCK_TIMEOUT_IN_MILISECONDS);
-      dispatch({ type: USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE, data: date.getTime() });
+      dispatch({
+        type: USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE,
+        data: date.getTime(),
+      });
       console.log("updateReduxProfileLockTimeout", date.getTime());
     }
   };
@@ -200,7 +225,6 @@ export function getSyaratRoot(token) {
         Accept: "application/json",
       },
     };
-    
 
     Axios.get(getsyaratroot, config)
       .then((response) => {
@@ -298,9 +322,12 @@ export function getHPV(id, token) {
       .catch((error) => {
         console.log(error);
         sentryLog(error);
-        dispatch({ type: USER_HPV_STATE_CHANGE, data: {
-          data: null,
-        } });
+        dispatch({
+          type: USER_HPV_STATE_CHANGE,
+          data: {
+            data: null,
+          },
+        });
         //dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: error?.message });
       });
   };
@@ -561,7 +588,14 @@ export function updateUserPhoto(id, token, uri) {
   }
 }
 
-export function updateUserData(id, userData, address, token, currentUser, foto) {
+export function updateUserData(
+  id,
+  userData,
+  address,
+  token,
+  currentUser,
+  foto
+) {
   try {
     return (dispatch) => {
       const config = {
@@ -714,7 +748,7 @@ export function setAuthData(data) {
   };
 }
 
-export function getRegisterSnapToken (id, token) {
+export function getRegisterSnapToken(id, token) {
   return (dispatch) => {
     const config = {
       headers: {
@@ -723,7 +757,7 @@ export function getRegisterSnapToken (id, token) {
       },
     };
     const url = registergetsnaptoken + "/" + id.toString();
-  
+
     Axios.post(url, config)
       .then((response) => {
         const data = response?.data;
@@ -733,12 +767,14 @@ export function getRegisterSnapToken (id, token) {
       .catch((error) => {
         console.error(error);
         sentryLog(error);
-        dispatch({ type: USER_REGISTER_SNAP_TOKEN_STATE_CHANGE, data: {
-          error: error.toString()
-        } });
+        dispatch({
+          type: USER_REGISTER_SNAP_TOKEN_STATE_CHANGE,
+          data: {
+            error: error.toString(),
+          },
+        });
       });
-  }
-
+  };
 }
 
 export function changePassword(authData, id, token) {
@@ -803,20 +839,23 @@ export function register(authData) {
 
     Axios.post(userregister, params)
       .then((response) => {
-        console.log(response.data);
-        const token = response.data.token;
-        if (token !== null && token !== undefined) {
-          //dispatch(setNewToken(token));
-          dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token });
-        } else {
+        //console.log(response.data);
+        const token = response?.data?.token;
+        if (token === undefined || token === null || token === "") {
           const data =
             "Tidak bisa mendaftarkan akun baru. Mohon periksa kembali data yang Anda masukkan.";
           dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data });
           //dispatch(clearUserData());
+          setObjectAsync(ASYNC_USER_KEY, null);
+        } else {
+          //dispatch(setNewToken(token));
+          dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token });
+          storeNewToken(token, authData?.password);
         }
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
+        sentryLog(error);
         dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: error?.message });
       });
   };
@@ -830,29 +869,33 @@ export function login(email, password, resetPIN) {
       password,
       device_name: Platform.OS,
     };
-    console.log("login with params " + JSON.stringify(params));
 
     Axios.post(loginlink, params)
       .then((response) => {
-        console.log(response.data);
-        const token = response.data.token;
-        if (token !== null && token !== undefined) {
+        const token = response?.data?.token;
+        if (token === undefined || token === null || token === "") {
+          const data =
+            "Username/password salah. Mohon periksa kembali data yang Anda masukkan.";
+          dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data });
+          setObjectAsync(ASYNC_USER_KEY, null);
+          //dispatch(clearUserData());
+        } else {
           //dispatch(setNewToken(token));
           if (resetPIN) {
             dispatch({ type: USER_PROFILE_PIN_STATE_CHANGE, data: null });
             dispatch({ type: USER_PROFILE_LOCK_STATE_CHANGE, data: true });
-            dispatch({ type: USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE, data: null });
+            dispatch({
+              type: USER_PROFILE_LOCK_TIMEOUT_STATE_CHANGE,
+              data: null,
+            });
           }
           dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token });
-        } else {
-          const data =
-            "Username/password salah. Mohon periksa kembali data yang Anda masukkan.";
-          dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data });
-          //dispatch(clearUserData());
+          storeNewToken(token, password);
         }
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
+        sentryLog(error);
         dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: error?.message });
       });
   };
@@ -921,17 +964,82 @@ function readStorageCurrentUser(dispatch, storageCurrentUser) {
   }
 }
 
-export function setNewToken(token, storageCurrentUser) {
+export function setNewToken(token, storageCurrentUser, key) {
   return (dispatch) => {
     if (token === undefined || token === null || token === "") {
       console.log("redux token set to null");
       dispatch({ type: USER_TOKEN_STATE_CHANGE, token: null });
-    } else {
-      console.log("redux token set to new", token);
+      userLogout();
+    } else if (key === undefined || key === null || key === "") {
+      console.log("redux token set to previous");
       dispatch({ type: USER_TOKEN_STATE_CHANGE, token });
       dispatch(getCurrentUser(token, storageCurrentUser));
       dispatch(getKeranjang(token));
       setTokenAsync(token);
+    } else {
+      const params = {
+        email: storageCurrentUser?.name,
+        password: key,
+        device_name: Platform.OS,
+      };
+
+      Axios.post(loginlink, params)
+        .then((response) => {
+          const token = response?.data?.token;
+          if (token === undefined || token === null || token === "") {
+            setObjectAsync(ASYNC_USER_TOKEN_KEY, null);
+            setObjectAsync(ASYNC_USER_KEY, null);
+            dispatch({ type: USER_TOKEN_STATE_CHANGE, token: null });
+          } else {
+            console.log("redux token set to new");
+            storeNewToken(token, key);
+            dispatch({ type: USER_TOKEN_STATE_CHANGE, token });
+            dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token });
+            dispatch(getCurrentUser(token, storageCurrentUser));
+            dispatch(getKeranjang(token));
+            setTokenAsync(token);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          sentryLog(error);
+          dispatch({ type: USER_TOKEN_STATE_CHANGE, token: null });
+          userLogout();
+        });
     }
   };
 }
+
+/*storageCurrentUser === undefined ||
+      storageCurrentUser === null ||
+      storageCurrentUser?.name === undefined ||
+      storageCurrentUser?.name === null*/
+
+export const storeNewToken = async (token, key) => {
+  if (
+    token === undefined ||
+    token === null ||
+    key === undefined ||
+    key === null
+  ) {
+    return;
+  }
+  const digest = aes(key, token, true);
+  await setObjectAsync(ASYNC_USER_KEY, digest);
+};
+
+export const deriveUserKey = async (token) => {
+  if (token === undefined || token === null) {
+    return null;
+  }
+  try {
+    const key = await getObjectAsync(ASYNC_USER_KEY);
+    if (key === undefined || key === null || key === "") {
+      return null;
+    }
+    return aes(key, token, false);
+  } catch (e) {
+    console.error(e);
+  }
+  return null;
+};

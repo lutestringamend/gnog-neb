@@ -251,13 +251,7 @@ function Shop(props) {
                 nama={item?.nama}
                 harga_currency={item?.harga_currency}
                 foto_url={item?.foto_url}
-                isPremium={
-                  !(
-                    currentUser?.status_member === undefined ||
-                    currentUser?.status_member === null ||
-                    currentUser?.status_member !== "premium"
-                  )
-                }
+                isPremium={currentUser?.isActive}
                 goDashboard={() => openDashboard()}
               />
             )}

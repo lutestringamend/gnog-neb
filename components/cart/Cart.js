@@ -24,12 +24,12 @@ function Cart(props) {
   const {
     cart,
     token,
+    currentUser,
     produk_id,
     iconSize,
     textSize,
     cartError,
     isShop,
-    isPremium,
     navigation,
   } = props;
 
@@ -84,7 +84,7 @@ function Cart(props) {
   function onShopButtonPress() {
     if (token === null && !(navigation === undefined || navigation === null)) {
       navigation.navigate("Login");
-    } else if (isShop && !isPremium) {
+    } else if (isShop && (currentUser?.isActive === undefined || currentUser?.isActive === null || !currentUser?.isActive)) {
       if (props?.goDashboard === undefined || props?.goDashboard === null) {
         return;
       }
@@ -113,7 +113,7 @@ function Cart(props) {
           <Text style={styles.textButton}>
             {token === null
               ? `Login/Register\nAkun`
-              : isPremium
+              : currentUser?.isActive
               ? `Tambahkan\nke Keranjang`
               : `Bergabung\nSekarang`}
           </Text>
@@ -237,6 +237,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (store) => ({
   token: store.userState.token,
+  currentUser: store.userState.currentUser,
   cart: store.userState.cart,
   cartError: store.userState.cartError,
 });
