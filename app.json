@@ -39,6 +39,11 @@
       "blockedPermissions": [
         "com.google.android.gms.permission.AD_ID"
       ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAyCj--fS9hSK7h8YmQljxhTlqUdOEZSUU"
+        }
+      },
       "icon": "./assets/favicon.png",
       "package": "com.daclen.android",
       "permissions": [

@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     justifyContent: "center",
-    backgroundColor: colors.daclen_gray,
+    backgroundColor: colors.daclen_light,
   },
   text: {
     fontWeight: "bold",

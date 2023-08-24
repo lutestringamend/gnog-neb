@@ -54,11 +54,13 @@ import FAQScreen from "./components/profile/FAQ";
 import AboutScreen from "./components/profile/About";
 import PDFViewer from "./components/pdfviewer/PDFViewer";
 import LoginScreen from "./components/auth/Login";
+
 import PickAddress from "./components/address/PickAddress";
 import FillAddressScreen from "./components/address/FillAddress";
+import LocationPin from "./components/address/LocationPin";
+
 import EditProfileScreen from "./components/profile/EditProfile";
 import CameraView from "./components/media/CameraView";
-
 import ImageViewer from "./components/imageviewer/ImageViewer";
 import MultipleImageView from "./components/imageviewer/MultipleImageView";
 import MediaKitFiles from "./components/mediakit/MediaKitFiles";
@@ -175,6 +177,11 @@ export default function App() {
                 name="OTPScreen"
                 component={OTPScreen}
                 options={{ ...defaultOptions, title: "Isi OTP dari Whatsapp" }}
+              />
+              <Stack.Screen
+                name="LocationPin"
+                component={LocationPin}
+                options={{ ...defaultOptions, headerShown: false }}
               />
               <Stack.Screen
                 name="PickAddress"

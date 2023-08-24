@@ -37,6 +37,7 @@ export const vwmarkrenderenlargementconstant = 2;
 export const vwmarkrenderendratioconstant = 0.125;
 
 export const vwmarkrenderlandscapewidthcompressionconstant = 1.2;
+//export const vwmarkrenderlandscapewidthcompressionconstant = 1;
 export const vwmarkrenderlandscapeheightcompressionconstant = 1;
 
 export const vwmarkrenderportraitwidthcompressionconstant = 1;

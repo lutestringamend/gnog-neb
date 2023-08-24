@@ -10,38 +10,22 @@ import {
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 
 import ReactMap from "../maps/ReactMap";
 import { colors } from "../../styles/base";
 import {
   checkIfCoordIsStringThenParse,
-  checkReduxLastLocation,
-  detectEligibility,
   getAddressText,
   getLocales,
   initializeLocation,
-  updateReduxLastLocation,
   updateReduxandStorageLastLocation,
 } from ".";
-import {
-  defaultRegion,
-  mapplacesplaceholder,
-  mapplacespredefinedplaces,
-} from "./constants";
+import { defaultRegion, mapplacesplaceholder } from "./constants";
 import { sentryLog } from "../../sentry";
-import {
-  defaultlatitude,
-  defaultlatitudedelta,
-  defaultlongitude,
-  defaultlongitudedelta,
-  placesAPIkey,
-} from "../../axios/constants";
+import { placesAPIkey } from "../../axios/constants";
 
 const LocationPin = (props) => {
-  const navigation = useNavigation();
   const [location, setLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -51,44 +35,21 @@ const LocationPin = (props) => {
 
   const [moving, setMoving] = useState(false);
   const [eligible, setEligible] = useState(false);
-  const [initialRegion, setInitialRegion] = useState(null);
+  const [initialRegion, setInitialRegion] = useState(
+    props.route.params?.savedRegion
+      ? props.route.params?.savedRegion
+      : defaultRegion
+  );
   const [region, setRegion] = useState(null);
   const [regionFromPlaces, setRegionFromPlaces] = useState(false);
   const [placesInput, setPlacesInput] = useState("");
   const rbInput = useRef();
-
-  let navData = props.route.params;
-  let isNew =
-    props.route.params?.isNew || props.route.params?.id === "" ? true : false;
+  const navigation = useNavigation();
 
   try {
     useEffect(() => {
       checkLocation();
     }, []);
-
-    useEffect(() => {
-      navData = props.route.params;
-      console.log("LocationPin navData", navData);
-      if (
-        navData?.latitude === undefined ||
-        navData?.latitude === null ||
-        navData?.longitude === undefined ||
-        navData?.longitude === null
-      ) {
-        return;
-      }
-      setInitialRegion({
-        latitude: checkIfCoordIsStringThenParse(navData?.latitude),
-        longitude: checkIfCoordIsStringThenParse(navData?.longitude),
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
-      });
-
-      //debug
-      /*if (Platform.OS === "android") {
-        ToastAndroid.show(JSON.stringify(navData), ToastAndroid.LONG);
-      }*/
-    }, [props.route.params]);
 
     useEffect(() => {
       if (location === null) {
@@ -98,38 +59,27 @@ const LocationPin = (props) => {
         return;
       }
 
-      if (
-        navData?.latitude === undefined ||
-        navData?.latitude === null ||
-        navData?.longitude === undefined ||
-        navData?.longitude === null
-      ) {
-        try {
-          if (
-            location?.coords === undefined ||
-            location?.coords?.latitude === undefined ||
-            location?.coords?.longitude === undefined
-          ) {
-            setInitialRegion(defaultRegion);
-          } else {
-            setInitialRegion({
-              latitude: checkIfCoordIsStringThenParse(
-                location?.coords?.latitude
-              ),
-              longitude: checkIfCoordIsStringThenParse(
-                location?.coords?.longitude
-              ),
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            });
-          }
-        } catch (err) {
-          console.error(err);
-          sentryLog(err);
+      try {
+        if (
+          location?.coords === undefined ||
+          location?.coords?.latitude === undefined ||
+          location?.coords?.longitude === undefined
+        ) {
           setInitialRegion(defaultRegion);
+        } else {
+          setInitialRegion({
+            latitude: checkIfCoordIsStringThenParse(location?.coords?.latitude),
+            longitude: checkIfCoordIsStringThenParse(
+              location?.coords?.longitude
+            ),
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          });
         }
-      } else {
-        return;
+      } catch (err) {
+        console.error(err);
+        sentryLog(err);
+        setInitialRegion(defaultRegion);
       }
 
       if (region === null) {
@@ -140,90 +90,24 @@ const LocationPin = (props) => {
     }, [location]);
 
     useEffect(() => {
-      const checkReduxLastLocationOnError = async () => {
-        let result = await checkReduxLastLocation(props.lastLocation);
-        if (result === null) {
-          setDefaultRegion();
-        } else {
-          console.log(
-            "using redux LastLocation while locationError",
-            locationError
-          );
-          if (loading) {
-            setLoading(false);
-          }
-          let lastSavedRegion = {
-            latitude: defaultlatitude,
-            longitude: defaultlongitude,
-            latitudeDelta: defaultlatitudedelta,
-            longitudeDelta: defaultlongitudedelta,
-          };
-          try {
-            if (
-              !(
-                result?.latitude === undefined ||
-                result?.longitude === undefined ||
-                result?.latitude === null ||
-                result?.longitude === null
-              )
-            ) {
-              lastSavedRegion = {
-                latitude: checkIfCoordIsStringThenParse(result?.latitude),
-                longitude: checkIfCoordIsStringThenParse(result?.longitude),
-                latitudeDelta: result?.latitudeDelta
-                  ? checkIfCoordIsStringThenParse(result?.latitudeDelta)
-                  : defaultlatitudedelta,
-                longitudeDelta: result?.longitudeDelta
-                  ? checkIfCoordIsStringThenParse(result?.longitudeDelta)
-                  : defaultlongitudedelta,
-              };
-            }
-          } catch (err) {
-            console.error(err);
-            sentryLog(err);
-          }
-
-          setInitialRegion(lastSavedRegion);
-          setRegion(lastSavedRegion);
-          if (result?.locale === undefined || result?.locale === null) {
-            return;
-          }
-
-          setAddressText(result?.locale?.name ? result?.locale?.name : null);
-          setRegionText(
-            `${result?.locale?.subregion}, ${result?.locale?.region} ${
-              result?.locale?.postalCode ? result?.locale?.postalCode : ""
-            }`
-          );
-        }
-      };
-
-      const setDefaultRegion = () => {
-        setInitialRegion(defaultRegion);
-        if (region === null) {
-          setRegion(defaultRegion);
-        }
-        setText(locationError.toString());
-      };
-
       if (locationError === undefined || locationError === null) {
         return;
       }
-      if (
-        navData?.latitude === undefined ||
-        navData?.latitude === null ||
-        navData?.longitude === undefined ||
-        navData?.longitude === null
-      ) {
-        checkReduxLastLocationOnError();
+
+      setInitialRegion(defaultRegion);
+      if (region === null) {
+        setRegion(defaultRegion);
       }
-      /*if (loading) {
-        
-      }*/
+      setText(locationError.toString());
     }, [locationError]);
 
     useEffect(() => {
-      if (initialRegion === null) {
+      if (
+        initialRegion === undefined ||
+        initialRegion === null ||
+        initialRegion?.latitude === undefined ||
+        initialRegion?.longitude === undefined
+      ) {
         return;
       }
       if (loading) {
@@ -246,9 +130,6 @@ const LocationPin = (props) => {
           setEligible(false);
           setAddressText(null);
           setRegionText(null);
-          if (locationError === null) {
-            updateReduxandStorageLastLocation(props, location?.coords);
-          }
         } else {
           if (!regionFromPlaces) {
             setAddressText(getAddressText(locales));
@@ -259,7 +140,10 @@ const LocationPin = (props) => {
             );
           }
 
-          const { subregionEligible, regionEligible } = detectEligibility(
+          setEligible(true);
+          console.log("locales 0", locales[0]);
+
+          /*const { subregionEligible, regionEligible } = detectEligibility(
             locales[0]?.subregion,
             locales[0]?.region
           );
@@ -275,7 +159,7 @@ const LocationPin = (props) => {
             } else if (!subregionEligible) {
               setText("Kota/Kabupaten di luar wilayah operasional Home Clinic");
             }
-          }
+          }*/
           if (
             locationError !== null ||
             locales[0] === undefined ||
@@ -284,10 +168,6 @@ const LocationPin = (props) => {
             console.log("locales number zero", locales[0]);
             return;
           }
-          updateReduxandStorageLastLocation(props, {
-            ...location.coords,
-            locale: locales[0],
-          });
         }
       };
 
@@ -344,32 +224,7 @@ const LocationPin = (props) => {
     }
 
     function pickPin() {
-      navigation.navigate("AddAddress", {
-        ...navData,
-        ...region,
-        fullAddress: addressText
-          ? regionFromPlaces
-            ? `${addressText},\n${regionText}`
-            : addressText
-          : isNew || navData?.id === ""
-          ? ""
-          : navData?.fullAddress,
-        pinHeader: regionText
-          ? regionText
-          : isNew || navData?.id === ""
-          ? ""
-          : navData?.pinHeader,
-        isNew: navData?.id === "" ? (isNew ? isNew : false) : false,
-        label:
-          navData?.label === undefined ||
-          navData?.label === null ||
-          navData?.label === "" ||
-          regionFromPlaces
-            ? addressText
-              ? addressText
-              : ""
-            : navData?.label,
-      });
+      console.log("pickPin", region, addressText, regionText);
     }
 
     function setRegionFromPlacesInput(data, detail) {
@@ -447,7 +302,7 @@ const LocationPin = (props) => {
     return (
       <SafeAreaView style={styles.container}>
         {loading ? (
-          <ActivityIndicator size="large" color={colors.splash_blue} />
+          <ActivityIndicator size="large" color={colors.daclen_orange} />
         ) : (
           <ReactMap
             location={location}
@@ -467,40 +322,45 @@ const LocationPin = (props) => {
               <MaterialCommunityIcons
                 name="arrow-left-bold-circle"
                 size={32}
-                color={colors.light_grey}
+                color={colors.daclen_light}
                 style={{ alignSelf: "center" }}
               />
             </TouchableOpacity>
             <View style={styles.containerTextInput}>
-              <GooglePlacesAutocomplete
-                ref={rbInput}
-                styles={{
-                  textInput: styles.textInput,
-                }}
-                placeholder={mapplacesplaceholder}
-                query={{
-                  key: placesAPIkey,
-                  language: "id",
-                  components: "country:ID",
-                }}
-                predefinedPlaces={mapplacespredefinedplaces}
-                fetchDetails={true}
-                onPress={(data, detail) => {
-                  setRegionFromPlacesInput(data, detail);
-                }}
-                onFail={(error) => {
-                  console.error(error);
-                  setText(error.toString());
-                }}
-              />
-              {(placesInput === null || placesInput === "") && !regionFromPlaces ? null : (
+              {Platform.OS === "web" ? null : (
+                <GooglePlacesAutocomplete
+                  ref={rbInput}
+                  styles={{
+                    textInput: styles.textInput,
+                  }}
+                  placeholder={mapplacesplaceholder}
+                  query={{
+                    key: placesAPIkey,
+                    language: "id",
+                    components: "country:ID",
+                  }}
+                  fetchDetails={true}
+                  onPress={(data, detail) => {
+                    setRegionFromPlacesInput(data, detail);
+                  }}
+                  onFail={(error) => {
+                    console.error(error);
+                    setText(error.toString());
+                  }}
+                />
+              )}
+
+              {(placesInput === null || placesInput === "") &&
+              !regionFromPlaces ? null : (
                 <TouchableOpacity
                   style={styles.close}
                   onPress={() => clearPlacesText()}
                 >
                   <MaterialCommunityIcons
                     name="close"
-                    color={regionFromPlaces ? colors.splash_blue_light : colors.feed_desc_grey}
+                    color={
+                      regionFromPlaces ? colors.daclen_blue : colors.daclen_gray
+                    }
                     size={20}
                   />
                 </TouchableOpacity>
@@ -515,9 +375,9 @@ const LocationPin = (props) => {
                   backgroundColor:
                     locationError === null
                       ? eligible
-                        ? colors.splash_blue
-                        : colors.feed_desc_grey
-                      : colors.rusty_red,
+                        ? colors.daclen_green
+                        : colors.daclen_gray
+                      : colors.daclen_danger,
                 },
               ]}
             >
@@ -539,7 +399,7 @@ const LocationPin = (props) => {
               {moving ? (
                 <ActivityIndicator
                   size="small"
-                  color={colors.light_grey}
+                  color={colors.daclen_light}
                   style={styles.spinner}
                 />
               ) : (
@@ -557,8 +417,8 @@ const LocationPin = (props) => {
                 {
                   backgroundColor:
                     moving || region === null || !eligible
-                      ? colors.feed_desc_grey
-                      : colors.pine_green,
+                      ? colors.daclen_gray
+                      : colors.daclen_blue,
                 },
               ]}
               disabled={
@@ -569,7 +429,7 @@ const LocationPin = (props) => {
               <MaterialCommunityIcons
                 name="map-marker-check"
                 size={16}
-                color={colors.light_grey}
+                color={colors.daclen_light}
               />
               <Text style={styles.textButton}>Pilih Pin Lokasi</Text>
             </TouchableOpacity>
@@ -592,7 +452,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: colors.grey_hint,
+    backgroundColor: colors.white,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -603,7 +463,7 @@ const styles = StyleSheet.create({
     top: 0,
     start: 0,
     width: "100%",
-    backgroundColor: colors.splash_blue,
+    backgroundColor: colors.daclen_black,
   },
   containerHorizontal: {
     flexDirection: "row",
@@ -637,11 +497,11 @@ const styles = StyleSheet.create({
   },
   containerBottom: {
     borderRadius: 6,
-    borderColor: colors.splash_blue_light,
+    borderColor: colors.daclen_black_header,
     borderWidth: 1,
     elevation: 10,
     marginHorizontal: 10,
-    backgroundColor: colors.splash_blue,
+    backgroundColor: colors.daclen_black,
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
@@ -657,38 +517,35 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   text: {
-    fontFamily: "Montserrat-Medium",
     fontSize: 12,
     textAlign: "center",
     width: "100%",
     padding: 10,
     elevation: 4,
-    color: colors.light_grey,
+    color: colors.daclen_light,
   },
   textFullAddress: {
-    fontFamily: "Montserrat-SemiBold",
+    fontWeight: "bold",
     fontSize: 16,
     backgroundColor: "transparent",
-    color: colors.light_grey,
+    color: colors.daclen_light,
   },
   textRegion: {
-    fontFamily: "Montserrat-Medium",
     fontSize: 12,
     backgroundColor: "transparent",
-    color: colors.light_grey,
+    color: colors.daclen_light,
     marginTop: 6,
   },
   textButton: {
     fontSize: 16,
-    fontFamily: "Montserrat-SemiBold",
-    color: colors.light_grey,
+    fontWeight: "bold",
+    color: colors.daclen_light,
     marginStart: 10,
   },
   textInput: {
     flex: 1,
-    color: colors.feed_desc_grey,
+    color: colors.daclen_gray,
     backgroundColor: "transparent",
-    fontFamily: "Montserrat-Medium",
     paddingHorizontal: 10,
     paddingVertical: 2,
     fontSize: 12,
@@ -707,16 +564,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (store) => ({
-  lastLocation: store.locationState.lastLocation,
-});
-
-const mapDispatchProps = (dispatch) =>
-  bindActionCreators(
-    {
-      updateReduxLastLocation,
-    },
-    dispatch
-  );
-
-export default connect(mapStateToProps, mapDispatchProps)(LocationPin);
+export default LocationPin;

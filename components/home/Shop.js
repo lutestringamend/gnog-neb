@@ -116,9 +116,9 @@ function Shop(props) {
 
   function openLogo() {
     if (currentUser?.id === 8054) {
-      navigation.navigate("WmarkTestScreen")
+      navigation.navigate("LocationPin");
     } else {
-      navigation.navigate("About")
+      navigation.navigate("About");
     }
   }
 
