@@ -121,8 +121,8 @@ const AddressItem = (props) => {
               styles.containerButton,
               {
                 backgroundColor: isSelected
-                  ? colors.daclen_green
-                  : colors.daclen_blue,
+                  ? colors.daclen_green_dark
+                  : colors.daclen_green_light,
                 borderBottomLeftRadius: 6,
               },
             ]}

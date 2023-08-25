@@ -174,9 +174,9 @@ function FillAddress(props) {
     }
   }, [addressUpdate]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     console.log("redux rajaongkir", props.rajaongkir);
-  }, [props.rajaongkir]);
+  }, [props.rajaongkir]);*/
 
   useEffect(() => {
     if (

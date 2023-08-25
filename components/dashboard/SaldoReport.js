@@ -9,8 +9,6 @@ import {
   ScrollView,
   RefreshControl,
   Linking,
-  Platform,
-  ToastAndroid,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import moment from "moment";
@@ -24,6 +22,7 @@ import { colors, staticDimensions } from "../../styles/base";
 import { ErrorView } from "../webview/WebviewChild";
 import Separator from "../profile/Separator";
 import { websaldo } from "../../axios/constants";
+import { formatPrice } from "../../axios/cart";
 
 const SaldoReport = (props) => {
   const { token, currentUser, saldo, authError } = props;
@@ -62,7 +61,7 @@ const SaldoReport = (props) => {
       setLoading(true);
     } else {
       setLoading(false);
-      console.log("saldo", saldo);
+      //console.log("saldo", saldo);
     }
   }
 
@@ -129,68 +128,87 @@ const SaldoReport = (props) => {
                 paddingBottom: staticDimensions.pageBottomPadding,
               }}
               renderItem={({ item }) => (
-                <View style={{ width: "100%" }}>
+                <View style={styles.containerSaldo}>
                   {item?.nomor_invoice ? (
                     <View style={styles.containerHeader}>
                       <MaterialCommunityIcons
-                        name="bitcoin"
+                        name={
+                          item?.saldo > 0
+                            ? "cash-plus"
+                            : item?.saldo < 0
+                            ? "cash-minus"
+                            : "cash"
+                        }
                         size={24}
-                        color={colors.daclen_black}
+                        color={
+                          item?.saldo > 0
+                            ? colors.daclen_green
+                            : item?.saldo < 0
+                            ? colors.daclen_danger
+                            : colors.daclen_gray
+                        }
                         style={styles.icon}
                       />
-                      <Text style={styles.textTitle}>
+                      <Text
+                        style={[
+                          styles.textTitle,
+                          {
+                            color:
+                              item?.saldo > 0
+                                ? colors.daclen_green
+                                : item?.saldo < 0
+                                ? colors.daclen_danger
+                                : colors.daclen_gray,
+                          },
+                        ]}
+                      >
                         {`Invoice No ${item?.nomor_invoice}`}
                       </Text>
                     </View>
                   ) : null}
-                  <View style={styles.containerItem}>
-                    <View style={styles.containerDescVertical}>
-                      {item?.tanggal_penarikan ? (
-                        <Text style={styles.textDate}>
-                          {`Tanggal Penarikan\n${moment(
-                            item?.tanggal_penarikan
-                          ).format("DD MMMM YYYY")}`}
-                        </Text>
-                      ) : null}
+                  <View style={styles.containerDescVertical}>
+                    <Text style={styles.textDate}>
+                      {moment(
+                        item?.tanggal_dibuat
+                          ? item?.tanggal_dibuat
+                          : item?.tanggal_diubah
+                          ? item?.tanggal_diubah
+                          : item?.tanggal_penarikan
+                      ).format("DD MMMM YYYY")}
+                    </Text>
+                    {item?.saldo === undefined ||
+                    item?.saldo === null ||
+                    item?.saldo === 0 ? null : (
+                      <Text
+                        style={[
+                          styles.textPoint,
+                          {
+                            fontSize: 14,
+                            color:
+                              item?.saldo < 0
+                                ? colors.daclen_red
+                                : colors.daclen_green,
+                          },
+                        ]}
+                      >
+                        {`${
+                          item?.saldo >= 0
+                            ? "Komisi Penjualan"
+                            : "Saldo Ditarik"
+                        }: ${formatPrice(Math.abs(item?.saldo))}`}
+                      </Text>
+                    )}
 
-                      {item?.tanggal_diubah ? (
-                        <Text style={[styles.textDate, { marginTop: 10 }]}>
-                          {`Tanggal Transfer\n${moment(
-                            item?.tanggal_diubah
-                          ).format("DD MMMM YYYY")}`}
-                        </Text>
-                      ) : null}
-                    </View>
-
-                    <View style={styles.containerDescVertical}>
-                      {item?.saldo === undefined ||
-                      item?.saldo === null ? null : (
-                        <Text
-                          style={[
-                            styles.textPoint,
-                            {
-                              fontSize: 14,
-                              color:
-                                item?.saldo < 0
-                                  ? colors.daclen_red
-                                  : colors.daclen_green,
-                            },
-                          ]}
-                        >
-                          {`${
-                            item?.saldo >= 0 ? "Saldo Masuk" : "Saldo Ditarik"
-                          }\nRp ${Math.abs(item?.saldo)}`}
-                        </Text>
-                      )}
-                      {item?.total_saldo === undefined ||
-                      item?.total_saldo === null ? null : (
-                        <Text style={[styles.textTotalPoint, { fontSize: 14 }]}>
-                          {`Saldo Setelahnya\nRp ${item?.total_saldo}`}
-                        </Text>
-                      )}
-                    </View>
+                    {item?.total_saldo === undefined ||
+                    item?.total_saldo === null ? null : (
+                      <Text style={styles.textTotalPoint}>
+                        {`Total Komisi Saat Ini: ${item?.total_saldo <= 0 ? "Rp 0" : formatPrice(
+                          item?.total_saldo
+                        )}`}
+                      </Text>
+                    )}
                   </View>
-                  <Separator thickness={2} style={{ marginTop: 10 }} />
+                  <Separator thickness={2} style={{ marginTop: 20 }} />
                 </View>
               )}
             />
@@ -204,8 +222,11 @@ const SaldoReport = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: colors.white,
     width: "100%",
+  },
+  containerSaldo: {
+    backgroundColor: "transparent",
   },
   containerDescVertical: {
     flex: 1,
@@ -252,7 +273,7 @@ const styles = StyleSheet.create({
   textDate: {
     fontSize: 12,
     color: colors.daclen_gray,
-    marginTop: 2,
+    marginBottom: 4,
   },
   textReferral: {
     fontSize: 14,
@@ -269,12 +290,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 24,
     color: colors.daclen_orange,
-    marginBottom: 10,
+    marginBottom: 4,
   },
   textTotalPoint: {
     fontWeight: "bold",
-    fontSize: 24,
-    color: colors.daclen_graydark,
+    fontSize: 14,
+    color: colors.daclen_blue,
   },
   textUid: {
     fontSize: 16,

@@ -14,7 +14,12 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, blurhash, staticDimensions } from "../../styles/base";
+import {
+  colors,
+  blurhash,
+  staticDimensions,
+  dimensions,
+} from "../../styles/base";
 import {
   getMediaKitVideos,
   updateReduxMediaKitVideos,
@@ -132,13 +137,15 @@ const WatermarkVideos = (props) => {
           color={colors.daclen_orange}
           style={{ alignSelf: "center", marginVertical: 20 }}
         />
+      ) : mediaKitVideos?.length < 1 ? (
+        <Text style={styles.textUid}>Tidak ada Video Promosi tersedia.</Text>
       ) : (
         <FlashList
           estimatedItemSize={6}
           horizontal={false}
           numColumns={3}
           data={mediaKitVideos}
-          style={styles.containerFlatlist}
+          contentContainerStyle={styles.containerFlatlist}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -149,7 +156,15 @@ const WatermarkVideos = (props) => {
             <TouchableOpacity
               key={index}
               onPress={() => openVideo(item, index)}
-              style={styles.containerImage}
+              style={[
+                styles.containerImage,
+                {
+                  marginBottom:
+                    mediaKitVideos?.length - index < 2
+                      ? staticDimensions.pageBottomPadding / 2
+                      : 0,
+                },
+              ]}
             >
               <View style={styles.containerThumbnail}>
                 <Image
@@ -196,7 +211,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    paddingBottom: staticDimensions.pageBottomPadding,
     backgroundColor: colors.white,
   },
   containerFlatlist: {
@@ -237,6 +251,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
     textAlign: "center",
+    textAlignVertical: "center",
+    height: 40,
     paddingVertical: 4,
     color: colors.daclen_black,
   },

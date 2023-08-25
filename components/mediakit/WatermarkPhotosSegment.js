@@ -9,6 +9,7 @@ import {
   Animated,
   Dimensions,
 } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -77,46 +78,38 @@ const WatermarkPhotosSegment = (props) => {
         </TouchableOpacity>
 
         <View style={styles.containerCarousel}>
-          <ScrollView
+          <FlashList
+            estimatedItemSize={10}
             horizontal={true}
-            pagingEnabled={true} // animates ScrollView to nearest multiple of it's own width
-            showsHorizontalScrollIndicator={false}
-            // the onScroll prop will pass a nativeEvent object to a function
-            onScroll={Animated.event(
-              // Animated.event returns a function that takes an array where the first element...
-              [{ nativeEvent: { contentOffset: { x: scrollX } } }] // ... is an object that maps any nativeEvent prop to a variable
-            )} // in this case we are mapping the value of nativeEvent.contentOffset.x to this.scrollX
-            scrollEventThrottle={16} // this will ensure that this ScrollView's onScroll prop is called no faster than 16ms between each function call
-          >
-            {photos.map((item, i) => {
-              return (
-                <TouchableOpacity
-                  onPress={() => openPhoto(item)}
-                  key={i}
-                  style={styles.containerImage}
-                >
-                  <Image
-                    style={[
-                      styles.image,
-                      {
-                        borderRadius: 2,
-                        borderWidth: 1,
-                        borderColor: colors.daclen_lightgrey,
-                        marginStart: 0,
-                        alignSelf: "flex-start",
-                        elevation: 4,
-                      },
-                    ]}
-                    source={item?.thumbnail ? item?.thumbnail : null}
-                    onClick={() => openSegmentScreen()}
-                    contentFit="cover"
-                    placeholder={blurhash}
-                    transition={0}
-                  />
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
+            data={photos}
+            contentContainerStyle={styles.containerFlatlist}
+            renderItem={({ item, i }) => (
+              <TouchableOpacity
+                onPress={() => openPhoto(item)}
+                key={i}
+                style={styles.containerImage}
+              >
+                <Image
+                  style={[
+                    styles.image,
+                    {
+                      borderRadius: 2,
+                      borderWidth: 1,
+                      borderColor: colors.daclen_lightgrey,
+                      marginStart: 0,
+                      alignSelf: "flex-start",
+                      elevation: 4,
+                    },
+                  ]}
+                  source={item?.thumbnail ? item?.thumbnail : null}
+                  onClick={() => openSegmentScreen()}
+                  contentFit="cover"
+                  placeholder={blurhash}
+                  transition={0}
+                />
+              </TouchableOpacity>
+            )}
+          />
         </View>
       </View>
     );
@@ -181,6 +174,25 @@ const WatermarkPhotosSegment = (props) => {
 };
 
 /*
+
+          <ScrollView
+            horizontal={true}
+            pagingEnabled={true} // animates ScrollView to nearest multiple of it's own width
+            showsHorizontalScrollIndicator={false}
+            // the onScroll prop will pass a nativeEvent object to a function
+            onScroll={Animated.event(
+              // Animated.event returns a function that takes an array where the first element...
+              [{ nativeEvent: { contentOffset: { x: scrollX } } }] // ... is an object that maps any nativeEvent prop to a variable
+            )} // in this case we are mapping the value of nativeEvent.contentOffset.x to this.scrollX
+            scrollEventThrottle={16} // this will ensure that this ScrollView's onScroll prop is called no faster than 16ms between each function call
+          >
+            {photos.map((item, i) => {
+              return (
+                
+              );
+            })}
+          </ScrollView>
+
 <View
           style={{ flexDirection: "row" }} // this will layout our dots horizontally (row) instead of vertically (column)
         >
@@ -229,6 +241,10 @@ const styles = StyleSheet.create({
   containerScrollHeader: {
     flexDirection: "row",
     backgroundColor: "transparent",
+  },
+  containerFlatlist: {
+    backgroundColor: "transparent",
+    paddingEnd: 24,
   },
   containerCarousel: {
     backgroundColor: "transparent",

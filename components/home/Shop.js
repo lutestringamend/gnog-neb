@@ -250,7 +250,13 @@ function Shop(props) {
                 id={item?.id}
                 nama={item?.nama}
                 harga_currency={item?.harga_currency}
-                foto_url={item?.foto_url}
+                foto_url={
+                  item?.thumbnail_url
+                    ? item?.thumbnail_url
+                    : item?.foto_url
+                    ? item?.foto_url
+                    : require("../../assets/favicon.png")
+                }
                 isPremium={currentUser?.isActive}
                 goDashboard={() => openDashboard()}
               />

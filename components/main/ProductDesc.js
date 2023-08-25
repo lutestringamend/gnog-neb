@@ -4,7 +4,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import RenderHTML from "react-native-render-html";
 
 import Separator from "../profile/Separator";
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 
 export default function ProductDesc(props) {
   const [desc, setDesc] = useState(false);
@@ -22,7 +22,7 @@ export default function ProductDesc(props) {
   return (
     <View style={styles.container}>
       <Separator thickness={2} />
-      <TouchableOpacity onPress={() => setDesc(!desc)}>
+      <TouchableOpacity onPress={() => setDesc((desc) => !desc)}>
         <View style={styles.containerHeader}>
           <Text style={styles.textHeader}>Deskripsi</Text>
           {desc ? (
@@ -37,10 +37,11 @@ export default function ProductDesc(props) {
         style={styles.textDesc}
         contentWidth={dimensions.fullWidth}
         source={{ html: content }}
+        enableCSSInlineProcessing
       />
 
       <Separator thickness={2} />
-      <TouchableOpacity onPress={() => setSpec(!spec)}>
+      <TouchableOpacity onPress={() => setSpec((spec) => !spec)}>
         <View style={styles.containerHeader}>
           <Text style={styles.textHeader}>Spesifikasi</Text>
           {spec ? (
@@ -51,17 +52,23 @@ export default function ProductDesc(props) {
         </View>
       </TouchableOpacity>
 
-      <View style={styles.containerSpec}>
-        <Text style={styles.textSpecHeader}>Dimensi</Text>
-        <Text style={styles.textSpec}>{props?.dimensi} cm</Text>
-      </View>
+      {spec ? (
+        <View style={styles.containerVertical}>
+          <View style={styles.containerSpec}>
+            <Text style={styles.textSpecHeader}>Dimensi</Text>
+            <Text style={styles.textSpec}>{props?.dimensi} cm</Text>
+          </View>
 
-      <View style={styles.containerSpec}>
-        <Text style={styles.textSpecHeader}>Berat</Text>
-        <Text style={styles.textSpec}>
-          {(props?.berat / 1000).toFixed(2)} kg
-        </Text>
-      </View>
+          <View style={styles.containerSpec}>
+            <Text style={styles.textSpecHeader}>Berat</Text>
+            <Text style={styles.textSpec}>
+              {(props?.berat / 1000).toFixed(2)} kg
+            </Text>
+          </View>
+        </View>
+      ) : null}
+
+      <View style={styles.containerBottom} />
     </View>
   );
 }
@@ -70,12 +77,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginVertical: 10,
-    paddingBottom: 60,
-    backgroundColor: "white",
+    backgroundColor: colors.white,
   },
   containerHeader: {
     flexDirection: "row",
     paddingVertical: 15,
+    backgroundColor: "transparent",
+  },
+  containerVertical: {
+    backgroundColor: "transparent",
+  },
+  containerBottom: {
+    backgroundColor: "transparent",
+    height: staticDimensions.pageBottomPadding / 2,
   },
   containerSpec: {
     backgroundColor: colors.daclen_light,
@@ -86,7 +100,6 @@ const styles = StyleSheet.create({
     borderColor: colors.daclen_gray,
     borderWidth: 1,
   },
-
   textHeader: {
     flex: 1,
     fontSize: 16,
@@ -95,7 +108,7 @@ const styles = StyleSheet.create({
   },
   textDesc: {
     fontSize: 14,
-    backgroundColor: colors.daclen_light,
+    backgroundColor: "transparent",
     color: colors.daclen_gray,
   },
   textSpecHeader: {

@@ -371,11 +371,7 @@ const LocationPin = (props) => {
 
     return (
       <SafeAreaView style={styles.container}>
-        {loading ||
-        (location === null &&
-          locationError === null &&
-          (props.route.params?.savedRegion === undefined ||
-            props.route.params?.savedRegion === null)) ? (
+        {loading ? (
           <ActivityIndicator size="large" color={colors.daclen_orange} />
         ) : (
           <ReactMap
@@ -401,11 +397,7 @@ const LocationPin = (props) => {
               />
             </TouchableOpacity>
             <View style={styles.containerTextInput}>
-              {Platform.OS === "web" ||
-              (location === null &&
-                locationError === null &&
-                (props.route.params?.savedRegion === undefined ||
-                  props.route.params?.savedRegion === null)) ? null : (
+              {Platform.OS === "web" ? null : (
                 <GooglePlacesAutocomplete
                   ref={rbInput}
                   styles={{
@@ -466,11 +458,7 @@ const LocationPin = (props) => {
 
         {loading ? null : (
           <View style={styles.containerInfo}>
-            {location === null &&
-            locationError === null &&
-            (props.route.params?.savedRegion === undefined ||
-              props.route.params?.savedRegion === null) ? null : (
-              <View style={styles.containerBottom}>
+            <View style={styles.containerBottom}>
                 <Text style={styles.textFullAddress}>
                   {moving
                     ? "Pindahkan pin..."
@@ -492,7 +480,6 @@ const LocationPin = (props) => {
                   </Text>
                 )}
               </View>
-            )}
 
             <TouchableOpacity
               onPress={() => pickPin()}

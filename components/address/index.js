@@ -86,7 +86,8 @@ export const processLocalesIntoAddressData = async (
       return result;
     }
     props.updateReduxRajaOngkirWithKey("kota", kotaArray);
-    const kotaFind = kotaArray.find(({ name }) => name.toLowerCase() === kota.toLowerCase());
+    let searchKotaName = convertKotaNametoRajaOngkirName(kota);
+    const kotaFind = kotaArray.find(({ name }) => name.toLowerCase() === searchKotaName);
     if (kotaFind === undefined || kotaFind === null || kotaFind?.id === undefined) {
       return result;
     }
@@ -111,8 +112,22 @@ export const convertProvinsiNametoRajaOngkirName = (provinsi) => {
     searchProvinsiName = "nusa tenggara barat (ntb)";
   } else if (searchProvinsiName === "aceh") {
     searchProvinsiName = "nanggroe aceh darussalam (nad)";
+  } else if (searchProvinsiName === "west java") {
+    searchProvinsiName = "jawa barat";
+  } else if (searchProvinsiName === "central java") {
+    searchProvinsiName = "jawa tengah";
+  } else if (searchProvinsiName === "east java") {
+    searchProvinsiName = "jawa timur";
   }
   return searchProvinsiName;
+}
+
+export const convertKotaNametoRajaOngkirName = (kota) => {
+  let searchKotaName = kota.toLowerCase();
+  if (searchKotaName === "bandung city") {
+    searchKotaName = "kota bandung";
+  }
+  return searchKotaName;
 }
 
 export const requestLocationForegroundPermission = async () => {

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Daclen",
     "slug": "daclen",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
     "userInterfaceStyle": "light",
@@ -27,7 +27,10 @@
       "infoPlist": {
         "NSCameraUsageDescription": "This app needs Camera permission only to take a new profile picture and save it on Daclen.com.",
         "NSPhotoLibraryAddUsageDescription": "This app needs Storage permission only to save watermarked product photos and videos from Daclen.com.",
-        "NSPhotoLibraryUsageDescription": "This app needs Storage and Camera Roll permissions only to locate downloaded photos and videos from Daclen.com as well as upload a new profile picture and save it on Daclen.com."
+        "NSPhotoLibraryUsageDescription": "This app needs Storage and Camera Roll permissions only to locate downloaded photos and videos from Daclen.com as well as upload a new profile picture and save it on Daclen.com.",
+        "NSLocationUsageDescription": "This app needs access to Location to speed up the process of finding delivery address for Daclen users to send their purchase to. The location data will not be sent to Daclen.com as it will only be used temporarily in the app to obtain the region, subregion and subdistrict information faster.",
+        "NSLocationWhenInUseUsageDescription": "This app needs access to Location to speed up the process of finding delivery address for Daclen users to send their purchase to. The location data will not be sent to Daclen.com as it will only be used temporarily in the app to obtain the region, subregion and subdistrict information faster.",
+        "NSLocationAlwaysAndWhenInUsageDescription": "This app needs access to Location to speed up the process of finding delivery address for Daclen users to send their purchase to. The location data will not be sent to Daclen.com as it will only be used temporarily in the app to obtain the region, subregion and subdistrict information faster."
       }
     },
     "android": {
@@ -62,7 +65,7 @@
       ],
       "softwareKeyboardLayoutMode": "resize",
       "userInterfaceStyle": "light",
-      "versionCode": 63
+      "versionCode": 64
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -8,7 +8,7 @@ import {
   RefreshControl,
 } from "react-native";
 
-import { colors, staticDimensions } from "../../styles/base";
+import { colors } from "../../styles/base";
 import { webfotowatermark } from "../../axios/constants";
 import { ErrorView } from "../webview/WebviewChild";
 import WatermarkPhotosSegment from "./WatermarkPhotosSegment";
@@ -33,14 +33,14 @@ const WatermarkPhotos = ({
             error="Mohon membuka website Daclen untuk melihat foto Media Kit"
             onOpenExternalLink={() => Linking.openURL(webfotowatermark)}
           />
-        ) : loading ? (
+        ) : loading || photos === undefined || photos === null ? (
           <ActivityIndicator
             size="large"
             color={colors.daclen_orange}
             style={{ alignSelf: "center", marginVertical: 20 }}
           />
-        ) : photos === undefined || photos === null ? (
-          <Text style={styles.textUid}>Tidak ada foto Media Kit tersedia</Text>
+        ) : photoKeys?.length === undefined || photoKeys?.length < 1 ? (
+          <Text style={styles.textUid}>Tidak ada Foto Promosi tersedia.</Text>
         ) : (
           <FlashList
             estimatedItemSize={10}

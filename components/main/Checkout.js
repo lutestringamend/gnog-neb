@@ -444,6 +444,7 @@ function Checkout(props) {
         addressId === "" || addressId === "default" || customAddress === null
           ? currentAddress
           : customAddress;
+      detail_checkout["nama_penerima"] = senderName.final ? senderName.final : "Daclen";
 
       const newCheckout = {
         checkout: {

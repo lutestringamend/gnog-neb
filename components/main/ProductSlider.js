@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  View,
-  TouchableHighlight,
-} from "react-native";
+import { StyleSheet, View, TouchableHighlight } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
@@ -31,13 +27,22 @@ function ProductSlider(props) {
         console.log("product id is " + props.id);
         const check = props.productItems.find(({ id }) => id === props.id);
         if (check !== undefined) {
-          setMainPhoto(check?.foto_url);
+          setMainPhoto(
+            check?.thumbnail_url ? check?.thumbnail_url : check?.foto_url
+          );
           const data = [
-            { img: check?.foto_url, id: 0 },
+            {
+              img: check?.foto_url,
+              thumbnail: check?.thumbnail_url
+                ? check?.thumbnail_url
+                : check?.foto_url,
+              id: 0,
+            },
             ...new Set(
               check?.foto_produk
-                .map(({ foto_url, id }) => ({
+                .map(({ foto_url, thumbnail_url, id }) => ({
                   img: foto_url,
+                  thumbnail: thumbnail_url ? thumbnail_url : foto_url,
                   id,
                 }))
                 .flat(1)
@@ -107,7 +112,7 @@ function ProductSlider(props) {
                 >
                   <Image
                     style={styles.imageList}
-                    source={item?.img}
+                    source={item?.thumbnail}
                     contentFit="contain"
                     placeholder={blurhash}
                     transition={0}

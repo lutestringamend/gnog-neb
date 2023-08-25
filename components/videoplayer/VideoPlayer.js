@@ -915,8 +915,8 @@ function VideoPlayer(props) {
                   {
                     top:
                       Platform.OS === "ios"
-                        ? Dimensions.get("window").height - 120
-                        : screenHeight - 100,
+                        ? Dimensions.get("window").height - 160
+                        : screenHeight - 140,
                     elevation: 10,
                     zIndex: 20,
                   },
