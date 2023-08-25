@@ -3,6 +3,7 @@ export const mainhttp = "https://daclen.com/"
 export const mainhttpcookie = "https://daclen.com"
 export const localisationID = "id-ID";
 export const defaultcurrency = "IDR";
+export const defaultcountry = "Indonesia";
 
 export const googleAPIkey = "AIzaSyAyCj--fS9hSK7h8YmQljxhTlqUdOEZSUU"
 export const MIDTRANS_CLIENT_KEY = "Mid-client-BqXWNDpvPhUU7fB1"
@@ -10,7 +11,7 @@ export const SB_MIDTRANS_CLIENT_KEY = "SB-Mid-client-xamInlBsiMBuJSWC"
 
 //export const googleAPIkey = "AIzaSyCrc_hstzOAPJiAwHa1sHMZbDN0vKFnOwM";
 export const placesAPIkey = "AIzaSyAyCj--fS9hSK7h8YmQljxhTlqUdOEZSUU";
-export const googleAPIdevkey = "AIzaSyAyCj--fS9hSK7h8YmQljxhTlqUdOEZSUU";
+export const googleAPIdevkey = "AIzaSyDK1LZOoEtLWkcunXe40MKc-VO7oZjXQ7A";
 export const defaultlatitude = -6.921697335392908;
 export const defaultlongitude = 107.60708919873582;
 export const defaultlatitudedelta = 0.01214273;

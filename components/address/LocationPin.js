@@ -5,9 +5,12 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
@@ -19,19 +22,23 @@ import {
   getAddressText,
   getLocales,
   initializeLocation,
-  updateReduxandStorageLastLocation,
+  processLocalesIntoAddressData,
 } from ".";
+import { updateReduxRajaOngkirWithKey } from "../../axios/address";
 import { defaultRegion, mapplacesplaceholder } from "./constants";
 import { sentryLog } from "../../sentry";
-import { placesAPIkey } from "../../axios/constants";
+import { defaultcountry, placesAPIkey } from "../../axios/constants";
+import AddressData from "./AddressData";
 
 const LocationPin = (props) => {
   const [location, setLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [addressProcessing, setAddressProcessing] = useState(false);
   const [text, setText] = useState(null);
   const [addressText, setAddressText] = useState(null);
   const [regionText, setRegionText] = useState(null);
+  const [locale, setLocale] = useState(null);
 
   const [moving, setMoving] = useState(false);
   const [eligible, setEligible] = useState(false);
@@ -43,16 +50,41 @@ const LocationPin = (props) => {
   const [region, setRegion] = useState(null);
   const [regionFromPlaces, setRegionFromPlaces] = useState(false);
   const [placesInput, setPlacesInput] = useState("");
+  const isNew = props.route.params?.isNew ? props.route.params?.isNew : false;
+  const isDefault = props.route.params?.isDefault
+    ? props.route.params?.isDefault
+    : false;
+  const addressData = props.route.params?.addressData
+    ? props.route.params?.addressData
+    : AddressData;
+  const [kecamatan, setKecamatan] = useState(addressData?.kecamatan_name);
   const rbInput = useRef();
   const navigation = useNavigation();
 
+  /*useEffect(() => {
+    checkLocation();
+  }, []);*/
+
+  const checkLocation = async () => {
+    let result = await initializeLocation(6);
+    console.log("initializeLocation", result);
+    setLocation(result?.location);
+    setLocationError(result?.locationError);
+  };
+
   try {
     useEffect(() => {
-      checkLocation();
-    }, []);
-
-    useEffect(() => {
+      //console.log("location", location);
       if (location === null) {
+        if (
+          props.route.params?.savedRegion === undefined ||
+          props.route.params?.savedRegion === null
+        ) {
+          checkLocation();
+        } else {
+          setRegion(props.route.params?.savedRegion);
+          console.log("savedRegion", props.route.params?.savedRegion);
+        }
         if (initialRegion === null) {
           setInitialRegion(defaultRegion);
         }
@@ -128,6 +160,15 @@ const LocationPin = (props) => {
         ) {
           //setText(JSON.stringify(region));
           setEligible(false);
+          setLocale(null);
+          setText(
+            location === null &&
+              locationError === null &&
+              (props.route.params?.savedRegion === undefined ||
+                props.route.params?.savedRegion === null)
+              ? "Mendeteksi lokasi anda..."
+              : "Lokasi tidak terbaca. Mohon pindahkan pin."
+          );
           setAddressText(null);
           setRegionText(null);
         } else {
@@ -140,32 +181,23 @@ const LocationPin = (props) => {
             );
           }
 
-          setEligible(true);
-          console.log("locales 0", locales[0]);
-
-          /*const { subregionEligible, regionEligible } = detectEligibility(
-            locales[0]?.subregion,
-            locales[0]?.region
-          );
-          if (subregionEligible && regionEligible) {
+          if (locales[0]?.country === defaultcountry) {
+            setLocale(locales[0]);
+            setText(null);
             setEligible(true);
-            if (locationError === null) {
-              setText(null);
-            }
           } else {
+            setLocale(null);
+            setText("Lokasi berada di luar Indonesia");
             setEligible(false);
-            if (!regionEligible) {
-              setText("Provinsi di luar wilayah operasional Home Clinic");
-            } else if (!subregionEligible) {
-              setText("Kota/Kabupaten di luar wilayah operasional Home Clinic");
-            }
-          }*/
+          }
+
           if (
             locationError !== null ||
             locales[0] === undefined ||
             locales[0] === null
           ) {
-            console.log("locales number zero", locales[0]);
+            setLocale(null);
+            //console.log("locales number zero", locales[0]);
             return;
           }
         }
@@ -178,7 +210,14 @@ const LocationPin = (props) => {
       ) {
         setEligible(false);
         setMoving(false);
-        setText("Lokasi tidak terdeteksi. Mohon cek GPS Anda.");
+        setText(
+          location === null &&
+            locationError === null &&
+            (props.route.params?.savedRegion === undefined ||
+              props.route.params?.savedRegion === null)
+            ? "Mendeteksi lokasi anda..."
+            : "Lokasi tidak terbaca. Mohon pindahkan pin."
+        );
         setAddressText(null);
         setRegionText(null);
         /*if (Platform.OS === "android") {
@@ -196,11 +235,10 @@ const LocationPin = (props) => {
       }
     }, [region]);
 
-    const checkLocation = async () => {
-      let result = await initializeLocation(6);
-      setLocation(result?.location);
-      setLocationError(result?.locationError);
-    };
+    useEffect(() => {
+      console.log("locale", locale);
+      //ToastAndroid.show(JSON.stringify(locale), ToastAndroid.LONG);
+    }, [locale]);
 
     function onRegionChange(e) {
       //setRegion(e);
@@ -223,9 +261,41 @@ const LocationPin = (props) => {
       setMoving(false);
     }
 
-    function pickPin() {
-      console.log("pickPin", region, addressText, regionText);
-    }
+    const pickPin = async () => {
+      if (region === null || locale === null || !eligible) {
+        navigation.navigate("Address", {
+          addressData,
+          isRealtime: false,
+          isDefault,
+          isNew,
+        });
+        return;
+      }
+      setAddressProcessing(true);
+      const result = await processLocalesIntoAddressData(
+        props,
+        props.token,
+        region?.latitude,
+        region?.longitude,
+        locale?.region,
+        locale?.subregion,
+        addressText,
+        regionText,
+        locale?.postalCode
+      );
+      let newAddressData = {
+        ...addressData,
+        ...result,
+      };
+      console.log("processLocalesIntoAddressData", newAddressData);
+      setAddressProcessing(false);
+      navigation.navigate("Address", {
+        addressData: newAddressData,
+        isRealtime: false,
+        isDefault,
+        isNew,
+      });
+    };
 
     function setRegionFromPlacesInput(data, detail) {
       //console.log("placesData", data);
@@ -301,7 +371,11 @@ const LocationPin = (props) => {
 
     return (
       <SafeAreaView style={styles.container}>
-        {loading ? (
+        {loading ||
+        (location === null &&
+          locationError === null &&
+          (props.route.params?.savedRegion === undefined ||
+            props.route.params?.savedRegion === null)) ? (
           <ActivityIndicator size="large" color={colors.daclen_orange} />
         ) : (
           <ReactMap
@@ -327,7 +401,11 @@ const LocationPin = (props) => {
               />
             </TouchableOpacity>
             <View style={styles.containerTextInput}>
-              {Platform.OS === "web" ? null : (
+              {Platform.OS === "web" ||
+              (location === null &&
+                locationError === null &&
+                (props.route.params?.savedRegion === undefined ||
+                  props.route.params?.savedRegion === null)) ? null : (
                 <GooglePlacesAutocomplete
                   ref={rbInput}
                   styles={{
@@ -388,50 +466,72 @@ const LocationPin = (props) => {
 
         {loading ? null : (
           <View style={styles.containerInfo}>
-            <View style={styles.containerBottom}>
-              <Text style={styles.textFullAddress}>
-                {moving
-                  ? "Pindahkan pin..."
-                  : addressText
-                  ? addressText
-                  : "Lokasi tidak terdeteksi"}
-              </Text>
-              {moving ? (
-                <ActivityIndicator
-                  size="small"
-                  color={colors.daclen_light}
-                  style={styles.spinner}
-                />
-              ) : (
-                <Text style={styles.textRegion}>
-                  {regionText
-                    ? regionText
-                    : "Mohon pindahkan pin ke lokasi lain"}
+            {location === null &&
+            locationError === null &&
+            (props.route.params?.savedRegion === undefined ||
+              props.route.params?.savedRegion === null) ? null : (
+              <View style={styles.containerBottom}>
+                <Text style={styles.textFullAddress}>
+                  {moving
+                    ? "Pindahkan pin..."
+                    : addressText
+                    ? addressText
+                    : "Lokasi tidak terdeteksi"}
                 </Text>
-              )}
-            </View>
+                {moving ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={colors.daclen_light}
+                    style={styles.spinner}
+                  />
+                ) : (
+                  <Text style={styles.textRegion}>
+                    {regionText
+                      ? regionText
+                      : "Mohon pindahkan pin ke lokasi lain"}
+                  </Text>
+                )}
+              </View>
+            )}
+
             <TouchableOpacity
               onPress={() => pickPin()}
               style={[
                 styles.containerButton,
                 {
                   backgroundColor:
-                    moving || region === null || !eligible
+                    moving || addressProcessing
                       ? colors.daclen_gray
                       : colors.daclen_blue,
                 },
               ]}
-              disabled={
-                (moving || region === null || !eligible) &&
-                Platform.OS !== "web"
-              }
+              disabled={(moving || addressProcessing) && Platform.OS !== "web"}
             >
-              <MaterialCommunityIcons
-                name="map-marker-check"
-                size={16}
-                color={colors.daclen_light}
-              />
-              <Text style={styles.textButton}>Pilih Pin Lokasi</Text>
+              {addressProcessing ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.daclen_light}
+                  style={{ alignSelf: "center" }}
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name={
+                    region === null || locale === null || !eligible
+                      ? "pencil"
+                      : "map-marker-check"
+                  }
+                  size={16}
+                  color={colors.daclen_light}
+                />
+              )}
+
+              <Text style={styles.textButton}>
+                {region === null || locale === null || !eligible
+                  ? "Isi Alamat Tanpa Titik"
+                  : addressProcessing
+                  ? "Memproses lokasi..."
+                  : "Pilih Pin Lokasi"}
+              </Text>
             </TouchableOpacity>
           </View>
         )}
@@ -564,4 +664,16 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LocationPin;
+const mapStateToProps = (store) => ({
+  token: store.userState.token,
+});
+
+const mapDispatchProps = (dispatch) =>
+  bindActionCreators(
+    {
+      updateReduxRajaOngkirWithKey,
+    },
+    dispatch
+  );
+
+export default connect(mapStateToProps, mapDispatchProps)(LocationPin);

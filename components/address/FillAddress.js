@@ -8,7 +8,9 @@ import {
   ActivityIndicator,
   ScrollView,
   SafeAreaView,
+  Platform,
 } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 import RBSheet from "react-native-raw-bottom-sheet";
 
@@ -20,6 +22,8 @@ import {
   callRajaOngkir,
   clearRajaOngkir,
   changeAddress,
+  updateReduxRajaOngkirWithKey,
+  fetchRajaOngkir,
 } from "../../axios/address";
 import {
   generateUuid,
@@ -31,9 +35,18 @@ import BSTextInput from "../bottomsheets/BSTextInput";
 import BSContainer from "../bottomsheets/BSContainer";
 import { selectprovinsi, selectkota, selectkecamatan } from "./constants";
 import { colors, staticDimensions } from "../../styles/base";
-import { setObjectAsync } from "../asyncstorage";
-import { ASYNC_USER_ADDRESSES_KEY } from "../asyncstorage/constants";
+import { getObjectAsync, setObjectAsync } from "../asyncstorage";
+import {
+  ASYNC_RAJAONGKIR_KECAMATAN_KEY,
+  ASYNC_RAJAONGKIR_KOTA_KEY,
+  ASYNC_RAJAONGKIR_PROVINSI_KEY,
+  ASYNC_USER_ADDRESSES_KEY,
+} from "../asyncstorage/constants";
 import { sentryLog } from "../../sentry";
+import {
+  defaultlatitudedelta,
+  defaultlongitudedelta,
+} from "../../axios/constants";
 
 function FillAddress(props) {
   const [address, setAddress] = useState(AddressData);
@@ -70,10 +83,12 @@ function FillAddress(props) {
   }, [addresses]);
 
   useEffect(() => {
-    //console.log(currentAddress);
+    //console.log("route params addressData", props.route.params?.addressData?.lat, props.route.params?.addressData?.long);
     setAddress(
       isNew
-        ? AddressData
+        ? props.route.params?.addressData
+          ? props.route.params?.addressData
+          : AddressData
         : isDefault
         ? currentAddress === undefined || currentAddress === null
           ? AddressData
@@ -105,7 +120,13 @@ function FillAddress(props) {
     );
     setInputNames(
       isNew
-        ? AddressInputNamesData
+        ? props.route.params?.addressData
+          ? {
+              provinsi: props.route.params?.addressData?.provinsi_name,
+              kota: props.route.params?.addressData?.kota_name,
+              kecamatan: props.route.params?.addressData?.kecamatan_name,
+            }
+          : AddressInputNamesData
         : isDefault
         ? currentAddress === undefined || currentAddress === null
           ? AddressInputNamesData
@@ -128,16 +149,16 @@ function FillAddress(props) {
           }
         : AddressInputNamesData
     );
-  }, [currentAddress]);
+  }, [props.route.params, currentAddress]);
 
   useEffect(() => {
-    console.log("address", address);
+    //console.log("address", address);
     setLoading(false);
   }, [address]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     console.log("inputNames", inputNames);
-  }, [inputNames]);
+  }, [inputNames]);*/
 
   useEffect(() => {
     if (loading) {
@@ -158,7 +179,12 @@ function FillAddress(props) {
   }, [props.rajaongkir]);
 
   useEffect(() => {
-    if (loading) {
+    if (
+      props.rajaongkir?.provinsi === undefined ||
+      props.rajaongkir?.provinsi === null
+    ) {
+      checkStorageProvinsi();
+    } else if (loading) {
       openBottomSheet("provinsi", props.rajaongkir.provinsi, selectprovinsi);
     }
   }, [props.rajaongkir?.provinsi]);
@@ -182,6 +208,121 @@ function FillAddress(props) {
     setBottomKey(key);
     rbSheet.current.open();
   }
+
+  const checkStorageProvinsi = async () => {
+    const storageProvinsi = await getObjectAsync(ASYNC_RAJAONGKIR_PROVINSI_KEY);
+    if (!(storageProvinsi === undefined || storageProvinsi === null)) {
+      props.updateReduxRajaOngkirWithKey("provinsi", storageProvinsi);
+    }
+  };
+
+  const openProvinsi = () => {
+    if (
+      props.rajaongkir?.provinsi === undefined ||
+      props.rajaongkir?.provinsi === null ||
+      props.rajaongkir?.provinsi?.length === undefined
+    ) {
+      callRajaOngkir("provinsi", null, null);
+    } else {
+      openBottomSheet("provinsi", props.rajaongkir.provinsi, selectprovinsi);
+    }
+  };
+
+  const openKota = async () => {
+    if (
+      props.rajaongkir?.kota === undefined ||
+      props.rajaongkir?.kota === null ||
+      props.rajaongkir?.kota?.length === undefined
+    ) {
+      setLoading(true);
+      const storageKota = await getObjectAsync(ASYNC_RAJAONGKIR_KOTA_KEY);
+      if (
+        storageKota === undefined ||
+        storageKota === null ||
+        storageKota?.length === undefined ||
+        storageKota?.length < 1
+      ) {
+        const newData = await fetchRajaOngkir(
+          token,
+          "kota",
+          "provinsi_id",
+          address?.provinsi_id
+        );
+        props.updateReduxRajaOngkirWithKey("kota", newData);
+      } else {
+        const match = storageKota.find(
+          ({ provinsi_id }) => provinsi_id === address?.provinsi_id
+        );
+        if (
+          match === undefined ||
+          match === null ||
+          match?.data === undefined ||
+          match?.data === null ||
+          match?.data?.length === undefined
+        ) {
+          const newData = await fetchRajaOngkir(
+            token,
+            "kota",
+            "provinsi_id",
+            address?.provinsi_id
+          );
+          props.updateReduxRajaOngkirWithKey("kota", newData);
+        } else {
+          props.updateReduxRajaOngkirWithKey("kota", match?.data);
+        }
+      }
+    } else {
+      openBottomSheet("kota", props.rajaongkir.kota, selectkota);
+    }
+  };
+
+  const openKecamatan = async () => {
+    if (
+      props.rajaongkir?.kecamatan === undefined ||
+      props.rajaongkir?.kecamatan === null ||
+      props.rajaongkir?.kecamatan?.length === undefined
+    ) {
+      setLoading(true);
+      const storageKota = await getObjectAsync(ASYNC_RAJAONGKIR_KECAMATAN_KEY);
+      if (
+        storageKota === undefined ||
+        storageKota === null ||
+        storageKota?.length === undefined ||
+        storageKota?.length < 1
+      ) {
+        const newData = await fetchRajaOngkir(
+          token,
+          "kecamatan",
+          "kota_id",
+          address?.kota_id
+        );
+        props.updateReduxRajaOngkirWithKey("kecamatan", newData);
+      } else {
+        const match = storageKota.find(
+          ({ kota_id }) => kota_id === address?.kota_id
+        );
+        if (
+          match === undefined ||
+          match === null ||
+          match?.data === undefined ||
+          match?.data === null ||
+          match?.data?.length === undefined
+        ) {
+          const newData = await fetchRajaOngkir(
+            token,
+            "kecamatan",
+            "kota_id",
+            address?.kota_id
+          );
+          props.updateReduxRajaOngkirWithKey("kecamatan", newData);
+        } else {
+          props.updateReduxRajaOngkirWithKey("kecamatan", match?.data);
+        }
+      }
+    } else {
+      openBottomSheet("kecamatan", props.rajaongkir.kecamatan, selectkecamatan);
+    }
+  };
 
   function callRajaOngkir(key, param, id) {
     if (!loading) {
@@ -243,6 +384,37 @@ function FillAddress(props) {
     console.log(bottomKey + ": " + JSON.stringify(item));
     rbSheet.current.close();
   }
+
+  const openLocationPin = () => {
+    try {
+      let savedRegion = null;
+      console.log("address lat long", address.lat, address.long);
+      if (
+        !(
+          address.lat === null ||
+          address.long === null ||
+          address.lat === "" ||
+          address.long === ""
+        )
+      ) {
+        savedRegion = {
+          latitude: parseFloat(address.lat),
+          longitude: parseFloat(address.long),
+          latitudeDelta: defaultlatitudedelta,
+          longitudeDelta: defaultlongitudedelta,
+        };
+      }
+      navigation.navigate("LocationPin", {
+        isNew,
+        isDefault,
+        savedRegion,
+        addressData: address,
+      });
+    } catch (e) {
+      console.error(e);
+      setError(e.toString());
+    }
+  };
 
   const updateUserAddressData = async () => {
     try {
@@ -315,11 +487,40 @@ function FillAddress(props) {
       ) : null}
 
       <ScrollView style={styles.scrollView}>
+        {Platform.OS === "ios" ? null : (
+          <TouchableOpacity
+            onPress={() => openLocationPin()}
+            style={[
+              styles.button,
+              {
+                backgroundColor: loading
+                  ? colors.daclen_gray
+                  : colors.daclen_orange,
+              },
+            ]}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator
+                size="small"
+                color={colors.daclen_light}
+                style={{ alignSelf: "center" }}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name="map-marker-plus"
+                size={18}
+                color={colors.daclen_light}
+              />
+            )}
+
+            <Text style={styles.textButton}>Tentukan di Peta</Text>
+          </TouchableOpacity>
+        )}
+
         {isDefault ? null : (
           <View style={styles.containerVertical}>
-            <Text style={[styles.textCompulsory, { marginTop: 24 }]}>
-              Nama Depan Penerima*
-            </Text>
+            <Text style={[styles.textCompulsory]}>Nama Depan Penerima*</Text>
             <TextInput
               value={address?.nama_depan}
               style={styles.textInput}
@@ -349,7 +550,7 @@ function FillAddress(props) {
         <Text style={styles.textCompulsory}>Provinsi*</Text>
         <BSTextInput
           disabled={loading}
-          onPress={() => callRajaOngkir("provinsi", null, null)}
+          onPress={() => openProvinsi()}
           value={inputNames.provinsi}
           style={styles.textInput}
           onChangeText={(provinsi_id) =>
@@ -359,9 +560,7 @@ function FillAddress(props) {
         <Text style={styles.textCompulsory}>Kota/Kabupaten*</Text>
         <BSTextInput
           disabled={loading || props.rajaongkir?.provinsi === null}
-          onPress={() =>
-            callRajaOngkir("kota", "provinsi_id", address?.provinsi_id)
-          }
+          onPress={() => openKota()}
           value={
             inputNames.kota === null || inputNames.kota === ""
               ? props.rajaongkir?.provinsi === null
@@ -379,9 +578,7 @@ function FillAddress(props) {
             props.rajaongkir?.provinsi === null ||
             props.rajaongkir?.kota === null
           }
-          onPress={() =>
-            callRajaOngkir("kecamatan", "kota_id", address?.kota_id)
-          }
+          onPress={() => openKecamatan()}
           value={
             inputNames.kecamatan === null || inputNames.kecamatan === ""
               ? props.rajaongkir?.provinsi === null
@@ -434,8 +631,13 @@ function FillAddress(props) {
               style={{ alignSelf: "center" }}
             />
           ) : (
-            <Text style={styles.textButton}>Simpan Alamat</Text>
+            <MaterialCommunityIcons
+              name="cursor-pointer"
+              size={18}
+              color={colors.daclen_light}
+            />
           )}
+          <Text style={styles.textButton}>Simpan Alamat</Text>
         </TouchableOpacity>
 
         {isDefault || isRealtime || isNew ? null : (
@@ -459,8 +661,13 @@ function FillAddress(props) {
                 style={{ alignSelf: "center" }}
               />
             ) : (
-              <Text style={styles.textButton}>Hapus Alamat</Text>
+              <MaterialCommunityIcons
+                name="delete"
+                size={18}
+                color={colors.daclen_light}
+              />
             )}
+            <Text style={styles.textButton}>Hapus Alamat</Text>
           </TouchableOpacity>
         )}
 
@@ -553,6 +760,7 @@ const styles = StyleSheet.create({
   button: {
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: "row",
     paddingVertical: 12,
     paddingHorizontal: 32,
     marginHorizontal: 20,
@@ -574,6 +782,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "white",
+    marginStart: 10,
   },
   textUid: {
     fontSize: 12,
@@ -600,6 +809,7 @@ const mapDispatchProps = (dispatch) =>
       clearRajaOngkir,
       updateReduxUserAddresses,
       incrementReduxUserAddresses,
+      updateReduxRajaOngkirWithKey,
     },
     dispatch
   );

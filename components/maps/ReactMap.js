@@ -75,6 +75,7 @@ export default function ReactMap(props) {
             1000
           );
         } else {
+          console.log("initial location coords", location?.coords);
           ref.current.animateToRegion(
             {
               latitude: checkIfCoordIsStringThenParse(location?.coords?.latitude),

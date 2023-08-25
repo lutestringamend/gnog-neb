@@ -34,6 +34,7 @@ import { getObjectAsync, getTokenAsync } from "./asyncstorage";
 import {
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
   ASYNC_PRODUCTS_ARRAY_KEY,
+  ASYNC_RAJAONGKIR_PROVINSI_KEY,
   ASYNC_USER_ADDRESSES_KEY,
   ASYNC_USER_CURRENTUSER_KEY,
   ASYNC_USER_PROFILE_ADDRESS_ID_KEY,
@@ -44,10 +45,13 @@ import { sentryLog } from "../sentry";
 import Top from "./Top";
 import { colors } from "../styles/base";
 import { personalwebsiteurlshort } from "../axios/constants";
+import { fetchRajaOngkir } from "../axios/address";
+import { requestLocationForegroundPermission } from "./address";
 
 function Main(props) {
   try {
     const [error, setError] = useState(null);
+    const [locationPermission, setLocationPermission] = useState(null);
     const appState = useRef(AppState.currentState);
     const {
       token,
@@ -93,6 +97,7 @@ function Main(props) {
         checkUserData();
         return;
       }
+      checkRajaOngkirProvinsi();
     }, [token]);
 
     useEffect(() => {
@@ -114,6 +119,12 @@ function Main(props) {
         return () => theAppState.remove();
       }
     }, [currentUser, profileLock]);
+
+    useEffect(() => {
+      if (locationPermission === null) {
+        checkLocationPermission();
+      }
+    }, [locationPermission]);
 
     useEffect(() => {
       if (profilePIN === null) {
@@ -210,6 +221,11 @@ function Main(props) {
       }
     };
 
+    const checkLocationPermission = async () => {
+      let result = await requestLocationForegroundPermission();
+      setLocationPermission(result);
+    }
+
     const handleAppStateChange = async (nextAppState) => {
       if (
         appState.current.match(/inactive|background/) &&
@@ -241,6 +257,13 @@ function Main(props) {
         props.updateReduxProfileLockStatus(false);
       }
     };
+
+    const checkRajaOngkirProvinsi = async () => {
+      const storageProvinsi = await getObjectAsync(ASYNC_RAJAONGKIR_PROVINSI_KEY);
+      if (storageProvinsi === undefined || storageProvinsi === null) {
+        fetchRajaOngkir(token, "provinsi");
+      }
+    }
 
     const checkStorageAddressId = async () => {
       const storageAddressId = await getObjectAsync(

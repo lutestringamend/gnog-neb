@@ -9,6 +9,7 @@ import {
   ScrollView,
   RefreshControl,
   FlatList,
+  Platform,
 } from "react-native";
 //import * as Location from "expo-location";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -118,10 +119,16 @@ function PickAddress(props) {
       if (navigation === undefined || navigation === null) {
         return;
       }
-      navigation.navigate("Address", {
+      /*if (Platform.OS === "ios") {
+        navigation.navigate("Address", {
+          isNew: true,
+          isDefault: false,
+          isRealtime: false,
+        });
+      }*/
+      navigation.navigate("LocationPin", {
         isNew: true,
-        isDefault: false,
-        isRealtime: false,
+        savedRegion: null,
       });
     };
 

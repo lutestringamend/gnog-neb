@@ -7,6 +7,13 @@ import {
 } from "../../redux/constants";
 import { updateuserdata, rajaongkirAPI } from "../constants";
 import { getCurrentUser } from "../user";
+import { sentryLog } from "../../sentry";
+import { getObjectAsync, setObjectAsync } from "../../components/asyncstorage";
+import {
+  ASYNC_RAJAONGKIR_KECAMATAN_KEY,
+  ASYNC_RAJAONGKIR_KOTA_KEY,
+  ASYNC_RAJAONGKIR_PROVINSI_KEY,
+} from "../../components/asyncstorage/constants";
 
 export function clearAddressData() {
   return (dispatch) => {
@@ -14,6 +21,13 @@ export function clearAddressData() {
     dispatch({ type: USER_ADDRESS_STATE_CLEAR });
   };
 }
+
+export const updateReduxRajaOngkirWithKey = (key, data) => {
+  return (dispatch) => {
+    console.log("updateReduxRajaOngkirWithKey", key);
+    dispatch({ type: USER_RAJAONGKIR_STATE_CHANGE, data, key });
+  };
+};
 
 export function changeAddress(addresses, id, newAddress) {
   if (
@@ -52,6 +66,105 @@ export function clearRajaOngkir(clearKota, clearKecamatan) {
   };
 }
 
+export const fetchRajaOngkir = async (token, key, param, id) => {
+  if (
+    token === undefined ||
+    token === null ||
+    key === undefined ||
+    key === null
+  ) {
+    return null;
+  }
+
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    };
+
+    let url = rajaongkirAPI + "/" + key.toString();
+    if (
+      !(
+        param === undefined ||
+        param === null ||
+        id === undefined ||
+        id === null
+      )
+    ) {
+      url += "?" + param.toString() + "=" + id.toString();
+    }
+    console.log("fetchRajaOngkir", url);
+
+    const response = await Axios.get(url, config).catch((error) => {
+      console.log(error);
+      sentryLog(error);
+    });
+
+    const data = response?.data?.data;
+    if (key === "provinsi") {
+      await setObjectAsync(ASYNC_RAJAONGKIR_PROVINSI_KEY, data);
+      console.log("storage provinsi saved", data);
+      return null;
+    } else if (key === "kota") {
+      let storageKota = await getObjectAsync(ASYNC_RAJAONGKIR_KOTA_KEY);
+      let newArray = [];
+      let newItem = {
+        provinsi_id: id,
+        data,
+      };
+      if (
+        !(
+          storageKota === undefined ||
+          storageKota === null ||
+          storageKota?.length === undefined ||
+          storageKota?.length < 1
+        )
+      ) {
+        for (let i = 0; i < storageKota?.length; i++) {
+          if (storageKota[i]?.provinsi_id !== id) {
+            newArray.push(storageKota[i]);
+          }
+        }
+      }
+      newArray.push(newItem);
+      await setObjectAsync(ASYNC_RAJAONGKIR_KOTA_KEY, newArray);
+      console.log("storage kota saved", newArray);
+      return data;
+    } else if (key === "kecamatan") {
+      let storageKota = await getObjectAsync(ASYNC_RAJAONGKIR_KECAMATAN_KEY);
+      let newArray = [];
+      let newItem = {
+        kota_id: id,
+        data,
+      };
+      if (
+        !(
+          storageKota === undefined ||
+          storageKota === null ||
+          storageKota?.length === undefined ||
+          storageKota?.length < 1
+        )
+      ) {
+        for (let i = 0; i < storageKota?.length; i++) {
+          if (storageKota[i]?.kota_id !== id) {
+            newArray.push(storageKota[i]);
+          }
+        }
+      }
+      newArray.push(newItem);
+      await setObjectAsync(ASYNC_RAJAONGKIR_KECAMATAN_KEY, newArray);
+      console.log("storage kecamatan saved", newArray);
+      return data;
+    }
+  } catch (e) {
+    console.error(e);
+    sentryLog(e);
+  }
+  return null;
+};
+
 export function callRajaOngkir(token, key, param, id) {
   return (dispatch) => {
     const config = {
@@ -62,10 +175,17 @@ export function callRajaOngkir(token, key, param, id) {
     };
 
     let url = rajaongkirAPI + "/" + key.toString();
-    if (id !== null && param !== null) {
+    if (
+      !(
+        param === undefined ||
+        param === null ||
+        id === undefined ||
+        id === null
+      )
+    ) {
       url += "?" + param.toString() + "=" + id.toString();
     }
-    console.log("callRajaOngkir " + url + " with header");
+    console.log("callRajaOngkir", url);
 
     Axios.get(url, config)
       .then((response) => {

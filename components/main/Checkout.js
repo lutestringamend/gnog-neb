@@ -146,8 +146,8 @@ function Checkout(props) {
 
         console.log("weight weightVolume", newWeight, newWeightVolume);
         setPoints(newPoints);
-        //setWeight(newWeight);
-        setWeight(newWeightVolume);
+        setWeight(newWeight);
+        //setWeight(newWeightVolume);
         setWeightVolume(newWeightVolume);
 
         if (retrieveDeliveryData) {
@@ -185,12 +185,14 @@ function Checkout(props) {
       `${customAddress?.nama_depan} ${
         customAddress?.nama_belakang ? customAddress?.nama_belakang : ""
       } | ${customAddress?.nomor_telp}\n${customAddress?.alamat}${
-        customAddress?.provinsi_name ? `, ${customAddress?.provinsi_name}` : ""
-      }${customAddress?.kota_name ? `, ${customAddress?.kota_name}` : ""}${
-        customAddress?.kecamatan_name
-          ? `, ${customAddress?.kecamatan_name}`
+        customAddress?.provinsi?.name
+          ? `, ${customAddress?.provinsi?.name}`
           : ""
-      } ${customAddress?.kode_pos}`
+      }${customAddress?.kota?.name ? `, ${customAddress?.kota?.name}` : ""}${
+        customAddress?.kecamatan?.name
+          ? `, ${customAddress?.kecamatan?.name}`
+          : ""
+      }  ${customAddress?.kode_pos}`
     );
     setAddressComplete(true);
   }, [customAddress]);
