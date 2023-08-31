@@ -90,15 +90,15 @@ const UserRoots = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-            <View style={styles.containerLeader}>
-      <MaterialCommunityIcons
-                  name="head"
-                  size={18}
-                  color={colors.daclen_light}
-                />
-                <Text style={styles.textLeader}>DACLEN</Text>
+      <View style={styles.containerLeader}>
+        <MaterialCommunityIcons
+          name="head"
+          size={18}
+          color={colors.daclen_light}
+        />
+        <Text style={styles.textLeader}>DACLEN</Text>
       </View>
-      <ScrollView style={styles.scrollView}>
+      <View style={styles.scrollView}>
         <View style={styles.containerMain}>
           <UserRootItem
             userData={currentUser}
@@ -138,7 +138,7 @@ const UserRoots = (props) => {
             )}
           </View>
         </View>
-      </ScrollView>
+      </View>
       <RBSheet ref={rbSheet} openDuration={250} height={300}>
         <BSUserRoot
           title="Detail User"
@@ -154,12 +154,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: "white",
+    backgroundColor: colors.white,
   },
   containerHorizontal: {
     width: "100%",
     flexDirection: "row",
-    backgroundColor: "white",
+    backgroundColor: "transparent",
     alignItems: "stretch",
     paddingHorizontal: staticDimensions.dashboardBoxHorizontalMargin,
     marginVertical: 10,
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   containerMain: {
     flex: 1,
     width: "100%",
-    backgroundColor: "white",
+    backgroundColor: "transparent",
     paddingBottom: staticDimensions.pageBottomPadding,
     marginVertical: 10,
     marginHorizontal: 12,
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     marginStart: 6,
     fontWeight: "bold",
     fontSize: 14,
-    color: colors.daclen_light
+    color: colors.daclen_light,
   },
 });
 

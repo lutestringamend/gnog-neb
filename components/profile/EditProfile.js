@@ -39,6 +39,7 @@ import {
   bankinfodesc,
   genderchoices,
   birthdateplaceholder,
+  bankinfodescset,
 } from "./constants";
 import { colors, blurhash, staticDimensions } from "../../styles/base";
 import { intiialPermissions, checkMediaPermissions } from "../media";
@@ -270,17 +271,8 @@ function EditProfile(props) {
       setError("Nama Depan harus diisi");
     } else if (user?.email === "") {
       setError("Email harus diisi");
-    } else if (user?.nomor_rekening === "") {
-      setError("Nomor Rekening harus diisi");
     } else if (user?.tanggal_lahir === "") {
       setError("Tanggal Lahir harus diisi");
-    } else if (
-      user?.bank_id === "" ||
-      user?.bank_name === "" ||
-      user?.bank_id === null ||
-      user?.bank_name === null
-    ) {
-      setError("Nama Bank harus dipilih");
     } else if (user?.nomor_telp === "") {
       setError("Nomor Telepon harus diisi");
     } else if (
@@ -288,6 +280,16 @@ function EditProfile(props) {
       user?.nomor_telp?.length < 8
     ) {
       setError("Nomor Telepon yang anda masukkan salah");
+    } else if (
+      (currentUser?.bank_set === undefined || !currentUser?.bank_set) &&
+      (user?.bank_id === "" ||
+        user?.bank_name === "" ||
+        user?.bank_id === null ||
+        user?.bank_name === null ||
+        user?.nomor_rekening === "" ||
+        user?.nomor_rekening?.length < 6)
+    ) {
+      setError("Nama Bank dan Nomor Rekening harus diisi dengan benar");
     } else if (!loading && token !== null && currentUser?.id !== undefined) {
       setLoading(true);
       if (
@@ -323,7 +325,11 @@ function EditProfile(props) {
 
   function openFillAddress() {
     rbSheetAddress.current.close();
-    navigation.navigate("Address");
+    navigation.navigate("LocationPin", {
+      isNew: true,
+      isDefault: true,
+      savedRegion: null,
+    });
   }
 
   try {
@@ -403,11 +409,13 @@ function EditProfile(props) {
             value={user?.nomor_telp}
             style={styles.textInput}
             inputMode="decimal"
-            editable={!(
-              user?.nomor_telp === undefined ||
-              user?.nomor_telp === null ||
-              user?.nomor_telp === ""
-            )}
+            editable={
+              !(
+                currentUser?.nomor_telp === undefined ||
+                currentUser?.nomor_telp === null ||
+                currentUser?.nomor_telp === ""
+              )
+            }
             onChangeText={(nomor_telp) => setUser({ ...user, nomor_telp })}
           />
 
@@ -423,11 +431,13 @@ function EditProfile(props) {
           <TextInput
             value={user?.email}
             style={styles.textInput}
-            editable={!(
-              user?.email === undefined ||
-              user?.email === null ||
-              user?.email === ""
-            )}
+            editable={
+              !(
+                currentUser?.email === undefined ||
+                currentUser?.email === null ||
+                currentUser?.email === ""
+              )
+            }
             onChangeText={(email) => setUser({ ...user, email })}
           />
 
@@ -436,12 +446,7 @@ function EditProfile(props) {
             value={user?.nama_depan}
             style={styles.textInput}
             onChangeText={(nama_depan) => setUser({ ...user, nama_depan })}
-            editable={!(
-              user?.nama_depan === undefined ||
-              user?.nama_depan === null ||
-              user?.nama_depan === ""
-            )
-            }
+            editable={currentUser?.bank_set === undefined || !currentUser?.bank_set}
           />
           <Text style={styles.text}>Nama belakang (opsional)</Text>
           <TextInput
@@ -450,13 +455,7 @@ function EditProfile(props) {
             onChangeText={(nama_belakang) =>
               setUser({ ...user, nama_belakang })
             }
-            editable={
-              !(
-                user?.nama_belakang === undefined ||
-                user?.nama_belakang === null ||
-                user?.nama_belakang === ""
-              )
-            }
+            editable={currentUser?.bank_set === undefined || !currentUser?.bank_set}
           />
 
           <Text style={styles.text}>Jenis kelamin (opsional)</Text>
@@ -475,11 +474,6 @@ function EditProfile(props) {
             onChangeText={(tanggal_lahir) =>
               setUser({ ...user, tanggal_lahir })
             }
-            editable={!(
-              user?.bank_name === undefined ||
-              user?.bank_name === null ||
-              user?.bank_name === ""
-            )}
           />
 
           <Separator thickness={2} />
@@ -495,48 +489,57 @@ function EditProfile(props) {
           <Text
             style={[styles.text, { marginBottom: 20, textAlign: "justify" }]}
           >
-            {bankinfodesc}
+            {currentUser?.bank_set === undefined || !currentUser?.bank_set
+              ? bankinfodesc
+              : bankinfodescset}
           </Text>
 
           <Text style={styles.textCompulsory}>Nomor Rekening*</Text>
           <TextInput
-            value={user?.nomor_rekening}
+            value={
+              currentUser?.bank_set
+                ? currentUser?.detail_user?.nomor_rekening
+                  ? currentUser?.detail_user?.nomor_rekening
+                  : ""
+                : user?.nomor_rekening
+            }
             style={styles.textInput}
             onChangeText={(nomor_rekening) =>
               setUser({ ...user, nomor_rekening })
             }
             inputMode="decimal"
             editable={
-              user?.nomor_rekening === undefined ||
-              user?.nomor_rekening === null ||
-              user?.nomor_rekening === ""
+              currentUser?.bank_set === undefined || !currentUser?.bank_set
             }
           />
 
           <Text style={styles.textCompulsory}>Nama Bank*</Text>
           <BSTextInput
-            disabled={
-              loading ||
-              !(
-                user?.bank_name === undefined ||
-                user?.bank_name === null ||
-                user?.bank_name === ""
-              )
-            }
+            disabled={loading || currentUser?.bank_set}
             onPress={() => openBottomSheet()}
-            value={bankName}
+            value={
+              currentUser?.bank_set
+                ? currentUser?.detail_user?.bank?.nama
+                  ? currentUser?.detail_user?.bank?.nama
+                  : ""
+                : bankName
+            }
             style={styles.textInput}
           />
 
           <Text style={styles.text}>Cabang Bank</Text>
           <TextInput
-            value={user?.cabang_bank}
+            value={
+              currentUser?.bank_set
+                ? currentUser?.detail_user?.cabang_bank
+                  ? currentUser?.detail_user?.cabang_bank
+                  : ""
+                : user?.cabang_bank
+            }
             style={styles.textInput}
             onChangeText={(cabang_bank) => setUser({ ...user, cabang_bank })}
             editable={
-                user?.cabang_bank === undefined ||
-                user?.cabang_bank === null ||
-                user?.cabang_bank === ""
+              currentUser?.bank_set === undefined || !currentUser?.bank_set
             }
           />
 
@@ -663,7 +666,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     elevation: 10,
     padding: 4,
-    backgroundColor: colors.daclen_orange,
+    backgroundColor: "transparent",
     borderRadius: 101,
   },
   containerPhotoSpinner: {

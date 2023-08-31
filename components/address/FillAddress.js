@@ -161,6 +161,13 @@ function FillAddress(props) {
   }, [inputNames]);*/
 
   useEffect(() => {
+    if (isDefault && loading) {
+      setLoading(false);
+      navigation.navigate("PickAddress");
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
     if (loading) {
       if (addressUpdate?.session === "success") {
         setSuccess(true);

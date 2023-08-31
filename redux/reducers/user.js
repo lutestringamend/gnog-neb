@@ -92,6 +92,11 @@ export const user = (state = initialState, action) => {
         ...state,
         currentUser: {
           ...action.data,
+          bank_set: !(
+            checkEmpty(action.data?.detail_user?.bank?.id) === "" ||
+            checkEmpty(action.data?.detail_user?.bank?.nama) === "" ||
+            checkEmpty(action.data?.detail_user?.nomor_rekening) === ""
+          ),
           email: checkEmpty(action.data?.email),
           nomor_telp: checkEmpty(action.data?.nomor_telp),
           detail_user: {
@@ -134,7 +139,7 @@ export const user = (state = initialState, action) => {
       return {
         ...state,
         registerSnapToken: action.data,
-      }
+      };
     case USER_PROFILE_LOCK_STATE_CHANGE:
       return {
         ...state,

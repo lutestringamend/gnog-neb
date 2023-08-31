@@ -835,14 +835,14 @@ export function register(authData) {
       ...authData,
       device_name: Platform.OS,
     };
-    console.log("register with params " + JSON.stringify(params));
+    console.log("register");
 
     Axios.post(userregister, params)
       .then((response) => {
-        //console.log(response.data);
+        //console.log("register response data", response.data);
         const token = response?.data?.token;
         if (token === undefined || token === null || token === "") {
-          const data =
+          const data = response?.data?.errors ? response?.data?.errors :
             "Tidak bisa mendaftarkan akun baru. Mohon periksa kembali data yang Anda masukkan.";
           dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data });
           //dispatch(clearUserData());
@@ -872,6 +872,7 @@ export function login(email, password, resetPIN) {
 
     Axios.post(loginlink, params)
       .then((response) => {
+        console.log("login response data", response?.data);
         const token = response?.data?.token;
         if (token === undefined || token === null || token === "") {
           const data =

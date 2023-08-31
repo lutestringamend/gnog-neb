@@ -61,7 +61,7 @@ const SaldoReport = (props) => {
       setLoading(true);
     } else {
       setLoading(false);
-      //console.log("saldo", saldo);
+      console.log("redux saldo", saldo);
     }
   }
 

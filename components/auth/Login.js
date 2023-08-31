@@ -30,6 +30,8 @@ import BSPopup from "../bottomsheets/BSPopup";
 import { colors, dimensions, staticDimensions } from "../../styles/base";
 import { setObjectAsync } from "../asyncstorage";
 import { ASYNC_USER_PROFILE_PIN_KEY } from "../asyncstorage/constants";
+import { sentryLog } from "../../sentry";
+import { checkEmpty } from "../../redux/reducers/user";
 
 function setPageHeight(bottomPadding) {
   return (
@@ -37,17 +39,30 @@ function setPageHeight(bottomPadding) {
   );
 }
 
+const defaultRegisterErrorArray = {
+  name: false,
+  email: false,
+  nomor_telp: false,
+  password: false,
+  referral: false,
+};
+
 function Login(props) {
   const [error, setError] = useState(null);
   const [isLogin, setLogin] = useState(true);
   const [isChangePassword, setChangePassword] = useState(false);
   const [resettingPin, setResettingPin] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [registerErrorArray, setRegisterErrorArray] = useState(
+    defaultRegisterErrorArray
+  );
+
   const rbSheet = useRef();
   const webKey = props.route.params?.webKey;
   const resetPIN = props.route.params?.resetPIN
     ? props.route.params?.resetPIN
     : false;
+  const { authData, authError } = props;
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -69,21 +84,41 @@ function Login(props) {
   }, [props.token, webKey]);
 
   useEffect(() => {
-    console.log("authError: " + props.authError);
+    console.log("redux authError", authError);
     setLoading(false);
-    if (isChangePassword) {
-      setError(props.authError?.message);
-      if (props.authError?.session === "success") {
-        rbSheet.current.open();
+    try {
+      if (isChangePassword) {
+        setError(authError?.message);
+        if (authError?.session === "success") {
+          rbSheet.current.open();
+        }
+      } else if (!isLogin && authError !== null) {
+        setRegisterErrorArray(defaultRegisterErrorArray);
+        let registerErrorKeys = Object.keys(authError);
+        let newError = "";
+        let newRegisterErrorArray = defaultRegisterErrorArray;
+        for (let key of registerErrorKeys) {
+          newRegisterErrorArray[key] = true;
+          newError = `${newError === "" ? "" : `${newError}\n`}${authError[
+            key
+          ][0].toString()}`;
+        }
+        console.log("newRegisterError", newError, newRegisterErrorArray);
+        setRegisterErrorArray(newRegisterErrorArray);
+        setError(newError);
+      } else {
+        setError(checkEmpty(authError));
       }
-    } else {
-      setError(props.authError);
+    } catch (e) {
+      console.error(e);
+      sentryLog(e);
+      setError(`Terjadi kesalahan pada saat autentikasi\n${e.toString()}`);
     }
-  }, [props.authError]);
+  }, [authError]);
 
-  /*useEffect(() => {
-    console.log("authData: " + JSON.stringify(props.authData));
-  }, [props.authData]);*/
+  useEffect(() => {
+    console.log("registerErrorArray", registerErrorArray);
+  }, [registerErrorArray]);
 
   useEffect(() => {
     if (isLogin && !isChangePassword && props.loginToken !== null) {
@@ -102,12 +137,12 @@ function Login(props) {
   }, [props.registerToken]);
 
   const onLogin = async () => {
-    if (props.authData?.email === null || props.authData?.email === undefined) {
+    if (authData?.email === null || authData?.email === undefined) {
       setError("Anda belum mengisi username atau email Anda");
       return;
     } else if (
-      props.authData?.password === undefined ||
-      props.authData?.password === null
+      authData?.password === undefined ||
+      authData?.password === null
     ) {
       setError("Anda belum mengisi password");
       return;
@@ -117,70 +152,62 @@ function Login(props) {
     if (resetPIN) {
       await setObjectAsync(ASYNC_USER_PROFILE_PIN_KEY, null);
     }
-    props.login(props.authData?.email, props.authData?.password, resetPIN);
+    props.login(authData?.email, authData?.password, resetPIN);
     setResettingPin(resetPIN);
   };
 
   const onRegister = () => {
     if (resetPIN) {
       return;
-    } else if (
-      props.authData?.name === null ||
-      props.authData?.name === undefined
-    ) {
+    } else if (authData?.name === null || authData?.name === undefined) {
       setError("Anda wajib mengisi username untuk register");
-    } else if (
-      props.authData?.email === null ||
-      props.authData?.email === undefined
-    ) {
+    } else if (authData?.email === null || authData?.email === undefined) {
       setError("Anda wajib mengisi email untuk register");
     } else if (
-      props.authData?.nomor_telp === null ||
-      props.authData?.nomor_telp === undefined
+      authData?.nomor_telp === null ||
+      authData?.nomor_telp === undefined
     ) {
       setError("Anda wajib mengisi nomor telepon untuk register");
     } else if (
-      props.authData?.password === undefined ||
-      props.authData?.password === null ||
-      props.authData?.confirmPassword === undefined ||
-      props.authData?.confirmPassword === null
+      authData?.password === undefined ||
+      authData?.password === null ||
+      authData?.confirmPassword === undefined ||
+      authData?.confirmPassword === null
     ) {
       setError("Anda wajib mengisi password untuk register");
-    } else if (props.authData?.password !== props.authData?.confirmPassword) {
+    } else if (authData?.password !== authData?.confirmPassword) {
       setError("Konfirmasi password Anda tidak sama");
     } else if (
-      props.authData?.referral === null ||
-      props.authData?.referral === undefined
+      authData?.referral === null ||
+      authData?.referral === undefined
     ) {
       setError("Anda wajib mengisi nama referral");
     } else {
       setError(null);
       setLoading(true);
-      props.register(props.authData);
+      props.register(authData);
     }
   };
 
   const onChangePassword = () => {
     if (
-      props.authData?.old_password === null ||
-      props.authData?.old_password === undefined
+      authData?.old_password === null ||
+      authData?.old_password === undefined
     ) {
       setError("Anda wajib mengisi password lama Anda");
     } else if (
-      props.authData?.new_password === undefined ||
-      props.authData?.new_password === null ||
-      props.authData?.confirm_password === undefined ||
-      props.authData?.confirm_password === null
+      authData?.new_password === undefined ||
+      authData?.new_password === null ||
+      authData?.confirm_password === undefined ||
+      authData?.confirm_password === null
     ) {
       setError("Anda wajib mengisi password baru");
-    } else if (
-      props.authData?.new_password !== props.authData?.confirm_password
-    ) {
+    } else if (authData?.new_password !== authData?.confirm_password) {
       setError("Konfirmasi password Anda tidak sama");
     } else {
       setError(null);
       setLoading(true);
-      props.changePassword(props.authData, props.currentUser?.id, props.token);
+      props.changePassword(authData, props.currentUser?.id, props.token);
     }
   };
 
@@ -253,7 +280,7 @@ function Login(props) {
             ) : isLogin ? (
               <LoginBox />
             ) : (
-              <RegisterBox />
+              <RegisterBox errorArray={registerErrorArray} />
             )}
 
             <TouchableOpacity
@@ -283,7 +310,9 @@ function Login(props) {
                   {isChangePassword
                     ? "Ganti Password"
                     : isLogin
-                    ? resetPIN ? "Login Ulang & Reset PIN" : "Login"
+                    ? resetPIN
+                      ? "Login Ulang & Reset PIN"
+                      : "Login"
                     : "Register"}
                 </Text>
               )}
@@ -305,7 +334,7 @@ function Login(props) {
               </View>
             ) : null}
 
-            {error && <Text style={styles.textError}>{error}</Text>}
+            {error ? <Text style={styles.textError}>{error}</Text> : null}
           </View>
         </View>
       </ScrollView>
@@ -324,8 +353,10 @@ function Login(props) {
             isChangePassword
               ? "Anda telah berhasil mengganti password akun Daclen Anda"
               : isLogin
-              ? `Anda telah berhasil login sebagai ${props.authData?.email}.\nSelamat datang kembali di Daclen!`
-              : `Anda telah berhasil register dengan nama akun ${props.authData?.username}.\nSelamat datang di Daclen!`
+              ? `Anda telah berhasil login sebagai ${authData?.email}.\nSelamat datang kembali di Daclen!`
+              : `Anda telah berhasil register sebagai ${
+                  authData?.name ? authData?.name : authData?.email
+                }.\nSelamat datang di Daclen!`
           }
           buttonNegative="OK"
           buttonNegativeColor={colors.daclen_gray}
@@ -415,11 +446,12 @@ const styles = StyleSheet.create({
   textError: {
     fontSize: 14,
     fontWeight: "bold",
-    marginHorizontal: 20,
-    marginBottom: 20,
-    padding: 20,
+    marginHorizontal: 10,
+    marginTop: 20,
+    marginBottom: 32,
     color: colors.daclen_danger,
     textAlign: "center",
+    textAlignVertical: "center",
   },
   textButton: {
     fontSize: 16,

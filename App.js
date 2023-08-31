@@ -312,7 +312,7 @@ export default function App() {
               <Stack.Screen
                 name="UserRootsScreen"
                 component={UserRoots}
-                options={{ ...defaultOptions, title: "User Roots" }}
+                options={{ ...defaultOptions, title: "Agen & Reseller" }}
               />
               <Stack.Screen
                 name="BonusRootScreen"

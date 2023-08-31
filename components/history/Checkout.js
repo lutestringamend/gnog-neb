@@ -25,7 +25,7 @@ import {
 } from "../../axios/history";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 
-import { colors, dimensions } from "../../styles/base";
+import { colors } from "../../styles/base";
 import Separator from "../profile/Separator";
 import { ASYNC_HISTORY_CHECKOUT_KEY } from "../asyncstorage/constants";
 import { capitalizeFirstLetter } from "../../axios/cart";

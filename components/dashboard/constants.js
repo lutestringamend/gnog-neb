@@ -76,6 +76,11 @@ export const watermarkvideoicon = "video-box";
 export const linkcopied = "Tersimpan ke Clipboard";
 export const sharingdialogtitle = "Bagikan Link Referral";
 
+export const dashboardonboardingtext1 = "Dengan membayar sejumlah";
+export const dashboardonboardingtext2 = null;
+export const dashboardonboardingtext3 = "Anda dapat menikmati semua fitur dan keuntungan setelah proses pembayaran selesai.";
+export const dashboardonboardingbutton = "Bergabung Sekarang!"
+
 export const withdrawalexplanation = `
 - Minimal penarikan saldo Rp. 50.000,-.
 - Maksimal penarikan saldo adalah Rp. 25.000.000,- atau sesuai kebijakan tiap bank.

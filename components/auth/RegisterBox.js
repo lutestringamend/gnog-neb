@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  Text,
-  Platform,
-} from "react-native";
+import { View, TextInput, StyleSheet, Text, Platform } from "react-native";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -15,41 +9,121 @@ import TextInputPassword from "./TextInputPassword";
 import { colors } from "../../styles/base";
 
 function RegisterBox(props) {
+  const { errorArray } = props;
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Username* (digunakan untuk referral Anda)</Text>
+      <Text
+        style={[
+          styles.text,
+          {
+            color: errorArray?.name ? colors.daclen_danger : colors.daclen_blue,
+          },
+        ]}
+      >
+        Username* (digunakan untuk referral Anda)
+      </Text>
       <TextInput
-        placeholder={Platform.OS === "ios" && props.authData?.username ? props.authData?.username : ""}
+        placeholder={
+          Platform.OS === "ios" && props.authData?.username
+            ? props.authData?.username
+            : ""
+        }
         style={styles.textInput}
-        onChangeText={(name) =>props.setAuthData({...props.authData, name })}
+        onChangeText={(name) => props.setAuthData({ ...props.authData, name })}
       />
-      <Text style={styles.text}>Email*</Text>
+      <Text
+        style={[
+          styles.text,
+          {
+            color: errorArray?.email
+              ? colors.daclen_danger
+              : colors.daclen_blue,
+          },
+        ]}
+      >
+        Email*
+      </Text>
       <TextInput
         placeholder={Platform.OS === "ios" ? props.authData?.email : ""}
         style={styles.textInput}
-        onChangeText={(email) => props.setAuthData({...props.authData, email })}
+        onChangeText={(email) =>
+          props.setAuthData({ ...props.authData, email })
+        }
       />
-      <Text style={styles.text}>Nomor Telepon*</Text>
+      <Text
+        style={[
+          styles.text,
+          {
+            color: errorArray?.nomor_telp
+              ? colors.daclen_danger
+              : colors.daclen_blue,
+          },
+        ]}
+      >
+        Nomor Telepon*
+      </Text>
       <TextInput
         placeholder={Platform.OS === "ios" ? props.authData?.phone : ""}
         style={styles.textInput}
-        onChangeText={(nomor_telp) => props.setAuthData({...props.authData, nomor_telp })}
+        inputMode="decimal"
+        onChangeText={(nomor_telp) =>
+          props.setAuthData({ ...props.authData, nomor_telp })
+        }
       />
-      <Text style={styles.text}>Password*</Text>
+      <Text
+        style={[
+          styles.text,
+          {
+            color: errorArray?.password
+              ? colors.daclen_danger
+              : colors.daclen_blue,
+          },
+        ]}
+      >
+        Password*
+      </Text>
       <TextInputPassword
         style={styles.textInput}
-        onChangeText={(password) => props.setAuthData({...props.authData, password })}
+        onChangeText={(password) =>
+          props.setAuthData({ ...props.authData, password })
+        }
       />
-      <Text style={styles.text}>Konfirmasi Password*</Text>
+      <Text
+        style={[
+          styles.text,
+          {
+            color: errorArray?.password
+              ? colors.daclen_danger
+              : colors.daclen_blue,
+          },
+        ]}
+      >
+        Konfirmasi Password*
+      </Text>
       <TextInputPassword
         style={styles.textInput}
-        onChangeText={(confirmPassword) => props.setAuthData({...props.authData, confirmPassword })}
+        onChangeText={(confirmPassword) =>
+          props.setAuthData({ ...props.authData, confirmPassword })
+        }
       />
-      <Text style={styles.text}>Referral*</Text>
+      <Text
+        style={[
+          styles.text,
+          {
+            color: errorArray?.referral
+              ? colors.daclen_danger
+              : colors.daclen_blue,
+          },
+        ]}
+      >
+        Referral*
+      </Text>
       <TextInput
-        placeholder={Platform.OS === "ios" ? props.authData?.referral: ""}
+        placeholder={Platform.OS === "ios" ? props.authData?.referral : ""}
         style={styles.textInput}
-        onChangeText={(referral) => props.setAuthData({...props.authData, referral })}
+        onChangeText={(referral) =>
+          props.setAuthData({ ...props.authData, referral })
+        }
       />
     </View>
   );

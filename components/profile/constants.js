@@ -56,7 +56,8 @@ export const referralWAtemplate =
   "Ayo ikut berjualan dan berbisnis bersama saya di daclen.com. Daftar disini ";
 export const sharereferral = "Bagikan Referral";
 export const bankinfodesc =
-  "Ketika saldo kamu nanti terisi kamu dapat mencairkan saldo kamu. Informasi rekening anda akan kami gunakan untuk keperluan pencairan saldo, admin akan mentransfer permintaan pencairan saldo anda ke informasi rekening yang kamu isi.";
+  "Ketika saldo kamu nanti terisi kamu dapat mencairkan saldo kamu. Informasi rekening anda akan kami gunakan untuk keperluan pencairan saldo, admin akan mentransfer permintaan pencairan saldo anda ke informasi rekening yang Anda isi.";
+export const bankinfodescset = "Berikut adalah keterangan rekening Anda yang akan menerima pencairan saldo. Mohon menghubungi Daclen Care apabila Anda ingin mengganti informasi ini.";
 
 export const instagramurl = "https://www.instagram.com/daclenofficial/";
 export const facebookurl = "https://www.facebook.com/daclenofficial/";

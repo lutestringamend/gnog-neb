@@ -13,6 +13,12 @@ import { useNavigation } from "@react-navigation/native";
 
 import { colors } from "../../../styles/base";
 import { dashboardkodeetikpdf, webdashboard } from "../../../axios/constants";
+import {
+  dashboardonboardingbutton,
+  dashboardonboardingtext1,
+  dashboardonboardingtext2,
+  dashboardonboardingtext3,
+} from "../constants";
 
 const DashboardUpgrade = (props) => {
   const navigation = useNavigation();
@@ -66,14 +72,17 @@ const DashboardUpgrade = (props) => {
         />
       }
     >
-      <Text style={styles.text}>You have to pay</Text>
+      <Text style={styles.text}>{dashboardonboardingtext1}</Text>
       <Text style={styles.textPrice}>Rp 300.000,-</Text>
-      <Text style={styles.text}>
-        {`Enjoy all the features and perk\nafter you complete the payment.`}
-      </Text>
-      <Text style={styles.textInner}>
-        {`100% guaranteed support and\nupdate for the next 5 years.`}
-      </Text>
+      {dashboardonboardingtext2 ? (
+        <Text style={styles.text}>{dashboardonboardingtext2}</Text>
+      ) : null}
+      {dashboardonboardingtext3 ? (
+        <Text style={styles.textInner}>{dashboardonboardingtext3}</Text>
+      ) : (
+        dashboardonboardingtext3
+      )}
+
       <TouchableOpacity
         onPress={() => proceedJoin()}
         style={[
@@ -99,7 +108,7 @@ const DashboardUpgrade = (props) => {
             color={colors.daclen_light}
           />
         )}
-        <Text style={styles.textButton}>Bergabung Sekarang</Text>
+        <Text style={styles.textButton}>{dashboardonboardingbutton}</Text>
       </TouchableOpacity>
       {registerSnapToken === null ? null : (
         <TouchableOpacity

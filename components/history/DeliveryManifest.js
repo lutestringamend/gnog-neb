@@ -43,8 +43,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: -8,
     top: 38,
-    elevation: 6,
-    backgroundColor: "white",
+    zIndex: 6,
+    backgroundColor: "transparent",
   },
   verticalLine: {
     height: "100%",
