@@ -83,72 +83,83 @@ function FillAddress(props) {
   }, [addresses]);
 
   useEffect(() => {
-    //console.log("route params addressData", props.route.params?.addressData?.lat, props.route.params?.addressData?.long);
-    setAddress(
-      isNew
-        ? props.route.params?.addressData
-          ? props.route.params?.addressData
-          : AddressData
-        : isDefault
-        ? currentAddress === undefined || currentAddress === null
-          ? AddressData
-          : {
-              nama_lengkap:
-                currentAddress?.nama_depan +
-                " " +
-                currentAddress?.nama_belakang,
-              email: currentAddress?.email,
-              nomor_telp: currentAddress?.nomor_telp,
-              alamat: currentAddress?.alamat,
-              kode_pos: currentAddress?.kode_pos,
-              provinsi_id: currentAddress?.provinsi?.id
-                ? currentAddress?.provinsi?.id
-                : "",
-              kota_id: currentAddress?.kota?.id ? currentAddress?.kota?.id : "",
-              kecamatan_id: currentAddress?.kecamatan?.id
-                ? currentAddress?.kecamatan?.id
-                : "",
-              lat: currentAddress?.lat,
-              long: currentAddress?.long,
-              catatan: currentAddress?.catatan,
-              nama_depan: currentAddress?.nama_depan,
-              nama_belakang: currentAddress?.nama_belakang,
-            }
-        : props.route.params?.addressData
-        ? props.route.params?.addressData
-        : AddressData
-    );
-    setInputNames(
-      isNew
-        ? props.route.params?.addressData
-          ? {
-              provinsi: props.route.params?.addressData?.provinsi_name,
-              kota: props.route.params?.addressData?.kota_name,
-              kecamatan: props.route.params?.addressData?.kecamatan_name,
-            }
-          : AddressInputNamesData
-        : isDefault
-        ? currentAddress === undefined || currentAddress === null
-          ? AddressInputNamesData
-          : {
-              provinsi: currentAddress?.provinsi?.name
-                ? currentAddress?.provinsi?.name
-                : "",
-              kota: currentAddress?.kota?.name
-                ? currentAddress?.kota?.name
-                : "",
-              kecamatan: currentAddress?.kecamatan?.name
-                ? currentAddress?.kecamatan?.name
-                : "",
-            }
-        : props.route.params?.addressData
-        ? {
-            provinsi: props.route.params?.addressData?.provinsi_name,
-            kota: props.route.params?.addressData?.kota_name,
-            kecamatan: props.route.params?.addressData?.kecamatan_name,
-          }
-        : AddressInputNamesData
-    );
+    let newAddress = props.route.params?.addressData
+      ? props.route.params?.addressData
+      : AddressData;
+    let newInputNames = props.route.params?.addressData
+      ? {
+          provinsi: props.route.params?.addressData?.provinsi_name,
+          kota: props.route.params?.addressData?.kota_name,
+          kecamatan: props.route.params?.addressData?.kecamatan_name,
+        }
+      : AddressInputNamesData;
+    console.log("initial newAddress", newAddress);
+    if (isDefault) {
+      console.log("currentAddress", currentAddress);
+      console
+      if (
+        currentAddress === undefined ||
+        currentAddress === null ||
+        currentAddress?.alamat === undefined ||
+        currentAddress?.alamat === null ||
+        currentAddress?.alamat === "" ||
+        currentAddress?.provinsi === undefined ||
+        currentAddress?.provinsi === null ||
+        currentAddress?.provinsi?.id === "" ||
+        currentAddress?.kota === undefined ||
+        currentAddress?.kota === null ||
+        currentAddress?.kota?.id === "" ||
+        currentAddress?.alamat !== newAddress?.alamat ||
+        currentAddress?.kode_pos !== newAddress?.kode_pos ||
+        currentAddress?.provinsi !== newAddress?.provinsi ||
+        currentAddress?.kota !== newAddress?.kota ||
+        currentAddress?.kecamatan !== newAddress?.kecamatan
+      ) {
+        console.log("do not use currentAddress");
+        newAddress = {
+          ...newAddress,
+          nama_lengkap: currentUser?.detail_user?.nama_lengkap,
+          email: currentUser?.email,
+          nomor_telp: currentUser?.nomor_telp,
+          nama_depan: currentUser?.detail_user?.nama_depan,
+          nama_belakang: currentUser?.detail_user?.nama_belakang,
+        };
+      } else {
+        console.log("use currentAddress");
+        newAddress = {
+          nama_lengkap:
+            currentAddress?.nama_depan + " " + currentAddress?.nama_belakang,
+          email: currentAddress?.email,
+          nomor_telp: currentAddress?.nomor_telp,
+          alamat: currentAddress?.alamat,
+          kode_pos: currentAddress?.kode_pos,
+          provinsi_id: currentAddress?.provinsi?.id
+            ? currentAddress?.provinsi?.id
+            : "",
+          kota_id: currentAddress?.kota?.id ? currentAddress?.kota?.id : "",
+          kecamatan_id: currentAddress?.kecamatan?.id
+            ? currentAddress?.kecamatan?.id
+            : "",
+          lat: currentAddress?.lat,
+          long: currentAddress?.long,
+          catatan: currentAddress?.catatan,
+          nama_depan: currentAddress?.nama_depan,
+          nama_belakang: currentAddress?.nama_belakang,
+        };
+        newInputNames = {
+          provinsi: currentAddress?.provinsi?.name
+            ? currentAddress?.provinsi?.name
+            : "",
+          kota: currentAddress?.kota?.name ? currentAddress?.kota?.name : "",
+          kecamatan: currentAddress?.kecamatan?.name
+            ? currentAddress?.kecamatan?.name
+            : "",
+        };
+      }
+    }
+    setAddress(newAddress);
+    setInputNames(newInputNames);
+    console.log(newAddress, newInputNames);
   }, [props.route.params, currentAddress]);
 
   useEffect(() => {
@@ -186,6 +197,7 @@ function FillAddress(props) {
   }, [props.rajaongkir]);*/
 
   useEffect(() => {
+    //console.log("rajaongkir provinsi", props.rajaongkir?.provinsi);
     if (
       props.rajaongkir?.provinsi === undefined ||
       props.rajaongkir?.provinsi === null

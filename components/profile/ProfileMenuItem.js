@@ -23,7 +23,7 @@ const ProfileMenuItem = ({ text, textSecondary, icon, webKey, screen, thickness,
       navigation.navigate(screen, { webKey, text, url });
     } else {
       console.log('onItemClick')
-      onItemClick()
+      onItemClick();
     }
   };
 

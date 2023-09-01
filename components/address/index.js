@@ -278,7 +278,7 @@ export const processLocalesIntoAddressData = async (
 
 export const convertProvinsiNametoRajaOngkirName = (provinsi) => {
   let searchProvinsiName = provinsi.toLowerCase();
-  if (searchProvinsiName === "daerah khusus ibukota jakarta") {
+  if (searchProvinsiName === "daerah khusus ibukota jakarta" || searchProvinsiName === "jakarta") {
     searchProvinsiName = "dki jakarta";
   } else if (searchProvinsiName === "daerah istimewa yogyakarta") {
     searchProvinsiName = "di yogyakarta";

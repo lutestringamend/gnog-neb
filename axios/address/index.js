@@ -232,7 +232,7 @@ export function updateUserAddressData(currentUser, address, token) {
       jenis_kelamin: currentUser?.detail_user?.jenis_kelamin,
       tanggal_lahir: currentUser?.detail_user?.tanggal_lahir,
       nomor_rekening: currentUser?.detail_user?.nomor_rekening,
-      bank: currentUser?.detail_user?.bank,
+      bank_id: currentUser?.detail_user?.bank?.id,
       cabang_bank: currentUser?.detail_user?.cabang_bank,
     };
 

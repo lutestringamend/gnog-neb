@@ -17,6 +17,31 @@ export function clearProfileData() {
   };
 }
 
+export function convertDisplayLocaleDatetoDateObject(dateString) {
+  try {
+    const items = dateString.split("-");
+    return new Date(
+      parseInt(items[0]),
+      parseInt(items[1]) - 1,
+      parseInt(items[2])
+    );
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
+export function convertDateObjecttoDisplayLocaleDate(date) {
+  try {
+    return `${date.getFullYear().toString()}-${(
+      date.getMonth() + 1
+    ).toString()}-${date.getDate().toString()}`;
+  } catch (e) {
+    console.error(e);
+    return "";
+  }
+}
+
 export function getPrivacyPolicy() {
   return (dispatch) => {
     console.log("getPrivacyPolicy");

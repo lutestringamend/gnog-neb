@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
-  Platform,
 } from "react-native";
 import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -27,12 +26,13 @@ import {
   getCurrentUser,
   updateReduxCurrentUserData,
 } from "../../axios/user";
-import { clearMediaData } from "../media";
+import { clearMediaData, setMediaProfilePicture } from "../media";
 import UserData from "./UserData";
 import Separator from "./Separator";
 import BSTextInput from "../bottomsheets/BSTextInput";
 import BSContainer from "../bottomsheets/BSContainer";
 import BSPopup from "../bottomsheets/BSPopup";
+import BSDatePicker from "../bottomsheets/BSDatePicker";
 import {
   selectbank,
   privacypolicy,
@@ -46,19 +46,23 @@ import { intiialPermissions, checkMediaPermissions } from "../media";
 import BSMedia from "../bottomsheets/BSMedia";
 import { setObjectAsync } from "../asyncstorage";
 import { ASYNC_USER_CURRENTUSER_KEY } from "../asyncstorage/constants";
+import { convertDateObjecttoDisplayLocaleDate } from "../../axios/profile";
+
+const defaultUploadingPhoto = {
+  pending: false,
+  uploading: false,
+};
 
 function EditProfile(props) {
   const [user, setUser] = useState(UserData);
   const [loading, setLoading] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-  const [uploadingPhoto, setUploadingPhoto] = useState({
-    pending: false,
-    uploading: false,
-  });
+  const [uploadingPhoto, setUploadingPhoto] = useState(defaultUploadingPhoto);
   const [bottomList, setBottomList] = useState([]);
   const [genderArray, setGenderArray] = useState(genderchoices);
   const [bankName, setBankName] = useState("");
+  const [displayDatePicker, setDisplayDatePicker] = useState(false);
 
   const { token, currentUser, currentAddress, userUpdate } = props;
   const navigation = useNavigation();
@@ -190,7 +194,7 @@ function EditProfile(props) {
         }
       } else {
         setSuccess(false);
-        let errorHeader = "Gagal update data user\n";
+        let errorHeader = "Gagal update data user.\n";
         switch (userUpdate?.session) {
           case "photoError":
             errorHeader = "Gagal upload foto\n";
@@ -210,6 +214,8 @@ function EditProfile(props) {
     } else if (userUpdate?.session === "photoError") {
       setSuccess(false);
       setError("Error mengambil foto baru\n" + userUpdate?.message);
+      setUploadingPhoto(defaultUploadingPhoto);
+      props.setMediaProfilePicture(null, currentUser?.id);
     }
   }, [userUpdate]);
 
@@ -289,6 +295,7 @@ function EditProfile(props) {
         user?.nomor_rekening === "" ||
         user?.nomor_rekening?.length < 6)
     ) {
+      console.log("user", user);
       setError("Nama Bank dan Nomor Rekening harus diisi dengan benar");
     } else if (!loading && token !== null && currentUser?.id !== undefined) {
       setLoading(true);
@@ -446,7 +453,9 @@ function EditProfile(props) {
             value={user?.nama_depan}
             style={styles.textInput}
             onChangeText={(nama_depan) => setUser({ ...user, nama_depan })}
-            editable={currentUser?.bank_set === undefined || !currentUser?.bank_set}
+            editable={
+              currentUser?.bank_set === undefined || !currentUser?.bank_set
+            }
           />
           <Text style={styles.text}>Nama belakang (opsional)</Text>
           <TextInput
@@ -455,7 +464,9 @@ function EditProfile(props) {
             onChangeText={(nama_belakang) =>
               setUser({ ...user, nama_belakang })
             }
-            editable={currentUser?.bank_set === undefined || !currentUser?.bank_set}
+            editable={
+              currentUser?.bank_set === undefined || !currentUser?.bank_set
+            }
           />
 
           <Text style={styles.text}>Jenis kelamin (opsional)</Text>
@@ -467,14 +478,24 @@ function EditProfile(props) {
           />
 
           <Text style={styles.textCompulsory}>Tanggal Lahir*</Text>
-          <TextInput
-            value={user?.tanggal_lahir}
-            style={styles.textInput}
-            placeholder={birthdateplaceholder}
-            onChangeText={(tanggal_lahir) =>
-              setUser({ ...user, tanggal_lahir })
-            }
-          />
+          {Platform.OS === "web" ? (
+            <TextInput
+              value={user?.tanggal_lahir ? user?.tanggal_lahir : ""}
+              style={styles.textInput}
+              placeholder={birthdateplaceholder}
+              onChangeText={(tanggal_lahir) =>
+                setUser({ ...user, tanggal_lahir })
+              }
+            />
+          ) : (
+            <BSTextInput
+              value={user?.tanggal_lahir ? user?.tanggal_lahir : ""}
+              onPress={() => openDatePicker()}
+              style={styles.textInput}
+              placeholder={birthdateplaceholder}
+              placeholderTextColor={colors.feed_desc_grey}
+            />
+          )}
 
           <Separator thickness={2} />
 
@@ -524,7 +545,14 @@ function EditProfile(props) {
                   : ""
                 : bankName
             }
-            style={styles.textInput}
+            style={[
+              styles.textInput,
+              {
+                color: currentUser?.bank_set
+                  ? colors.daclen_blue
+                  : colors.daclen_black,
+              },
+            ]}
           />
 
           <Text style={styles.text}>Cabang Bank</Text>
@@ -625,6 +653,18 @@ function EditProfile(props) {
             onPress={() => openFillAddress()}
           />
         </RBSheet>
+        {displayDatePicker ? (
+          <BSDatePicker
+            currentDate={
+              user?.tanggal_lahir
+                ? convertDateObjecttoDisplayLocaleDate(user?.tanggal_lahir)
+                : new Date()
+            }
+            onPress={(tanggal_lahir) => setUser({ ...user, tanggal_lahir })}
+            onError={(e) => setError(e.toString())}
+            closeThis={() => setDisplayDatePicker(false)}
+          />
+        ) : null}
       </View>
     );
   } catch (e) {
@@ -664,7 +704,7 @@ const styles = StyleSheet.create({
     width: 202,
     height: 202,
     alignSelf: "center",
-    elevation: 10,
+    zIndex: 10,
     padding: 4,
     backgroundColor: "transparent",
     borderRadius: 101,
@@ -685,7 +725,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     end: 10,
     bottom: 10,
-    elevation: 12,
+    zIndex: 12,
     backgroundColor: colors.daclen_orange,
     width: 40,
     height: 40,
@@ -744,7 +784,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginBottom: 20,
     borderRadius: 6,
-    elevation: 3,
+    zIndex: 3,
     backgroundColor: colors.daclen_blue,
   },
   textError: {
@@ -787,6 +827,7 @@ const mapDispatchProps = (dispatch) =>
       clearMediaData,
       getCurrentUser,
       updateReduxCurrentUserData,
+      setMediaProfilePicture,
     },
     dispatch
   );

@@ -54,7 +54,6 @@ export const userLogOut = async (props, username) => {
     await userLogout(username);
     props.setNewToken(null, null);
     props.clearUserData(true);
-
   } catch (e) {
     sentryLog(e);
   }
@@ -68,7 +67,11 @@ function Profile(props) {
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (token === null || currentUser === null || currentUser?.id === undefined) {
+    if (
+      token === null ||
+      currentUser === null ||
+      currentUser?.id === undefined
+    ) {
       if (loggingOut) {
         rbSheet.current.close();
         setLoggingOut(false);
@@ -76,11 +79,35 @@ function Profile(props) {
       }
     }
   }, [currentUser, token]);
-  
+
+  const openAddress = () => {
+    //console.log("detail_user", currentUser?.detail_user);
+    if (
+      currentUser?.detail_user === undefined ||
+      currentUser?.detail_user?.alamat === undefined ||
+      currentUser?.detail_user?.alamat === null ||
+      currentUser?.detail_user?.alamat === "" ||
+      currentUser?.detail_user?.provinsi === undefined ||
+      currentUser?.detail_user?.provinsi === null ||
+      currentUser?.detail_user?.provinsi === "" ||
+      currentUser?.detail_user?.kota === undefined ||
+      currentUser?.detail_user?.kota === null ||
+      currentUser?.detail_user?.kota === ""
+    ) {
+      navigation.navigate("LocationPin", {
+        isNew: false,
+        isDefault: true,
+        savedRegion: null,
+      });
+    } else {
+      navigation.navigate("PickAddress");
+    }
+  };
+
   const proceedLogout = () => {
     setLoggingOut(true);
     userLogOut(props, currentUser?.name);
-  }
+  };
 
   /*
         <ProfileMenuItem
@@ -99,20 +126,20 @@ function Profile(props) {
         style={styles.scrollView}
         contentContainerStyle={styles.containerVertical}
       >
-        <Header
-          token={token}
-          currentUser={currentUser}
-          thickness={3}
-        />
+        <Header token={token} currentUser={currentUser} thickness={3} />
 
         {currentUser === null || currentUser?.id === undefined ? null : (
           <View>
-            <ProfileMenuItem
-              text={addressmenu}
-              icon={addressmenuicon}
-              screen="Address"
-              thickness={2}
-            />
+            {currentUser?.bank_set === undefined || !currentUser?.bank_set ? null : (
+              <ProfileMenuItem
+                text={addressmenu}
+                icon={addressmenuicon}
+                screen={null}
+                onItemClick={() => openAddress()}
+                thickness={2}
+              />
+            )}
+
             <ProfileMenuItem
               text={changepassword}
               icon={changepasswordicon}

@@ -526,7 +526,7 @@ export function updateUserPhoto(id, token, uri) {
                 type: USER_UPDATE_STATE_CHANGE,
                 data: {
                   session: "photoError",
-                  message: JSON.stringify(data?.errors?.foto),
+                  message: id === 8054 ? JSON.stringify(data?.errors?.foto) : "",
                 },
               });
             } else {
@@ -534,7 +534,7 @@ export function updateUserPhoto(id, token, uri) {
                 type: USER_UPDATE_STATE_CHANGE,
                 data: {
                   session: "photoError",
-                  message: JSON.stringify(data?.errors),
+                  message: id === 8054 ? JSON.stringify(data?.errors) : "",
                 },
               });
             }
@@ -543,7 +543,7 @@ export function updateUserPhoto(id, token, uri) {
               type: USER_UPDATE_STATE_CHANGE,
               data: {
                 session: "photoError",
-                message: JSON.stringify(data),
+                message: id === 8054 ? JSON.stringify(data) : "",
               },
             });
           }
@@ -556,14 +556,14 @@ export function updateUserPhoto(id, token, uri) {
             type: USER_UPDATE_STATE_CHANGE,
             data: {
               session: "photoError",
-              message: JSON.stringify({
+              message: id === 8054 ? JSON.stringify({
                 MAINMESSAGE: error.message,
                 CONFIG: JSON.stringify(config),
                 METHOD: method,
                 URI: uri,
                 TYPE: type,
                 FORMDATA: JSON.stringify(formData),
-              }),
+              }) : error?.message,
             },
           });
         });
@@ -637,10 +637,25 @@ export function updateUserData(
                 },
               });
             } else {
-              dispatch({
-                type: USER_UPDATE_STATE_CHANGE,
-                data: { session: "", message: JSON.stringify(data?.errors) },
-              });
+              try {
+                let message = "";
+                let errorKeys = Object.keys(data?.errors);
+                for (let key of errorKeys) {
+                  if (data?.errors[key]?.length > 0) {
+                    message = `${message ? `${message}\n` : ""}${data?.errors[key][0]}`;
+                  }
+                }
+                dispatch({
+                  type: USER_UPDATE_STATE_CHANGE,
+                  data: { session: "", message },
+                });
+              } catch (e) {
+                console.error(e);
+                dispatch({
+                  type: USER_UPDATE_STATE_CHANGE,
+                  data: { session: "", message: JSON.stringify(data?.errors) },
+                });
+              }
             }
           } else {
             dispatch({ type: USER_UPDATE_STATE_CHANGE, data: data });
@@ -875,7 +890,7 @@ export function login(email, password, resetPIN) {
         console.log("login response data", response?.data);
         const token = response?.data?.token;
         if (token === undefined || token === null || token === "") {
-          const data =
+          const data = response?.data?.message ? response?.data?.message : 
             "Username/password salah. Mohon periksa kembali data yang Anda masukkan.";
           dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data });
           setObjectAsync(ASYNC_USER_KEY, null);

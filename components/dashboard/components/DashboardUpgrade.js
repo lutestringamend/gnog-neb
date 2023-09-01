@@ -77,11 +77,11 @@ const DashboardUpgrade = (props) => {
       {dashboardonboardingtext2 ? (
         <Text style={styles.text}>{dashboardonboardingtext2}</Text>
       ) : null}
-      {dashboardonboardingtext3 ? (
-        <Text style={styles.textInner}>{dashboardonboardingtext3}</Text>
-      ) : (
-        dashboardonboardingtext3
-      )}
+      <Text style={styles.textInner}>
+        {registerSnapToken?.message_pembayaran
+          ? registerSnapToken?.message_pembayaran
+          : dashboardonboardingtext3}
+      </Text>
 
       <TouchableOpacity
         onPress={() => proceedJoin()}
