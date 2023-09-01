@@ -20,6 +20,7 @@ import { colors } from "../../styles/base";
 import {
   checkIfCoordIsStringThenParse,
   getAddressText,
+  getKecamatanFromPlacesData,
   getLocales,
   initializeLocation,
   processLocalesIntoAddressData,
@@ -57,7 +58,12 @@ const LocationPin = (props) => {
   const addressData = props.route.params?.addressData
     ? props.route.params?.addressData
     : AddressData;
-  const [kecamatan, setKecamatan] = useState(addressData?.kecamatan_name);
+  const [kecamatan, setKecamatan] = useState({
+    data: addressData?.kecamatan_name,
+    detail: addressData?.kecamatan_name,
+    dataAlamat: null,
+    detailAlamat: null,
+  });
   const rbInput = useRef();
   const navigation = useNavigation();
 
@@ -240,6 +246,12 @@ const LocationPin = (props) => {
       //ToastAndroid.show(JSON.stringify(locale), ToastAndroid.LONG);
     }, [locale]);
 
+    //debug
+    useEffect(() => {
+      //Platform.OS === "android" && ToastAndroid.show(JSON.stringify(kecamatan), ToastAndroid.LONG);
+      console.log("kecamatanData", kecamatan);
+    }, [kecamatan]);
+
     function onRegionChange(e) {
       //setRegion(e);
       if (regionFromPlaces) {
@@ -281,7 +293,8 @@ const LocationPin = (props) => {
         locale?.subregion,
         addressText,
         regionText,
-        locale?.postalCode
+        locale?.postalCode,
+        kecamatan
       );
       let newAddressData = {
         ...addressData,
@@ -298,8 +311,8 @@ const LocationPin = (props) => {
     };
 
     function setRegionFromPlacesInput(data, detail) {
-      //console.log("placesData", data);
-      //console.log("placesDetail", detail);
+      /*console.log("placesData", data);
+      console.log("placesDetail", detail);*/
       try {
         if (
           data === undefined ||
@@ -357,6 +370,7 @@ const LocationPin = (props) => {
               : newAddressText
           );
         }
+        setKecamatan(getKecamatanFromPlacesData(data, detail));
       } catch (e) {
         console.error(e);
         sentryLog(e);
@@ -459,27 +473,27 @@ const LocationPin = (props) => {
         {loading ? null : (
           <View style={styles.containerInfo}>
             <View style={styles.containerBottom}>
-                <Text style={styles.textFullAddress}>
-                  {moving
-                    ? "Pindahkan pin..."
-                    : addressText
-                    ? addressText
-                    : "Lokasi tidak terdeteksi"}
+              <Text style={styles.textFullAddress}>
+                {moving
+                  ? "Pindahkan pin..."
+                  : addressText
+                  ? addressText
+                  : "Lokasi tidak terdeteksi"}
+              </Text>
+              {moving ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.daclen_light}
+                  style={styles.spinner}
+                />
+              ) : (
+                <Text style={styles.textRegion}>
+                  {regionText
+                    ? regionText
+                    : "Mohon pindahkan pin ke lokasi lain"}
                 </Text>
-                {moving ? (
-                  <ActivityIndicator
-                    size="small"
-                    color={colors.daclen_light}
-                    style={styles.spinner}
-                  />
-                ) : (
-                  <Text style={styles.textRegion}>
-                    {regionText
-                      ? regionText
-                      : "Mohon pindahkan pin ke lokasi lain"}
-                  </Text>
-                )}
-              </View>
+              )}
+            </View>
 
             <TouchableOpacity
               onPress={() => pickPin()}

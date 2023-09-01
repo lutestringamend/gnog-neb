@@ -8,8 +8,54 @@ import {
   locationundefined,
 } from "./constants";
 import { getObjectAsync } from "../asyncstorage";
-import { ASYNC_RAJAONGKIR_KOTA_KEY, ASYNC_RAJAONGKIR_PROVINSI_KEY } from "../asyncstorage/constants";
+import {
+  ASYNC_RAJAONGKIR_KECAMATAN_KEY,
+  ASYNC_RAJAONGKIR_KOTA_KEY,
+  ASYNC_RAJAONGKIR_PROVINSI_KEY,
+} from "../asyncstorage/constants";
 import { fetchRajaOngkir } from "../../axios/address";
+
+export const getKecamatanFromPlacesData = (data, detail) => {
+  let result = {
+    data: null,
+    detail: null,
+    dataAlamat: null,
+    detailAlamat: null,
+  };
+  try {
+    if (detail?.address_components?.length > 0) {
+      let isFound = false;
+      let detailAlamat = null;
+      for (let ad of detail?.address_components) {
+        if (ad?.long_name?.toLowerCase().includes("kecamatan")) {
+          result["detail"] = ad?.long_name.substr(10, ad?.long_name?.length);
+          isFound = true;
+        } else if (!isFound) {
+          detailAlamat = `${detailAlamat ? `${detailAlamat} ` : ""}${
+            ad?.long_name
+          }`;
+        }
+      }
+      result["detailAlamat"] = detailAlamat;
+    }
+    if (data?.terms?.length > 3) {
+      let dataAlamat = null;
+      for (let i = 0; i < data?.terms?.length - 3; i++) {
+        if (i === data?.terms?.length - 4) {
+          result["data"] = data?.terms[i]?.value.toString();
+        } else {
+          dataAlamat = `${dataAlamat ? `${dataAlamat} ` : ""}${data?.terms[
+            i
+          ]?.value.toString()}`;
+        }
+      }
+      result["dataAlamat"] = dataAlamat;
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  return result;
+};
 
 export const processLocalesIntoAddressData = async (
   props,
@@ -20,7 +66,8 @@ export const processLocalesIntoAddressData = async (
   kota,
   addressText,
   regionText,
-  postalCode
+  postalCode,
+  kecamatanData
 ) => {
   let result = {
     alamat: `${addressText ? addressText : ""}`,
@@ -36,21 +83,41 @@ export const processLocalesIntoAddressData = async (
   };
 
   try {
-    if (props === undefined || props === null || provinsi === undefined || provinsi === null || provinsi === "") {
+    if (
+      props === undefined ||
+      props === null ||
+      provinsi === undefined ||
+      provinsi === null ||
+      provinsi === ""
+    ) {
       return result;
     }
 
     let storageProvinsi = await getObjectAsync(ASYNC_RAJAONGKIR_PROVINSI_KEY);
-    if (storageProvinsi === undefined || storageProvinsi === null || storageProvinsi?.length === undefined) {
+    if (
+      storageProvinsi === undefined ||
+      storageProvinsi === null ||
+      storageProvinsi?.length === undefined
+    ) {
       storageProvinsi = await fetchRajaOngkir(token, "provinsi");
-      if (storageProvinsi === undefined || storageProvinsi === null || storageProvinsi?.length === undefined) {
+      if (
+        storageProvinsi === undefined ||
+        storageProvinsi === null ||
+        storageProvinsi?.length === undefined
+      ) {
         return result;
       }
     }
 
     let searchProvinsiName = convertProvinsiNametoRajaOngkirName(provinsi);
-    const provinsiFind = storageProvinsi.find(({ name }) => name.toLowerCase() === searchProvinsiName);
-    if (provinsiFind === undefined || provinsiFind === null || provinsiFind?.id === undefined) {
+    const provinsiFind = storageProvinsi.find(
+      ({ name }) => name.toLowerCase() === searchProvinsiName
+    );
+    if (
+      provinsiFind === undefined ||
+      provinsiFind === null ||
+      provinsiFind?.id === undefined
+    ) {
       return result;
     }
     result["provinsi_id"] = provinsiFind?.id;
@@ -60,7 +127,11 @@ export const processLocalesIntoAddressData = async (
 
     let storageKota = await getObjectAsync(ASYNC_RAJAONGKIR_KOTA_KEY);
     let kotaArray = [];
-    if (storageKota === undefined || storageKota === null || storageKota?.length === undefined) {
+    if (
+      storageKota === undefined ||
+      storageKota === null ||
+      storageKota?.length === undefined
+    ) {
       kotaArray = await fetchRajaOngkir(
         token,
         "kota",
@@ -68,9 +139,20 @@ export const processLocalesIntoAddressData = async (
         provinsiFind?.id
       );
     } else {
-      let searchStorageKota = storageKota.find(({ provinsi_id }) => provinsi_id === provinsiFind?.id.toString());
-      console.log("storageKota", storageKota, provinsiFind?.id, searchStorageKota);
-      if (searchStorageKota === undefined || searchStorageKota === null || searchStorageKota?.data === undefined) {
+      let searchStorageKota = storageKota.find(
+        ({ provinsi_id }) => provinsi_id === provinsiFind?.id.toString()
+      );
+      console.log(
+        "storageKota",
+        storageKota,
+        provinsiFind?.id,
+        searchStorageKota
+      );
+      if (
+        searchStorageKota === undefined ||
+        searchStorageKota === null ||
+        searchStorageKota?.data === undefined
+      ) {
         kotaArray = await fetchRajaOngkir(
           token,
           "kota",
@@ -82,18 +164,112 @@ export const processLocalesIntoAddressData = async (
       }
     }
 
-    if (kotaArray === undefined || kotaArray === null || kotaArray?.length === undefined) {
+    if (
+      kotaArray === undefined ||
+      kotaArray === null ||
+      kotaArray?.length === undefined
+    ) {
       return result;
     }
     props.updateReduxRajaOngkirWithKey("kota", kotaArray);
     let searchKotaName = convertKotaNametoRajaOngkirName(kota);
-    const kotaFind = kotaArray.find(({ name }) => name.toLowerCase() === searchKotaName);
-    if (kotaFind === undefined || kotaFind === null || kotaFind?.id === undefined) {
+    const kotaFind = kotaArray.find(
+      ({ name }) => name.toLowerCase() === searchKotaName
+    );
+    if (
+      kotaFind === undefined ||
+      kotaFind === null ||
+      kotaFind?.id === undefined
+    ) {
       return result;
     }
     result["kota_id"] = kotaFind?.id;
     result["kota_name"] = kotaFind?.name;
 
+    console.log("processing kecamatanData", kecamatanData);
+    if (
+      kecamatanData === null ||
+      kecamatanData?.data === undefined ||
+      kecamatanData?.detail === undefined ||
+      (kecamatanData?.data === null && kecamatanData?.data === null)
+    ) {
+      return result;
+    }
+    let searchKecamatanName = kecamatanData?.detail
+      ? kecamatanData?.detail.toLowerCase()
+      : kecamatanData?.data.toLowerCase();
+
+    let storageKecamatan = await getObjectAsync(ASYNC_RAJAONGKIR_KECAMATAN_KEY);
+    let kecamatanArray = [];
+    if (
+      storageKecamatan === undefined ||
+      storageKecamatan === null ||
+      storageKecamatan?.length === undefined
+    ) {
+      kecamatanArray = await fetchRajaOngkir(
+        token,
+        "kecamatan",
+        "kota_id",
+        kotaFind?.id
+      );
+    } else {
+      let searchStorageKecamatan = storageKecamatan.find(
+        ({ kota_id }) => kota_id === kotaFind?.id.toString()
+      );
+      console.log(
+        "storageKecamatan",
+        storageKecamatan,
+        kotaFind?.id,
+        searchStorageKecamatan
+      );
+      if (
+        searchStorageKecamatan === undefined ||
+        searchStorageKecamatan === null ||
+        searchStorageKecamatan?.data === undefined
+      ) {
+        kecamatanArray = await fetchRajaOngkir(
+          token,
+          "kecamatan",
+          "kota_id",
+          kotaFind?.id
+        );
+      } else {
+        kecamatanArray = searchStorageKecamatan?.data;
+      }
+    }
+
+    if (
+      kecamatanArray === undefined ||
+      kecamatanArray === null ||
+      kecamatanArray?.length === undefined
+    ) {
+      return result;
+    }
+    props.updateReduxRajaOngkirWithKey("kecamatan", kecamatanArray);
+    const kecamatanFind = kecamatanArray.find(
+      ({ name }) => name.toLowerCase() === searchKecamatanName
+    );
+    if (
+      kecamatanFind === undefined ||
+      kecamatanFind === null ||
+      kecamatanFind?.id === undefined
+    ) {
+      return result;
+    }
+    result["kecamatan_id"] = kecamatanFind?.id;
+    result["kecamatan_name"] = kecamatanFind?.name;
+
+    if (
+      kecamatanData?.dataAlamat === null &&
+      kecamatanData?.detailAlamat === null
+    ) {
+      return result;
+    }
+    result["alamat"] = kecamatanData?.detailAlamat
+      ? kecamatanData?.detailAlamat
+      : kecamatanData?.dataAlamat
+      ? kecamatanData?.dataAlamat
+      : addressText;
   } catch (e) {
     console.error(e);
   }
@@ -120,7 +296,7 @@ export const convertProvinsiNametoRajaOngkirName = (provinsi) => {
     searchProvinsiName = "jawa timur";
   }
   return searchProvinsiName;
-}
+};
 
 export const convertKotaNametoRajaOngkirName = (kota) => {
   let searchKotaName = kota.toLowerCase();
@@ -128,7 +304,7 @@ export const convertKotaNametoRajaOngkirName = (kota) => {
     searchKotaName = "kota bandung";
   }
   return searchKotaName;
-}
+};
 
 export const requestLocationForegroundPermission = async () => {
   try {

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Daclen",
     "slug": "daclen",
-    "version": "1.2.2",
+    "version": "1.2.3",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
     "userInterfaceStyle": "light",
@@ -65,7 +65,7 @@
       ],
       "softwareKeyboardLayoutMode": "resize",
       "userInterfaceStyle": "light",
-      "versionCode": 65
+      "versionCode": 66
     },
     "web": {
       "favicon": "./assets/favicon.png"
