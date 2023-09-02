@@ -31,7 +31,7 @@ import UserData from "./UserData";
 import Separator from "./Separator";
 import BSTextInput from "../bottomsheets/BSTextInput";
 import BSContainer from "../bottomsheets/BSContainer";
-import BSPopup from "../bottomsheets/BSPopup";
+//import BSPopup from "../bottomsheets/BSPopup";
 import BSDatePicker from "../bottomsheets/BSDatePicker";
 import {
   selectbank,
@@ -46,7 +46,7 @@ import { intiialPermissions, checkMediaPermissions } from "../media";
 import BSMedia from "../bottomsheets/BSMedia";
 import { setObjectAsync } from "../asyncstorage";
 import { ASYNC_USER_CURRENTUSER_KEY } from "../asyncstorage/constants";
-import { convertDateObjecttoDisplayLocaleDate } from "../../axios/profile";
+import { convertDateObjecttoDisplayLocaleDate, convertDisplayLocaleDatetoDateObject } from "../../axios/profile";
 
 const defaultUploadingPhoto = {
   pending: false,
@@ -68,7 +68,7 @@ function EditProfile(props) {
   const navigation = useNavigation();
   const rbSheet = useRef();
   const rbSheetMedia = useRef();
-  const rbSheetAddress = useRef();
+  //const rbSheetAddress = useRef();
 
   const [permissions, setPermissions] = useState(intiialPermissions);
   const exitRightAway = props.route.params?.exitRightAway
@@ -202,9 +202,6 @@ function EditProfile(props) {
           case "photoUri":
             errorHeader = "URI foto\n";
             break;
-          case "addressIncomplete":
-            rbSheetAddress.current.open();
-            break;
           default:
             break;
         }
@@ -217,6 +214,12 @@ function EditProfile(props) {
       setUploadingPhoto(defaultUploadingPhoto);
       props.setMediaProfilePicture(null, currentUser?.id);
     }
+
+    /*
+              case "addressIncomplete":
+            rbSheetAddress.current.open();
+            break;
+    */
   }, [userUpdate]);
 
   useEffect(() => {
@@ -330,13 +333,17 @@ function EditProfile(props) {
     );
   };
 
-  function openFillAddress() {
+  /*function openFillAddress() {
     rbSheetAddress.current.close();
     navigation.navigate("LocationPin", {
       isNew: true,
       isDefault: true,
       savedRegion: null,
     });
+  }*/
+
+  function openDatePicker() {
+    setDisplayDatePicker(true);
   }
 
   try {
@@ -640,24 +647,11 @@ function EditProfile(props) {
             onPress={(item) => getBSValue(item)}
           />
         </RBSheet>
-        <RBSheet ref={rbSheetAddress} openDuration={250} height={350}>
-          <BSPopup
-            title="Alamat Pengiriman Kosong"
-            text="Anda harus mengisi alamat pengiriman di akun ini sebelum Anda bisa update profil Anda"
-            buttonPositive="Isi Alamat"
-            buttonPositiveColor={colors.daclen_blue}
-            buttonNegative="Tutup"
-            buttonNegativeColor={colors.daclen_gray}
-            icon="truck-delivery"
-            closeThis={() => rbSheetAddress.current.close()}
-            onPress={() => openFillAddress()}
-          />
-        </RBSheet>
         {displayDatePicker ? (
           <BSDatePicker
             currentDate={
               user?.tanggal_lahir
-                ? convertDateObjecttoDisplayLocaleDate(user?.tanggal_lahir)
+                ? convertDisplayLocaleDatetoDateObject(user?.tanggal_lahir)
                 : new Date()
             }
             onPress={(tanggal_lahir) => setUser({ ...user, tanggal_lahir })}
@@ -680,6 +674,22 @@ function EditProfile(props) {
     );
   }
 }
+
+/*
+        <RBSheet ref={rbSheetAddress} openDuration={250} height={350}>
+          <BSPopup
+            title="Alamat Pengiriman Kosong"
+            text="Anda harus mengisi alamat pengiriman di akun ini sebelum Anda bisa update profil Anda"
+            buttonPositive="Isi Alamat"
+            buttonPositiveColor={colors.daclen_blue}
+            buttonNegative="Tutup"
+            buttonNegativeColor={colors.daclen_gray}
+            icon="truck-delivery"
+            closeThis={() => rbSheetAddress.current.close()}
+            onPress={() => openFillAddress()}
+          />
+        </RBSheet>
+*/
 
 const styles = StyleSheet.create({
   container: {

@@ -23,8 +23,7 @@ export function getBlog(pageNumber) {
       getblog +
       "?page=" +
       (parseInt(pageNumber) > 0 ? pageNumber.toString() : "1");
-
-    console.log("getBlog " + url);
+    console.log("getBlog", url);
 
     Axios.get(url)
       .then((response) => {

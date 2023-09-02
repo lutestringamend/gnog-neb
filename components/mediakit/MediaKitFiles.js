@@ -46,7 +46,7 @@ import {
   ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY,
   ASYNC_WATERMARK_PHOTOS_PDF_KEY,
 } from "../asyncstorage/constants";
-import Header from "../DashboardHeader";
+import Header from "./Header";
 import BSPopup from "../bottomsheets/BSPopup";
 import { WatermarkData } from "./constants";
 
@@ -141,6 +141,8 @@ function MediaKitFiles(props) {
       } else {
         if (loading) {
           changingWatermarkData();
+        } else {
+          setTempWatermarkData(watermarkData);
         }
         console.log("redux WatermarkData", watermarkData);
       }
@@ -221,7 +223,7 @@ function MediaKitFiles(props) {
     const refreshPhotos = () => {
       setPhotoLoading(true);
       props.getMediaKitPhotos(token);
-    }
+    };
 
     function closeBS() {}
 
@@ -253,10 +255,7 @@ function MediaKitFiles(props) {
 
     return (
       <View style={styles.container}>
-        <Header
-          settingText="SETTING WATERMARK"
-          onSettingPress={() => rbSheet.current.open()}
-        />
+        <Header onSettingPress={() => rbSheet.current.open()} />
         <View style={styles.tabView}>
           <HistoryTabItem
             activeTab={activeTab}

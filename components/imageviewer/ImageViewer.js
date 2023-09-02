@@ -203,7 +203,7 @@ const ImageViewer = (props) => {
       if (currentUser?.id === 8054) {
         /*setSuccess(true);
         setError(`html\n${html}`);*/
-        console.log("pdf html", html);
+        //console.log("pdf html", html);
       }
       const result = await Print.printToFileAsync({
         width: resizedImgWidth,

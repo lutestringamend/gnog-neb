@@ -33,12 +33,25 @@ export function convertDisplayLocaleDatetoDateObject(dateString) {
 
 export function convertDateObjecttoDisplayLocaleDate(date) {
   try {
-    return `${date.getFullYear().toString()}-${(
+    return `${addZero(date.getFullYear())}-${addZero((
       date.getMonth() + 1
-    ).toString()}-${date.getDate().toString()}`;
+    ))}-${addZero(date.getDate())}`;
   } catch (e) {
     console.error(e);
     return "";
+  }
+}
+
+export function addZero(n) {
+  try {
+    if (parseInt(n) < 10) {
+      return `0${n.toString()}`;
+    } else {
+      return n.toString();
+    }
+  } catch (e) {
+    console.error(e);
+    return n.toString();
   }
 }
 

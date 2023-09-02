@@ -47,14 +47,14 @@ function BlogFeed(props) {
       setLoading(true);
       props.getBlog(1);
     } else if (pageNumber < finalblognumber) {
-      setPaginationLoading(true);
       props.getBlog(pageNumber + 1);
     }
   }
 
   function onEndReached() {
-    if (!onEndReachedCalledDuringMomentum) {
+    if (!onEndReachedCalledDuringMomentum && !paginationLoading) {
       console.log("onEndReached");
+      setPaginationLoading(true);
       setEndReachedCalledDuringMomentum(true);
       loadData(false);
     }
@@ -120,12 +120,14 @@ const styles = StyleSheet.create({
   containerFlatlist: {
     flex: 1,
     width: "100%",
+    backgroundColor: "transparent",
   },
   activityControl: {
     alignSelf: "center",
     position: "absolute",
     bottom: 32,
     elevation: 10,
+    zIndex: 20,
   },
 });
 

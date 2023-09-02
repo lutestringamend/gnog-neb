@@ -17,7 +17,11 @@ import {
   HISTORY_DELIVERY_STATUS_STATE_CHANGE,
   HISTORY_DASHBOARD_STATE_CHANGE,
   HISTORY_CLEAR_DATA,
-  USER_CHECKOUT_STATE_CHANGE
+  USER_CHECKOUT_STATE_CHANGE,
+  HISTORY_CHECKOUT_PAGE_NUMBER_STATE_CHANGE,
+  HISTORY_DELIVERY_PAGE_NUMBER_STATE_CHANGE,
+  HISTORY_CHECKOUTS_INCREMENT_CHANGE,
+  HISTORY_DELIVERIES_INCREMENT_CHANGE,
 } from "../../redux/constants";
 
 export function clearHistoryData() {
@@ -38,6 +42,20 @@ export function clearDeliveryStatus() {
   return (dispatch) => {
     console.log("clearDeliveryStatus");
     dispatch({ type: HISTORY_DELIVERY_STATUS_STATE_CHANGE, data: null });
+  };
+}
+
+export function updateReduxHistoryCheckoutsPageNumber(data) {
+  return (dispatch) => {
+    console.log("updateReduxHistoryCheckoutsPageNumber", data);
+    dispatch({ type: HISTORY_CHECKOUT_PAGE_NUMBER_STATE_CHANGE, data });
+  };
+}
+
+export function updateReduxHistoryDeliveriesPageNumber(data) {
+  return (dispatch) => {
+    console.log("updateReduxHistoryDeliveriesPageNumber", data);
+    dispatch({ type: HISTORY_DELIVERY_PAGE_NUMBER_STATE_CHANGE, data });
   };
 }
 
@@ -62,14 +80,15 @@ export function clearDashboardHTML(token) {
   };
 }
 
-
 export function getStatusPengiriman(token, delivery_id, nomor_resi, slug) {
   return (dispatch) => {
-
-    const params = delivery_id === null ? {
-      nomor_resi,
-      slug,
-    } : null;
+    const params =
+      delivery_id === null
+        ? {
+            nomor_resi,
+            slug,
+          }
+        : null;
 
     const config = {
       headers: {
@@ -78,12 +97,12 @@ export function getStatusPengiriman(token, delivery_id, nomor_resi, slug) {
       },
     };
 
-    const url = delivery_id === null ? statuspengiriman : (statusidpengiriman + "/" + delivery_id.toString())
+    const url =
+      delivery_id === null
+        ? statuspengiriman
+        : statusidpengiriman + "/" + delivery_id.toString();
 
-    Axios.get(
-      url,
-      config
-    )
+    Axios.get(url, config)
       .then((response) => {
         console.log("getStatusPengiriman with params and header");
         const statusCode = response.data?.rajaongkir?.status?.code;
@@ -138,7 +157,7 @@ export function getCheckoutItem(checkout_id) {
 export function clearDeliveryItem() {
   return (dispatch) => {
     clearDeliveryStatus();
-    console.log("clearDeliveryItem")
+    console.log("clearDeliveryItem");
     dispatch({ type: HISTORY_DELIVERY_STATE_CHANGE, id: null });
   };
 }
@@ -146,7 +165,7 @@ export function clearDeliveryItem() {
 export function getDeliveryItem(pengiriman_id) {
   return (dispatch) => {
     clearDeliveryStatus();
-    console.log("getDeliveryItem for id " + pengiriman_id)
+    console.log("getDeliveryItem for id " + pengiriman_id);
     dispatch({ type: HISTORY_DELIVERY_STATE_CHANGE, id: pengiriman_id });
   };
 }
@@ -179,7 +198,7 @@ export function postPembayaran(token, checkout_id) {
   };
 }
 
-export function getCheckouts(token) {
+export function getCheckouts(token, pageNumber) {
   return (dispatch) => {
     const config = {
       headers: {
@@ -187,13 +206,31 @@ export function getCheckouts(token) {
         Accept: "application/json",
       },
     };
+    const url =
+      getcheckout +
+      "?page=" +
+      (parseInt(pageNumber) > 0 ? pageNumber.toString() : "1");
+    console.log("getCheckouts", url);
 
-    Axios.get(getcheckout, config)
+    Axios.get(url, config)
       .then((response) => {
-        console.log("getCheckouts with header");
-        //console.log(config);
         const data = response.data.data;
-        dispatch({ type: HISTORY_CHECKOUTS_STATE_CHANGE, data });
+        if (data?.length === undefined || data?.length < 1) {
+          dispatch({ HISTORY_CHECKOUT_PAGE_NUMBER_STATE_CHANGE, data: 999 });
+        } else {
+          let newArray = [];
+          for (let a of data) {
+            newArray.push(a.id);
+          }
+          console.log("getCheckout result", url, newArray);
+          dispatch({
+            type:
+              parseInt(pageNumber) < 2
+                ? HISTORY_CHECKOUTS_STATE_CHANGE
+                : HISTORY_CHECKOUTS_INCREMENT_CHANGE,
+            data,
+          });
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -201,7 +238,7 @@ export function getCheckouts(token) {
   };
 }
 
-export function getDeliveries(token) {
+export function getDeliveries(token, pageNumber) {
   return (dispatch) => {
     const config = {
       headers: {
@@ -209,13 +246,31 @@ export function getDeliveries(token) {
         Accept: "application/json",
       },
     };
+    const url =
+      getpengiriman +
+      "?page=" +
+      (parseInt(pageNumber) > 0 ? pageNumber.toString() : "1");
+    console.log("getDeliveries", url);
 
-    Axios.get(getpengiriman, config)
+    Axios.get(url, config)
       .then((response) => {
-        console.log("getPengiriman with header");
-        //console.log(config);
         const data = response.data.data;
-        dispatch({ type: HISTORY_DELIVERIES_STATE_CHANGE, data });
+        if (data?.length === undefined || data?.length < 1) {
+          dispatch({ HISTORY_DELIVERY_PAGE_NUMBER_STATE_CHANGE, data: 999 });
+        } else {
+          let newArray = [];
+          for (let a of data) {
+            newArray.push(a.id);
+          }
+          console.log("getDeliveries result", url, newArray);
+          dispatch({
+            type:
+              parseInt(pageNumber) < 2
+                ? HISTORY_DELIVERIES_STATE_CHANGE
+                : HISTORY_DELIVERIES_INCREMENT_CHANGE,
+            data,
+          });
+        }
       })
       .catch((error) => {
         console.log(error);

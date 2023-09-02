@@ -6,10 +6,10 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
-  ScrollView,
   RefreshControl,
+  FlatList,
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
+//import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
@@ -22,6 +22,7 @@ import {
   clearUserCheckoutData,
   clearHistoryData,
   updateReduxHistoryCheckouts,
+  updateReduxHistoryCheckoutsPageNumber,
 } from "../../axios/history";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 
@@ -31,23 +32,37 @@ import { ASYNC_HISTORY_CHECKOUT_KEY } from "../asyncstorage/constants";
 import { capitalizeFirstLetter } from "../../axios/cart";
 
 function Checkout(props) {
-  const { token, checkouts, checkout } = props;
+  const { token, checkouts, checkout, checkoutPageNumber } = props;
   const [loading, setLoading] = useState(false);
+  const [onEndReachedCalledDuringMomentum, setEndReachedCalledDuringMomentum] =
+    useState(true);
+  const [paginationLoading, setPaginationLoading] = useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (token === undefined || token === null) {
-      setLoading(false);
-      return;
-    }
     if (checkouts === null) {
       checkAsyncStorageHistory();
     } else {
-      setObjectAsync(ASYNC_HISTORY_CHECKOUT_KEY, checkouts);
+      if (checkoutPageNumber < 2) {
+        setObjectAsync(ASYNC_HISTORY_CHECKOUT_KEY, checkouts);
+      }
       setLoading(false);
     }
-    //console.log({ checkouts, token });
-  }, [token, checkouts]);
+    if (paginationLoading) {
+      setPaginationLoading(false);
+    }
+    console.log("redux checkouts", checkouts?.length);
+  }, [checkouts]);
+
+  useEffect(() => {
+    if (checkoutPageNumber >= 999) {
+      setPaginationLoading(false);
+      setLoading(false);
+    } else if (checkoutPageNumber > 1) {
+      props.getCheckouts(token, checkoutPageNumber);
+    }
+    console.log("checkoutPageNumber", checkoutPageNumber);
+  }, [checkoutPageNumber]);
 
   useEffect(() => {
     if (checkout === null) {
@@ -59,10 +74,33 @@ function Checkout(props) {
   const checkAsyncStorageHistory = async () => {
     setLoading(true);
     const storageHistory = await getObjectAsync(ASYNC_HISTORY_CHECKOUT_KEY);
-    if (storageHistory === undefined || storageHistory === null || storageHistory?.length === undefined || storageHistory?.length < 1) {
-      props.getCheckouts(token);
+    if (
+      storageHistory === undefined ||
+      storageHistory === null ||
+      storageHistory?.length === undefined ||
+      storageHistory?.length < 1
+    ) {
+      refreshScreen();
     } else {
       props.updateReduxHistoryCheckouts(storageHistory);
+    }
+  };
+
+  const refreshScreen = () => {
+    props.getCheckouts(token, 1);
+    props.updateReduxHistoryCheckoutsPageNumber(1);
+  };
+
+  function onEndReached() {
+    if (
+      !onEndReachedCalledDuringMomentum &&
+      checkoutPageNumber < 999 &&
+      !paginationLoading
+    ) {
+      console.log("onEndReached");
+      setEndReachedCalledDuringMomentum(true);
+      props.updateReduxHistoryCheckoutsPageNumber(checkoutPageNumber + 1);
+      //loadData(false);
     }
   }
 
@@ -74,7 +112,7 @@ function Checkout(props) {
     }
   }
 
-  if (loading) {
+  if (loading || token === null || token === "") {
     return (
       <SafeAreaView style={styles.container}>
         <ActivityIndicator
@@ -88,27 +126,33 @@ function Checkout(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {token ? (
-        <ScrollView
-          style={styles.containerFlatlist}
-          refreshControl={
-            <RefreshControl
-              refreshing={loading}
-              onRefresh={() => props.clearHistoryData()}
-            />
-          }
-        >
-          {checkouts === undefined || checkouts === null || checkouts?.length === undefined || checkouts?.length < 1 ? (
+      <View style={styles.containerFlatlist}>
+        {token ? (
+          checkouts === undefined ||
+          checkouts === null ||
+          checkouts?.length === undefined ||
+          checkouts?.length < 1 ? (
             <Text style={styles.textUid}>
               Anda belum memiliki riwayat Checkout
             </Text>
           ) : (
-            <FlashList
-              estimatedItemSize={20}
+            <FlatList
+              initialNumToRender={10}
               numColumns={1}
               horizontal={false}
               data={checkouts}
               contentContainerStyle={{ paddingBottom: 100 }}
+              onMomentumScrollBegin={() =>
+                setEndReachedCalledDuringMomentum(false)
+              }
+              onEndReachedThreshold={0.1}
+              onEndReached={() => onEndReached()}
+              refreshControl={
+                <RefreshControl
+                  refreshing={loading}
+                  onRefresh={() => refreshScreen()}
+                />
+              }
               renderItem={({ item }) => (
                 <View style={{ width: "100%" }}>
                   <View style={styles.containerItem}>
@@ -155,18 +199,45 @@ function Checkout(props) {
                 </View>
               )}
             />
-          )}
-        </ScrollView>
-      ) : (
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.textUid}>
-            Anda harus Login / Register untuk mengecek riwayat Checkout
-          </Text>
-        </TouchableOpacity>
-      )}
+          )
+        ) : (
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <Text style={styles.textUid}>
+              Anda harus Login / Register untuk mengecek riwayat Checkout
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+      {paginationLoading ? (
+        <ActivityIndicator
+          size="large"
+          color={colors.daclen_orange}
+          style={styles.activityControl}
+        />
+      ) : null}
     </SafeAreaView>
   );
 }
+
+/*
+
+          <ScrollView style={styles.containerDescVertical}>
+            <TouchableOpacity
+              onPress={() =>
+                props.updateReduxHistoryCheckoutsPageNumber(
+                  checkoutPageNumber + 1
+                )
+              }
+            >
+              <Text style={styles.textUid}>Increment</Text>
+            </TouchableOpacity>
+            {checkouts.map(({ id, index }) => (
+              <Text key={index} style={styles.textUid}>
+                {`[${id.toString()}]`}
+              </Text>
+            ))}
+          </ScrollView>
+*/
 
 const styles = StyleSheet.create({
   container: {
@@ -184,6 +255,8 @@ const styles = StyleSheet.create({
   },
   containerFlatlist: {
     flex: 1,
+    width: "100%",
+    backgroundColor: "transparent",
   },
   containerItem: {
     flex: 1,
@@ -239,6 +312,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
   },
+  activityControl: {
+    alignSelf: "center",
+    position: "absolute",
+    bottom: 32,
+    elevation: 10,
+    zIndex: 20,
+  },
 });
 
 const mapStateToProps = (store) => ({
@@ -246,6 +326,7 @@ const mapStateToProps = (store) => ({
   userCheckout: store.userState.checkout,
   checkouts: store.historyState.checkouts,
   checkout: store.historyState.checkout,
+  checkoutPageNumber: store.historyState.checkoutPageNumber,
 });
 
 const mapDispatchProps = (dispatch) =>
@@ -257,6 +338,7 @@ const mapDispatchProps = (dispatch) =>
       clearUserCheckoutData,
       clearHistoryData,
       updateReduxHistoryCheckouts,
+      updateReduxHistoryCheckoutsPageNumber,
     },
     dispatch
   );

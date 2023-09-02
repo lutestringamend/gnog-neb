@@ -8,8 +8,9 @@ import {
   ActivityIndicator,
   ScrollView,
   RefreshControl,
+  FlatList,
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
+//import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
@@ -21,31 +22,47 @@ import {
   clearDeliveryStatus,
   clearHistoryData,
   updateReduxHistoryDeliveries,
+  updateReduxHistoryDeliveriesPageNumber,
 } from "../../axios/history";
 
-import { colors, dimensions } from "../../styles/base";
+import { colors } from "../../styles/base";
 import Separator from "../profile/Separator";
 import { ASYNC_HISTORY_DELIVERY_KEY } from "../asyncstorage/constants";
 import { capitalizeFirstLetter } from "../../axios/cart";
 
 function Delivery(props) {
-  const { token, deliveries, delivery, deliveryStatus } = props;
+  const { token, deliveries, delivery, deliveryStatus, deliveryPageNumber } =
+    props;
   const [loading, setLoading] = useState(false);
+  const [paginationLoading, setPaginationLoading] = useState(false);
+  const [onEndReachedCalledDuringMomentum, setEndReachedCalledDuringMomentum] =
+    useState(true);
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (token === undefined || token === null) {
-      setLoading(false);
-      return;
-    }
     if (deliveries === null) {
       checkAsyncStorageHistory();
     } else {
-      setObjectAsync(ASYNC_HISTORY_DELIVERY_KEY, deliveries);
+      if (deliveryPageNumber < 2) {
+        setObjectAsync(ASYNC_HISTORY_DELIVERY_KEY, deliveries);
+      }
       setLoading(false);
     }
-    //console.log({ deliveries, token });
-  }, [token, deliveries]);
+    if (paginationLoading) {
+      setPaginationLoading(false);
+    }
+    console.log("redux deliveries", deliveries?.length);
+  }, [deliveries]);
+
+  useEffect(() => {
+    if (deliveryPageNumber >= 999) {
+      setPaginationLoading(false);
+      setLoading(false);
+    } else if (deliveryPageNumber > 1) {
+      props.getDeliveries(token, deliveryPageNumber);
+    }
+    console.log("deliveryPageNumber", deliveryPageNumber);
+  }, [deliveryPageNumber]);
 
   useEffect(() => {
     if (delivery === null) {
@@ -57,10 +74,33 @@ function Delivery(props) {
   const checkAsyncStorageHistory = async () => {
     setLoading(true);
     const storageHistory = await getObjectAsync(ASYNC_HISTORY_DELIVERY_KEY);
-    if (storageHistory === undefined || storageHistory === null || storageHistory?.length === undefined || storageHistory?.length < 1) {
-      props.getDeliveries(token);
+    if (
+      storageHistory === undefined ||
+      storageHistory === null ||
+      storageHistory?.length === undefined ||
+      storageHistory?.length < 1
+    ) {
+      refreshScreen();
     } else {
       props.updateReduxHistoryDeliveries(storageHistory);
+    }
+  };
+
+  const refreshScreen = () => {
+    props.getDeliveries(token, 1);
+    props.updateReduxHistoryDeliveriesPageNumber(1);
+  };
+
+  function onEndReached() {
+    if (
+      !onEndReachedCalledDuringMomentum &&
+      deliveryPageNumber < 999 &&
+      !paginationLoading
+    ) {
+      console.log("onEndReached");
+      setEndReachedCalledDuringMomentum(true);
+      props.updateReduxHistoryDeliveriesPageNumber(deliveryPageNumber + 1);
+      //loadData(false);
     }
   }
 
@@ -72,7 +112,7 @@ function Delivery(props) {
     }
   }
 
-  if (loading) {
+  if (loading || token === null || token === "") {
     return (
       <SafeAreaView style={styles.container}>
         <ActivityIndicator
@@ -86,26 +126,33 @@ function Delivery(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {token ? (
-        <ScrollView
-          style={styles.containerFlatlist}
-          refreshControl={
-            <RefreshControl
-              refreshing={loading}
-              onRefresh={() => props.clearHistoryData()}
-            />
-          }
-        >
-          {deliveries === undefined || deliveries === null || deliveries?.length === undefined || deliveries?.length < 1 ? (
+      <View style={styles.containerFlatlist}>
+        {token ? (
+          deliveries === undefined ||
+          deliveries === null ||
+          deliveries?.length === undefined ||
+          deliveries?.length < 1 ? (
             <Text style={styles.textUid}>
               Anda belum memiliki riwayat Pengiriman
             </Text>
           ) : (
-            <FlashList
-              estimatedItemSize={10}
+            <FlatList
+              initialNumToRender={10}
               numColumns={1}
               horizontal={false}
               data={deliveries}
+              contentContainerStyle={{ paddingBottom: 100 }}
+              onMomentumScrollBegin={() =>
+                setEndReachedCalledDuringMomentum(false)
+              }
+              onEndReachedThreshold={0.1}
+              onEndReached={() => onEndReached()}
+              refreshControl={
+                <RefreshControl
+                  refreshing={loading}
+                  onRefresh={() => refreshScreen()}
+                />
+              }
               renderItem={({ item }) => (
                 <View style={{ width: "100%" }}>
                   <View style={styles.containerItem}>
@@ -149,15 +196,22 @@ function Delivery(props) {
                 </View>
               )}
             />
-          )}
-        </ScrollView>
-      ) : (
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.textUid}>
-            Anda harus Login / Register untuk mengecek riwayat Pengiriman
-          </Text>
-        </TouchableOpacity>
-      )}
+          )
+        ) : (
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <Text style={styles.textUid}>
+              Anda harus Login / Register untuk mengecek riwayat Pengiriman
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+      {paginationLoading ? (
+        <ActivityIndicator
+          size="large"
+          color={colors.daclen_orange}
+          style={styles.activityControl}
+        />
+      ) : null}
     </SafeAreaView>
   );
 }
@@ -178,6 +232,8 @@ const styles = StyleSheet.create({
   },
   containerFlatlist: {
     flex: 1,
+    width: "100%",
+    backgroundColor: "transparent",
   },
   containerItem: {
     flex: 1,
@@ -233,6 +289,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
   },
+  activityControl: {
+    alignSelf: "center",
+    position: "absolute",
+    bottom: 32,
+    elevation: 10,
+    zIndex: 20,
+  },
 });
 
 const mapStateToProps = (store) => ({
@@ -240,6 +303,7 @@ const mapStateToProps = (store) => ({
   delivery: store.historyState.delivery,
   deliveries: store.historyState.deliveries,
   deliveryStatus: store.historyState.deliveryStatus,
+  deliveryPageNumber: store.historyState.deliveryPageNumber,
 });
 
 const mapDispatchProps = (dispatch) =>
