@@ -78,19 +78,12 @@ const DashboardButtons = ({ userId, username }) => {
       );
     }
     if (!(props?.setMessage === undefined || props?.setMessage === null)) {
-      props?.setMessage("Link Personal Website tersalin ke Clipboard", false);
+      props?.setMessage("Link Toko Online tersalin ke Clipboard", false);
     }
   };
 
   function openDaclenCare() {
-    let template = adminWAtemplate;
-    if (!(username === undefined || username === null)) {
-      template = template.replace("#I#", username);
-    }
-    /*if (!(userId === undefined || userId === null)) {
-      template = template.replace("#USERID#", userId);
-    }*/
-    template = template.replace("#P#", Platform.OS);
+    let template = `Halo, Daclen Care! Saya adalah seller${username === undefined || username === null ? "" : ` dengan id ${username}`} (${Platform.OS}).\n`;
     console.log("Daclen care intro", template);
     openWhatsapp(adminWA, template);
   }
@@ -111,10 +104,11 @@ const DashboardButtons = ({ userId, username }) => {
   }
 
   function openExplanation() {
-    navigation.navigate("PDFViewer", {
+    /*navigation.navigate("PDFViewer", {
       title: "Penjelasan Bisnis",
       uri: dashboardpenjelasanbisnispdf,
-    })
+    })*/
+    Linking.openURL(dashboardpenjelasanbisnispdf);
   }
 
   function openWebDashboard() {
@@ -122,10 +116,11 @@ const DashboardButtons = ({ userId, username }) => {
   }
 
   function openCatalog() {
-    navigation.navigate("PDFViewer", {
+    /*navigation.navigate("PDFViewer", {
       title: "Katalog Hadiah",
       uri: dashboardhadiahpdf,
-    })
+    })*/
+    Linking.openURL(dashboardhadiahpdf);
   }
 
   return (

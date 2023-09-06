@@ -24,6 +24,8 @@ export const defaulttoprightlong = 107.86793313814107;*/
 export const defaultlatitudelongbits = "-4603892706931430400";
 export const defaultlongitudelongbits = "4637272587357913000";
 
+export const testerusercode = "devdcn";
+
 export const finalblognumber = 9999
 export const productpaginationnumber = 100
 export const PROFILE_LOCK_TIMEOUT_IN_MILISECONDS = 6000000

@@ -118,11 +118,9 @@ function MediaKitFiles(props) {
     const checkWatermarkData = async () => {
       let newData = await getObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY);
       if (!(newData === undefined || newData === null)) {
-        setTempWatermarkData(newData);
         props.updateReduxMediaKitWatermarkData(newData);
       } else {
         newData = getWatermarkDataFromCurrentUser();
-        setTempWatermarkData(newData);
         props.updateReduxMediaKitWatermarkData(newData);
       }
     };

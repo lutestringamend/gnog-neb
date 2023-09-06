@@ -7,14 +7,17 @@ import {
   deletekeranjang,
   storecheckout,
   localisationID,
-  defaultcurrency
+  defaultcurrency,
 } from "../constants";
 import {
   USER_CART_STATE_CHANGE,
   USER_CART_ITEM_STATE_CHANGE,
   USER_CHECKOUT_STATE_CHANGE,
   USER_CART_STATE_ERROR,
-  HISTORY_CHECKOUTS_STATE_CHANGE
+  HISTORY_CHECKOUTS_STATE_CHANGE,
+  USER_TEMP_CART_STATE_CHANGE,
+  USER_TEMP_CART_ITEM_STATE_CHANGE,
+  USER_TEMP_CART_NEW_ITEM_CHANGE,
 } from "../../redux/constants";
 import { setObjectAsync } from "../../components/asyncstorage";
 import { ASYNC_HISTORY_CHECKOUT_KEY } from "../../components/asyncstorage/constants";
@@ -23,7 +26,7 @@ export function clearCartError() {
   return (dispatch) => {
     console.log("clearCartError");
     dispatch({ type: USER_CART_STATE_ERROR, data: null });
-  }
+  };
 }
 
 export function capitalizeFirstLetter(string) {
@@ -52,7 +55,8 @@ export function storeCheckout(token, checkoutJson) {
       .then((response) => {
         const data = response.data;
         let clearCart = true;
-        if (data?.snap_token === undefined || data?.snap_token === null) clearCart = false;
+        if (data?.snap_token === undefined || data?.snap_token === null)
+          clearCart = false;
         console.log("storeCheckout response", data);
         dispatch({ type: USER_CHECKOUT_STATE_CHANGE, data, clearCart });
         dispatch({ type: HISTORY_CHECKOUTS_STATE_CHANGE, data: null });
@@ -83,7 +87,10 @@ export function deleteKeranjang(token, produk_id, itemSize) {
         const data = response.data?.data;
         console.log("deleteKeranjang", data);
         if (data === undefined) {
-          dispatch({ type: USER_CART_STATE_ERROR, data: "API response undefined" });
+          dispatch({
+            type: USER_CART_STATE_ERROR,
+            data: "API response undefined",
+          });
         } else {
           if (itemSize > 1 && produk_id > 0) {
             dispatch(postKeranjang(token, produk_id, itemSize - 1));
@@ -101,6 +108,36 @@ export function deleteKeranjang(token, produk_id, itemSize) {
         sentryLog(error);
         dispatch({ type: USER_CART_STATE_ERROR, data: error.toString() });
       });
+  };
+}
+
+export function addToTempCart(produk_id) {
+  return (dispatch) => {
+    console.log("addToTempCart", produk_id);
+    try {
+      dispatch({
+        type: USER_TEMP_CART_NEW_ITEM_CHANGE,
+        id: produk_id,
+        data: 1,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+}
+
+export function modifyTempCart(produk_id, itemSize) {
+  return (dispatch) => {
+    console.log("modifyTempCart", produk_id, itemSize);
+    try {
+      dispatch({
+        type: USER_TEMP_CART_ITEM_STATE_CHANGE,
+        id: produk_id,
+        data: parseInt(itemSize) < 1 ? 0 : parseInt(itemSize),
+      });
+    } catch (e) {
+      console.error(e);
+    }
   };
 }
 
@@ -129,7 +166,10 @@ export function postKeranjang(token, produk_id, itemSize) {
         console.log("postKeranjang", data);
 
         if (data === undefined) {
-          dispatch({ type: USER_CART_STATE_ERROR, data: "API response undefined" });
+          dispatch({
+            type: USER_CART_STATE_ERROR,
+            data: "API response undefined",
+          });
         } else {
           dispatch({ type: USER_CART_STATE_CHANGE, data });
         }
@@ -156,7 +196,10 @@ export function clearKeranjang(token) {
         const data = response.data?.data;
         console.log("clearKeranjang", data);
         if (data === undefined) {
-          dispatch({ type: USER_CART_STATE_ERROR, data: "API response undefined" });
+          dispatch({
+            type: USER_CART_STATE_ERROR,
+            data: "API response undefined",
+          });
         } else {
           dispatch({ type: USER_CART_STATE_CHANGE, data: null });
         }
@@ -169,9 +212,92 @@ export function clearKeranjang(token) {
   };
 }
 
+export function alterKeranjang(token, tempCart) {
+  return (dispatch) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    };
+
+    if (
+      tempCart === undefined ||
+      tempCart === null ||
+      tempCart?.length === undefined ||
+      tempCart?.length < 1
+    ) {
+      return;
+    }
+
+    let new_array = [];
+    for (let i = 0; i < tempCart.length; i++) {
+      let id = tempCart[i]?.id;
+      let jumlah = tempCart[i]?.jumlah;
+      if (
+        !(
+          id === undefined ||
+          id === null ||
+          jumlah === undefined ||
+          jumlah === null ||
+          jumlah < 1
+        )
+      ) {
+        for (let j = 0; j < jumlah; j++) {
+          new_array.push(id);
+        }
+      }
+    }
+
+    const params = {
+      produk: new_array,
+      produk_id: new_array,
+    };
+
+    console.log("alterKeranjang", tempCart, new_array);
+
+    Axios.post(clearkeranjang, null, config)
+      .then((response) => {
+        const data = response.data?.data;
+        console.log("clearKeranjang", data);
+        if (data === undefined) {
+          dispatch({
+            type: USER_CART_STATE_ERROR,
+            data: "API response undefined",
+          });
+        } else {
+          //dispatch({ type: USER_CART_STATE_CHANGE, data: null });
+          Axios.post(postkeranjang, params, config)
+            .then((response) => {
+              const data = response.data?.data;
+              console.log("postKeranjang", data);
+              if (data === undefined) {
+                dispatch({
+                  type: USER_CART_STATE_ERROR,
+                  data: "API response undefined",
+                });
+              } else {
+                dispatch({ type: USER_CART_STATE_CHANGE, data });
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+              sentryLog(error);
+              dispatch({ type: USER_CART_STATE_ERROR, data: error.toString() });
+            });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        sentryLog(error);
+        dispatch({ type: USER_CART_STATE_ERROR, data: error.toString() });
+      });
+  };
+}
+
 export function getKeranjang(token) {
   return (dispatch) => {
-    if (token === undefined || token === null || token === ""){
+    if (token === undefined || token === null || token === "") {
       return;
     }
     const config = {
@@ -186,9 +312,26 @@ export function getKeranjang(token) {
         const data = response.data.data;
         console.log("getKeranjang", data);
         if (data === undefined) {
-          dispatch({ type: USER_CART_STATE_ERROR, data: "API response undefined" });
+          dispatch({
+            type: USER_CART_STATE_ERROR,
+            data: "API response undefined",
+          });
         } else {
           dispatch({ type: USER_CART_STATE_CHANGE, data });
+          try {
+            let tempCartMap = [];
+            let produkArray = data?.produk;
+            for (let item of produkArray) {
+              tempCartMap.push({
+                id: item?.id,
+                jumlah: parseInt(item?.jumlah),
+              });
+            }
+            dispatch({ type: USER_TEMP_CART_STATE_CHANGE, data: tempCartMap });
+          } catch (e) {
+            console.error(e);
+            dispatch({ type: USER_TEMP_CART_STATE_CHANGE, data: null });
+          }
         }
       })
       .catch((error) => {

@@ -79,10 +79,9 @@ import BonusRoot from "./components/dashboard/BonusRoot";
 import SaldoReport from "./components/dashboard/SaldoReport";
 import WmarkTestScreen from "./components/media/WmarkTestScreen";
 
-import { appname } from "./axios/constants";
+import { appname, mainhttp } from "./axios/constants";
 import { colors, staticDimensions } from "./styles/base";
 import { sentryLog } from "./sentry";
-
 
 const Stack = createStackNavigator();
 

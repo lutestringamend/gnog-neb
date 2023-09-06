@@ -1,3 +1,4 @@
+export const ASYNC_SERVER_URL = "@server_url"
 export const ASYNC_USER_TOKEN_KEY = "@user_token"
 export const ASYNC_USER_KEY = "@user_key"
 

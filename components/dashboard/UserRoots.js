@@ -7,6 +7,7 @@ import {
   Text,
   ActivityIndicator,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { connect } from "react-redux";
@@ -17,6 +18,7 @@ import BSUserRoot from "../bottomsheets/BSUserRoot";
 import UserRootItem, { VerticalLine } from "./UserRootItem";
 import { colors, staticDimensions } from "../../styles/base";
 import { getHPV } from "../../axios/user";
+import { devuserroottree } from "./constants";
 /*import UserRootHeaderItem from "./UserRootHeaderItem";
 import { notverified, userverified } from "./constants";*/
 
@@ -34,6 +36,7 @@ function checkVerification(userData) {
 
 const UserRoots = (props) => {
   const [numRoots, setNumRoots] = useState(0);
+  const [tree, setTree] = useState([]);
   //const [numVerified, setNumVerified] = useState(0);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -59,10 +62,12 @@ const UserRoots = (props) => {
       hpv?.data?.children?.length < 1
     ) {
       setNumRoots(0);
+      setTree([]);
       console.log("hpv children empty", hpv?.data);
       //setNumVerified(0);
     } else {
       setNumRoots(hpv?.data?.children?.length);
+      setTree(hpv?.data?.children);
       console.log("hpv children", hpv?.data?.children);
       /*for (let i = 0; i < hpv?.data?.children?.length; i++) {
         if (checkVerification(hpv?.data?.children[i])) {
@@ -109,6 +114,14 @@ const UserRoots = (props) => {
     fetchHPV();
   }
 
+  function switchTree() {
+    if (tree?.length === numRoots) {
+      setTree(devuserroottree.data.children);
+    } else {
+      setTree(hpv?.data?.children);
+    }
+  }
+
   /*
         <View style={styles.containerHorizontal}>
           <UserRootHeaderItem
@@ -130,14 +143,14 @@ const UserRoots = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.containerLeader}>
+      <TouchableOpacity onPress={() => switchTree()} style={styles.containerLeader} disabled={currentUser?.id !== 8054}>
         <MaterialCommunityIcons
           name="head"
           size={18}
           color={colors.daclen_light}
         />
         <Text style={styles.textLeader}>DACLEN</Text>
-      </View>
+      </TouchableOpacity>
       <ScrollView
         style={styles.scrollView}
         refreshControl={
@@ -173,7 +186,7 @@ const UserRoots = (props) => {
                       : colors.daclen_red,
                   }}
                 />
-                {hpv?.data?.children.map((item, index) => (
+                {tree.map((item, index) => (
                   <UserRootItem
                     key={index}
                     userData={item}

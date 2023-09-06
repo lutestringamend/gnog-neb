@@ -1,4 +1,5 @@
-import Axios from "../index";
+import Axioss, { isUserDevServer } from "../index";
+import Axios from "axios";
 import { Linking, Platform } from "react-native";
 import * as Crypto from "expo-crypto";
 
@@ -20,6 +21,8 @@ import {
   laporansaldo,
   PROFILE_LOCK_TIMEOUT_IN_MILISECONDS,
   registergetsnaptoken,
+  devhttp,
+  mainhttp,
 } from "../constants";
 import { getKeranjang } from "../cart";
 import { initialState } from "../../redux/reducers/user";
@@ -74,6 +77,7 @@ import {
   ASYNC_MEDIA_WATERMARK_PHOTOS_KEY,
   ASYNC_MEDIA_WATERMARK_VIDEOS_KEY,
   ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY,
+  ASYNC_SERVER_URL,
   ASYNC_USER_ADDRESSES_KEY,
   ASYNC_USER_CURRENTUSER_KEY,
   ASYNC_USER_KEY,
@@ -226,7 +230,7 @@ export function getSyaratRoot(token) {
       },
     };
 
-    Axios.get(getsyaratroot, config)
+    Axioss.get(getsyaratroot, config)
       .then((response) => {
         const data = response.data?.data;
         console.log("getSyaratRoot", data);
@@ -253,7 +257,7 @@ export function getLaporanSaldo(id, token) {
     const url = laporansaldo + "/" + id.toString();
     console.log("getLaporanSaldo", url);
 
-    Axios.get(url, config)
+    Axioss.get(url, config)
       .then((response) => {
         const data = response.data;
         dispatch({ type: USER_SALDO_STATE_CHANGE, data });
@@ -279,7 +283,7 @@ export function getLaporanPoin(id, token) {
     const url = laporanpoinuser + "/" + id.toString();
     console.log("laporanpoinuser with header " + url);
 
-    Axios.get(url, config)
+    Axioss.get(url, config)
       .then((response) => {
         const data = response.data;
         dispatch({ type: USER_POINTS_STATE_CHANGE, data });
@@ -314,7 +318,7 @@ export function getHPV(id, token) {
     const url = gethpv + "/" + id.toString();
     console.log("getHPV with header " + url);
 
-    Axios.get(url, config)
+    Axioss.get(url, config)
       .then((response) => {
         const data = response.data;
         dispatch({ type: USER_HPV_STATE_CHANGE, data });
@@ -343,7 +347,7 @@ export function deleteAccount(email, password) {
     };
     console.log("deleteAccount with params " + JSON.stringify(params));
 
-    Axios.post(userdelete, params)
+    Axioss.post(userdelete, params)
       .then((response) => {
         const data = response.data;
         if (data !== null && data !== undefined) {
@@ -380,7 +384,7 @@ export function validateOTP(id, token, otp) {
     console.log("validateOTP " + url + " with params and header");
     console.log({ config, params });
 
-    Axios.post(url, params, config)
+    Axioss.post(url, params, config)
       .then((response) => {
         let data = response.data;
         console.log(response);
@@ -422,7 +426,7 @@ export function getOTP(id, token, nomor_telp) {
     console.log("getOTP " + url + " with params and header");
     console.log({ config, params });
 
-    Axios.post(url, params, config)
+    Axioss.post(url, params, config)
       .then((response) => {
         let data = response.data;
         console.log(response);
@@ -511,7 +515,7 @@ export function updateUserPhoto(id, token, uri) {
       console.log("updateUserPhoto " + url + " with formData and header");
       //console.log({ config, formData });
 
-      Axios.post(url, formData, config)
+      Axioss.post(url, formData, config)
         .then((response) => {
           const data = response.data;
           console.log(data);
@@ -526,7 +530,8 @@ export function updateUserPhoto(id, token, uri) {
                 type: USER_UPDATE_STATE_CHANGE,
                 data: {
                   session: "photoError",
-                  message: id === 8054 ? JSON.stringify(data?.errors?.foto) : "",
+                  message:
+                    id === 8054 ? JSON.stringify(data?.errors?.foto) : "",
                 },
               });
             } else {
@@ -556,14 +561,17 @@ export function updateUserPhoto(id, token, uri) {
             type: USER_UPDATE_STATE_CHANGE,
             data: {
               session: "photoError",
-              message: id === 8054 ? JSON.stringify({
-                MAINMESSAGE: error.message,
-                CONFIG: JSON.stringify(config),
-                METHOD: method,
-                URI: uri,
-                TYPE: type,
-                FORMDATA: JSON.stringify(formData),
-              }) : error?.message,
+              message:
+                id === 8054
+                  ? JSON.stringify({
+                      MAINMESSAGE: error.message,
+                      CONFIG: JSON.stringify(config),
+                      METHOD: method,
+                      URI: uri,
+                      TYPE: type,
+                      FORMDATA: JSON.stringify(formData),
+                    })
+                  : error?.message,
             },
           });
         });
@@ -619,7 +627,7 @@ export function updateUserData(
       console.log("updateUserData " + url + " with params and header");
       console.log({ config, params });
 
-      Axios.post(url, params, config)
+      Axioss.post(url, params, config)
         .then((response) => {
           const data = response.data;
           console.log(data);
@@ -642,7 +650,9 @@ export function updateUserData(
                 let errorKeys = Object.keys(data?.errors);
                 for (let key of errorKeys) {
                   if (data?.errors[key]?.length > 0) {
-                    message = `${message ? `${message}\n` : ""}${data?.errors[key][0]}`;
+                    message = `${message ? `${message}\n` : ""}${
+                      data?.errors[key][0]
+                    }`;
                   }
                 }
                 dispatch({
@@ -718,7 +728,7 @@ export function getBank(token) {
       },
     };
 
-    Axios.get(getbank, config)
+    Axioss.get(getbank, config)
       .then((response) => {
         let data = [];
         for (let i = 0; i < response.data?.data?.length; i++) {
@@ -773,7 +783,7 @@ export function getRegisterSnapToken(id, token) {
     };
     const url = registergetsnaptoken + "/" + id.toString();
 
-    Axios.post(url, config)
+    Axioss.post(url, config)
       .then((response) => {
         const data = response?.data;
         console.log("getRegisterSnapToken", data);
@@ -807,7 +817,7 @@ export function changePassword(authData, id, token) {
       "changePassword with header and params " + JSON.stringify(authData)
     );
 
-    Axios.post(url, authData, config)
+    Axioss.post(url, authData, config)
       .then((response) => {
         console.log(response.data);
         const session = response.data?.session;
@@ -852,18 +862,35 @@ export function register(authData) {
     };
     console.log("register");
 
-    Axios.post(userregister, params)
-      .then((response) => {
+    let isDevUser = isUserDevServer(authData?.name);
+    const newServerUrl = isDevUser ? devhttp : mainhttp;
+    let url = `${newServerUrl}${userregister}`;
+    console.log("register", url);
+
+    Axios.post(url, params)
+      .then(async (response) => {
         //console.log("register response data", response.data);
         const token = response?.data?.token;
         if (token === undefined || token === null || token === "") {
-          const data = response?.data?.errors ? response?.data?.errors :
-            "Tidak bisa mendaftarkan akun baru. Mohon periksa kembali data yang Anda masukkan.";
+          const data = response?.data?.errors
+            ? response?.data?.errors
+            : "Tidak bisa mendaftarkan akun baru. Mohon periksa kembali data yang Anda masukkan.";
           dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data });
           //dispatch(clearUserData());
           setObjectAsync(ASYNC_USER_KEY, null);
         } else {
           //dispatch(setNewToken(token));
+          await setObjectAsync(ASYNC_SERVER_URL, newServerUrl);
+          Axios.interceptors.request.use(
+            async (config) => {
+              config.baseURL = newServerUrl;
+              console.log("axios instance baseURL changed to", newServerUrl);
+              return config;
+            },
+            (error) => {
+              console.error(error);
+            }
+          );
           dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token });
           storeNewToken(token, authData?.password);
         }
@@ -871,7 +898,10 @@ export function register(authData) {
       .catch((error) => {
         console.error(error);
         sentryLog(error);
-        dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: error?.message });
+        dispatch({
+          type: USER_AUTH_ERROR_STATE_CHANGE,
+          data: { default: [error?.toString()] },
+        });
       });
   };
 }
@@ -885,18 +915,35 @@ export function login(email, password, resetPIN) {
       device_name: Platform.OS,
     };
 
-    Axios.post(loginlink, params)
-      .then((response) => {
+    let isDevUser = isUserDevServer(email);
+    const newServerUrl = isDevUser ? devhttp : mainhttp;
+    let url = `${newServerUrl}${loginlink}`;
+    console.log("login", url);
+
+    Axios.post(url, params)
+      .then(async (response) => {
         console.log("login response data", response?.data);
         const token = response?.data?.token;
         if (token === undefined || token === null || token === "") {
-          const data = response?.data?.message ? response?.data?.message : 
-            "Username/password salah. Mohon periksa kembali data yang Anda masukkan.";
+          const data = response?.data?.message
+            ? response?.data?.message
+            : "Username/password salah. Mohon periksa kembali data yang Anda masukkan.";
           dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data });
           setObjectAsync(ASYNC_USER_KEY, null);
           //dispatch(clearUserData());
         } else {
           //dispatch(setNewToken(token));
+          await setObjectAsync(ASYNC_SERVER_URL, newServerUrl);
+          Axios.interceptors.request.use(
+            async (config) => {
+              config.baseURL = newServerUrl;
+              console.log("axios instance baseURL changed to", newServerUrl);
+              return config;
+            },
+            (error) => {
+              console.error(error);
+            }
+          );
           if (resetPIN) {
             dispatch({ type: USER_PROFILE_PIN_STATE_CHANGE, data: null });
             dispatch({ type: USER_PROFILE_LOCK_STATE_CHANGE, data: true });
@@ -931,7 +978,7 @@ export function getCurrentUser(token, storageCurrentUser) {
     };
 
     console.log("getCurrentUser", token);
-    Axios.get(getcurrentuser, config)
+    Axioss.get(getcurrentuser, config)
       .then((response) => {
         const data = response.data?.data;
         if (data === undefined || data === null) {
@@ -999,7 +1046,7 @@ export function setNewToken(token, storageCurrentUser, key) {
         device_name: Platform.OS,
       };
 
-      Axios.post(loginlink, params)
+      Axioss.post(loginlink, params)
         .then((response) => {
           const token = response?.data?.token;
           if (token === undefined || token === null || token === "") {

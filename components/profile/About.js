@@ -6,9 +6,11 @@ import {
   Text,
   SafeAreaView,
   View,
+  Linking,
+  TouchableOpacity,
 } from "react-native";
 
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 import packageJson from "../../package.json";
 import {
   abouttext,
@@ -18,23 +20,42 @@ import {
   twitterurl,
   tiktokurl,
   youtubeurl,
+  youtubechannel,
 } from "./constants";
 import MainHeader from "../main/MainHeader";
 import SocialsItem from "./SocialsItem";
+import { getObjectAsync } from "../asyncstorage";
+import { ASYNC_SERVER_URL } from "../asyncstorage/constants";
 
 export default function About() {
   const appVersion = `Versi ${packageJson?.version}`;
+
+  function openYoutube() {
+    Linking.openURL("vnd.youtube://channel/" + youtubechannel).catch((e) => {
+      console.error(e);
+      Linking.openURL(youtubeurl);
+    });
+  }
+
+  const logoPress = async () => {
+    const serverUrl = await getObjectAsync(ASYNC_SERVER_URL);
+    console.log("serverUrl", serverUrl);
+    Linking.openURL(serverUrl);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <MainHeader title="Tentang Daclen" icon="arrow-left" />
       <ScrollView style={styles.scrollView}>
-        <View style={styles.containerLogo}>
+        <TouchableOpacity
+          style={styles.containerLogo}
+          onPress={() => logoPress()}
+        >
           <Image
             source={require("../../assets/splashsmall.png")}
             style={styles.logo}
           />
-        </View>
+        </TouchableOpacity>
 
         <Text style={styles.textCaption}>{appVersion}</Text>
         <Text style={styles.textDesc}>{abouttext}</Text>
@@ -44,7 +65,11 @@ export default function About() {
           <SocialsItem link={facebookurl} icon="fb" />
           <SocialsItem link={twitterurl} icon="twitter" />
           <SocialsItem link={tiktokurl} icon="tiktok" />
-          <SocialsItem link={youtubeurl} icon="youtube" />
+          <SocialsItem
+            onPress={() => openYoutube()}
+            link={null}
+            icon="youtube"
+          />
         </View>
         <Text style={styles.textCaption}>{copyrighttext}</Text>
       </ScrollView>

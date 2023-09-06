@@ -95,7 +95,7 @@ export const getVideoProductData = (item, products) => {
         nama,
         produk_id: data?.id,
         produk: data?.slug,
-        foto: data?.foto,
+        foto: data?.thumbnail ? data?.thumbnail : data?.foto ? data?.foto : null,
       };
     } else if (
       item?.produk?.id === undefined ||

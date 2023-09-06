@@ -69,12 +69,12 @@ const DashboardBottom = (props) => {
     await Clipboard.setStringAsync(`${personalwebsiteurl}${currentUser?.name}`);
     if (Platform.OS === "android") {
       ToastAndroid.show(
-        "Link Personal Website tersalin ke Clipboard",
+        "Link Toko Online tersalin ke Clipboard",
         ToastAndroid.SHORT
       );
     }
     if (!(props?.setMessage === undefined || props?.setMessage === null)) {
-      props?.setMessage("Link Personal Website tersalin ke Clipboard", false);
+      props?.setMessage("Link Toko Online tersalin ke Clipboard", false);
     }
   };
 

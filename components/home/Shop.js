@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicator,
+  Platform,
+  ToastAndroid,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { connect } from "react-redux";
@@ -21,14 +23,17 @@ import { ASYNC_PRODUCTS_ARRAY_KEY } from "../asyncstorage/constants";
 import { productpaginationnumber } from "../../axios/constants";
 import { updateProductSearchFilter } from "../../axios/product";
 import { openCheckout } from "../main/CheckoutScreen";
+import { checkNumberEmpty, alterKeranjang } from "../../axios/cart";
 
 function Shop(props) {
   const [storageProducts, setStorageProducts] = useState(null);
   const [category, setCategory] = useState("");
   const [isSearch, setSearch] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [cartLoading, setCartLoading] = useState(false);
+  const [tempCartSize, setTempCartSize] = useState(0);
   const navigation = useNavigation();
-  const { token, currentUser, cart } = props;
+  const { token, currentUser, cart, tempCart, cartError } = props;
 
   const products = useMemo(() => {
     if (
@@ -55,6 +60,49 @@ function Shop(props) {
       setLoading(false);
     }
   }, [props.products, storageProducts]);
+
+  useEffect(() => {
+    if (cart === null) {
+      return;
+    } else if (cartLoading) {
+      setCartLoading(false);
+      openCheckout(
+        navigation,
+        false,
+        token,
+        currentUser,
+        tempCartSize > 0 ? tempCartSize : cart?.jumlah_produk,
+        null
+      );
+    }
+  }, [cart]);
+
+  useEffect(() => {
+    if (
+      tempCart === null ||
+      tempCart?.length === undefined ||
+      tempCart?.length < 1
+    ) {
+      return;
+    }
+    let newNum = 0;
+    for (let i = 0; i < tempCart?.length; i++) {
+      newNum += checkNumberEmpty(tempCart[i].jumlah);
+    }
+    setTempCartSize(newNum);
+    console.log("redux tempCart", newNum, tempCart);
+  }, [tempCart]);
+
+  useEffect(() => {
+    if (cartError === null) {
+      return;
+    } else if (cartLoading) {
+      if (Platform.OS === "android") {
+        ToastAndroid.show(cartError, ToastAndroid.LONG);
+      }
+      setCartLoading(false);
+    }
+  }, [cartError]);
 
   async function getStorageProducts() {
     const asyncProducts = await getObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY);
@@ -136,6 +184,11 @@ function Shop(props) {
     props?.goDashboard();
   }
 
+  const loadCart = () => {
+    setCartLoading(true);
+    props.alterKeranjang(token, tempCart);
+  };
+
   return (
     <View
       style={[
@@ -180,35 +233,51 @@ function Shop(props) {
             />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() =>
-              openCheckout(
-                navigation,
-                false,
-                token,
-                currentUser,
-                cart?.jumlah_produk,
-                null
-              )
-            }
-            style={styles.containerCart}
+            onPress={() => loadCart()}
+            style={[
+              styles.containerCart,
+              {
+                backgroundColor:
+                  tempCartSize < 1 ||
+                  cart === null ||
+                  cart?.jumlah_produk === undefined ||
+                  cart?.jumlah_produk === null ||
+                  tempCartSize === parseInt(cart?.jumlah_produk)
+                    ? colors.daclen_gray
+                    : colors.daclen_blue,
+              },
+            ]}
             disabled={
               token === null ||
               cart?.jumlah_produk === 0 ||
               cart?.jumlah_produk === undefined ||
-              cart?.jumlah_produk === null
+              cart?.jumlah_produk === null ||
+              tempCartSize < 1
             }
           >
-            <MaterialCommunityIcons
-              name="cart"
-              size={28}
-              color={colors.daclen_light}
-            />
+            {cartLoading ? (
+              <ActivityIndicator
+                size="small"
+                color={colors.daclen_light}
+                style={styles.spinner}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name="cart"
+                size={28}
+                color={colors.daclen_light}
+              />
+            )}
+
             {token === null ||
             cart?.jumlah_produk === 0 ||
             cart?.jumlah_produk === undefined ||
-            cart?.jumlah_produk === null ? null : (
+            cart?.jumlah_produk === null ||
+            tempCartSize < 1 ? null : (
               <View style={styles.containerNumber}>
-                <Text style={styles.textCartNumber}>{cart?.jumlah_produk}</Text>
+                <Text style={styles.textCartNumber}>
+                  {tempCartSize > 0 ? tempCartSize : cart?.jumlah_produk}
+                </Text>
               </View>
             )}
           </TouchableOpacity>
@@ -374,6 +443,9 @@ const styles = StyleSheet.create({
     color: colors.daclen_light,
     marginHorizontal: 12,
   },
+  spinner: {
+    alignSelf: "center",
+  },
 });
 
 const mapStateToProps = (store) => ({
@@ -383,12 +455,15 @@ const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
   cart: store.userState.cart,
+  cartError: store.userState.cartError,
+  tempCart: store.userState.tempCart,
 });
 
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
       updateProductSearchFilter,
+      alterKeranjang,
     },
     dispatch
   );

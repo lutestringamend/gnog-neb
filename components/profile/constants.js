@@ -47,7 +47,7 @@ export const genderchoices = [
 ];
 
 export const abouttext =
-  `Daclen merupakan brand premium yang menghadirkan bermacam produk fashion berkualitas tinggi. Bergabung bersama Daclen dan dapatkan kesempatan meraih penghasilan yang tak terbatas, tanpa pembelian! Karena kami percaya dengan kualitas produk Daclen. Jika kamu ingin memiliki bisnis online terpercaya dengan komisi yang langsung dapat dicairkan, kesempatan mendapat banyak hadiah serta cashback dan tentu saja memiliki produk fashion premium berkualitas, Daclen jawabannya!\n\nDaclen menganut sistem bisnis Direct Selling yang merupakan metode penjualan dengan memaksimalkan anggotanya untuk mendapatkan keuntungan dari penjualan produk Daclen. Di Daclen, pendaftaran menjadi reseller cukup dengan Rp 300.000 sekali seumur hidup. Bahkan, kamu juga tidak perlu membeli produk apapun untuk menjadi member Daclen! Setelah menjadi member, kamu bisa menggunakan referalmu untuk mengajak orang lain bergabung, dan setiap transaksi pembelian produk yang dilakukan member yang kamu ajak, tentu kamu akan mendapat komisi!
+  `Daclen merupakan brand premium yang menghadirkan bermacam produk fashion berkualitas tinggi. Bergabung bersama Daclen dan dapatkan kesempatan meraih penghasilan yang tak terbatas, tanpa pembelian! Karena kami percaya dengan kualitas produk Daclen. Jika kamu ingin memiliki bisnis online terpercaya dengan komisi yang langsung dapat dicairkan, kesempatan mendapat banyak hadiah serta cashback dan tentu saja memiliki produk fashion premium berkualitas, Daclen jawabannya!\n\nDaclen menganut sistem bisnis Direct Selling yang merupakan metode penjualan dengan memaksimalkan anggotanya untuk mendapatkan keuntungan dari penjualan produk Daclen. Di Daclen, pendaftaran menjadi reseller cukup dengan Rp 300.000 sekali seumur hidup. Bahkan, kamu juga tidak perlu membeli produk apapun untuk menjadi reseller Daclen! Setelah menjadi reseller, kamu bisa menggunakan referalmu untuk mengajak orang lain bergabung, dan setiap transaksi pembelian produk yang dilakukan member yang kamu ajak, tentu kamu akan mendapat komisi!
   `;
 export const copyrighttext = "Copyright 2023 Daclen";
 export const adminWA = "62811210555";
@@ -65,6 +65,7 @@ export const twitterurl = "https://twitter.com/DaclenOfficial";
 export const tiktokurl = "https://www.tiktok.com/@DaclenOfficial";
 export const youtubeurl =
   "https://www.youtube.com/channel/UC57m-AUNzQli8Y8RKagga-A";
+export const youtubechannel = "UC57m-AUNzQli8Y8RKagga-A";
 
 export const imagePickerOptions = {
   maxHeight: 300,

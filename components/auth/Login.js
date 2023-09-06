@@ -32,6 +32,8 @@ import { setObjectAsync } from "../asyncstorage";
 import { ASYNC_USER_PROFILE_PIN_KEY } from "../asyncstorage/constants";
 import { sentryLog } from "../../sentry";
 import { checkEmpty } from "../../redux/reducers/user";
+import { isUserDevServer } from "../../axios";
+import { devhttp, mainhttp } from "../../axios/constants";
 
 function setPageHeight(bottomPadding) {
   return (
@@ -62,8 +64,18 @@ function Login(props) {
   const resetPIN = props.route.params?.resetPIN
     ? props.route.params?.resetPIN
     : false;
-  const { authData, authError } = props;
+  const { token, currentUser, authData, authError } = props;
   const navigation = useNavigation();
+
+  useEffect(() => {
+    if (
+      currentUser === null ||
+      currentUser?.name === undefined ||
+      currentUser?.name === null
+    ) {
+      return;
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     console.log(webKey);
@@ -81,7 +93,7 @@ function Login(props) {
       setChangePassword(false);
       setLoading(false);
     }
-  }, [props.token, webKey]);
+  }, [token, webKey]);
 
   useEffect(() => {
     console.log("redux authError", authError);
@@ -115,7 +127,7 @@ function Login(props) {
       setError(`Terjadi kesalahan pada saat autentikasi\n${e.toString()}`);
     }
   }, [authError]);
-
+  
   useEffect(() => {
     console.log("registerErrorArray", registerErrorArray);
   }, [registerErrorArray]);
@@ -207,7 +219,7 @@ function Login(props) {
     } else {
       setError(null);
       setLoading(true);
-      props.changePassword(authData, props.currentUser?.id, props.token);
+      props.changePassword(authData, currentUser?.id, token);
     }
   };
 

@@ -7,9 +7,11 @@ import { colors } from "../../styles/base";
 export default function SocialsItem(props) {
   const openLink = () => {
     if (props?.link === undefined || props?.link === null || props?.link === "") {
-      returnl
+      if (!(props?.onPress === undefined || props?.onPress === null)) {
+        props.onPress();
+      }
+      return;
     }
-    console.log("opening " + props?.link);
     Linking.openURL(props?.link);
   };
 
@@ -38,7 +40,7 @@ export default function SocialsItem(props) {
       style={styles.container}
       underlayColor={colors.daclen_orange}
     >
-      <Image source={imageSource} style={styles.icon} />
+      <Image source={imageSource} style={styles.icon} resizeMode="contain" />
     </TouchableHighlight>
   );
 }

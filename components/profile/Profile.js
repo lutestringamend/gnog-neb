@@ -18,12 +18,8 @@ import {
   aboutappicon,
   addressmenu,
   addressmenuicon,
-  blogicon,
-  blogscroll,
   changepassword,
   changepasswordicon,
-  commissionpoint,
-  commissionpointicon,
   contactadmin,
   contactadminicon,
   faq,
@@ -37,7 +33,6 @@ import {
   tnc,
   tncicon,
 } from "./constants";
-import { commissionpointpdf } from "../../axios/constants";
 import { colors, staticDimensions } from "../../styles/base";
 
 import MainHeader from "../main/MainHeader";
@@ -104,9 +99,9 @@ function Profile(props) {
     }
   };
 
-  const proceedLogout = () => {
+  const proceedLogout = async () => {
     setLoggingOut(true);
-    userLogOut(props, currentUser?.name);
+    await userLogOut(props, currentUser?.name);
   };
 
   /*

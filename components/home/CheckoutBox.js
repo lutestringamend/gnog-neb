@@ -31,6 +31,7 @@ function CheckoutBox(props) {
     ) {
       setErasing(false);
     }
+    console.log("redux cart", cart);
   }, [cart]);
 
   useEffect(() => {

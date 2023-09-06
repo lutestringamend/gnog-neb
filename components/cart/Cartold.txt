@@ -13,23 +13,17 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import {
-  postKeranjang,
-  deleteKeranjang,
-  modifyTempCart,
-  addToTempCart,
-} from "../../axios/cart";
+import { postKeranjang, deleteKeranjang } from "../../axios/cart";
 import { colors } from "../../styles/base";
+
 import { MAXIMUM_ITEM_PER_PRODUCT } from "../../redux/constants";
-const defaultItemSize = {
-  number: 0,
-  text: "0",
-};
 
 function Cart(props) {
+  const [loading, setLoading] = useState(false);
+  const [item, setItem] = useState(null);
+  const [itemSize, setItemSize] = useState(0);
   const {
     cart,
-    tempCart,
     token,
     currentUser,
     produk_id,
@@ -40,45 +34,24 @@ function Cart(props) {
     navigation,
   } = props;
 
-  const [loading, setLoading] = useState(false);
-  const [itemSize, setItemSize] = useState(defaultItemSize);
+  useEffect(() => {
+    setLoading(true);
+    if (cart !== null) {
+      setItem(cart?.produk.find(({ id }) => id === produk_id));
+    } else {
+      setItem(null);
+    }
+    setLoading(false);
+  }, [cart]);
 
   useEffect(() => {
-    try {
-      if (tempCart === null) {
-        if (
-          cart === null ||
-          cart?.produk === undefined ||
-          cart?.produk?.length === undefined ||
-          cart?.produk?.length < 1
-        ) {
-          setItemSize(defaultItemSize);
-        } else {
-          const item = cart?.produk.find(({ id }) => id === produk_id);
-          if (!(item === undefined || item === null || item?.jumlah === undefined)) {
-            setItemSize({
-              number: parseInt(item?.jumlah),
-              text: item?.jumlah.toString(),
-            });
-          }
-        }
-      } else {
-        const item = tempCart.find(({ id }) => id === produk_id);
-        if (!(item === undefined || item === null || item?.jumlah === undefined)) {
-          setItemSize({
-            number: parseInt(item?.jumlah),
-            text: item?.jumlah.toString(),
-          });
-        }
-        if (loading) {
-          setLoading(false);
-        }
-      }
-    } catch (e) {
-      console.error(e);
-      //setItemSize(0);
+    if (item !== undefined && item !== null) {
+      setItemSize(item?.jumlah);
+    } else {
+      setItemSize(0);
     }
-  }, [cart, tempCart]);
+    //setLoading(false);
+  }, [item]);
 
   useEffect(() => {
     if (loading) {
@@ -90,92 +63,39 @@ function Cart(props) {
     }*/
   }, [cartError]);
 
-  useEffect(() => {
-    if (loading) {
-      props.modifyTempCart(produk_id, itemSize.number);
-    }
-  }, [itemSize.number]);
-
   const modifyCart = (isAdd) => {
     if (loading) {
       console.log("still loading");
     } else {
-      //console.log("modifyCart " + produk_id + " isAdd " + isAdd.toString());
+      console.log("modifyCart " + produk_id + " isAdd " + isAdd.toString());
       if (isAdd) {
-        if (itemSize.number <= MAXIMUM_ITEM_PER_PRODUCT) {
+        if (itemSize <= MAXIMUM_ITEM_PER_PRODUCT) {
           setLoading(true);
-          props.modifyTempCart(produk_id, itemSize.number + 1);
-          //props.postKeranjang(token, produk_id, 1);
+          props.postKeranjang(token, produk_id, 1);
         }
       } else {
-        if (itemSize.number > 0) {
+        if (item !== undefined && itemSize > 0) {
           setLoading(true);
-          props.modifyTempCart(produk_id, itemSize.number - 1);
-          //props.deleteKeranjang(token, produk_id, itemSize);
+          props.deleteKeranjang(token, produk_id, itemSize);
         }
       }
     }
   };
 
-  const changeItemSize = (e) => {
-    if (!loading) {
-      try {
-        if (e === undefined || e === null || e === "") {
-          setItemSize({
-            ...itemSize,
-            text: itemSize.number.toString(),
-          });
-        } else if (parseInt(e) <= MAXIMUM_ITEM_PER_PRODUCT) {
-          setLoading(true);
-          setItemSize({
-            number: parseInt(e),
-            text: e,
-          });
-        } else {
-          setItemSize({
-            ...itemSize,
-            text: itemSize.number.toString(),
-          });
-        }
-      } catch (e) {
-        console.error(e);
-        setLoading(false);
-      }
-    }
-  }
-
-  const onChangeText = (text) => {
-    setItemSize({
-      ...itemSize,
-      text,
-    });
-  }
-
   function onShopButtonPress() {
     if (token === null && !(navigation === undefined || navigation === null)) {
       navigation.navigate("Login");
-    } else if (
-      isShop &&
-      (currentUser?.isActive === undefined ||
-        currentUser?.isActive === null ||
-        !currentUser?.isActive)
-    ) {
+    } else if (isShop && (currentUser?.isActive === undefined || currentUser?.isActive === null || !currentUser?.isActive)) {
       if (props?.goDashboard === undefined || props?.goDashboard === null) {
         return;
       }
       props?.goDashboard();
     } else {
-      //modifyCart(true);
-      const item = tempCart.find(({ id }) => id === produk_id);
-      if (item === undefined || item === null) {
-        props.addToTempCart(produk_id);
-      } else {
-        props.modifyTempCart(produk_id, 1);
-      }
+      modifyCart(true);
     }
   }
 
-  if (isShop && itemSize.number < 1 && itemSize.text === "0") {
+  if (isShop && itemSize < 1) {
     return (
       <TouchableOpacity
         style={styles.container}
@@ -247,11 +167,7 @@ function Cart(props) {
           <TextInput
             style={[styles.textCart, { fontSize: textSize ? textSize : 16 }]}
             inputMode="decimal"
-            value={itemSize.text}
-            maxLength={2}
-            multiline={false}
-            onChangeText={(text) => onChangeText(text)}
-            onPressOut={(e) => changeItemSize(e.nativeEvent.text)}
+            value={itemSize ? itemSize : "0"}
             editable={!loading}
           />
         )}
@@ -309,7 +225,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     alignSelf: "center",
     fontSize: 16,
-    width: 30,
   },
   textButton: {
     fontSize: 14,
@@ -325,7 +240,6 @@ const mapStateToProps = (store) => ({
   currentUser: store.userState.currentUser,
   cart: store.userState.cart,
   cartError: store.userState.cartError,
-  tempCart: store.userState.tempCart,
 });
 
 const mapDispatchProps = (dispatch) =>
@@ -333,8 +247,6 @@ const mapDispatchProps = (dispatch) =>
     {
       postKeranjang,
       deleteKeranjang,
-      modifyTempCart,
-      addToTempCart,
     },
     dispatch
   );

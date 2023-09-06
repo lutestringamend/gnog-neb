@@ -32,6 +32,9 @@ import {
   USER_REGISTER_SNAP_TOKEN_STATE_CHANGE,
   USER_ADDRESS_ID_STATE_CHANGE,
   USER_ADDRESSES_INCREMENT,
+  USER_TEMP_CART_STATE_CHANGE,
+  USER_TEMP_CART_ITEM_STATE_CHANGE,
+  USER_TEMP_CART_NEW_ITEM_CHANGE,
 } from "../constants";
 
 import { mainhttp } from "../../axios/constants";
@@ -51,6 +54,7 @@ export const initialState = {
   saldo: null,
   cart: null,
   cartError: null,
+  tempCart: null,
   currentAddress: null,
   masterkurir: [],
   couriers: [],
@@ -179,6 +183,29 @@ export const user = (state = initialState, action) => {
       return {
         ...state,
         cart: action.data,
+      };
+    case USER_TEMP_CART_STATE_CHANGE:
+      return {
+        ...state,
+        tempCart: action.data,
+      };
+    case USER_TEMP_CART_NEW_ITEM_CHANGE:
+      return {
+        ...state,
+        tempCart: [...state.tempCart].concat({
+          id: action.id,
+          jumlah: action.data
+        }),
+      };
+    case USER_TEMP_CART_ITEM_STATE_CHANGE:
+      return {
+        ...state,
+        tempCart: state.tempCart.map((item) =>
+          item.id === action.id ? {
+            id: item.id,
+            jumlah: action.data,
+          } : item
+        ),
       };
     case USER_CART_STATE_ERROR:
       return {

@@ -101,11 +101,11 @@ function Main(props) {
     }, [token]);
 
     useEffect(() => {
-      if (currentUser === undefined || currentUser === null) {
+      if (currentUser === undefined || currentUser === null || currentUser?.name === undefined) {
         return;
       }
 
-      console.log("redux currentuser", currentUser);
+      console.log("redux currentUser", currentUser);
       if (watermarkData === null) {
         checkWatermarkData();
       } else {
