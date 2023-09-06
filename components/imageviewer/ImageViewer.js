@@ -382,6 +382,7 @@ const ImageViewer = (props) => {
   };
 
   //startDownload(transformedImage !== null && transformedImage !== "")
+  //            useRenderInContext: Platform.OS === "ios",
 
   return (
     <SafeAreaView style={styles.container}>
@@ -397,7 +398,6 @@ const ImageViewer = (props) => {
             format: "jpg",
             quality: 1,
             result: "tmpfile",
-            useRenderInContext: Platform.OS === "ios",
           }}
           style={[
             styles.containerLargeImage,

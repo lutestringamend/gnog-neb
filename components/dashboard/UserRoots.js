@@ -7,6 +7,7 @@ import {
   RefreshControl,
   Text,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { connect } from "react-redux";
@@ -138,46 +139,44 @@ const UserRoots = (props) => {
         />
         <Text style={styles.textLeader}>DACLEN</Text>
       </View>
-      <View style={styles.scrollView}>
-        <View style={styles.containerMain}>
-          <UserRootItem
-            userData={currentUser}
-            onPress={() => openUserPopup(currentUser)}
-            isCurrentUser={true}
-            status={currentUser?.status}
-            isLastItem={false}
-            isVerified={checkVerification(currentUser)}
+      <ScrollView
+        style={styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => refreshChildren()}
           />
-          <View style={styles.containerFlatlist}>
+        }
+      >
+        {loading ? (
+          <ActivityIndicator
+            size="large"
+            color={colors.daclen_orange}
+            style={styles.spinner}
+          />
+        ) : (
+          <View style={styles.containerMain}>
+            <UserRootItem
+              userData={currentUser}
+              onPress={() => openUserPopup(currentUser)}
+              isCurrentUser={true}
+              status={currentUser?.status}
+              isLastItem={false}
+              isVerified={checkVerification(currentUser)}
+            />
             {numRoots > 0 ? (
-              <VerticalLine
-                style={{
-                  height: 32,
-                  backgroundColor: checkVerification(currentUser)
-                    ? colors.daclen_green
-                    : colors.daclen_red,
-                }}
-              />
-            ) : null}
-            {loading ? (
-              <ActivityIndicator
-                size="large"
-                color={colors.daclen_orange}
-                style={styles.spinner}
-              />
-            ) : numRoots > 0 ? (
-              <FlatList
-                numColumns={1}
-                horizontal={false}
-                data={hpv?.data?.children}
-                refreshControl={
-                  <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={() => refreshChildren()}
-                  />
-                }
-                renderItem={({ item, index }) => (
+              <View style={styles.containerFlatlist}>
+                <VerticalLine
+                  style={{
+                    height: 32,
+                    backgroundColor: checkVerification(currentUser)
+                      ? colors.daclen_green
+                      : colors.daclen_red,
+                  }}
+                />
+                {hpv?.data?.children.map((item, index) => (
                   <UserRootItem
+                    key={index}
                     userData={item}
                     onPress={() => openUserPopup(item)}
                     isCurrentUser={false}
@@ -185,15 +184,15 @@ const UserRoots = (props) => {
                     isCurrentVerified={checkVerification(currentUser)}
                     isVerified={checkVerification(item)}
                   />
-                )}
-              />
+                ))}
+              </View>
             ) : (
               <Text style={styles.textUid}>User Roots Anda masih kosong.</Text>
             )}
           </View>
-        </View>
-      </View>
-      <RBSheet ref={rbSheet} openDuration={250} height={300}>
+        )}
+      </ScrollView>
+      <RBSheet ref={rbSheet} openDuration={250} height={350}>
         <BSUserRoot
           title="Detail User"
           data={popupUser}
