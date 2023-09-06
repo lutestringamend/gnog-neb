@@ -27,6 +27,7 @@ import Separator from "../profile/Separator";
 import { colors, staticDimensions } from "../../styles/base";
 import {
   checkoutdefaultsendername,
+  checkoutdefaultsendernameoption,
   checkoutdisclaimer,
   checkoutsubtotalcommissionpercentage,
 } from "./constants";
@@ -37,7 +38,6 @@ import { ASYNC_HISTORY_CHECKOUT_KEY } from "../asyncstorage/constants";
 import { setObjectAsync } from "../asyncstorage";
 
 function Checkout(props) {
-  const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [error, setError] = useState(null);
 
@@ -57,6 +57,9 @@ function Checkout(props) {
   //const [packaging, setPackaging] = useState(null);
   const packaging = "Box";
 
+  const [senderNameChoices, setSenderNameChoices] = useState([
+    checkoutdefaultsendernameoption,
+  ]);
   const [senderName, setSenderName] = useState({
     final: checkoutdefaultsendername,
     temp: checkoutdefaultsendername,
@@ -70,6 +73,7 @@ function Checkout(props) {
   const [checkoutJson, setCheckoutJson] = useState(null);
 
   const {
+    products,
     currentUser,
     token,
     currentAddress,
@@ -84,17 +88,6 @@ function Checkout(props) {
 
   useEffect(() => {
     if (
-      props.products.length !== products.length &&
-      props.products.length > 0
-    ) {
-      setProducts(props.products);
-      props.callMasterkurir(token);
-    } else {
-      backHome();
-    }
-
-    if (
-      token === null ||
       currentUser === null ||
       currentUser?.id === undefined ||
       currentUser?.isActive === undefined ||
@@ -102,15 +95,35 @@ function Checkout(props) {
       !currentUser?.isActive
     ) {
       backHome();
+      return;
     }
+    props.callMasterkurir(token);
 
-    console.log({
-      products: props.products,
-      token,
-      currentUser,
-      checkout,
-    });
-  }, [props.products, token, currentUser]);
+    let newSenderNameChoices = [checkoutdefaultsendernameoption];
+    if (!(currentUser?.name === undefined || currentUser?.name === null)) {
+      newSenderNameChoices.unshift({
+        id: 1,
+        label: currentUser?.name,
+        value: currentUser?.name,
+      });
+    }
+    if (
+      !(
+        currentUser?.detail_user === undefined ||
+        currentUser?.detail_user === null ||
+        currentUser?.detail_user?.nama_lengkap === undefined ||
+        currentUser?.detail_user?.nama_lengkap === null
+      )
+    ) {
+      newSenderNameChoices.unshift({
+        id: 2,
+        label: currentUser?.detail_user?.nama_lengkap,
+        value: currentUser?.detail_user?.nama_lengkap,
+      });
+    }
+    setSenderNameChoices(newSenderNameChoices);
+    console.log("redux checkout", checkout);
+  }, [currentUser]);
 
   useEffect(() => {
     if (props.cart === null || props.cart?.jumlah_produk < 1) {
@@ -444,7 +457,9 @@ function Checkout(props) {
         addressId === "" || addressId === "default" || customAddress === null
           ? currentAddress
           : customAddress;
-      detail_checkout["nama_penerima"] = senderName.final ? senderName.final : "Daclen";
+      detail_checkout["nama_penerima"] = senderName.final
+        ? senderName.final
+        : "Daclen";
 
       const newCheckout = {
         checkout: {
@@ -525,6 +540,17 @@ function Checkout(props) {
       console.log(e);
     }*/
     return;
+  }
+
+  function onPressRadioButtonSenderName(radioButtonsArray) {
+    try {
+      const chosenName = radioButtonsArray.find(
+        ({ selected }) => selected === true
+      );
+      setSenderName({final: chosenName?.value, temp: chosenName?.value});
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   function changeSenderName() {
@@ -666,7 +692,7 @@ function Checkout(props) {
       <RBSheet
         ref={rbSenderName}
         openDuration={250}
-        height={350}
+        height={320}
         onClose={() =>
           setSenderName((senderName) => ({
             ...senderName,
@@ -682,6 +708,8 @@ function Checkout(props) {
               setSenderName={(temp) =>
                 setSenderName((senderName) => ({ ...senderName, temp }))
               }
+              senderNameChoices={senderNameChoices}
+              onPressRadioButtonSenderName={onPressRadioButtonSenderName}
             />
           }
           buttonPositive="Ganti"

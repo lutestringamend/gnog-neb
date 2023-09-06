@@ -3,7 +3,6 @@ import {
   SafeAreaView,
   View,
   StyleSheet,
-  FlatList,
   RefreshControl,
   Text,
   ActivityIndicator,
@@ -50,6 +49,7 @@ const UserRoots = (props) => {
       hpv?.data === null ||
       hpv?.data?.children === undefined
     ) {
+      setLoading(true);
       fetchHPV();
       return;
     }
@@ -101,7 +101,6 @@ const UserRoots = (props) => {
     ) {
       return;
     }
-    setLoading(true);
     props.getHPV(currentUser?.id, token);
   }
 

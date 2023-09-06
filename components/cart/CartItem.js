@@ -30,7 +30,13 @@ const CartItem = (props) => {
         >
           <Image
             style={styles.image}
-            source={props?.item?.foto_url}
+            source={
+              props?.item?.thumbnail_url
+                ? props?.item?.thumbnail_url
+                : props?.item?.foto_url
+                ? props?.item?.foto_url
+                : require("../../assets/favicon.png")
+            }
             onClick={() => openProduct(props?.item?.id)}
             contentFit="contain"
             placeholder={null}
@@ -59,7 +65,7 @@ const CartItem = (props) => {
       <Separator thickness={2} />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   containerItem: {
@@ -104,4 +110,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(CartItem)
+export default memo(CartItem);

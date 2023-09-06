@@ -1,5 +1,12 @@
 export const checkoutsubtotalcommissionpercentage = 10;
-export const checkoutdefaultsendername = "Daclen";
+export const checkoutdefaultsendername = "Daclen Official";
+
+export const checkoutdefaultsendernameoption = {
+    id: 0,
+    label: checkoutdefaultsendername,
+    value: checkoutdefaultsendername,
+    selected: true,
+};
 
 export const checkoutdisclaimer = `Data personal Anda akan digunakan untuk proses
 pemesanan dalam membantu kenyamanan Anda melalui
