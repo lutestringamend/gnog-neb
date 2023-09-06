@@ -59,8 +59,8 @@ const ImageViewer = (props) => {
     sharingAvailability,
     disableWatermark,
   } = props.route.params;
-  const resizedImgWidth = pdfpagewidth - 20;
-  const resizedImgHeight = Math.ceil((height * resizedImgWidth) / width);
+  const resizedImgWidth = Platform.OS === "ios" ? width : pdfpagewidth - 20;
+  const resizedImgHeight = Platform.OS === "ios" ? height : Math.ceil((height * resizedImgWidth) / width);
 
   const productPhotoWidth =
     dimensions.fullWidth - staticDimensions.productPhotoWidthMargin;
@@ -382,7 +382,7 @@ const ImageViewer = (props) => {
   };
 
   //startDownload(transformedImage !== null && transformedImage !== "")
-  //            useRenderInContext: Platform.OS === "ios",
+  //            
 
   return (
     <SafeAreaView style={styles.container}>
@@ -398,6 +398,7 @@ const ImageViewer = (props) => {
             format: "jpg",
             quality: 1,
             result: "tmpfile",
+            useRenderInContext: Platform.OS === "ios",
           }}
           style={[
             styles.containerLargeImage,

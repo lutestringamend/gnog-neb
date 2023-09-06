@@ -692,7 +692,7 @@ function Checkout(props) {
       <RBSheet
         ref={rbSenderName}
         openDuration={250}
-        height={320}
+        height={300}
         onClose={() =>
           setSenderName((senderName) => ({
             ...senderName,
@@ -704,20 +704,12 @@ function Checkout(props) {
           title="Ganti Nama Pengirim"
           content={
             <CheckoutSenderName
-              senderName={senderName.temp}
-              setSenderName={(temp) =>
-                setSenderName((senderName) => ({ ...senderName, temp }))
-              }
               senderNameChoices={senderNameChoices}
               onPressRadioButtonSenderName={onPressRadioButtonSenderName}
             />
           }
-          buttonPositive="Ganti"
-          buttonPositiveColor={colors.daclen_orange}
-          buttonNegative="Tutup"
-          buttonNegativeColor={colors.daclen_gray}
-          closeThis={() => rbSenderName.current.close()}
-          onPress={() => changeSenderName()}
+          closeThis={null}
+          onPress={null}
         />
       </RBSheet>
       <RBSheet ref={rbDisclaimer} openDuration={250} height={350}>
