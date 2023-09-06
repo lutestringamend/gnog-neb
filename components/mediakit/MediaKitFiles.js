@@ -2,10 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   SafeAreaView,
-  Text,
   View,
-  TextInput,
-  TouchableOpacity,
   Platform,
   ToastAndroid,
   ActivityIndicator,
@@ -14,7 +11,6 @@ import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { isAvailableAsync } from "expo-sharing";
-import RBSheet from "react-native-raw-bottom-sheet";
 
 import {
   getMediaKitPhotos,
@@ -27,7 +23,6 @@ import {
 import { overwriteWatermarkVideos } from "../media";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { colors, dimensions } from "../../styles/base";
-import { privacypolicy } from "../profile/constants";
 import { ErrorView } from "../webview/WebviewChild";
 import HistoryTabItem from "../history/HistoryTabItem";
 import { personalwebsiteurlshort } from "../../axios/constants";
@@ -43,73 +38,19 @@ import { sentryLog } from "../../sentry";
 import {
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
   ASYNC_MEDIA_WATERMARK_PHOTOS_KEY,
-  ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY,
-  ASYNC_WATERMARK_PHOTOS_PDF_KEY,
 } from "../asyncstorage/constants";
 import Header from "./Header";
-import BSPopup from "../bottomsheets/BSPopup";
 import { WatermarkData } from "./constants";
-
-const WatermarkSettings = ({
-  navigation,
-  loading,
-  tempWatermarkData,
-  setTempWatermarkData,
-}) => {
-  return (
-    <View style={styles.containerInfo}>
-      <View style={styles.containerPrivacy}>
-        <Text style={styles.textUid}>
-          Kirimkan foto dan video promosi dari katalog Daclen dengan watermark
-          spesial untuk kamu. Watermark berisi nama, nomor telepon dan link
-          referral.
-        </Text>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("Webview", {
-              webKey: "privacy",
-              text: privacypolicy,
-            })
-          }
-          disabled={loading}
-        >
-          <Text style={styles.textChange}>Baca {privacypolicy}</Text>
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.textCompulsory}>Nama*</Text>
-      <TextInput
-        value={tempWatermarkData?.name}
-        style={styles.textInput}
-        onChangeText={(name) =>
-          setTempWatermarkData({ ...tempWatermarkData, name })
-        }
-      />
-      <Text style={styles.textCompulsory}>Nomor telepon*</Text>
-      <TextInput
-        value={tempWatermarkData?.phone}
-        style={[styles.textInput, { marginBottom: 0 }]}
-        inputMode="numeric"
-        onChangeText={(phone) =>
-          setTempWatermarkData({ ...tempWatermarkData, phone })
-        }
-      />
-    </View>
-  );
-};
 
 function MediaKitFiles(props) {
   try {
     const [activeTab, setActiveTab] = useState(WATERMARK_PHOTO);
     const [photoLoading, setPhotoLoading] = useState(false);
-    const [loading, setLoading] = useState(false);
     const [sharingAvailability, setSharingAvailability] = useState(null);
     const [photoKeys, setPhotoKeys] = useState([]);
-    const [tempWatermarkData, setTempWatermarkData] = useState(WatermarkData);
 
     const { token, currentUser, photoError, watermarkData, mediaKitPhotos } =
       props;
-    const rbSheet = useRef();
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -139,11 +80,6 @@ function MediaKitFiles(props) {
       if (watermarkData === null) {
         checkWatermarkData();
       } else {
-        if (loading) {
-          changingWatermarkData();
-        } else {
-          setTempWatermarkData(watermarkData);
-        }
         console.log("redux WatermarkData", watermarkData);
       }
     }, [watermarkData]);
@@ -156,9 +92,6 @@ function MediaKitFiles(props) {
       } else {
         if (photoLoading) {
           setPhotoLoading(false);
-        }
-        if (loading) {
-          setLoading(false);
         }
         setObjectAsync(ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, mediaKitPhotos);
         console.log(
@@ -225,37 +158,11 @@ function MediaKitFiles(props) {
       props.getMediaKitPhotos(token);
     };
 
-    function closeBS() {}
 
-    function changeWatermark() {
-      if (
-        tempWatermarkData?.name === null ||
-        tempWatermarkData?.name === "" ||
-        tempWatermarkData?.name?.length < 3 ||
-        tempWatermarkData?.phone === null ||
-        tempWatermarkData?.phone === "" ||
-        tempWatermarkData?.phone?.length < 8
-      ) {
-        rbSheet.current.close();
-        return;
-      }
-      setLoading(true);
-      props.updateReduxMediaKitWatermarkData(tempWatermarkData);
-    }
-
-    const changingWatermarkData = async () => {
-      await setObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY, watermarkData);
-      await setObjectAsync(ASYNC_WATERMARK_PHOTOS_PDF_KEY, null);
-      await setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY, null);
-      props.updateReduxMediaKitPhotosUri([]);
-      props.overwriteWatermarkVideos([]);
-      setLoading(false);
-      rbSheet.current.close();
-    };
 
     return (
       <View style={styles.container}>
-        <Header onSettingPress={() => rbSheet.current.open()} />
+        <Header onSettingPress={() => navigation.navigate("WatermarkSettings")} />
         <View style={styles.tabView}>
           <HistoryTabItem
             activeTab={activeTab}
@@ -291,7 +198,7 @@ function MediaKitFiles(props) {
           ) : (
             <WatermarkPhotos
               userId={currentUser?.id}
-              loading={photoLoading || loading}
+              loading={photoLoading}
               error={photoError}
               watermarkData={watermarkData}
               sharingAvailability={sharingAvailability}
@@ -301,39 +208,6 @@ function MediaKitFiles(props) {
             />
           )}
         </View>
-
-        <RBSheet
-          ref={rbSheet}
-          openDuration={250}
-          height={dimensions.fullHeight}
-          onClose={() => closeBS()}
-        >
-          <BSPopup
-            title="Setting Watermark"
-            content={
-              <WatermarkSettings
-                loading={loading}
-                navigation={navigation}
-                tempWatermarkData={tempWatermarkData}
-                setTempWatermarkData={setTempWatermarkData}
-              />
-            }
-            buttonPositive="Ganti"
-            buttonPositiveColor={colors.daclen_orange}
-            buttonNegative="Tutup"
-            buttonNegativeColor={colors.daclen_gray}
-            buttonDisabled={
-              tempWatermarkData?.name === null ||
-              tempWatermarkData?.name === "" ||
-              tempWatermarkData?.name?.length < 3 ||
-              tempWatermarkData?.phone === null ||
-              tempWatermarkData?.phone === "" ||
-              tempWatermarkData?.phone?.length < 8
-            }
-            closeThis={() => rbSheet.current.close()}
-            onPress={() => changeWatermark()}
-          />
-        </RBSheet>
       </View>
     );
   } catch (error) {
@@ -366,14 +240,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: colors.daclen_graydark,
   },
-  containerInfo: {
-    backgroundColor: "transparent",
-  },
-  containerPrivacy: {
-    marginVertical: 12,
-    marginHorizontal: 20,
-    alignItems: "center",
-  },
+
   containerBox: {
     backgroundColor: colors.white,
     borderColor: colors.daclen_gray,
@@ -413,34 +280,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     backgroundColor: "transparent",
-  },
-  textCompulsory: {
-    color: colors.daclen_orange,
-    fontSize: 12,
-    fontWeight: "bold",
-    marginHorizontal: 20,
-  },
-  textChange: {
-    color: colors.daclen_blue,
-    fontSize: 14,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginVertical: 4,
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: colors.daclen_gray,
-    borderRadius: 4,
-    padding: 10,
-    marginTop: 2,
-    marginHorizontal: 20,
-    marginBottom: 20,
-    fontSize: 14,
-  },
-  textUid: {
-    fontSize: 12,
-    color: colors.daclen_gray,
-    textAlign: "center",
   },
 });
 

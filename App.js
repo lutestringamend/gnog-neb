@@ -64,6 +64,7 @@ import CameraView from "./components/media/CameraView";
 import ImageViewer from "./components/imageviewer/ImageViewer";
 import MultipleImageView from "./components/imageviewer/MultipleImageView";
 import MediaKitFiles from "./components/mediakit/MediaKitFiles";
+import WatermarkSettings from "./components/mediakit/WatermarkSettings";
 import PhotosSegment from "./components/mediakit/PhotosSegment";
 import QRScreen from "./components/qrscreen/QRScreen";
 import VideoPlayer from "./components/videoplayer/VideoPlayer";
@@ -81,6 +82,7 @@ import WmarkTestScreen from "./components/media/WmarkTestScreen";
 import { appname } from "./axios/constants";
 import { colors, staticDimensions } from "./styles/base";
 import { sentryLog } from "./sentry";
+
 
 const Stack = createStackNavigator();
 
@@ -298,6 +300,11 @@ export default function App() {
                 name="MediaKitFiles"
                 component={MediaKitFiles}
                 options={{ ...defaultOptions, title: "Materi Promosi" }}
+              />
+              <Stack.Screen
+                name="WatermarkSettings"
+                component={WatermarkSettings}
+                options={{ ...defaultOptions, title: "Setting Watermark" }}
               />
               <Stack.Screen
                 name="PhotosSegment"

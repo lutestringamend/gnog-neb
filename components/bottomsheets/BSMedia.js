@@ -109,7 +109,7 @@ function BSMedia(props) {
           <MaterialCommunityIcons name="camera" size={18} color="white" />
           <Text style={styles.textButton}>Foto dari Kamera</Text>
         </TouchableOpacity>
-        {Platform.OS === "windows" ? null : (
+        {Platform.OS === "ios" ? null : (
           <TouchableOpacity
             onPress={() => openImagePicker()}
             style={[
