@@ -1,5 +1,6 @@
 export const appname = "Daclen"
 export const mainhttp = "https://daclen.com/"
+export const devhttp = "https://devdcn.com/"
 export const mainhttpcookie = "https://daclen.com"
 export const localisationID = "id-ID";
 export const defaultcurrency = "IDR";

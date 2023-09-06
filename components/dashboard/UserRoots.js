@@ -4,17 +4,19 @@ import {
   View,
   StyleSheet,
   FlatList,
-  ScrollView,
+  RefreshControl,
   Text,
+  ActivityIndicator,
 } from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { connect } from "react-redux";
-//import { bindActionCreators } from "redux";
+import { bindActionCreators } from "redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import BSUserRoot from "../bottomsheets/BSUserRoot";
 import UserRootItem, { VerticalLine } from "./UserRootItem";
 import { colors, staticDimensions } from "../../styles/base";
+import { getHPV } from "../../axios/user";
 /*import UserRootHeaderItem from "./UserRootHeaderItem";
 import { notverified, userverified } from "./constants";*/
 
@@ -32,26 +34,46 @@ function checkVerification(userData) {
 
 const UserRoots = (props) => {
   const [numRoots, setNumRoots] = useState(0);
-  const [numVerified, setNumVerified] = useState(0);
+  //const [numVerified, setNumVerified] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [popupUser, setPopupUser] = useState({ name: null });
-  const { currentUser, hpv } = props;
+  const { token, currentUser, hpv } = props;
   const rbSheet = useRef();
 
   useEffect(() => {
     if (
+      hpv === undefined ||
+      hpv === null ||
+      hpv?.data === undefined ||
+      hpv?.data === null ||
+      hpv?.data?.children === undefined
+    ) {
+      fetchHPV();
+      return;
+    }
+    if (
+      hpv?.data?.children === null ||
       hpv?.data?.children?.length === undefined ||
       hpv?.data?.children?.length < 1
     ) {
       setNumRoots(0);
-      setNumVerified(0);
+      console.log("hpv children empty", hpv?.data);
+      //setNumVerified(0);
     } else {
       setNumRoots(hpv?.data?.children?.length);
       console.log("hpv children", hpv?.data?.children);
-      for (let i = 0; i < hpv?.data?.children?.length; i++) {
+      /*for (let i = 0; i < hpv?.data?.children?.length; i++) {
         if (checkVerification(hpv?.data?.children[i])) {
           setNumVerified((n) => n + 1);
         }
-      }
+      }*/
+    }
+    if (loading) {
+      setLoading(false);
+    }
+    if (refreshing) {
+      setRefreshing(false);
     }
   }, [hpv]);
 
@@ -67,6 +89,24 @@ const UserRoots = (props) => {
     } else {
       rbSheet.current.open();
     }
+  }
+
+  function fetchHPV() {
+    if (
+      token === null ||
+      currentUser === null ||
+      currentUser?.id === undefined ||
+      currentUser?.id === null
+    ) {
+      return;
+    }
+    setLoading(true);
+    props.getHPV(currentUser?.id, token);
+  }
+
+  function refreshChildren() {
+    setRefreshing(true);
+    fetchHPV();
   }
 
   /*
@@ -119,11 +159,23 @@ const UserRoots = (props) => {
                 }}
               />
             ) : null}
-            {numRoots > 0 && (
+            {loading ? (
+              <ActivityIndicator
+                size="large"
+                color={colors.daclen_orange}
+                style={styles.spinner}
+              />
+            ) : numRoots > 0 ? (
               <FlatList
                 numColumns={1}
                 horizontal={false}
                 data={hpv?.data?.children}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={() => refreshChildren()}
+                  />
+                }
                 renderItem={({ item, index }) => (
                   <UserRootItem
                     userData={item}
@@ -135,6 +187,8 @@ const UserRoots = (props) => {
                   />
                 )}
               />
+            ) : (
+              <Text style={styles.textUid}>User Roots Anda masih kosong.</Text>
             )}
           </View>
         </View>
@@ -193,6 +247,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.daclen_light,
   },
+  textUid: {
+    fontSize: 16,
+    marginVertical: 20,
+    textAlign: "center",
+    padding: 10,
+    color: colors.daclen_gray,
+    marginHorizontal: 10,
+  },
+  spinner: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
+    marginVertical: 20,
+  },
 });
 
 const mapStateToProps = (store) => ({
@@ -201,14 +268,12 @@ const mapStateToProps = (store) => ({
   hpv: store.userState.hpv,
 });
 
-/*const mapDispatchProps = (dispatch) =>
-    bindActionCreators(
-      {
-        clearUserData,
-        getCurrentUser,
-        getHPV,
-      },
-      dispatch
-    );*/
+const mapDispatchProps = (dispatch) =>
+  bindActionCreators(
+    {
+      getHPV,
+    },
+    dispatch
+  );
 
-export default connect(mapStateToProps, null)(UserRoots);
+export default connect(mapStateToProps, mapDispatchProps)(UserRoots);
