@@ -5,7 +5,6 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
-  TextInput,
 } from "react-native";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -18,7 +17,7 @@ import { colors } from "../../styles/base";
 
 import { MAXIMUM_ITEM_PER_PRODUCT } from "../../redux/constants";
 
-function Cart(props) {
+function CartOld(props) {
   const [loading, setLoading] = useState(false);
   const [item, setItem] = useState(null);
   const [itemSize, setItemSize] = useState(0);
@@ -164,12 +163,11 @@ function Cart(props) {
             style={{ alignSelf: "center" }}
           />
         ) : (
-          <TextInput
+          <Text
             style={[styles.textCart, { fontSize: textSize ? textSize : 16 }]}
-            inputMode="decimal"
-            value={itemSize ? itemSize : "0"}
-            editable={!loading}
-          />
+          >
+            {itemSize}
+          </Text>
         )}
       </View>
 
@@ -223,8 +221,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: colors.daclen_black,
     textAlign: "center",
+    textAlignVertical: "center",
     alignSelf: "center",
     fontSize: 16,
+    zIndex: 4,
   },
   textButton: {
     fontSize: 14,
@@ -251,4 +251,4 @@ const mapDispatchProps = (dispatch) =>
     dispatch
   );
 
-export default connect(mapStateToProps, mapDispatchProps)(Cart);
+export default connect(mapStateToProps, mapDispatchProps)(CartOld);

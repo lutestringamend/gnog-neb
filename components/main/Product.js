@@ -26,23 +26,33 @@ import BSProductBenefit from "../bottomsheets/BSProductBenefit";*/
 import { openCheckout } from "./CheckoutScreen";
 import { colors, staticDimensions } from "../../styles/base";
 import { ASYNC_MEDIA_WATERMARK_PHOTOS_KEY } from "../asyncstorage/constants";
+import { checkNumberEmpty, alterKeranjang } from "../../axios/cart";
 
 function Product(props) {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [mediaPhotos, setMediaPhotos] = useState(null);
+  const [tempCartSize, setTempCartSize] = useState(0);
+  const [cartLoading, setCartLoading] = useState(false);
   //const rbSheet = useRef();
-  const { token, currentUser } = props;
+  const { token, currentUser, cart, tempCart } = props;
   const name = props.route.params?.nama;
   const navigation = useNavigation();
 
   useEffect(() => {
     if (props.route.params?.id === null) {
       console.log("productId is null");
-      useNavigation().goBack();
+      navigation.goBack();
       return;
     }
 
+    props.navigation.setOptions({
+      title: name,
+      headerShown: true,
+    });
+  }, []);
+
+  useEffect(() => {
     const check = props.productItems.find(
       ({ id }) => id === props.route.params?.id
     );
@@ -60,19 +70,56 @@ function Product(props) {
   }, [props.route.params?.id, props.productItems]);
 
   useEffect(() => {
-    props.navigation.setOptions({
-      title: name,
-      headerShown: true,
-    });
-  }, [name]);
+    if (
+      tempCart === null ||
+      tempCart?.length === undefined ||
+      tempCart?.length < 1
+    ) {
+      return;
+    }
+    let newNum = 0;
+    for (let i = 0; i < tempCart?.length; i++) {
+      newNum += checkNumberEmpty(tempCart[i].jumlah);
+    }
+    setTempCartSize(newNum);
+    if (
+      newNum < 1 &&
+      !(
+        cart?.jumlah_produk === undefined ||
+        cart?.jumlah_produk === null ||
+        cart?.jumlah_produk < 1
+      )
+    ) {
+      props.clearKeranjang(token);
+    }
+    //console.log("redux tempCart", newNum, tempCart);
+  }, [tempCart]);
+
+  useEffect(() => {
+    if (cart === null) {
+      return;
+    } else if (cartLoading) {
+      setCartLoading(false);
+      openCheckout(
+        navigation,
+        false,
+        token,
+        currentUser,
+        tempCartSize > 0 ? tempCartSize : cart?.jumlah_produk,
+        null
+      );
+    }
+  }, [cart]);
 
   const checkAsyncProductMediaKitData = async (name) => {
-    const storagePhotos = await getObjectAsync(ASYNC_MEDIA_WATERMARK_PHOTOS_KEY);
+    const storagePhotos = await getObjectAsync(
+      ASYNC_MEDIA_WATERMARK_PHOTOS_KEY
+    );
     if (!(storagePhotos === undefined || storagePhotos === null)) {
       setMediaPhotos(storagePhotos[name]);
     }
     setLoading(false);
-  }
+  };
 
   const openPhotosSegment = () => {
     navigation.navigate("PhotosSegment", {
@@ -81,7 +128,12 @@ function Product(props) {
       title: name,
       photos: mediaPhotos,
     });
-  }
+  };
+
+  const loadCart = () => {
+    setCartLoading(true);
+    props.alterKeranjang(token, tempCart);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -122,7 +174,9 @@ function Product(props) {
               </View>
             )}
 
-          {mediaPhotos === null || mediaPhotos?.length === undefined || mediaPhotos?.length < 1 ? null : (   
+            {mediaPhotos === null ||
+            mediaPhotos?.length === undefined ||
+            mediaPhotos?.length < 1 ? null : (
               <TouchableOpacity onPress={() => openPhotosSegment()}>
                 <View style={styles.containerBenefit}>
                   <MaterialCommunityIcons
@@ -151,32 +205,47 @@ function Product(props) {
       currentUser?.isActive === null ||
       !currentUser?.isActive ||
       product === null ||
-      props.cart === null ||
-      props.cart?.jumlah_produk === undefined ||
-      props.cart?.jumlah_produk === null ||
-      props.cart?.jumlah_produk < 1 ? null : (
+      ((cart?.jumlah_produk === undefined ||
+        cart?.jumlah_produk === null ||
+        cart?.jumlah_produk < 1) &&
+        tempCartSize < 1) ? null : (
         <TouchableOpacity
-          style={styles.containerCheckout}
-          onPress={() =>
-            openCheckout(
-              props.navigation,
-              false,
-              token,
-              currentUser,
-              props.cart?.jumlah_produk,
-              null
-            )
-          }
+          style={[
+            styles.containerCheckout,
+            {
+              backgroundColor:
+                tempCartSize < 1 ||
+                cart === null ||
+                cart?.jumlah_produk === undefined ||
+                cart?.jumlah_produk === null ||
+                tempCartSize === parseInt(cart?.jumlah_produk)
+                  ? colors.daclen_gray
+                  : colors.daclen_blue,
+            },
+          ]}
+          onPress={() => loadCart()}
         >
-          <MaterialCommunityIcons name="cart" size={32} color="white" />
+          {cartLoading ? (
+            <ActivityIndicator
+              size="small"
+              color={colors.daclen_light}
+              style={styles.spinner}
+            />
+          ) : (
+            <MaterialCommunityIcons
+              name="cart"
+              size={32}
+              color={colors.daclen_light}
+            />
+          )}
+
           <View style={styles.containerNumber}>
             <Text style={styles.textNumber}>
-              {props.cart?.jumlah_produk.toString()}
+              {tempCartSize > 0 ? tempCartSize : cart?.jumlah_produk}
             </Text>
           </View>
         </TouchableOpacity>
       )}
-
     </SafeAreaView>
   );
 }
@@ -263,9 +332,12 @@ const styles = StyleSheet.create({
     end: 12,
     bottom: 40,
     elevation: 10,
-    padding: 20,
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: colors.daclen_green,
-    borderRadius: 100,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
   },
   text: {
     fontWeight: "bold",
@@ -323,12 +395,14 @@ const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
   cart: store.userState.cart,
+  tempCart: store.userState.tempCart,
 });
 
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
       showProduct,
+      alterKeranjang,
     },
     dispatch
   );

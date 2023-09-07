@@ -23,7 +23,11 @@ import { ASYNC_PRODUCTS_ARRAY_KEY } from "../asyncstorage/constants";
 import { productpaginationnumber } from "../../axios/constants";
 import { updateProductSearchFilter } from "../../axios/product";
 import { openCheckout } from "../main/CheckoutScreen";
-import { checkNumberEmpty, alterKeranjang } from "../../axios/cart";
+import {
+  checkNumberEmpty,
+  alterKeranjang,
+  clearKeranjang,
+} from "../../axios/cart";
 
 function Shop(props) {
   const [storageProducts, setStorageProducts] = useState(null);
@@ -90,7 +94,17 @@ function Shop(props) {
       newNum += checkNumberEmpty(tempCart[i].jumlah);
     }
     setTempCartSize(newNum);
-    console.log("redux tempCart", newNum, tempCart);
+    if (
+      newNum < 1 &&
+      !(
+        cart?.jumlah_produk === undefined ||
+        cart?.jumlah_produk === null ||
+        cart?.jumlah_produk < 1
+      )
+    ) {
+      props.clearKeranjang(token);
+    }
+    //console.log("redux tempCart", newNum, tempCart);
   }, [tempCart]);
 
   useEffect(() => {
@@ -270,19 +284,25 @@ function Shop(props) {
             )}
 
             {token === null ||
-            cart?.jumlah_produk === 0 ||
-            cart?.jumlah_produk === undefined ||
-            cart?.jumlah_produk === null ||
-            tempCartSize < 1 ? null : (
+            ((cart?.jumlah_produk === undefined ||
+              cart?.jumlah_produk === null ||
+              cart?.jumlah_produk < 1) &&
+              tempCartSize < 1) ? null : (
               <View style={styles.containerNumber}>
                 <Text style={styles.textCartNumber}>
-                  {tempCartSize > 0 ? tempCartSize : cart?.jumlah_produk}
+                  {tempCartSize > 0
+                    ? tempCartSize
+                    : cart?.jumlah_produk
+                    ? cart?.jumlah_produk
+                    : 0}
                 </Text>
               </View>
             )}
           </TouchableOpacity>
         </View>
       )}
+
+      {cartError ? <Text style={styles.textError}>{cartError}</Text> : null}
 
       <View style={styles.containerFlatlist}>
         {loading ? (
@@ -435,6 +455,15 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginHorizontal: 6,
   },
+  textError: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "white",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: colors.daclen_danger,
+    textAlign: "center",
+  },
   textUid: {
     fontSize: 12,
     fontWeight: "bold",
@@ -464,6 +493,7 @@ const mapDispatchProps = (dispatch) =>
     {
       updateProductSearchFilter,
       alterKeranjang,
+      clearKeranjang,
     },
     dispatch
   );

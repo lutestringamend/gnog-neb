@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 
-import Cart from "./Cart";
+import CartOld from "./CartOld";
 import Separator from "../profile/Separator";
 import { colors, blurhash } from "../../styles/base";
 
@@ -58,7 +58,7 @@ const CartItem = (props) => {
             </Text>
           </TouchableOpacity>
           {props?.isCart && (
-            <Cart produk_id={props?.item?.id} iconSize={14} textSize={14} />
+            <CartOld produk_id={props?.item?.id} iconSize={14} textSize={14} />
           )}
         </View>
       </View>
