@@ -41,7 +41,8 @@ import { mainhttp } from "../../axios/constants";
 const WatermarkVideos = (props) => {
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
-  const { mediaKitVideos, watermarkVideos, userId, token } = props;
+  const { mediaKitVideos, watermarkVideos, userId, token, products, loading } =
+    props;
 
   useEffect(() => {
     if (mediaKitVideos?.length === undefined || mediaKitVideos?.length < 1) {
@@ -77,7 +78,7 @@ const WatermarkVideos = (props) => {
       if (token === undefined || token === null) {
         return;
       }
-      props.getMediaKitVideos(token, props.products);
+      props.getMediaKitVideos(token, products);
     } else {
       props.updateReduxMediaKitVideos(storageVideos);
     }
@@ -100,8 +101,16 @@ const WatermarkVideos = (props) => {
   };
 
   const refreshPage = () => {
+    if (
+      props?.refreshPage === undefined ||
+      props?.refreshPage === null ||
+      loading
+    ) {
+      return;
+    }
     setRefreshing(true);
-    props.getMediaKitVideos(token, props.products);
+    props?.refreshPage();
+    //props.getMediaKitVideos(token, products);
   };
 
   function openVideo(item, index) {
@@ -131,77 +140,84 @@ const WatermarkVideos = (props) => {
 
   return (
     <View style={styles.container}>
-      {mediaKitVideos?.length === undefined || mediaKitVideos?.length < 1 ? (
+      {mediaKitVideos?.length < 1 ? null : (
         <ActivityIndicator
           size="large"
           color={colors.daclen_orange}
-          style={{ alignSelf: "center", marginVertical: 20 }}
+          style={{ alignSelf: "center", marginVertical: 20, zIndex: 1 }}
         />
-      ) : mediaKitVideos?.length < 1 ? (
-        <Text style={styles.textUid}>Tidak ada Video Promosi tersedia.</Text>
-      ) : (
-        <FlashList
-          estimatedItemSize={6}
-          horizontal={false}
-          numColumns={3}
-          data={mediaKitVideos}
-          contentContainerStyle={styles.containerFlatlist}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={() => refreshPage()}
-            />
-          }
-          renderItem={({ item, index }) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => openVideo(item, index)}
-              style={[
-                styles.containerImage,
-                {
-                  marginBottom:
-                    mediaKitVideos?.length - index < 2
-                      ? staticDimensions.pageBottomPadding / 2
-                      : 0,
-                },
-              ]}
-            >
-              <View style={styles.containerThumbnail}>
-                <Image
-                  style={styles.imageList}
-                  source={`${mainhttp}${item?.foto}`}
-                  contentFit="cover"
-                  placeholder={blurhash}
-                  transition={100}
+      )}
+      {mediaKitVideos?.length === undefined || loading ? null : (
+        <View style={styles.containerInside}>
+          {mediaKitVideos?.length < 1 ? (
+            <Text style={styles.textUid}>
+              Tidak ada Video Promosi tersedia.
+            </Text>
+          ) : (
+            <FlashList
+              estimatedItemSize={6}
+              horizontal={false}
+              numColumns={3}
+              data={mediaKitVideos}
+              contentContainerStyle={styles.containerFlatlist}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={() => refreshPage()}
                 />
-                <View
+              }
+              renderItem={({ item, index }) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => openVideo(item, index)}
                   style={[
-                    styles.containerOrientation,
+                    styles.containerImage,
                     {
-                      backgroundColor:
-                        item?.width > item?.height
-                          ? colors.daclen_cyan
-                          : colors.daclen_blue,
+                      marginBottom:
+                        mediaKitVideos?.length - index < 2
+                          ? staticDimensions.pageBottomPadding / 2
+                          : 0,
                     },
                   ]}
                 >
-                  <MaterialCommunityIcons
-                    name={
-                      item?.width > item?.height
-                        ? "crop-landscape"
-                        : "crop-portrait"
-                    }
-                    size={20}
-                    color={colors.daclen_light}
-                    style={{ alignSelf: "center" }}
-                  />
-                </View>
-              </View>
+                  <View style={styles.containerThumbnail}>
+                    <Image
+                      style={styles.imageList}
+                      source={`${mainhttp}${item?.foto}`}
+                      contentFit="cover"
+                      placeholder={blurhash}
+                      transition={100}
+                    />
+                    <View
+                      style={[
+                        styles.containerOrientation,
+                        {
+                          backgroundColor:
+                            item?.width > item?.height
+                              ? colors.daclen_cyan
+                              : colors.daclen_blue,
+                        },
+                      ]}
+                    >
+                      <MaterialCommunityIcons
+                        name={
+                          item?.width > item?.height
+                            ? "crop-landscape"
+                            : "crop-portrait"
+                        }
+                        size={20}
+                        color={colors.daclen_light}
+                        style={{ alignSelf: "center" }}
+                      />
+                    </View>
+                  </View>
 
-              <Text style={styles.textHeader}>{item?.nama}</Text>
-            </TouchableOpacity>
+                  <Text style={styles.textHeader}>{item?.nama}</Text>
+                </TouchableOpacity>
+              )}
+            />
           )}
-        />
+        </View>
       )}
     </View>
   );
@@ -212,11 +228,22 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: colors.white,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  containerInside: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: "transparent",
+    position: "absolute",
+    top: 0,
+    start: 0,
+    zIndex: 2,
   },
   containerFlatlist: {
     flex: 1,
     width: "100%",
-    backgroundColor: "transparent",
+    backgroundColor: colors.white,
   },
   containerImage: {
     flex: 1,

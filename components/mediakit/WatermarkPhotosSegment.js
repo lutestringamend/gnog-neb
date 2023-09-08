@@ -58,8 +58,8 @@ const WatermarkPhotosSegment = (props) => {
         style={[
           styles.containerScroll,
           {
-            marginTop: index === 0 ? 20 : 10,
-            marginBottom: isLast ? staticDimensions.pageBottomPadding / 2 : 0,
+            paddingTop: index === 0 ? 20 : 10,
+            paddingBottom: isLast ? staticDimensions.pageBottomPadding / 2 : 0,
           },
         ]}
       >
@@ -117,7 +117,7 @@ const WatermarkPhotosSegment = (props) => {
     console.error(e);
     return (
       <TouchableOpacity
-        style={[styles.containerItem, { marginBottom: isLast ? 32 : 0 }]}
+        style={[styles.containerItem, { paddingBottom: isLast ? 32 : 0 }]}
         key={title}
         onPress={() => openSegmentScreen()}
       >
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: colors.white,
     marginHorizontal: 10,
-    marginTop: 10,
+    paddingTop: 10,
     elevation: 2,
     borderWidth: 1,
     borderColor: colors.daclen_gray,
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
   containerScroll: {
     backgroundColor: colors.white,
     marginHorizontal: 10,
-    marginTop: 10,
+    paddingTop: 10,
   },
   containerScrollHeader: {
     flexDirection: "row",

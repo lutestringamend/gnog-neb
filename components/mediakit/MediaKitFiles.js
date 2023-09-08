@@ -6,14 +6,17 @@ import {
   Platform,
   ToastAndroid,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { isAvailableAsync } from "expo-sharing";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import {
   getMediaKitPhotos,
+  getMediaKitVideos,
   clearMediaKitPhotosError,
   clearMediaKitData,
   updateReduxMediaKitPhotos,
@@ -22,7 +25,7 @@ import {
 } from "../../axios/mediakit";
 import { overwriteWatermarkVideos } from "../media";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
-import { colors, dimensions } from "../../styles/base";
+import { colors } from "../../styles/base";
 import { ErrorView } from "../webview/WebviewChild";
 import HistoryTabItem from "../history/HistoryTabItem";
 import { personalwebsiteurlshort } from "../../axios/constants";
@@ -46,11 +49,19 @@ function MediaKitFiles(props) {
   try {
     const [activeTab, setActiveTab] = useState(WATERMARK_PHOTO);
     const [photoLoading, setPhotoLoading] = useState(false);
+    const [videoLoading, setVideoLoading] = useState(false);
     const [sharingAvailability, setSharingAvailability] = useState(null);
     const [photoKeys, setPhotoKeys] = useState([]);
 
-    const { token, currentUser, photoError, watermarkData, mediaKitPhotos } =
-      props;
+    const {
+      token,
+      currentUser,
+      photoError,
+      watermarkData,
+      mediaKitPhotos,
+      mediaKitVideos,
+      products,
+    } = props;
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -102,6 +113,15 @@ function MediaKitFiles(props) {
         );
       }
     }, [mediaKitPhotos, photoKeys]);
+
+    useEffect(() => {
+      if (mediaKitVideos === null || mediaKitVideos?.length === undefined) {
+        return;
+      }
+      if (videoLoading) {
+        setVideoLoading(false);
+      }
+    }, [mediaKitVideos]);
 
     useEffect(() => {
       if (photoError === null) {
@@ -156,11 +176,24 @@ function MediaKitFiles(props) {
       props.getMediaKitPhotos(token);
     };
 
+    const refreshVideos = () => {
+      setVideoLoading(true);
+      props.getMediaKitVideos(token, products);
+    };
 
+    const refreshContent = () => {
+      if (activeTab === WATERMARK_VIDEO) {
+        refreshVideos();
+      } else {
+        refreshPhotos();
+      }
+    };
 
     return (
       <View style={styles.container}>
-        <Header onSettingPress={() => navigation.navigate("WatermarkSettings")} />
+        <Header
+          onSettingPress={() => navigation.navigate("WatermarkSettings")}
+        />
         <View style={styles.tabView}>
           <HistoryTabItem
             activeTab={activeTab}
@@ -174,6 +207,26 @@ function MediaKitFiles(props) {
             icon={watermarkvideoicon}
             onPress={() => setActiveTab(WATERMARK_VIDEO)}
           />
+          <TouchableOpacity
+            style={styles.containerRefresh}
+            disabled={photoLoading || videoLoading}
+            onPress={() => refreshContent()}
+          >
+            {photoLoading || videoLoading ? (
+              <ActivityIndicator
+                size={28}
+                color={colors.daclen_blue}
+                style={{ alignSelf: "center" }}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name="refresh-circle"
+                size={28}
+                color={colors.daclen_blue}
+                style={{ alignSelf: "center" }}
+              />
+            )}
+          </TouchableOpacity>
         </View>
         <View style={styles.scrollView}>
           {token === null ||
@@ -192,6 +245,8 @@ function MediaKitFiles(props) {
               watermarkData={watermarkData}
               userId={currentUser?.id}
               token={token}
+              loading={videoLoading}
+              refreshPage={() => refreshVideos()}
             />
           ) : (
             <WatermarkPhotos
@@ -238,7 +293,13 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: colors.daclen_graydark,
   },
-
+  containerRefresh: {
+    alignSelf: "center",
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
+    marginStart: 6,
+  },
   containerBox: {
     backgroundColor: colors.white,
     borderColor: colors.daclen_gray,
@@ -287,13 +348,16 @@ const mapStateToProps = (store) => ({
   photosUri: store.mediaKitState.photosUri,
   watermarkData: store.mediaKitState.watermarkData,
   mediaKitPhotos: store.mediaKitState.photos,
+  mediaKitVideos: store.mediaKitState.videos,
   photoError: store.mediaKitState.photoError,
+  products: store.productState.products,
 });
 
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
       getMediaKitPhotos,
+      getMediaKitVideos,
       updateReduxMediaKitPhotos,
       updateReduxMediaKitWatermarkData,
       updateReduxMediaKitPhotosUri,

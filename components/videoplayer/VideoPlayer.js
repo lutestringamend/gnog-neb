@@ -576,9 +576,11 @@ function VideoPlayer(props) {
               (output) =>
                 `${output}\nffmpeg session ${sessionId.toString()} error returnCode ${returnCode.toString()}`
             );
-            navigation.navigate("VideoLogsScreen", {
-              text: `ffmpeg ${ffmpegCommand}\n\nsession ${sessionId.toString()} returnCode ${returnCode.toString()}\n\nsession output:\n\n${sessionOutput}`,
-            });
+            if (userId === 8054) {
+              navigation.navigate("VideoLogsScreen", {
+                text: `ffmpeg ${ffmpegCommand}\n\nsession ${sessionId.toString()} returnCode ${returnCode.toString()}\n\nsession output:\n\n${sessionOutput}`,
+              });
+            }
           }
         })
         .catch((error) => {
@@ -914,7 +916,7 @@ function VideoPlayer(props) {
                   {
                     top:
                       Platform.OS === "ios"
-                        ? Dimensions.get("window").height - 160
+                        ? Dimensions.get("window").height - 220
                         : screenHeight - 140,
                     elevation: 10,
                     zIndex: 20,

@@ -385,6 +385,7 @@ const styles = StyleSheet.create({
     marginEnd: 10,
   },
   containerCart: {
+    width: 60,
     backgroundColor: colors.daclen_gray,
     paddingHorizontal: 16,
     paddingVertical: 10,

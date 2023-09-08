@@ -6,15 +6,15 @@ import {
   ActivityIndicator,
   Linking,
   RefreshControl,
-  FlatList,
 } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 
 import { colors } from "../../styles/base";
 import { webfotowatermark } from "../../axios/constants";
 import { ErrorView } from "../webview/WebviewChild";
 import WatermarkPhotosSegment from "./WatermarkPhotosSegment";
 import { sentryLog } from "../../sentry";
-import { FlashList } from "@shopify/flash-list";
+
 
 const WatermarkPhotos = ({
   photos,
@@ -23,51 +23,57 @@ const WatermarkPhotos = ({
   error,
   watermarkData,
   sharingAvailability,
-  refreshPage
+  refreshPage,
 }) => {
   try {
-
     return (
       <View style={styles.container}>
-        {error ? (
-          <ErrorView
-            error="Mohon membuka website Daclen untuk melihat foto Media Kit"
-            onOpenExternalLink={() => Linking.openURL(webfotowatermark)}
-          />
-        ) : loading || photos === undefined || photos === null ? (
+        {error || photoKeys?.length < 1 ? null : (
           <ActivityIndicator
             size="large"
             color={colors.daclen_orange}
-            style={{ alignSelf: "center", marginVertical: 20 }}
-          />
-        ) : photoKeys?.length === undefined || photoKeys?.length < 1 ? (
-          <Text style={styles.textUid}>Tidak ada Foto Promosi tersedia.</Text>
-        ) : (
-          <FlatList
-            estimatedItemSize={10}
-            horizontal={false}
-            numColumns={1}
-            data={photoKeys}
-            style={styles.containerFlatlist}
-            refreshControl={
-              <RefreshControl
-                refreshing={loading}
-                onRefresh={() => refreshPage()}
-              />
-            }
-            renderItem={({ item, index }) => (
-              <WatermarkPhotosSegment
-                index={index}
-                isLast={index === photoKeys?.length - 1}
-                key={item}
-                title={item}
-                photos={photos[item]}
-                watermarkData={watermarkData}
-                sharingAvailability={sharingAvailability}
-              />
-            )}
+            style={{ alignSelf: "center", marginVertical: 20, zIndex: 1 }}
           />
         )}
+
+        <View style={styles.containerInside}>
+          {error ? (
+            <ErrorView
+              error="Mohon membuka website Daclen untuk melihat foto Media Kit"
+              onOpenExternalLink={() => Linking.openURL(webfotowatermark)}
+            />
+          ) : loading ||
+            photos === undefined ||
+            photos === null ||
+            photoKeys?.length === undefined ? null : photoKeys?.length < 1 ? (
+            <Text style={styles.textUid}>Tidak ada Foto Promosi tersedia.</Text>
+          ) : (
+            <FlashList
+              estimatedItemSize={10}
+              horizontal={false}
+              numColumns={1}
+              data={photoKeys}
+              style={styles.containerFlatlist}
+              refreshControl={
+                <RefreshControl
+                  refreshing={loading}
+                  onRefresh={() => refreshPage()}
+                />
+              }
+              renderItem={({ item, index }) => (
+                <WatermarkPhotosSegment
+                  index={index}
+                  isLast={index === photoKeys?.length - 1}
+                  key={item}
+                  title={item}
+                  photos={photos[item]}
+                  watermarkData={watermarkData}
+                  sharingAvailability={sharingAvailability}
+                />
+              )}
+            />
+          )}
+        </View>
       </View>
     );
   } catch (e) {
@@ -95,6 +101,17 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  containerInside: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: "transparent",
+    position: "absolute",
+    top: 0,
+    start: 0,
+    zIndex: 2,
   },
   containerFlatlist: {
     flex: 1,
