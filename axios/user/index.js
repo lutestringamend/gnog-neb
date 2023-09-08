@@ -56,6 +56,7 @@ import {
   USER_ADDRESSES_STATE_CHANGE,
   USER_ADDRESS_ID_STATE_CHANGE,
   USER_ADDRESSES_INCREMENT,
+  USER_RECRUITMENT_DEADLINE_STATE_CHANGE,
 } from "../../redux/constants";
 import {
   calculateBase64SizeInBytes,
@@ -174,6 +175,13 @@ export function updateReduxProfilePIN(data) {
   return (dispatch) => {
     console.log("updateReduxProfilePIN", data);
     dispatch({ type: USER_PROFILE_PIN_STATE_CHANGE, data });
+  };
+}
+
+export function updateReduxRecruitmentDeadline(data) {
+  return (dispatch) => {
+    console.log("updateReduxRecruitmentDeadline", data);
+    dispatch({ type: USER_RECRUITMENT_DEADLINE_STATE_CHANGE, data });
   };
 }
 

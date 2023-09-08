@@ -47,6 +47,7 @@ const AddressItem = (props) => {
                 ? colors.daclen_offgreen
                 : colors.white,
             },
+            isDefault ? {borderTopStartRadius: 6, borderTopEndRadius: 6, borderStartWidth: 1, borderEndWidth: 1} : null
           ]}
         >
           <View style={styles.containerHorizontal}>
@@ -114,7 +115,7 @@ const AddressItem = (props) => {
           </View>
         </View>
 
-        <View style={styles.containerButtons}>
+        {isDefault ?         <View style={styles.containerButtons}>
           <TouchableOpacity
             onPress={() => pickAddress()}
             style={[
@@ -163,7 +164,9 @@ const AddressItem = (props) => {
             />
             <Text style={styles.textButton}>Edit</Text>
           </TouchableOpacity>
-        </View>
+        </View> : null}
+
+
       </TouchableOpacity>
     );
   } catch (e) {
@@ -177,21 +180,18 @@ const AddressItem = (props) => {
   }
 };
 
+/*
+
+*/
+
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 20,
-    elevation: 4,
-    borderTopStartRadius: 5,
-    borderTopEndRadius: 5,
-    borderBottomStartRadius: 6,
-    borderBottomEndRadius: 6,
+    elevation: 2,
     backgroundColor: "transparent",
   },
   containerInner: {
-    borderWidth: 1,
-    borderTopStartRadius: 6,
-    borderTopEndRadius: 6,
-    borderBottomWidth: 0,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
   },
   containerHorizontalFlat: {
     flexDirection: "row",

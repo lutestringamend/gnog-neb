@@ -1,7 +1,6 @@
 import React, { memo } from "react";
 import {
   StyleSheet,
-  ScrollView,
   View,
   TouchableOpacity,
   Text,
@@ -106,6 +105,7 @@ const WatermarkPhotosSegment = (props) => {
                   contentFit="cover"
                   placeholder={blurhash}
                   transition={0}
+                  cachePolicy="memory-disk"
                 />
               </TouchableOpacity>
             )}

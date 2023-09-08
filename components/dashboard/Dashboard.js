@@ -38,6 +38,7 @@ import DashboardLogout from "./components/DashboardLogout";
 import DashboardVerification from "./components/DashboardVerification";
 import DashboardCreatePIN from "./components/DashboardCreatePIN";
 import DashboardUpgrade from "./components/DashboardUpgrade";
+import DashboardTimer from "./components/DashboardTimer";
 
 const Dashboard = (props) => {
   const [message, setMessage] = useState({
@@ -47,6 +48,7 @@ const Dashboard = (props) => {
   const [pinLoading, setPinLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchingToken, setFetchingToken] = useState(false);
+  const [showTimerModal, setShowTimerModal] = useState(true);
 
   const {
     currentUser,
@@ -55,6 +57,7 @@ const Dashboard = (props) => {
     hpv,
     profileLock,
     profilePIN,
+    recruitmentTimer,
   } = props;
 
   /*const [isSharingAvailable, setSharingAvailable] = useState(false);
@@ -150,7 +153,7 @@ const Dashboard = (props) => {
     }
     setFetchingToken(true);
     props.getCurrentUser(token, null);
-  }
+  };
 
   function fetchHPV() {
     if (
@@ -166,6 +169,9 @@ const Dashboard = (props) => {
 
   function onLockPress() {
     props.updateReduxProfileLockStatus(!profileLock);
+    if (!showTimerModal) {
+      setShowTimerModal(true);
+    }
   }
 
   function receiveOTP(e) {
@@ -247,7 +253,11 @@ const Dashboard = (props) => {
         ) : (
           <View style={styles.scrollView}>
             <DashboardUser currentUser={currentUser} />
-            <DashboardStats currentUser={currentUser} />
+            <DashboardStats
+              currentUser={currentUser}
+              recruitmentTimer={recruitmentTimer}
+              showTimerModal={() => setShowTimerModal(true)}
+            />
             <DashboardButtons
               userId={currentUser?.id}
               username={currentUser?.name}
@@ -267,6 +277,25 @@ const Dashboard = (props) => {
             style={styles.spinner}
           />
         ) : null}
+        {currentUser === null ||
+          currentUser?.status_member === undefined ||
+          currentUser?.status_member === null ||
+          currentUser?.status_member !== "premium" ||
+          profileLock === undefined ||
+          profileLock === null ||
+          profileLock ||
+          pinLoading ||
+          recruitmentTimer === undefined ||
+          recruitmentTimer === null ||
+          recruitmentTimer < 0 ||
+          !showTimerModal ? null : (
+          <DashboardTimer
+            recruitmentTimer={recruitmentTimer}
+            toggleModal={() =>
+              setShowTimerModal((showTimerModal) => !showTimerModal)
+            }
+          />
+        )}
       </ScrollView>
 
       {profileLock === undefined ||

@@ -39,7 +39,7 @@ const TabButton = (props) => {
   );
 };
 
-const Top = ({ token, currentUser }) => {
+const Top = ({ token, currentUser, recruitmentTimer }) => {
   const [tab, setTab] = useState("home");
 
   return (
@@ -55,7 +55,7 @@ const Top = ({ token, currentUser }) => {
       {tab === "mediakit" ? (
         <MediaKitFiles />
       ) : tab === "profile" ? (
-        <Dashboard />
+        <Dashboard recruitmentTimer={recruitmentTimer} />
       ) : (
         <Home goDashboard={() => setTab("profile")} />
       )}

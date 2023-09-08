@@ -11,7 +11,7 @@ import TabBarIcon from "./TabBarIcon";
 const Tab = createMaterialBottomTabNavigator();
 
 export default function TabNavigator(props) {
-  const { token, currentUser } = props;
+  const { token, currentUser, recruitmentTimer } = props;
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -84,7 +84,7 @@ export default function TabNavigator(props) {
       <Tab.Screen
         name="ProfileTab"
         key="Profile"
-        component={DashboardMain}
+        children={() => <DashboardMain recruitmentTimer={recruitmentTimer} />}
         navigation={props.navigation}
         options={{
           headerShown: false,

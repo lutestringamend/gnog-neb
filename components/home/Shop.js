@@ -263,10 +263,10 @@ function Shop(props) {
             ]}
             disabled={
               token === null ||
-              cart?.jumlah_produk === 0 ||
-              cart?.jumlah_produk === undefined ||
-              cart?.jumlah_produk === null ||
-              tempCartSize < 1
+              ((cart?.jumlah_produk === undefined ||
+                cart?.jumlah_produk === null ||
+                cart?.jumlah_produk < 1) &&
+                tempCartSize < 1) 
             }
           >
             {cartLoading ? (

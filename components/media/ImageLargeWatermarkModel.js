@@ -4,19 +4,8 @@ import { Image } from "expo-image";
 
 import { blurhash, colors } from "../../styles/base";
 import {
-  vmwarkdefaultpositionendtovideotruewidthratio,
-  vmwarkportraittopenlargementconstant,
-  vwmarkdefaultpositiontoptovideotrueheightratio,
-  vwmarkdefaultwmarktovideotruewidthratio,
-  vwmarkportraitenlargementconstant,
-  vwmarktemplatewidth,
   vwmarktextnamecharlimit,
   vwmarktextphonecharlimit,
-  vwmarkurlborderradius,
-  vwmarkurlfontsize,
-  vwmarkurlmargintop,
-  vwmarkurlpaddinghorizontal,
-  vwmarkurlpaddingvertical,
   wmarkhorizontalmargin,
 } from "../mediakit/constants";
 import VWatermarkModel from "./VWatermarkModel";
@@ -41,7 +30,7 @@ function ImageLargeWatermarkModel(props) {
 
   const ratio = displayWidth / width;
   const displayFontSize = Math.round(
-    ratio * (fontSize >= 48 ? fontSize / 1.25 : fontSize)
+    ratio * (fontSize >= 48 ? fontSize / 1.5 : fontSize)
   );
 
   if (
@@ -65,29 +54,29 @@ function ImageLargeWatermarkModel(props) {
         },
         style ? style : null,
       ]}
-    > 
-    {uri === undefined || uri === null ? null : 
-    <Image
-    source={uri}
-    style={[
-      styles.image,
-      {
-        width: displayWidth ? displayWidth : width,
-        height: displayHeight ? displayHeight : height,
-      },
-    ]}
-    contentFit="contain"
-    placeholder={blurhash}
-    transition={100}
-  />
-    }
-      
+    >
+      {uri === undefined || uri === null ? null : (
+        <Image
+          source={uri}
+          style={[
+            styles.image,
+            {
+              width: displayWidth ? displayWidth : width,
+              height: displayHeight ? displayHeight : height,
+            },
+          ]}
+          contentFit="contain"
+          placeholder={blurhash}
+          transition={100}
+        />
+      )}
+
       <View
         style={[
           styles.containerUrl,
           {
             width: displayWidth,
-            top: Math.round(ratio * link_y) - 2,
+            top: Math.ceil(ratio * (link_y + 1)),
             start: 0,
           },
         ]}
@@ -113,9 +102,11 @@ function ImageLargeWatermarkModel(props) {
         style={[
           styles.containerUrl,
           {
-            width: displayWidth,
-            top: Math.round(ratio * text_y) - 2,
-            start: 0,
+            width: displayWidth * 0.8,
+            top: ratio * (text_y - 2),
+            start: displayWidth * 0.1,
+            end: displayWidth * 0.1,
+            alignSelf: "center",
           },
         ]}
       >
@@ -123,6 +114,7 @@ function ImageLargeWatermarkModel(props) {
           style={[
             styles.textUrl,
             {
+              flex: 1,
               fontSize: displayFontSize,
               marginEnd: wmarkhorizontalmargin,
             },
@@ -138,6 +130,7 @@ function ImageLargeWatermarkModel(props) {
           style={[
             styles.textUrl,
             {
+              flex: 1,
               fontSize: displayFontSize,
               marginStart: wmarkhorizontalmargin,
             },
@@ -165,7 +158,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 2,
+    zIndex: 4,
     elevation: 4,
   },
   image: {
@@ -173,6 +166,7 @@ const styles = StyleSheet.create({
     top: 0,
     start: 0,
     backgroundColor: "transparent",
+    zIndex: 2,
   },
   textUrl: {
     backgroundColor: "transparent",

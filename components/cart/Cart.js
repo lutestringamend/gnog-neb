@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   TextInput,
+  Platform,
 } from "react-native";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -55,7 +56,9 @@ function Cart(props) {
           setItemSize(defaultItemSize);
         } else {
           const item = cart?.produk.find(({ id }) => id === produk_id);
-          if (!(item === undefined || item === null || item?.jumlah === undefined)) {
+          if (
+            !(item === undefined || item === null || item?.jumlah === undefined)
+          ) {
             setItemSize({
               number: parseInt(item?.jumlah),
               text: item?.jumlah.toString(),
@@ -64,7 +67,9 @@ function Cart(props) {
         }
       } else {
         const item = tempCart.find(({ id }) => id === produk_id);
-        if (!(item === undefined || item === null || item?.jumlah === undefined)) {
+        if (
+          !(item === undefined || item === null || item?.jumlah === undefined)
+        ) {
           setItemSize({
             number: parseInt(item?.jumlah),
             text: item?.jumlah.toString(),
@@ -117,39 +122,44 @@ function Cart(props) {
     }
   };
 
-  const changeItemSize = (e) => {
+  const changeItemSize = () => {
+    console.log("onEndEditing");
     if (!loading) {
       try {
-        if (e === undefined || e === null || e === "") {
+        if (
+          itemSize.text === undefined ||
+          itemSize.text === null ||
+          itemSize.text === "" ||
+          parseInt(itemSize.text) > MAXIMUM_ITEM_PER_PRODUCT
+        ) {
           setItemSize({
             ...itemSize,
             text: itemSize.number.toString(),
-          });
-        } else if (parseInt(e) <= MAXIMUM_ITEM_PER_PRODUCT) {
-          setLoading(true);
-          setItemSize({
-            number: parseInt(e),
-            text: e,
           });
         } else {
+          setLoading(true);
           setItemSize({
-            ...itemSize,
-            text: itemSize.number.toString(),
+            number: parseInt(itemSize.text),
+            text: e,
           });
         }
       } catch (e) {
         console.error(e);
+        setItemSize({
+          ...itemSize,
+          text: itemSize.number.toString(),
+        });
         setLoading(false);
       }
     }
-  }
+  };
 
   const onChangeText = (text) => {
     setItemSize({
       ...itemSize,
       text,
     });
-  }
+  };
 
   function onShopButtonPress() {
     if (token === null && !(navigation === undefined || navigation === null)) {
@@ -251,8 +261,8 @@ function Cart(props) {
             maxLength={2}
             multiline={false}
             onChangeText={(text) => onChangeText(text)}
-            onPressOut={(e) => changeItemSize(e.nativeEvent.text)}
-            editable={!loading}
+            onEndEditing={() => changeItemSize()}
+            editable={!(loading || Platform.OS === "web")}
           />
         )}
       </View>

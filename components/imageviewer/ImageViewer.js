@@ -60,7 +60,10 @@ const ImageViewer = (props) => {
     disableWatermark,
   } = props.route.params;
   const resizedImgWidth = Platform.OS === "ios" ? width : pdfpagewidth - 20;
-  const resizedImgHeight = Platform.OS === "ios" ? height : Math.ceil((height * resizedImgWidth) / width);
+  const resizedImgHeight =
+    Platform.OS === "ios"
+      ? height
+      : Math.ceil((height * resizedImgWidth) / width);
 
   const productPhotoWidth =
     dimensions.fullWidth - staticDimensions.productPhotoWidthMargin;
@@ -195,7 +198,7 @@ const ImageViewer = (props) => {
           "#HEIGHT#",
           pdfpageheight > resizedImgHeight ? pdfpageheight : resizedImgHeight
         )
-        .replace("#IMGWIDTH#", resizedImgWidth )
+        .replace("#IMGWIDTH#", resizedImgWidth)
         .replace("#IMGHEIGHT#", resizedImgHeight)}`;
       const html = multiplephotoshtml
         .replace("#TITLE#", title)
@@ -382,7 +385,7 @@ const ImageViewer = (props) => {
   };
 
   //startDownload(transformedImage !== null && transformedImage !== "")
-  //            
+  //
 
   return (
     <SafeAreaView style={styles.container}>
@@ -410,7 +413,7 @@ const ImageViewer = (props) => {
             source={uri}
             style={[
               styles.image,
-              { width: resizedImgWidth, height: resizedImgHeight, zIndex: 1 },
+              { width: resizedImgWidth, height: resizedImgHeight, zIndex: 2 },
             ]}
             contentFit="contain"
             placeholder={null}
@@ -447,47 +450,43 @@ const ImageViewer = (props) => {
 
       {watermarkData === null ||
       watermarkData === undefined ||
-      disableWatermark || !sharingAvailability || Platform.OS === "web" ? null : (
+      disableWatermark ||
+      !sharingAvailability ||
+      Platform.OS === "web" ? null : (
         <View style={styles.containerHorizontal}>
           <View style={styles.containerButton}>
-              <TouchableOpacity
-                onPress={() =>
-                  Platform.OS === "ios" ? shareJPGApple() : shareJPGAndroid()
-                }
-                style={[
-                  styles.button,
-                  {
-                    backgroundColor:
-                      loading ||
-                      sharing ||
-                      transformedImage === null
-                        ? colors.daclen_gray
-                        : colors.daclen_orange,
-                  },
-                ]}
-                disabled={
-                  loading ||
-                  sharing ||
-                  transformedImage === null
-                }
-              >
-                {loading || transformedImage === null ? (
-                  <ActivityIndicator
-                    size="small"
-                    color={colors.daclen_light}
-                    style={{ alignSelf: "center" }}
-                  />
-                ) : (
-                  <MaterialCommunityIcons
-                    name="share-variant"
-                    size={18}
-                    color={colors.daclen_light}
-                  />
-                )}
+            <TouchableOpacity
+              onPress={() =>
+                Platform.OS === "ios" ? shareJPGApple() : shareJPGAndroid()
+              }
+              style={[
+                styles.button,
+                {
+                  backgroundColor:
+                    loading || sharing || transformedImage === null
+                      ? colors.daclen_gray
+                      : colors.daclen_orange,
+                },
+              ]}
+              disabled={loading || sharing || transformedImage === null}
+            >
+              {loading || transformedImage === null ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.daclen_light}
+                  style={{ alignSelf: "center" }}
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="share-variant"
+                  size={18}
+                  color={colors.daclen_light}
+                />
+              )}
 
-                <Text style={styles.textButton}>Share Foto</Text>
-              </TouchableOpacity>
-            </View>
+              <Text style={styles.textButton}>Share Foto</Text>
+            </TouchableOpacity>
+          </View>
 
           <View style={styles.containerButton}>
             <TouchableOpacity
@@ -499,7 +498,7 @@ const ImageViewer = (props) => {
                     loading ||
                     sharing ||
                     pdfUri === null ||
-                    transformedImage === null 
+                    transformedImage === null
                       ? colors.daclen_gray
                       : colors.daclen_blue,
                 },
@@ -549,35 +548,39 @@ const ImageViewer = (props) => {
           </View>
         ) : (
           <View style={styles.containerInside}>
-            {loading ? (
+            <View
+              style={[
+                styles.containerImagePreview,
+                { width: productPhotoWidth, height: productPhotoHeight },
+              ]}
+            >
               <ActivityIndicator
-                size="large"
-                style={styles.spinner}
-                color={colors.daclen_orange}
+                size={24}
+                color={loading ? colors.daclen_orange : colors.daclen_gray}
+                style={styles.spinnerMain}
               />
-            ) : (
-              <View
-                style={[
-                  styles.containerImagePreview,
-                  { width: productPhotoWidth, height: productPhotoHeight },
-                ]}
-              >
-                <ImageLargeWatermarkModel
-                  width={width}
-                  height={height}
-                  displayWidth={productPhotoWidth}
-                  displayHeight={productPhotoHeight}
-                  uri={uri}
-                  link_x={link_x}
-                  link_y={link_y}
-                  text_x={text_x}
-                  text_y={text_y}
-                  fontSize={fontSize}
-                  watermarkData={watermarkData}
-                  username={currentUser?.name}
-                />
-              </View>
-            )}
+              <ImageLargeWatermarkModel
+                width={width}
+                height={height}
+                displayWidth={productPhotoWidth}
+                displayHeight={productPhotoHeight}
+                uri={uri}
+                link_x={link_x}
+                link_y={link_y}
+                text_x={text_x}
+                text_y={text_y}
+                fontSize={fontSize}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  start: 0,
+                  zIndex: 1,
+                }
+                }
+                watermarkData={watermarkData}
+                username={currentUser?.name}
+              />
+            </View>
           </View>
         )}
       </ScrollView>
@@ -593,36 +596,38 @@ const styles = StyleSheet.create({
   scrollView: {
     flexGrow: 1,
     width: "100%",
-    backgroundColor: "white",
+    backgroundColor: colors.white,
     justifyContent: "center",
     alignItems: "center",
   },
   containerInside: {
     flex: 1,
+    zIndex: 3,
     width: "100%",
-    backgroundColor: "white",
+    backgroundColor: colors.white,
     justifyContent: "center",
     alignItems: "center",
   },
   containerLargeImage: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: colors.white,
     overflow: "visible",
     position: "absolute",
     top: 0,
     start: 0,
-    zIndex: 0,
+    zIndex: -1,
     opacity: 100,
   },
   containerImage: {
     flex: 1,
-    backgroundColor: "white",
+    zIndex: 3,
+    backgroundColor: colors.white,
     justifyContent: "center",
     alignItems: "center",
     overflow: "visible",
   },
   containerImagePreview: {
-    backgroundColor: "white",
+    backgroundColor: colors.white,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -631,7 +636,7 @@ const styles = StyleSheet.create({
     top: 0,
     start: 0,
     backgroundColor: "transparent",
-    zIndex: 2,
+    zIndex: 4,
     overflow: "visible",
   },
   containerHorizontal: {
@@ -657,13 +662,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginStart: 10,
-    color: "white",
+    color: colors.white,
   },
   textError: {
     width: "100%",
     fontSize: 14,
     fontWeight: "bold",
-    color: "white",
+    color: colors.white,
     paddingHorizontal: 20,
     paddingVertical: 10,
     backgroundColor: colors.daclen_danger,
@@ -676,6 +681,13 @@ const styles = StyleSheet.create({
   },
   spinner: {
     marginVertical: 20,
+    backgroundColor: colors.white,
+    zIndex: 2,
+  },
+  spinnerMain: {
+    zIndex: 1,
+    backgroundColor: "transparent",
+    alignSelf: "center",
   },
 });
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { colors } from "../../../styles/base";
 import { monthNames } from "../../../axios/constants";
@@ -8,7 +9,7 @@ import { formatPrice } from "../../../axios/cart";
 import { sentryLog } from "../../../sentry";
 
 export default function DashboardStats(props) {
-  const { currentUser } = props;
+  const { currentUser, recruitmentTimer } = props;
   const navigation = useNavigation();
 
   if (
@@ -19,6 +20,14 @@ export default function DashboardStats(props) {
   ) {
     return null;
   }
+
+  function showTimerModal() {
+    if (props?.showTimerModal === undefined || props?.showTimerModal === null) {
+        return;
+    }
+    props?.showTimerModal();
+    console.log("recruitmentTimer", recruitmentTimer);
+}
 
   function openHistory() {
     navigation.navigate("History");
@@ -109,9 +118,22 @@ export default function DashboardStats(props) {
           </TouchableOpacity>
         </View>
   
+        <TouchableOpacity style={styles.containerBottom} onPress={() => showTimerModal()}>
         <Text style={styles.textBottom}>
-          {`Minimal Rekrutmen Bulan Ini: 0 Reseller`}
+          {`Target Recruitment Bulan Ini: ${
+              currentUser?.target_rekrutmen
+              ? currentUser?.target_rekrutmen
+              : "0"
+            } Reseller`}
         </Text>
+        <MaterialCommunityIcons
+          name="timer"
+          size={16}
+          color={colors.daclen_light}
+          style={styles.timer}
+        />
+        </TouchableOpacity>
+        
       </View>
     );
   } catch (e) {
@@ -136,6 +158,14 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     flexDirection: "row",
     alignItems: "center",
+  },
+  containerBottom: {
+    backgroundColor: "transparent",
+    flexDirection: "row",
+    justifyContent: "center",
+    marginHorizontal: 10,
+    marginTop: 20,
+    marginBottom: 12,
   },
   containerVertical: {
     marginEnd: 12,
@@ -183,9 +213,6 @@ const styles = StyleSheet.create({
   textBottom: {
     backgroundColor: "transparent",
     textAlign: "center",
-    marginHorizontal: 10,
-    marginTop: 20,
-    marginBottom: 12,
     fontSize: 12,
     color: colors.daclen_light,
   },
@@ -193,5 +220,9 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     aspectRatio: 1 / 1,
+  },
+  timer: {
+    alignSelf: "center",
+    marginHorizontal: 10,
   },
 });

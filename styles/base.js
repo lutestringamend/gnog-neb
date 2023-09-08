@@ -62,6 +62,9 @@ export const colors = {
   daclen_offgreen: "#eaffe7",
   daclen_palepink: "#ffdbcb",
   daclen_reddishbrown: "#750f0f",
+  timer_green_dark: "#0c4824",
+  timer_green_light: "#0c8a38",
+  timer_green_outline: "#04a23d",
 };
 
 export const padding = {

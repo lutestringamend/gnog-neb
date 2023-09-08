@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Linking,
   RefreshControl,
+  FlatList,
 } from "react-native";
 
 import { colors } from "../../styles/base";
@@ -42,7 +43,7 @@ const WatermarkPhotos = ({
         ) : photoKeys?.length === undefined || photoKeys?.length < 1 ? (
           <Text style={styles.textUid}>Tidak ada Foto Promosi tersedia.</Text>
         ) : (
-          <FlashList
+          <FlatList
             estimatedItemSize={10}
             horizontal={false}
             numColumns={1}

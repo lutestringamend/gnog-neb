@@ -35,6 +35,7 @@ import {
   USER_TEMP_CART_STATE_CHANGE,
   USER_TEMP_CART_ITEM_STATE_CHANGE,
   USER_TEMP_CART_NEW_ITEM_CHANGE,
+  USER_RECRUITMENT_DEADLINE_STATE_CHANGE,
 } from "../constants";
 
 import { mainhttp } from "../../axios/constants";
@@ -46,6 +47,7 @@ export const initialState = {
   profileLock: true,
   profileLockTimeout: null,
   profilePIN: null,
+  recruitmentDeadline: null,
   addresses: null,
   addressId: null,
   hpv: null,
@@ -158,6 +160,11 @@ export const user = (state = initialState, action) => {
       return {
         ...state,
         profilePIN: action.data,
+      };
+    case USER_RECRUITMENT_DEADLINE_STATE_CHANGE:
+      return {
+        ...state,
+        recruitmentDeadline: action.data,
       };
     case USER_HPV_STATE_CHANGE:
       return {

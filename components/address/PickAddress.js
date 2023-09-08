@@ -13,6 +13,7 @@ import {
 } from "react-native";
 //import * as Location from "expo-location";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { SwipeListView } from "react-native-swipe-list-view";
 import { useNavigation } from "@react-navigation/native";
 
 import { connect } from "react-redux";
@@ -33,6 +34,7 @@ import {
 import Header from "../profile/Header";
 import { privacypolicy } from "../profile/constants";
 import Separator from "../profile/Separator";
+import { changeAddress } from "../../axios/address";
 
 function PickAddress(props) {
   const navigation = useNavigation();
@@ -74,14 +76,14 @@ function PickAddress(props) {
     const updatedAddressId = async () => {
       await setObjectAsync(ASYNC_USER_PROFILE_ADDRESS_ID_KEY, addressId);
       if (addressId === "default") {
-        setChangeText("Pengiriman dikirimkan ke Alamat Utama")
+        setChangeText("Pengiriman dikirimkan ke Alamat Utama");
       } else if (originalId === addressId) {
         setChangeText("Alamat Pengiriman telah dikembalikan");
       } else {
         setChangeText("Anda mengganti Alamat Pengiriman");
       }
       navigation.goBack();
-    }
+    };
 
     const loadStorageAddresses = async () => {
       setLoading(true);
@@ -99,14 +101,20 @@ function PickAddress(props) {
       setLoading(false);
     };
 
-    const checkStorageAddressId = async() => {
-      const storageAddressId = await getObjectAsync(ASYNC_USER_PROFILE_ADDRESS_ID_KEY);
-      if (storageAddressId === undefined || storageAddressId === null || storageAddressId === "") {
+    const checkStorageAddressId = async () => {
+      const storageAddressId = await getObjectAsync(
+        ASYNC_USER_PROFILE_ADDRESS_ID_KEY
+      );
+      if (
+        storageAddressId === undefined ||
+        storageAddressId === null ||
+        storageAddressId === ""
+      ) {
         props.updateReduxUserAddressId("default");
       } else {
         props.updateReduxUserAddressId(storageAddressId);
       }
-    }
+    };
 
     const addAddress = async () => {
       /*if (addresses?.length === undefined || addresses?.length < 1) {
@@ -143,6 +151,62 @@ function PickAddress(props) {
         navigation.goBack();
       }
     }
+
+    const editAddress = (item) => {
+      navigation.navigate("Address", {
+        addressData: item,
+        isRealtime: false,
+        isDefault: false,
+        isNew: false,
+      });
+    };
+
+    const deleteAddressData = async (item) => {
+      let newAddresses = changeAddress(addresses, item?.id, null);
+      console.log("deleteAddressData", item?.id);
+      await setObjectAsync(ASYNC_USER_ADDRESSES_KEY, newAddresses);
+      props.updateReduxUserAddresses(newAddresses);
+    };
+
+    const onRowDidOpen = (rowKey) => {
+      console.log("onRowDidOpen", rowKey);
+    };
+
+    const renderHiddenItem = (data, rowMap) => (
+      <View
+        style={[
+          styles.rowBack,
+          {
+            backgroundColor:
+              addressId === data?.item?.id
+                ? colors.daclen_green_dark
+                : colors.daclen_green,
+          },
+        ]}
+      >
+        <TouchableOpacity
+          onPress={() => onAddressPress(data?.item?.id)}
+          disabled={addressId === data?.item?.id}
+        >
+          <Text style={styles.textHiddenButton}>
+            {addressId === data?.item?.id ? "Terpilih" : "Pilih"}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.backRightBtn, styles.backRightBtnLeft]}
+          onPress={() => editAddress(data?.item)}
+        >
+          <Text style={styles.textHiddenButton}>Edit</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.backRightBtn, styles.backRightBtnRight]}
+          onPress={() => deleteAddressData(data?.item)}
+        >
+          <Text style={styles.textHiddenButton}>Hapus</Text>
+        </TouchableOpacity>
+      </View>
+    );
 
     if (currentUser === null || currentUser?.id === undefined) {
       return (
@@ -195,14 +259,12 @@ function PickAddress(props) {
             isDefault={true}
             addressId={addressId}
             item={currentAddress}
-            style={{marginTop: 20}}
+            style={{ marginTop: 20, marginHorizontal: 20 }}
           />
 
           <Separator thickness={2} style={{ marginTop: 12 }} />
 
-          <Text style={styles.textHeader}>
-            Alamat Lainnya
-          </Text>
+          <Text style={styles.textHeader}>Alamat Lainnya</Text>
 
           <TouchableOpacity style={styles.button} onPress={() => addAddress()}>
             <MaterialCommunityIcons
@@ -222,27 +284,25 @@ function PickAddress(props) {
           ) : addresses?.length === undefined || addresses?.length < 1 ? (
             <Text style={styles.textUid}>Tidak ada alamat lain tersimpan.</Text>
           ) : (
-            <FlatList
-              horizontal={false}
-              numColumns={1}
-              style={styles.containerFlatlist}
+            <SwipeListView
               data={addresses}
-              renderItem={({ item, index }) => (
+              renderItem={(data, rowMap) => (
                 <AddressItem
                   onPress={(e) => onAddressPress(e)}
                   isRealtime={false}
                   isDefault={false}
                   addressId={addressId}
-                  item={item}
-                  style={{ marginTop: index === 0 ? 12 : 20 }}
+                  item={data.item}
                 />
               )}
-              refreshControl={
-                <RefreshControl
-                  refreshing={refreshing}
-                  onRefresh={() => loadStorageAddresses()}
-                />
-              }
+              renderHiddenItem={renderHiddenItem}
+              leftOpenValue={75}
+              rightOpenValue={-150}
+              previewRowKey={"0"}
+              previewOpenValue={-40}
+              previewOpenDelay={3000}
+              onRowDidOpen={onRowDidOpen}
+              style={{ marginTop: 20 }}
             />
           )}
           <View style={styles.containerBottom} />
@@ -259,6 +319,24 @@ function PickAddress(props) {
     );
   }
 }
+
+/*
+            <FlatList
+              horizontal={false}
+              numColumns={1}
+              style={styles.containerFlatlist}
+              data={addresses}
+              renderItem={({ item, index }) => (
+
+              )}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={() => loadStorageAddresses()}
+                />
+              }
+            />
+*/
 
 const styles = StyleSheet.create({
   container: {
@@ -329,6 +407,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textAlign: "center",
   },
+  textHiddenButton: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: colors.daclen_light,
+  },
   spinner: {
     marginTop: 20,
     alignSelf: "center",
@@ -338,6 +421,30 @@ const styles = StyleSheet.create({
     height: 120,
     backgroundColor: "transparent",
     alignSelf: "center",
+  },
+  rowBack: {
+    alignItems: "center",
+    backgroundColor: colors.daclen_black,
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingLeft: 15,
+  },
+  backRightBtn: {
+    alignItems: "center",
+    bottom: 0,
+    justifyContent: "center",
+    position: "absolute",
+    top: 0,
+    width: 75,
+  },
+  backRightBtnLeft: {
+    backgroundColor: colors.daclen_indigo,
+    right: 75,
+  },
+  backRightBtnRight: {
+    backgroundColor: colors.daclen_danger,
+    right: 0,
   },
 });
 

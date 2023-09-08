@@ -44,26 +44,30 @@ import { clearCartError } from "../axios/cart";
 import { sentryLog } from "../sentry";
 import Top from "./Top";
 import { colors } from "../styles/base";
-import { personalwebsiteurlshort } from "../axios/constants";
+import {
+  personalwebsiteurlshort,
+  temprecruitmentdeadline,
+} from "../axios/constants";
 import { fetchRajaOngkir } from "../axios/address";
 import { requestLocationForegroundPermission } from "./address";
 
 function Main(props) {
-  try {
-    const [error, setError] = useState(null);
-    const [locationPermission, setLocationPermission] = useState(null);
-    const appState = useRef(AppState.currentState);
-    const {
-      token,
-      currentUser,
-      profileLock,
-      profileLockTimeout,
-      profilePIN,
-      watermarkData,
-      addressId,
-      addresses,
-    } = props;
+  const [error, setError] = useState(null);
+  const [locationPermission, setLocationPermission] = useState(null);
+  const [recruitmentTimer, setRecruitmentTimer] = useState(null);
+  const appState = useRef(AppState.currentState);
+  const {
+    token,
+    currentUser,
+    profileLock,
+    profileLockTimeout,
+    profilePIN,
+    watermarkData,
+    addressId,
+    addresses,
+  } = props;
 
+  try {
     useEffect(() => {
       const readStorageProducts = async () => {
         const storageProducts = await getObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY);
@@ -101,23 +105,26 @@ function Main(props) {
     }, [token]);
 
     useEffect(() => {
-      if (currentUser === undefined || currentUser === null || currentUser?.name === undefined) {
+      if (
+        currentUser === undefined ||
+        currentUser === null ||
+        currentUser?.name === undefined
+      ) {
         return;
       }
 
+      checkProfileLockTimeout();
       console.log("redux currentUser", currentUser);
       if (watermarkData === null) {
         checkWatermarkData();
       } else {
         console.log("Main redux WatermarkData", watermarkData);
       }
-      if (!profileLock) {
-        const theAppState = AppState.addEventListener(
-          "change",
-          handleAppStateChange
-        );
-        return () => theAppState.remove();
-      }
+      const theAppState = AppState.addEventListener(
+        "change",
+        handleAppStateChange
+      );
+      return () => theAppState.remove();
     }, [currentUser, profileLock]);
 
     useEffect(() => {
@@ -132,18 +139,6 @@ function Main(props) {
       }
       console.log("Main redux PIN", profilePIN);
     }, [profilePIN]);
-
-    useEffect(() => {
-      //console.log("Main profileLock", profileLock);
-      if (
-        profileLock ||
-        profileLockTimeout === null ||
-        profileLockTimeout <= 0
-      ) {
-        return;
-      }
-      checkProfileLockTimeout();
-    }, [profileLock, profileLockTimeout]);
 
     useEffect(() => {
       if (addressId === null) {
@@ -224,7 +219,7 @@ function Main(props) {
     const checkLocationPermission = async () => {
       let result = await requestLocationForegroundPermission();
       setLocationPermission(result);
-    }
+    };
 
     const handleAppStateChange = async (nextAppState) => {
       if (
@@ -245,12 +240,34 @@ function Main(props) {
 
     const checkProfileLockTimeout = async () => {
       //console.log("checkProfileLockTimeout");
+      if (
+        token === null ||
+        currentUser === null ||
+        currentUser?.id === undefined ||
+        currentUser?.id === null ||
+        currentUser?.name === undefined ||
+        currentUser?.name === null
+      ) {
+        return;
+      }
       try {
         let time = new Date().getTime();
-        if (time >= profileLockTimeout) {
+        if (
+          !(
+            profileLock ||
+            profileLockTimeout === null ||
+            profileLockTimeout <= 0
+          ) &&
+          time >= profileLockTimeout
+        ) {
           props.updateReduxProfileLockStatus(true);
-        } else {
+        }
+
+        if (temprecruitmentdeadline - time > 0) {
+          setRecruitmentTimer(temprecruitmentdeadline - time);
           setTimeout(checkProfileLockTimeout, 1000);
+        } else {
+          setRecruitmentTimer(0);
         }
       } catch (err) {
         console.error(err);
@@ -259,11 +276,13 @@ function Main(props) {
     };
 
     const checkRajaOngkirProvinsi = async () => {
-      const storageProvinsi = await getObjectAsync(ASYNC_RAJAONGKIR_PROVINSI_KEY);
+      const storageProvinsi = await getObjectAsync(
+        ASYNC_RAJAONGKIR_PROVINSI_KEY
+      );
       if (storageProvinsi === undefined || storageProvinsi === null) {
         fetchRajaOngkir(token, "provinsi");
       }
-    }
+    };
 
     const checkStorageAddressId = async () => {
       const storageAddressId = await getObjectAsync(
@@ -318,7 +337,7 @@ function Main(props) {
     } else if (Platform.OS === "web") {
       return (
         <SafeAreaView style={styles.container}>
-          <TabNavigator token={token} currentUser={currentUser} />
+          <TabNavigator token={token} currentUser={currentUser} recruitmentTimer={recruitmentTimer} />
         </SafeAreaView>
       );
     } else {
@@ -329,7 +348,11 @@ function Main(props) {
             style={styles.background}
             resizeMode="cover"
           />
-          <Top token={token} currentUser={currentUser} />
+          <Top
+            token={token}
+            currentUser={currentUser}
+            recruitmentTimer={recruitmentTimer}
+          />
         </SafeAreaView>
       );
     }
