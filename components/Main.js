@@ -120,11 +120,16 @@ function Main(props) {
       } else {
         console.log("Main redux WatermarkData", watermarkData);
       }
-      const theAppState = AppState.addEventListener(
-        "change",
-        handleAppStateChange
-      );
-      return () => theAppState.remove();
+
+      try {
+        const theAppState = AppState.addEventListener(
+          "change",
+          handleAppStateChange
+        );
+        return () => theAppState.remove();
+      } catch (e) {
+        console.error(e);
+      }
     }, [currentUser, profileLock]);
 
     useEffect(() => {
@@ -318,7 +323,15 @@ function Main(props) {
         props.updateReduxMediaKitWatermarkData(newData);
       } else if (currentUser !== null) {
         props.updateReduxMediaKitWatermarkData({
-          name: currentUser?.name ? currentUser?.name : "",
+          name:
+            currentUser?.detail_user === undefined ||
+            currentUser?.detail_user?.nama_lengkap === undefined ||
+            currentUser?.detail_user?.nama_lengkap === null ||
+            currentUser?.detail_user?.nama_lengkap === ""
+              ? currentUser?.name
+                ? currentUser?.name
+                : ""
+              : currentUser?.detail_user?.nama_lengkap,
           phone: currentUser?.nomor_telp ? currentUser?.nomor_telp : "",
           url: currentUser?.name
             ? `${personalwebsiteurlshort}${currentUser?.name}`
@@ -337,7 +350,11 @@ function Main(props) {
     } else if (Platform.OS === "web") {
       return (
         <SafeAreaView style={styles.container}>
-          <TabNavigator token={token} currentUser={currentUser} recruitmentTimer={recruitmentTimer} />
+          <TabNavigator
+            token={token}
+            currentUser={currentUser}
+            recruitmentTimer={recruitmentTimer}
+          />
         </SafeAreaView>
       );
     } else {

@@ -96,7 +96,7 @@ function FillAddress(props) {
     console.log("initial newAddress", newAddress);
     if (isDefault) {
       console.log("currentAddress", currentAddress);
-      console
+      console;
       if (
         currentAddress === undefined ||
         currentAddress === null ||
@@ -542,7 +542,15 @@ function FillAddress(props) {
             <Text style={[styles.textCompulsory]}>Nama Depan Penerima*</Text>
             <TextInput
               value={address?.nama_depan}
-              style={styles.textInput}
+              style={[
+                styles.textInput,
+                {
+                  backgroundColor:
+                    address.nama_depan === null || address.nama_depan === ""
+                      ? colors.daclen_lightgrey
+                      : colors.white,
+                },
+              ]}
               onChangeText={(nama_depan) =>
                 setAddress({ ...address, nama_depan })
               }
@@ -560,10 +568,41 @@ function FillAddress(props) {
           </View>
         )}
 
+        {isDefault ? null : (
+          <View style={styles.containerVertical}>
+            <Text style={styles.textCompulsory}>Nomor Telepon*</Text>
+            <TextInput
+              value={address?.nomor_telp}
+              style={[
+                styles.textInput,
+                {
+                  backgroundColor:
+                    address.nomor_telp === null || address.nomor_telp === ""
+                      ? colors.daclen_lightgrey
+                      : colors.white,
+                },
+              ]}
+              inputMode="decimal"
+              onChangeText={(nomor_telp) =>
+                setAddress({ ...address, nomor_telp })
+              }
+              editable={!isDefault}
+            />
+          </View>
+        )}
+
         <Text style={styles.textCompulsory}>Alamat Lengkap*</Text>
         <TextInput
           value={address?.alamat}
-          style={styles.textInput}
+          style={[
+            styles.textInput,
+            {
+              backgroundColor:
+                address.alamat === null || address.alamat === ""
+                  ? colors.daclen_lightgrey
+                  : colors.white,
+            },
+          ]}
           onChangeText={(alamat) => setAddress({ ...address, alamat })}
         />
         <Text style={styles.textCompulsory}>Provinsi*</Text>
@@ -571,7 +610,15 @@ function FillAddress(props) {
           disabled={loading}
           onPress={() => openProvinsi()}
           value={inputNames.provinsi}
-          style={styles.textInput}
+          style={[
+            styles.textInput,
+            {
+              backgroundColor:
+                inputNames.provinsi === null || inputNames.provinsi === ""
+                  ? colors.daclen_lightgrey
+                  : colors.white,
+            },
+          ]}
           onChangeText={(provinsi_id) =>
             setAddress({ ...address, provinsi_id })
           }
@@ -587,7 +634,15 @@ function FillAddress(props) {
                 : "Tekan untuk memilih"
               : inputNames.kota
           }
-          style={styles.textInput}
+          style={[
+            styles.textInput,
+            {
+              backgroundColor:
+                inputNames.kota === null || inputNames.kota === ""
+                  ? colors.daclen_lightgrey
+                  : colors.white,
+            },
+          ]}
           onChangeText={(kota_id) => setAddress({ ...address, kota_id })}
         />
         <Text style={styles.textCompulsory}>Kecamatan*</Text>
@@ -607,7 +662,15 @@ function FillAddress(props) {
                 : "Tekan untuk memilih"
               : inputNames.kecamatan
           }
-          style={styles.textInput}
+          style={[
+            styles.textInput,
+            {
+              backgroundColor:
+                inputNames.kecamatan === null || inputNames.kecamatan === ""
+                  ? colors.daclen_lightgrey
+                  : colors.white,
+            },
+          ]}
           onChangeText={(kecamatan_id) =>
             setAddress({ ...address, kecamatan_id })
           }
@@ -619,21 +682,6 @@ function FillAddress(props) {
           inputMode="decimal"
           onChangeText={(kode_pos) => setAddress({ ...address, kode_pos })}
         />
-
-        {isDefault ? null : (
-          <View style={styles.containerVertical}>
-            <Text style={styles.textCompulsory}>Nomor Telepon*</Text>
-            <TextInput
-              value={address?.nomor_telp}
-              style={styles.textInput}
-              inputMode="decimal"
-              onChangeText={(nomor_telp) =>
-                setAddress({ ...address, nomor_telp })
-              }
-              editable={!isDefault}
-            />
-          </View>
-        )}
 
         <TouchableOpacity
           onPress={() => updateUserAddressData()}

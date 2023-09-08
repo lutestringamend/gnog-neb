@@ -6,56 +6,86 @@ import {
   Text,
   Dimensions,
 } from "react-native";
-import CountDown from "react-native-countdown-component";
+//import CountDown from "react-native-countdown-component";
 import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../../../styles/base";
 import moment from "moment";
 
 const DashboardTimer = (props) => {
-  const { recruitmentTimer } = props;
-  const modalWidth = Dimensions.get("window").width * 0.9;
+  const { recruitmentTimer, showTimerModal, setShowTimerModal } = props;
+  const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
+  const modalWidth = screenWidth * 0.9;
+  const modalHeight = 200;
 
-  function toggleModal() {
-    if (props?.toggleModal === undefined || props?.toggleModal === null) {
-      return;
-    }
-    props?.toggleModal();
-  }
-
-  return (
-    <TouchableOpacity style={styles.container} onPress={() => toggleModal()}>
-      <View style={[styles.containerTimer, { width: modalWidth }]}>
-        <LinearGradient
-          colors={[colors.timer_green_light, colors.timer_green_dark]}
-          style={styles.background}
-        />
-        <Text style={styles.textHeader}>COUNTDOWN RECRUITMENT</Text>
-        <CountDown
-          until={moment.duration(recruitmentTimer).asSeconds()}
-          size={32}
-          onFinish={() => console.log("Finished")}
-          style={styles.containerCountdown}
-          digitStyle={{ backgroundColor: "transparent" }}
-          digitTxtStyle={styles.digitText}
-          timeLabelStyle={styles.timeLabel}
-          timeToShow={["D", "H", "M"]}
-          timeLabels={{ d: "HARI", h: "JAM", m: "MENIT" }}
-        />
-        <View style={[styles.containerOK, { start: modalWidth / 2 - 60 }]}>
-          <Text style={styles.textOK}>OK</Text>
+  try {
+    return (
+      <TouchableOpacity
+        style={[
+          styles.container,
+          {
+            width: screenWidth,
+            height: screenHeight,
+            opacity: showTimerModal ? 0.95 : 0,
+          },
+        ]}
+        onPress={() => setShowTimerModal((showTimerModal) => !showTimerModal)}
+      >
+        <View
+          style={[
+            styles.containerTimer,
+            {
+              width: modalWidth,
+              height: modalHeight,
+              start: screenWidth * 0.05,
+              end: screenWidth * 0.05,
+              top: screenHeight * 0.2,
+            },
+          ]}
+        >
+          <LinearGradient
+            colors={[colors.timer_green_light, colors.timer_green_dark]}
+            style={[
+              styles.background,
+              {
+                width: modalWidth,
+                height: modalHeight,
+              },
+            ]}
+          />
+          <Text style={styles.textHeader}>COUNTDOWN RECRUITMENT</Text>
+ 
+          <View style={[styles.containerOK, { start: modalWidth / 2 - 60 }]}>
+            <Text style={styles.textOK}>OK</Text>
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  } catch (e) {
+    console.log("DashboardTimer error", e);
+    return null;
+  }
 };
+
+/*
+         <CountDown
+            until={moment.duration(recruitmentTimer).asSeconds()}
+            size={32}
+            onFinish={() => console.log("Finished")}
+            style={styles.containerCountdown}
+            digitStyle={{ backgroundColor: "transparent" }}
+            digitTxtStyle={styles.digitText}
+            timeLabelStyle={styles.timeLabel}
+            timeToShow={["D", "H", "M"]}
+            timeLabels={{ d: "HARI", h: "JAM", m: "MENIT" }}
+          />
+*/
 
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
     top: 0,
     start: 0,
-    width: "100%",
-    height: "100%",
     zIndex: 100,
     elevation: 4,
     backgroundColor: "transparent",
@@ -67,11 +97,10 @@ const styles = StyleSheet.create({
     start: 0,
     end: 0,
     top: 0,
-    width: "100%",
-    height: "100%",
     borderRadius: 12,
   },
   containerTimer: {
+    position: "absolute",
     backgroundColor: "transparent",
     opacity: 1,
     borderRadius: 12,
@@ -112,7 +141,6 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 10,
     elevation: 6,
-    marginHorizontal: 10,
   },
   timeLabel: { color: colors.daclen_light, fontSize: 14 },
   textOK: {

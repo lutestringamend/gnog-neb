@@ -287,13 +287,11 @@ const Dashboard = (props) => {
           pinLoading ||
           recruitmentTimer === undefined ||
           recruitmentTimer === null ||
-          recruitmentTimer < 0 ||
-          !showTimerModal ? null : (
+          recruitmentTimer < 0 ? null : (
           <DashboardTimer
             recruitmentTimer={recruitmentTimer}
-            toggleModal={() =>
-              setShowTimerModal((showTimerModal) => !showTimerModal)
-            }
+            showTimerModal={showTimerModal}
+            setShowTimerModal={setShowTimerModal}
           />
         )}
       </ScrollView>

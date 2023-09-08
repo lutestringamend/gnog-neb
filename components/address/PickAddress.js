@@ -264,26 +264,32 @@ function PickAddress(props) {
 
           <Separator thickness={2} style={{ marginTop: 12 }} />
 
-          <Text style={styles.textHeader}>Alamat Lainnya</Text>
-
-          <TouchableOpacity style={styles.button} onPress={() => addAddress()}>
-            <MaterialCommunityIcons
-              name="map-plus"
-              size={18}
-              color={colors.daclen_light}
-            />
-            <Text style={styles.textButton}>Tambah Alamat Baru</Text>
-          </TouchableOpacity>
+          {loading ? null : (
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => addAddress()}
+            >
+              <MaterialCommunityIcons
+                name="map-plus"
+                size={18}
+                color={colors.daclen_light}
+              />
+              <Text style={styles.textButton}>
+                {addresses?.length === undefined || addresses?.length < 1
+                  ? "Tambah Alamat Lainnya"
+                  : "Tambah Alamat Baru"}
+              </Text>
+            </TouchableOpacity>
+          )}
 
           {loading ? (
             <ActivityIndicator
               size="small"
-              color={colors.splash_blue}
+              color={colors.daclen_orange}
               style={styles.spinner}
             />
-          ) : addresses?.length === undefined || addresses?.length < 1 ? (
-            <Text style={styles.textUid}>Tidak ada alamat lain tersimpan.</Text>
-          ) : (
+          ) : addresses?.length === undefined ||
+            addresses?.length < 1 ? null : (
             <SwipeListView
               data={addresses}
               renderItem={(data, rowMap) => (
@@ -321,6 +327,9 @@ function PickAddress(props) {
 }
 
 /*
+
+          <Text style={styles.textHeader}>Alamat Lainnya</Text>
+
             <FlatList
               horizontal={false}
               numColumns={1}
@@ -356,7 +365,7 @@ const styles = StyleSheet.create({
   },
   containerBottom: {
     backgroundColor: "transparent",
-    height: staticDimensions.pageBottomPadding / 2,
+    height: staticDimensions.pageBottomPadding * 2,
   },
   button: {
     flexDirection: "row",

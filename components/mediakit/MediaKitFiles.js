@@ -148,11 +148,19 @@ function MediaKitFiles(props) {
     function getWatermarkDataFromCurrentUser() {
       return {
         ...WatermarkData,
-        name: currentUser?.name ? currentUser?.name : "",
-        phone: currentUser?.nomor_telp ? currentUser?.nomor_telp : "",
-        url: currentUser?.name
-          ? `${personalwebsiteurlshort}${currentUser?.name}`
-          : "",
+        name:
+            currentUser?.detail_user === undefined ||
+            currentUser?.detail_user?.nama_lengkap === undefined ||
+            currentUser?.detail_user?.nama_lengkap === null ||
+            currentUser?.detail_user?.nama_lengkap === ""
+              ? currentUser?.name
+                ? currentUser?.name
+                : ""
+              : currentUser?.detail_user?.nama_lengkap,
+          phone: currentUser?.nomor_telp ? currentUser?.nomor_telp : "",
+          url: currentUser?.name
+            ? `${personalwebsiteurlshort}${currentUser?.name}`
+            : "",
       };
     }
 

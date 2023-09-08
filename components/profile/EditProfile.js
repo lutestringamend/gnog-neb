@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
+  Platform,
 } from "react-native";
 import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -46,7 +47,10 @@ import { intiialPermissions, checkMediaPermissions } from "../media";
 import BSMedia from "../bottomsheets/BSMedia";
 import { setObjectAsync } from "../asyncstorage";
 import { ASYNC_USER_CURRENTUSER_KEY } from "../asyncstorage/constants";
-import { convertDateObjecttoDisplayLocaleDate, convertDisplayLocaleDatetoDateObject } from "../../axios/profile";
+import {
+  convertDateObjecttoDisplayLocaleDate,
+  convertDisplayLocaleDatetoDateObject,
+} from "../../axios/profile";
 
 const defaultUploadingPhoto = {
   pending: false,
@@ -421,7 +425,15 @@ function EditProfile(props) {
           )}
           <TextInput
             value={user?.nomor_telp}
-            style={styles.textInput}
+            style={[
+              styles.textInput,
+              {
+                backgroundColor:
+                  user?.nomor_telp === null || user?.nomor_telp === ""
+                    ? colors.daclen_lightgrey
+                    : colors.white,
+              },
+            ]}
             inputMode="decimal"
             editable={
               !(
@@ -444,7 +456,15 @@ function EditProfile(props) {
           )}
           <TextInput
             value={user?.email}
-            style={styles.textInput}
+            style={[
+              styles.textInput,
+              {
+                backgroundColor:
+                  user?.email === null || user?.email === ""
+                    ? colors.daclen_lightgrey
+                    : colors.white,
+              },
+            ]}
             editable={
               !(
                 currentUser?.email === undefined ||
@@ -458,7 +478,15 @@ function EditProfile(props) {
           <Text style={styles.textCompulsory}>Nama depan*</Text>
           <TextInput
             value={user?.nama_depan}
-            style={styles.textInput}
+            style={[
+              styles.textInput,
+              {
+                backgroundColor:
+                  user?.nama_depan === null || user?.nama_depan === ""
+                    ? colors.daclen_lightgrey
+                    : colors.white,
+              },
+            ]}
             onChangeText={(nama_depan) => setUser({ ...user, nama_depan })}
             editable={
               currentUser?.bank_set === undefined || !currentUser?.bank_set
@@ -488,7 +516,15 @@ function EditProfile(props) {
           {Platform.OS === "web" ? (
             <TextInput
               value={user?.tanggal_lahir ? user?.tanggal_lahir : ""}
-              style={styles.textInput}
+              style={[
+                styles.textInput,
+                {
+                  backgroundColor:
+                    user?.tanggal_lahir === null || user?.tanggal_lahir === ""
+                      ? colors.daclen_lightgrey
+                      : colors.white,
+                },
+              ]}
               placeholder={birthdateplaceholder}
               onChangeText={(tanggal_lahir) =>
                 setUser({ ...user, tanggal_lahir })
@@ -498,7 +534,15 @@ function EditProfile(props) {
             <BSTextInput
               value={user?.tanggal_lahir ? user?.tanggal_lahir : ""}
               onPress={() => openDatePicker()}
-              style={styles.textInput}
+              style={[
+                styles.textInput,
+                {
+                  backgroundColor:
+                    user?.tanggal_lahir === null || user?.tanggal_lahir === ""
+                      ? colors.daclen_lightgrey
+                      : colors.white,
+                },
+              ]}
               placeholder={birthdateplaceholder}
               placeholderTextColor={colors.feed_desc_grey}
             />
@@ -531,7 +575,15 @@ function EditProfile(props) {
                   : ""
                 : user?.nomor_rekening
             }
-            style={styles.textInput}
+            style={[
+              styles.textInput,
+              {
+                backgroundColor:
+                  user?.nomor_rekening === null || user?.nomor_rekening === ""
+                    ? colors.daclen_lightgrey
+                    : colors.white,
+              },
+            ]}
             onChangeText={(nomor_rekening) =>
               setUser({ ...user, nomor_rekening })
             }
@@ -555,6 +607,9 @@ function EditProfile(props) {
             style={[
               styles.textInput,
               {
+                backgroundColor: currentUser?.bank_set
+                  ? colors.white
+                  : colors.daclen_lightgrey,
                 color: currentUser?.bank_set
                   ? colors.daclen_blue
                   : colors.daclen_black,

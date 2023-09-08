@@ -12,7 +12,7 @@ export const vwmarktemplateheight = 762;
 export const vwmarktextnamefontsize = 190;
 export const vwmarktextnametop = 55;
 export const vwmarktextnamestart = 1350;
-export const vwmarktextnamecharlimit = 14;
+export const vwmarktextnamecharlimit = 18;
 
 export const vwmarktextphonefontsize = 310;
 export const vwmarktextphonetop = 300;
@@ -40,7 +40,7 @@ export const vwmarkrenderlandscapewidthcompressionconstant = 1;
 export const vwmarkrenderlandscapeheightcompressionconstant = 1;
 
 export const vwmarkrenderportraitwidthcompressionconstant = 1;
-export const vwmarkrenderportraitheightcompressionconstant = 1.05;
+export const vwmarkrenderportraitheightcompressionconstant = 1;
 
 export const vwmarkdebuguserid = 1;
 
