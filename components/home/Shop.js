@@ -79,6 +79,7 @@ function Shop(props) {
         null
       );
     }
+    console.log("redux cart", cart);
   }, [cart]);
 
   useEffect(() => {
@@ -104,7 +105,7 @@ function Shop(props) {
     ) {
       props.clearKeranjang(token);
     }
-    //console.log("redux tempCart", newNum, tempCart);
+    console.log("redux tempCart", tempCart);
   }, [tempCart]);
 
   useEffect(() => {

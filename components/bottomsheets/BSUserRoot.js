@@ -1,5 +1,6 @@
 import React from "react";
-import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { colors } from "../../styles/base";
@@ -22,8 +23,12 @@ export default function BSUserRoot(props) {
       <View style={styles.containerContent}>
         <View style={styles.containerLogo}>
           <Image
-            source={require("../../assets/user.png")}
+            source={data?.foto ? data?.foto : require("../../assets/user.png")}
             style={styles.logo}
+            alt={data?.title ? data?.title : ""}
+            contentFit="cover"
+            placeholder={require("../../assets/user.png")}
+            transition={0}
           />
         </View>
         <View style={styles.containerInfo}>
@@ -32,13 +37,13 @@ export default function BSUserRoot(props) {
             style={[
               styles.textVerification,
               {
-                backgroundColor: data?.nomor_telp_verified_at
+                backgroundColor: data?.isVerified
                   ? colors.daclen_green
                   : colors.daclen_red,
               },
             ]}
           >
-            {data?.nomor_telp_verified_at ? data?.nomor_telp ? data?.nomor_telp : userverified : phonenotverified}
+            {data?.isVerified ? data?.nomor_telp ? data?.nomor_telp : userverified : phonenotverified}
           </Text>
           <Text style={styles.text}>
             PV: {data?.pv ? data?.pv : "0"}
@@ -109,6 +114,9 @@ const styles = StyleSheet.create({
   logo: {
     width: 80,
     height: 80,
+    borderRadius: 40,
+    backgroundColor: "transparent",
+    elevation: 2,
   },
   icon: {
     backgroundColor: colors.daclen_black,

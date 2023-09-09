@@ -16,7 +16,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { clearUserData, getCurrentUser } from "../../axios/user";
-import { clearKeranjang, formatPrice, storeCheckout } from "../../axios/cart";
+import { clearKeranjang, formatPrice, storeCheckout, overhaulReduxCart, overhaulReduxTempCart } from "../../axios/cart";
 import { callMasterkurir, getKurirData } from "../../axios/courier";
 import { clearHistoryData } from "../../axios/history";
 
@@ -328,6 +328,8 @@ function Checkout(props) {
           const snapToken = checkout?.snap_token;
           const snap_url = checkout?.snap_url;
           //console.log("open MidtransSnap " + snapToken);
+          props.overhaulReduxCart(null);
+          props.overhaulReduxTempCart(null);
           props.clearHistoryData();
           navigation.navigate("OpenMidtrans", { snapToken, snap_url });
         } else {
@@ -692,7 +694,7 @@ function Checkout(props) {
       <RBSheet
         ref={rbSenderName}
         openDuration={250}
-        height={300}
+        height={240}
         onClose={() =>
           setSenderName((senderName) => ({
             ...senderName,
@@ -708,7 +710,7 @@ function Checkout(props) {
               onPressRadioButtonSenderName={onPressRadioButtonSenderName}
             />
           }
-          closeThis={null}
+          closeThis={() => rbSenderName.current.close()}
           onPress={null}
         />
       </RBSheet>
@@ -831,6 +833,8 @@ const mapDispatchProps = (dispatch) =>
       callMasterkurir,
       getKurirData,
       clearHistoryData,
+      overhaulReduxCart,
+      overhaulReduxTempCart,
     },
     dispatch
   );

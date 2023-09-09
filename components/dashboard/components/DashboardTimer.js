@@ -1,22 +1,99 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   TouchableOpacity,
   View,
   Text,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 //import CountDown from "react-native-countdown-component";
 import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../../../styles/base";
 import moment from "moment";
+import { sentryLog } from "../../../sentry";
+import { addZeroToArray } from "../../../axios";
+
+const screenWidth = Dimensions.get("window").width;
+const screenHeight = Dimensions.get("window").height;
+const modalWidth = screenWidth * 0.95;
+const modalHeight = 200;
+const digitTextWidth = 30;
+const digitTextHeight = 54;
+const defaultDigit = ["0", "0", "0", "0", "0", "0", "0", "0"];
+
+const DigitText = ({ number }) => {
+  return (
+    <View
+      style={[
+        styles.containerDigitText,
+        { width: digitTextWidth, height: digitTextHeight },
+      ]}
+    >
+      <LinearGradient
+        colors={[colors.timer_green_dark, colors.timer_green_light]}
+        style={[
+          styles.background,
+          {
+            width: digitTextWidth,
+            height: digitTextHeight,
+            borderRadius: 6,
+          },
+        ]}
+      />
+      <Text style={styles.digitText}>{number.toString()}</Text>
+    </View>
+  );
+};
+
+const ContainerDigit = ({ digit1, digit2, label }) => {
+  return (
+    <View style={styles.containerDigitItem}>
+      <View style={styles.containerDoubleDigit}>
+        <DigitText number={digit1} />
+        <DigitText number={digit2} />
+      </View>
+      <Text style={styles.timeLabel}>{label}</Text>
+    </View>
+  );
+};
 
 const DashboardTimer = (props) => {
-  const { recruitmentTimer, showTimerModal, setShowTimerModal } = props;
-  const screenWidth = Dimensions.get("window").width;
-  const screenHeight = Dimensions.get("window").height;
-  const modalWidth = screenWidth * 0.9;
-  const modalHeight = 200;
+  const { recruitmentTimer, setShowTimerModal } = props;
+  const [digits, setDigits] = useState(defaultDigit);
+
+  useEffect(() => {
+    try {
+      let days = Math.floor(moment.duration(recruitmentTimer).asDays());
+      let hours = Math.floor(
+        moment.duration(recruitmentTimer).asHours() - days * 24
+      );
+      let minutes = Math.floor(
+        moment.duration(recruitmentTimer).asMinutes() -
+          hours * 60 -
+          days * 60 * 24
+      );
+      let seconds = Math.floor(
+        moment.duration(recruitmentTimer).asSeconds() -
+          minutes * 60 -
+          hours * 60 * 60 -
+          days * 60 * 60 * 24
+      );
+      setDigits(
+        addZeroToArray(days)
+          .concat(addZeroToArray(hours))
+          .concat(addZeroToArray(minutes))
+          .concat(addZeroToArray(seconds))
+      );
+    } catch (e) {
+      console.error(e);
+      sentryLog(e);
+      setDigits(defaultDigit);
+      setShowTimerModal(false);
+    }
+  }, [recruitmentTimer]);
+
+  useEffect(() => {}, [digits]);
 
   try {
     return (
@@ -26,7 +103,6 @@ const DashboardTimer = (props) => {
           {
             width: screenWidth,
             height: screenHeight,
-            opacity: showTimerModal ? 0.95 : 0,
           },
         ]}
         onPress={() => setShowTimerModal((showTimerModal) => !showTimerModal)}
@@ -37,8 +113,8 @@ const DashboardTimer = (props) => {
             {
               width: modalWidth,
               height: modalHeight,
-              start: screenWidth * 0.05,
-              end: screenWidth * 0.05,
+              start: screenWidth * 0.025,
+              end: screenWidth * 0.025,
               top: screenHeight * 0.2,
             },
           ]}
@@ -50,11 +126,46 @@ const DashboardTimer = (props) => {
               {
                 width: modalWidth,
                 height: modalHeight,
+                borderRadius: 12,
               },
             ]}
           />
           <Text style={styles.textHeader}>COUNTDOWN RECRUITMENT</Text>
- 
+
+          {digits === defaultDigit ? (
+            <ActivityIndicator
+              size="large"
+              color={colors.daclen_light}
+              style={{ alignSelf: "center", marginVertical: 32 }}
+            />
+          ) : (
+            <View style={[styles.containerCountdown, { width: modalWidth }]}>
+              <ContainerDigit
+                digit1={digits[0]}
+                digit2={digits[1]}
+                label="Hari"
+              />
+              <Text style={styles.textWall}>:</Text>
+              <ContainerDigit
+                digit1={digits[2]}
+                digit2={digits[3]}
+                label="Jam"
+              />
+              <Text style={styles.textWall}>:</Text>
+              <ContainerDigit
+                digit1={digits[4]}
+                digit2={digits[5]}
+                label="Menit"
+              />
+              <Text style={styles.textWall}>:</Text>
+              <ContainerDigit
+                digit1={digits[6]}
+                digit2={digits[7]}
+                label="Detik"
+              />
+            </View>
+          )}
+
           <View style={[styles.containerOK, { start: modalWidth / 2 - 60 }]}>
             <Text style={styles.textOK}>OK</Text>
           </View>
@@ -91,6 +202,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
+    opacity: 0.95,
   },
   background: {
     position: "absolute",
@@ -98,21 +210,23 @@ const styles = StyleSheet.create({
     end: 0,
     top: 0,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.timer_green_outline,
   },
   containerTimer: {
     position: "absolute",
     backgroundColor: "transparent",
-    opacity: 1,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.timer_green_outline,
+    alignItems: "center",
     paddingVertical: 24,
     paddingHorizontal: 12,
     elevation: 6,
   },
   containerCountdown: {
     backgroundColor: "transparent",
+    flexDirection: "row",
     marginVertical: 10,
+    justifyContent: "center",
+    alignSelf: "center",
   },
   containerOK: {
     position: "absolute",
@@ -128,6 +242,24 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  containerDigitItem: {
+    backgroundColor: "transparent",
+    alignItems: "center",
+    marginHorizontal: 6,
+    marginTop: 12,
+  },
+  containerDigitText: {
+    backgroundColor: "transparent",
+    borderRadius: 10,
+    marginHorizontal: 1,
+    elevation: 6,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  containerDoubleDigit: {
+    backgroundColor: "transparent",
+    flexDirection: "row",
+  },
   textHeader: {
     fontWeight: "bold",
     fontSize: 16,
@@ -135,14 +267,29 @@ const styles = StyleSheet.create({
     textAlign: "center",
     zIndex: 2,
   },
-  digitText: {
+  textWall: {
+    fontWeight: "bold",
+    fontSize: 28,
     color: colors.daclen_light,
-    backgroundColor: colors.timer_green_dark,
-    padding: 16,
-    borderRadius: 10,
-    elevation: 6,
+    backgroundColor: "transparent",
+    marginTop: (digitTextHeight - 12) / 2,
   },
-  timeLabel: { color: colors.daclen_light, fontSize: 14 },
+  digitText: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: colors.daclen_light,
+    backgroundColor: "transparent",
+    alignSelf: "center",
+    textAlign: "center",
+    textAlignVertical: "center",
+    zIndex: 4,
+  },
+  timeLabel: {
+    color: colors.daclen_light,
+    fontSize: 14,
+    fontWeight: "bold",
+    marginTop: 12,
+  },
   textOK: {
     backgroundColor: "transparent",
     color: colors.timer_green_dark,

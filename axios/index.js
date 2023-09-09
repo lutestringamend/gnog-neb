@@ -55,4 +55,21 @@ export const checkNumberEmpty = (e) => {
   }
 };
 
+export const addZeroToArray = (e) => {
+  if (!(e === undefined || e === null)) {
+    try {
+      if (parseInt(e) < 10) {
+        return["0", e.toString()];
+      } else {
+        let n = Math.floor(e % 10);
+        return [Math.floor(e / 10).toString(), n.toString()];
+      }
+    } catch (e) {
+      console.error(e);
+  
+    }
+  }
+  return ["0", "0"];
+} 
+
 export default instance;

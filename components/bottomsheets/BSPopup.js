@@ -101,7 +101,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_light,
     borderTopWidth: 2,
     borderTopColor: colors.daclen_gray,
-    elevation: 10,
   },
   containerHorizontal: {
     flexDirection: "row",
@@ -145,7 +144,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     marginHorizontal: 4,
     borderRadius: 4,
-    elevation: 3,
     backgroundColor: colors.daclen_black,
   },
   textButton: {

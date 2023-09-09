@@ -19,13 +19,25 @@ import {
   USER_TEMP_CART_ITEM_STATE_CHANGE,
   USER_TEMP_CART_NEW_ITEM_CHANGE,
 } from "../../redux/constants";
-import { setObjectAsync } from "../../components/asyncstorage";
-import { ASYNC_HISTORY_CHECKOUT_KEY } from "../../components/asyncstorage/constants";
 
 export function clearCartError() {
   return (dispatch) => {
     console.log("clearCartError");
     dispatch({ type: USER_CART_STATE_ERROR, data: null });
+  };
+}
+
+export function overhaulReduxTempCart(data) {
+  return (dispatch) => {
+    console.log("overhaulReduxTempCart", data);
+    dispatch({ type: USER_TEMP_CART_STATE_CHANGE, data });
+  };
+}
+
+export function overhaulReduxCart(data) {
+  return (dispatch) => {
+    console.log("overhaulReduxCart", data);
+    dispatch({ type: USER_CART_STATE_CHANGE, data });
   };
 }
 

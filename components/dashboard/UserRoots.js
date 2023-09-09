@@ -9,10 +9,10 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+import { Image } from "expo-image";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import BSUserRoot from "../bottomsheets/BSUserRoot";
 import UserRootItem, { VerticalLine } from "./UserRootItem";
@@ -22,7 +22,7 @@ import { devuserroottree } from "./constants";
 /*import UserRootHeaderItem from "./UserRootHeaderItem";
 import { notverified, userverified } from "./constants";*/
 
-function checkVerification(userData) {
+export function checkVerification(userData) {
   if (
     userData?.nomor_telp_verified_at === undefined ||
     userData?.nomor_telp_verified_at === null ||
@@ -36,7 +36,7 @@ function checkVerification(userData) {
 
 const UserRoots = (props) => {
   const [numRoots, setNumRoots] = useState(0);
-  const [tree, setTree] = useState([]);
+  const [tree, setTree] = useState(null);
   //const [numVerified, setNumVerified] = useState(0);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -50,25 +50,29 @@ const UserRoots = (props) => {
       hpv === null ||
       hpv?.data === undefined ||
       hpv?.data === null ||
-      hpv?.data?.children === undefined
+      hpv?.data?.children === undefined ||
+      hpv?.data?.children === null ||
+      hpv?.data?.children?.length === undefined ||
+      hpv?.data?.children[0] === undefined ||
+      hpv?.data?.children[0] === null
     ) {
       setLoading(true);
       fetchHPV();
       return;
     }
     if (
-      hpv?.data?.children === null ||
-      hpv?.data?.children?.length === undefined ||
-      hpv?.data?.children?.length < 1
+      hpv?.data?.children[0]?.children === undefined ||
+      hpv?.data?.children[0]?.children?.length === undefined ||
+      hpv?.data?.children[0]?.children?.length < 1
     ) {
       setNumRoots(0);
       setTree([]);
       console.log("hpv children empty", hpv?.data);
       //setNumVerified(0);
     } else {
-      setNumRoots(hpv?.data?.children?.length);
-      setTree(hpv?.data?.children);
-      console.log("hpv children", hpv?.data?.children);
+      setNumRoots(hpv?.data?.children[0]?.children?.length);
+      setTree(hpv?.data?.children[0]?.children);
+      //console.log("hpv children", hpv?.data?.children[0]?.children);
       /*for (let i = 0; i < hpv?.data?.children?.length; i++) {
         if (checkVerification(hpv?.data?.children[i])) {
           setNumVerified((n) => n + 1);
@@ -84,14 +88,21 @@ const UserRoots = (props) => {
   }, [hpv]);
 
   useEffect(() => {
+    console.log("tree", tree);
+  }, [tree]);
+
+  useEffect(() => {
     if (popupUser?.name !== null) {
       rbSheet.current.open();
     }
   }, [popupUser]);
 
-  function openUserPopup(data) {
+  function openUserPopup(data, isVerified) {
     if (popupUser?.name === null || popupUser?.name !== data?.name) {
-      setPopupUser(data);
+      setPopupUser({
+        ...data,
+        isVerified
+      });
     } else {
       rbSheet.current.open();
     }
@@ -118,7 +129,7 @@ const UserRoots = (props) => {
     if (tree?.length === numRoots) {
       setTree(devuserroottree.data.children);
     } else {
-      setTree(hpv?.data?.children);
+      setTree(hpv?.data?.children[0]?.children);
     }
   }
 
@@ -143,13 +154,24 @@ const UserRoots = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity onPress={() => switchTree()} style={styles.containerLeader} disabled={currentUser?.id !== 8054}>
-        <MaterialCommunityIcons
-          name="head"
-          size={18}
-          color={colors.daclen_light}
+      <TouchableOpacity
+        onPress={() => switchTree()}
+        style={styles.containerLeader}
+        disabled={currentUser?.id !== 8054}
+      >
+        <Image
+          source={
+            hpv?.data?.foto ? hpv?.data?.foto : require("../../assets/user.png")
+          }
+          style={styles.parent}
+          alt={hpv?.data?.name ? hpv?.data?.name : ""}
+          contentFit="cover"
+          placeholder={require("../../assets/user.png")}
+          transition={0}
         />
-        <Text style={styles.textLeader}>DACLEN</Text>
+        <Text style={styles.textLeader}>
+          {hpv?.data?.name ? hpv?.data?.name : "DACLEN"}
+        </Text>
       </TouchableOpacity>
       <ScrollView
         style={styles.scrollView}
@@ -160,7 +182,7 @@ const UserRoots = (props) => {
           />
         }
       >
-        {loading ? (
+        {loading || tree === null ? (
           <ActivityIndicator
             size="large"
             color={colors.daclen_orange}
@@ -168,12 +190,17 @@ const UserRoots = (props) => {
           />
         ) : (
           <View style={styles.containerMain}>
+            <VerticalLine
+              style={{height: 24}}
+            />
             <UserRootItem
               userData={currentUser}
-              onPress={() => openUserPopup(currentUser)}
+              onPress={() => openUserPopup(hpv?.data?.children[0], checkVerification(currentUser))}
               isCurrentUser={true}
               status={currentUser?.status}
+              isFirstItem={false}
               isLastItem={false}
+              isNextBranch={false}
               isVerified={checkVerification(currentUser)}
             />
             {numRoots > 0 ? (
@@ -190,16 +217,19 @@ const UserRoots = (props) => {
                   <UserRootItem
                     key={index}
                     userData={item}
-                    onPress={() => openUserPopup(item)}
+                    onPress={() => openUserPopup(item, checkVerification(item))}
                     isCurrentUser={false}
-                    isLastItem={index >= numRoots - 1}
+                    isFirstItem={index === 0}
+                    isLastItem={index >= tree?.length - 1}
+                    isNextBranch={false}
                     isCurrentVerified={checkVerification(currentUser)}
                     isVerified={checkVerification(item)}
+                    openUserPopup={openUserPopup}
                   />
                 ))}
               </View>
             ) : (
-              <Text style={styles.textUid}>User Roots Anda masih kosong.</Text>
+              <Text style={styles.textUid}>User Roots kosong.</Text>
             )}
           </View>
         )}
@@ -234,7 +264,7 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "transparent",
     paddingBottom: staticDimensions.pageBottomPadding,
-    marginVertical: 10,
+    marginBottom: 10,
     marginHorizontal: 12,
   },
   containerLeader: {
@@ -253,9 +283,9 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   textLeader: {
-    marginStart: 6,
+    marginStart: 10,
     fontWeight: "bold",
-    fontSize: 14,
+    fontSize: 20,
     color: colors.daclen_light,
   },
   textUid: {
@@ -265,6 +295,13 @@ const styles = StyleSheet.create({
     padding: 10,
     color: colors.daclen_gray,
     marginHorizontal: 10,
+  },
+  parent: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "transparent",
+    elevation: 2,
   },
   spinner: {
     backgroundColor: "transparent",

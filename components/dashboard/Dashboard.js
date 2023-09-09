@@ -277,23 +277,6 @@ const Dashboard = (props) => {
             style={styles.spinner}
           />
         ) : null}
-        {currentUser === null ||
-          currentUser?.status_member === undefined ||
-          currentUser?.status_member === null ||
-          currentUser?.status_member !== "premium" ||
-          profileLock === undefined ||
-          profileLock === null ||
-          profileLock ||
-          pinLoading ||
-          recruitmentTimer === undefined ||
-          recruitmentTimer === null ||
-          recruitmentTimer < 0 ? null : (
-          <DashboardTimer
-            recruitmentTimer={recruitmentTimer}
-            showTimerModal={showTimerModal}
-            setShowTimerModal={setShowTimerModal}
-          />
-        )}
       </ScrollView>
 
       {profileLock === undefined ||
@@ -307,6 +290,25 @@ const Dashboard = (props) => {
               isError,
             })
           }
+        />
+      )}
+
+      {currentUser === null ||
+      currentUser?.status_member === undefined ||
+      currentUser?.status_member === null ||
+      currentUser?.status_member !== "premium" ||
+      profileLock === undefined ||
+      profileLock === null ||
+      profileLock ||
+      pinLoading ||
+      recruitmentTimer === undefined ||
+      recruitmentTimer === null ||
+      recruitmentTimer < 0 ||
+      !showTimerModal ? null : (
+        <DashboardTimer
+          recruitmentTimer={recruitmentTimer}
+          showTimerModal={showTimerModal}
+          setShowTimerModal={setShowTimerModal}
         />
       )}
     </View>

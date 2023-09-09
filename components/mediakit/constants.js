@@ -40,7 +40,7 @@ export const vwmarkrenderlandscapewidthcompressionconstant = 1;
 export const vwmarkrenderlandscapeheightcompressionconstant = 1;
 
 export const vwmarkrenderportraitwidthcompressionconstant = 1;
-export const vwmarkrenderportraitheightcompressionconstant = 1;
+export const vwmarkrenderportraitheightcompressionconstant = 1.2;
 
 export const vwmarkdebuguserid = 1;
 

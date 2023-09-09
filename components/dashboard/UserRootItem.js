@@ -1,10 +1,17 @@
-import React from "react";
-import { View, StyleSheet, Text, TouchableHighlight } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  TouchableOpacity,
+} from "react-native";
 import { colors } from "../../styles/base";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { emailnotverified, phonenotverified } from "./constants";
+import { phonenotverified } from "./constants";
 import { capitalizeFirstLetter } from "../../axios/cart";
+import { checkVerification } from "./UserRoots";
 
 export function VerticalLine({ style }) {
   return <View style={[styles.verticalLine, style]} />;
@@ -13,12 +20,17 @@ export function VerticalLine({ style }) {
 const UserRootItem = ({
   userData,
   isCurrentUser,
+  isFirstItem,
   isLastItem,
+  isNextBranch,
   isVerified,
   isCurrentVerified,
   status,
   onPress,
+  openUserPopup,
 }) => {
+  const [expand, setExpand] = useState(true);
+
   function userPress() {
     let message = `${userData?.name}`;
     /*if (userData?.email_verified_at === null) {
@@ -27,22 +39,52 @@ const UserRootItem = ({
     if (userData?.nomor_telp_verified_at === null) {
       message += `\n${phonenotverified}`;
     }
-    console.log({ id: userData?.id, message });
+    console.log(userData?.id, message, userData?.children);
     onPress();
     /*if (Platform.OS === "android") {
       ToastAndroid.show(message, ToastAndroid.SHORT);
     }*/
   }
 
+  /*
+          {isCurrentUser ||
+        userData?.children === undefined ||
+        userData?.children === null ||
+        userData?.children?.length === undefined ||
+        userData?.children?.length < 1 ? null : (
+          <TouchableOpacity
+            style={[
+              styles.containerExpand,
+              {
+                backgroundColor: isVerified
+                  ? colors.daclen_green
+                  : colors.daclen_red,
+              },
+            ]}
+            onPress={() => setExpand((expand) => !expand)}
+          >
+            <MaterialCommunityIcons
+              name={expand ? "arrow-collapse" : "arrow-expand"}
+              size={16}
+              color={colors.daclen_light}
+            />
+          </TouchableOpacity>
+        )}
+  (
+
+        ) : 
+  */
+
   return (
     <View style={styles.container}>
       {isCurrentUser ? null : (
         <VerticalLine
           style={{
-            height: isLastItem ? "51%" : "100%",
+            height: isLastItem || (isFirstItem && isNextBranch) ? "51%" : "100%",
             backgroundColor: isCurrentVerified
               ? colors.daclen_green
               : colors.daclen_red,
+            alignSelf: isFirstItem && isNextBranch ? "flex-end" : isLastItem ? "flex-start" : "auto",
           }}
         />
       )}
@@ -59,78 +101,146 @@ const UserRootItem = ({
         />
       )}
 
+
       <TouchableHighlight
-        onPress={() => userPress()}
-        underlayColor={colors.daclen_orange}
-        style={[
-          styles.containerTouchable,
-          {
-            marginVertical: isCurrentUser ? 0 : 12,
-            borderRadius: isCurrentUser ? 0 : 6,
-            borderTopStartRadius: 6,
-            borderTopEndRadius: 6,
-          },
-        ]}
-      >
-        <View
+          onPress={() => userPress()}
+          underlayColor={colors.daclen_orange}
           style={[
-            styles.containerMain,
+            styles.containerTouchable,
             {
-              borderColor: isVerified ? colors.daclen_green : colors.daclen_red,
-              borderRadius: 6,
-              borderBottomStartRadius: isCurrentUser ? 0 : 6,
-              borderWidth: isCurrentUser ? 2 : 1,
-              borderTopWidth: 0,
+              marginVertical: isCurrentUser ? 0 : 12,
             },
           ]}
         >
           <View
             style={[
-              styles.containerHeader,
+              styles.containerMain,
               {
-                backgroundColor: isVerified
+                borderColor: isVerified
                   ? colors.daclen_green
                   : colors.daclen_red,
-                borderTopStartRadius: 6,
-                borderTopEndRadius: 6,
+                borderWidth: isCurrentUser ? 2 : 1,
+                borderTopWidth: 0,
               },
             ]}
           >
-            <MaterialCommunityIcons
-              name={isVerified ? "account-check" : "account-remove"}
-              size={14}
-              color={colors.daclen_light}
+            <View
+              style={[
+                styles.containerHeader,
+                {
+                  backgroundColor: isVerified
+                    ? colors.daclen_green
+                    : colors.daclen_red,
+                },
+              ]}
+            >
+              <MaterialCommunityIcons
+                name={isVerified ? "account-check" : "account-remove"}
+                size={14}
+                color={colors.daclen_light}
+              />
+              <Text style={styles.textHeader}>{userData?.name}</Text>
+            </View>
+            <View style={styles.containerValue}>
+              <Text style={styles.text}>
+                {`${isCurrentUser ? "Saya - " : ""}${
+                  status ? capitalizeFirstLetter(status) : "Reseller"
+                }${
+                  isCurrentUser ||
+                  userData?.children === undefined ||
+                  userData?.children === null ||
+                  userData?.children?.length === undefined ||
+                  userData?.children?.length < 1
+                    ? ""
+                    : `\n${userData?.children?.length} anggota`
+                }`}
+              </Text>
+            </View>
+          </View>
+        </TouchableHighlight>
+
+      {isCurrentUser ||
+      userData?.children === undefined ||
+      userData?.children === null ||
+      userData?.children?.length === undefined ||
+      userData?.children?.length < 1 ||
+      !expand ? null : (
+        <View
+          style={[
+            styles.horizontalLine,
+            {
+              backgroundColor: isVerified
+                ? colors.daclen_green
+                : colors.daclen_red,
+              alignSelf: "center",
+            },
+          ]}
+        />
+      )}
+
+      {isCurrentUser ||
+      userData?.children === undefined ||
+      userData?.children === null ||
+      userData?.children?.length === undefined ||
+      userData?.children?.length < 1 ||
+      !expand ? null : (
+        <View style={styles.containerFlatlist}>
+          {userData?.children.map((item, index) => (
+            <UserRootItem
+              key={index}
+              userData={item}
+              onPress={() => openUserPopup(item, checkVerification(item))}
+              isCurrentUser={false}
+              isFirstItem={index === 0}
+              isLastItem={index >= userData?.children?.length - 1}
+              isNextBranch={true}
+              isCurrentVerified={isVerified}
+              isVerified={checkVerification(item)}
             />
-            <Text style={styles.textHeader}>{userData?.name}</Text>
-          </View>
-          <View style={styles.containerValue}>
-            <Text style={styles.text}>
-              {status ? capitalizeFirstLetter(status) : "Reseller"}
-            </Text>
-          </View>
+          ))}
         </View>
-      </TouchableHighlight>
+      )}
     </View>
   );
 };
 
+/*
+           <VerticalLine
+              style={{
+                height: "100%",
+                backgroundColor: isVerified
+                  ? colors.daclen_green
+                  : colors.daclen_red,
+              }}
+            />
+*/
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    backgroundColor: "white",
+    backgroundColor: "transparent",
     alignItems: "center",
   },
   containerTouchable: {
-    backgroundColor: "white",
+    backgroundColor: "transparent",
   },
   containerMain: {
-    backgroundColor: "white",
+    backgroundColor: "transparent",
+  },
+  containerHorizontal: {
+    backgroundColor: "transparent",
+    flexDirection: "row",
+  },
+  containerExpand: {
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 6,
   },
   verticalLine: {
     height: "100%",
     width: 2,
     alignSelf: "flex-start",
-    backgroundColor: colors.daclen_red,
+    backgroundColor: colors.daclen_green,
   },
   horizontalLine: {
     width: 24,
@@ -141,8 +251,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 6,
     paddingHorizontal: 20,
-    borderTopStartRadius: 6,
-    borderTopEndRadius: 6,
+  },
+  containerFlatlist: {
+    justifyContent: "flex-start",
   },
   containerValue: {
     justifyContent: "center",
@@ -158,9 +269,10 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   text: {
-    fontSize: 14,
-    fontWeight: "bold",
+    fontSize: 12,
     color: colors.daclen_black,
+    fontWeight: "bold",
+    textAlign: "center",
     backgroundColor: "transparent",
   },
 });
