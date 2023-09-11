@@ -1,6 +1,8 @@
+import { Platform } from "react-native";
+
 export const addressmenu = "Alamat Pengiriman";
 export const changepassword = "Ganti Password";
-export const contactadmin = "Kontak Admin Daclen";
+export const contactadmin = "Hubungi Daclen Care";
 export const commissionpoint = "Komisi dan Point";
 export const mediakit = "Media Kit";
 export const tnc = "Syarat dan Ketentuan";
@@ -51,7 +53,10 @@ export const abouttext =
   `;
 export const copyrighttext = "Copyright 2023 Daclen";
 export const adminWA = "62811210555";
-export const adminWAtemplate = "Halo, Daclen Care! Saya adalah seller dengan id #I# (#P#).\n";
+export const adminWAtemplate = `Halo, Daclen Care! Saya adalah seller dengan id #I# (${Platform.OS}).\n`;
+export const adminWAnonusertemplate = `Halo, Daclen Care! Saya adalah pengguna aplikasi ${Platform.OS} yang belum login.\n`;
+export const adminWAbankdetailstemplate = `Halo, Daclen Care! Saya adalah seller dengan id #I# (${Platform.OS}) hendak mengajukan perubahan keterangan rekening untuk pencairan saldo.\n`;
+
 export const referralWAtemplate =
   "Ayo ikut berjualan dan berbisnis bersama saya di daclen.com. Daftar disini ";
 export const sharereferral = "Bagikan Referral";

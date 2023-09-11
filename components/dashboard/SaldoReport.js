@@ -66,8 +66,8 @@ const SaldoReport = (props) => {
   }
 
   function openWithdrawal() {
-    //navigation.navigate("Withdrawal");
-    onOpenExternalLink();
+    navigation.navigate("Withdrawal");
+    //onOpenExternalLink();
   }
 
   function onOpenExternalLink() {
@@ -129,7 +129,7 @@ const SaldoReport = (props) => {
               }}
               renderItem={({ item }) => (
                 <View style={styles.containerSaldo}>
-                  {item?.nomor_invoice ? (
+                  {item?.status ? (
                     <View style={styles.containerHeader}>
                       <MaterialCommunityIcons
                         name={
@@ -145,7 +145,7 @@ const SaldoReport = (props) => {
                             ? colors.daclen_green
                             : item?.saldo < 0
                             ? colors.daclen_danger
-                            : colors.daclen_gray
+                            : colors.daclen_black
                         }
                         style={styles.icon}
                       />
@@ -158,24 +158,24 @@ const SaldoReport = (props) => {
                                 ? colors.daclen_green
                                 : item?.saldo < 0
                                 ? colors.daclen_danger
-                                : colors.daclen_gray,
+                                : colors.daclen_black,
                           },
                         ]}
                       >
-                        {`Invoice No ${item?.nomor_invoice}`}
+                        {item?.status}
+                      </Text>
+                      <Text style={styles.textDate}>
+                        {moment(
+                          item?.tanggal_dibuat
+                            ? item?.tanggal_dibuat
+                            : item?.tanggal_diubah
+                            ? item?.tanggal_diubah
+                            : item?.tanggal_penarikan
+                        ).format("DD MMMM YYYY")}
                       </Text>
                     </View>
                   ) : null}
                   <View style={styles.containerDescVertical}>
-                    <Text style={styles.textDate}>
-                      {moment(
-                        item?.tanggal_dibuat
-                          ? item?.tanggal_dibuat
-                          : item?.tanggal_diubah
-                          ? item?.tanggal_diubah
-                          : item?.tanggal_penarikan
-                      ).format("DD MMMM YYYY")}
-                    </Text>
                     {item?.saldo === undefined ||
                     item?.saldo === null ||
                     item?.saldo === 0 ? null : (
@@ -183,7 +183,6 @@ const SaldoReport = (props) => {
                         style={[
                           styles.textPoint,
                           {
-                            fontSize: 14,
                             color:
                               item?.saldo < 0
                                 ? colors.daclen_red
@@ -191,20 +190,28 @@ const SaldoReport = (props) => {
                           },
                         ]}
                       >
-                        {`${
-                          item?.saldo >= 0
-                            ? "Komisi Penjualan"
-                            : "Saldo Ditarik"
-                        }: ${formatPrice(Math.abs(item?.saldo))}`}
+                        {formatPrice(Math.abs(item?.saldo))}
                       </Text>
                     )}
+
+                    {item?.keterangan || item?.nomor_invoice ? (
+                      <Text style={styles.textReferral}>{`${
+                        item?.keterangan ? `${item?.keterangan}\n` : ""
+                      }${
+                        item?.nomor_invoice
+                          ? `Nomor Invoice ${item?.nomor_invoice}`
+                          : ""
+                      }`}</Text>
+                    ) : null}
 
                     {item?.total_saldo === undefined ||
                     item?.total_saldo === null ? null : (
                       <Text style={styles.textTotalPoint}>
-                        {`Total Komisi Saat Ini: ${item?.total_saldo <= 0 ? "Rp 0" : formatPrice(
-                          item?.total_saldo
-                        )}`}
+                        {`Saldo Total: ${
+                          item?.total_saldo <= 0
+                            ? "Rp 0"
+                            : formatPrice(item?.total_saldo)
+                        }`}
                       </Text>
                     )}
                   </View>
@@ -269,16 +276,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.daclen_black,
     marginStart: 10,
+    flex: 1,
   },
   textDate: {
     fontSize: 12,
     color: colors.daclen_gray,
-    marginBottom: 4,
+    marginStart: 6,
+    alignSelf: "center",
   },
   textReferral: {
-    fontSize: 14,
-    color: colors.daclen_black,
-    marginTop: 6,
+    fontSize: 12,
+    color: colors.daclen_gray,
+    marginTop: 4,
   },
   textCheckout: {
     fontSize: 14,
@@ -288,14 +297,14 @@ const styles = StyleSheet.create({
   },
   textPoint: {
     fontWeight: "bold",
-    fontSize: 24,
+    fontSize: 30,
     color: colors.daclen_orange,
-    marginBottom: 4,
   },
   textTotalPoint: {
-    fontWeight: "bold",
     fontSize: 14,
+    fontWeight: "bold",
     color: colors.daclen_blue,
+    marginTop: 6,
   },
   textUid: {
     fontSize: 16,

@@ -22,6 +22,7 @@ import {
 } from "../../axios/cart";
 import { colors } from "../../styles/base";
 import { MAXIMUM_ITEM_PER_PRODUCT } from "../../redux/constants";
+import { sentryLog } from "../../sentry";
 const defaultItemSize = {
   number: 0,
   text: "0",
@@ -46,7 +47,7 @@ function Cart(props) {
 
   useEffect(() => {
     try {
-      if (tempCart === null) {
+      if (tempCart === null || tempCart?.length === undefined || tempCart?.length < 1) {
         if (
           cart === null ||
           cart?.produk === undefined ||
@@ -81,7 +82,8 @@ function Cart(props) {
       }
     } catch (e) {
       console.error(e);
-      //setItemSize(0);
+      sentryLog(e);
+      setItemSize(defaultItemSize);
     }
   }, [cart, tempCart]);
 
@@ -176,6 +178,10 @@ function Cart(props) {
       props?.goDashboard();
     } else {
       //modifyCart(true);
+      if (tempCart === null || tempCart?.length === undefined || tempCart?.length < 1) {
+        props.addToTempCart(produk_id);
+        return;
+      }
       const item = tempCart.find(({ id }) => id === produk_id);
       if (item === undefined || item === null) {
         props.addToTempCart(produk_id);

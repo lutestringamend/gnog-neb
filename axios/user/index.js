@@ -1,6 +1,6 @@
 import Axioss, { isUserDevServer } from "../index";
 import Axios from "axios";
-import { Linking, Platform } from "react-native";
+import { Linking, Platform, ToastAndroid } from "react-native";
 import * as Crypto from "expo-crypto";
 
 import {
@@ -23,6 +23,7 @@ import {
   registergetsnaptoken,
   devhttp,
   mainhttp,
+  penarikansaldo,
 } from "../constants";
 import { getKeranjang } from "../cart";
 import { initialState } from "../../redux/reducers/user";
@@ -57,6 +58,8 @@ import {
   USER_ADDRESS_ID_STATE_CHANGE,
   USER_ADDRESSES_INCREMENT,
   USER_RECRUITMENT_DEADLINE_STATE_CHANGE,
+  USER_CART_STATE_CHANGE,
+  USER_TEMP_CART_STATE_CHANGE,
 } from "../../redux/constants";
 import {
   calculateBase64SizeInBytes,
@@ -252,6 +255,50 @@ export function getSyaratRoot(token) {
         });
       });
   };
+}
+
+export const storePenarikanSaldo = async (token, saldo) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  };
+  const params = {
+    saldo,
+  };
+  console.log("storePenarikanSaldo", params);
+
+  try {
+    const response = await Axioss.post(penarikansaldo, params, config)
+    .catch((error) => {
+      console.error(error);
+      sentryLog(error);
+      return {
+        data: null,
+        error: error.toString(),
+      }
+    });
+    const data = response?.data;
+    if (data?.saldo === undefined || data?.saldo === null || data?.saldo === "" || data?.saldo !== saldo) {
+      return {
+        data: null,
+        error: null,
+      };
+    }
+    return {
+      data,
+      error: null,
+    };
+  } catch (e) {
+    console.error(e);
+    sentryLog(e);
+    return {
+      data: null,
+      error: e.toString(),
+    }
+  }
+
 }
 
 export function getLaporanSaldo(id, token) {
@@ -977,7 +1024,7 @@ export function getCurrentUser(token, storageCurrentUser) {
     if (token === undefined || token === null || token === "") {
       return;
     }
-
+    //dev debug
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -985,7 +1032,7 @@ export function getCurrentUser(token, storageCurrentUser) {
       },
     };
 
-    console.log("getCurrentUser", token);
+    console.log("getCurrentUser", `${token}`);
     Axioss.get(getcurrentuser, config)
       .then((response) => {
         const data = response.data?.data;
@@ -994,12 +1041,17 @@ export function getCurrentUser(token, storageCurrentUser) {
           dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
           dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });
           dispatch({ type: HISTORY_CLEAR_DATA });
-          try {
+          dispatch({ type: MEDIA_KIT_CLEAR_DATA });
+          dispatch({ type: USER_TEMP_CART_STATE_CHANGE, data: null });
+          dispatch({ type: USER_CART_STATE_CHANGE, data: null });
+          dispatch({ type: USER_TOKEN_STATE_CHANGE, token: null });
+          userLogout();
+          /*try {
             readStorageCurrentUser(dispatch, storageCurrentUser);
           } catch (e) {
             console.error(e);
             sentryLog(e);
-          }
+          }*/
         } else {
           dispatch({ type: USER_STATE_CHANGE, data });
           dispatch({ type: USER_ADDRESS_STATE_CHANGE, data });
@@ -1010,12 +1062,30 @@ export function getCurrentUser(token, storageCurrentUser) {
         }
       })
       .catch((error) => {
-        console.error("getCurrentUser", error);
-        sentryLog(error);
+        let errorJSON = error.toJSON();
+        let status = (status =
+          errorJSON === undefined ||
+          errorJSON === null ||
+          errorJSON?.status === undefined
+            ? null
+            : errorJSON?.status);
+        console.error("getCurrentUser", status, error);
+        //sentryLog(error);
         dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
         dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });
         dispatch({ type: HISTORY_CLEAR_DATA });
-        readStorageCurrentUser(dispatch, storageCurrentUser);
+        if (status === 401 || status === 500) {
+          dispatch({ type: MEDIA_KIT_CLEAR_DATA });
+          dispatch({ type: USER_TOKEN_STATE_CHANGE, token: null });
+          dispatch({ type: USER_TEMP_CART_STATE_CHANGE, data: null });
+          dispatch({ type: USER_CART_STATE_CHANGE, data: null });
+          userLogout();
+          if (Platform.OS === "android") {
+            ToastAndroid.show("Tidak bisa login ke akun Anda. Mohon menghubungi Daclen Care untuk lebih lanjut.", ToastAndroid.show);
+          }
+        } else {
+          readStorageCurrentUser(dispatch, storageCurrentUser);
+        }
       });
   };
 }

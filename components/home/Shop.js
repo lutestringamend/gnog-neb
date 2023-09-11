@@ -88,6 +88,7 @@ function Shop(props) {
       tempCart?.length === undefined ||
       tempCart?.length < 1
     ) {
+      setTempCartSize(0);
       return;
     }
     let newNum = 0;
@@ -255,6 +256,10 @@ function Shop(props) {
                 backgroundColor:
                   tempCartSize < 1 ||
                   cart === null ||
+                  cart?.produk === undefined ||
+                  cart?.produk === null ||
+                  cart?.produk?.length === undefined ||
+                  cart?.produk?.length < 1 ||
                   cart?.jumlah_produk === undefined ||
                   cart?.jumlah_produk === null ||
                   tempCartSize === parseInt(cart?.jumlah_produk)
@@ -264,10 +269,14 @@ function Shop(props) {
             ]}
             disabled={
               token === null ||
-              ((cart?.jumlah_produk === undefined ||
+              ((cart?.produk === undefined ||
+                cart?.produk === null ||
+                cart?.produk?.length === undefined ||
+                cart?.produk?.length < 1 ||
+                cart?.jumlah_produk === undefined ||
                 cart?.jumlah_produk === null ||
                 cart?.jumlah_produk < 1) &&
-                tempCartSize < 1) 
+                tempCartSize < 1)
             }
           >
             {cartLoading ? (
@@ -285,7 +294,11 @@ function Shop(props) {
             )}
 
             {token === null ||
-            ((cart?.jumlah_produk === undefined ||
+            ((cart?.produk === undefined ||
+              cart?.produk === null ||
+              cart?.produk?.length === undefined ||
+              cart?.produk?.length < 1 ||
+              cart?.jumlah_produk === undefined ||
               cart?.jumlah_produk === null ||
               cart?.jumlah_produk < 1) &&
               tempCartSize < 1) ? null : (

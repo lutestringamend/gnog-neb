@@ -324,14 +324,8 @@ function Checkout(props) {
   useEffect(() => {
     if (checkout !== null) {
       if (afterCheckout) {
-        if (checkout.snap_token) {
-          const snapToken = checkout?.snap_token;
-          const snap_url = checkout?.snap_url;
-          //console.log("open MidtransSnap " + snapToken);
-          props.overhaulReduxCart(null);
-          props.overhaulReduxTempCart(null);
-          props.clearHistoryData();
-          navigation.navigate("OpenMidtrans", { snapToken, snap_url });
+        if (checkout?.snap_token) {
+          proceedMidtrans(checkout?.snap_token, checkout?.snap_url);
         } else {
           setAllowCheckout(true);
         }
@@ -339,6 +333,13 @@ function Checkout(props) {
       }
     }
   }, [checkout]);
+
+  const proceedMidtrans = async (snapToken, snap_url) => {
+    props.overhaulReduxTempCart([]);
+    props.overhaulReduxCart(null);
+    props.clearHistoryData();
+    navigation.navigate("OpenMidtrans", { snapToken, snap_url });
+  }
 
   const setDefaultAddress = () => {
     if (
@@ -459,9 +460,6 @@ function Checkout(props) {
         addressId === "" || addressId === "default" || customAddress === null
           ? currentAddress
           : customAddress;
-      detail_checkout["nama_penerima"] = senderName.final
-        ? senderName.final
-        : "Daclen";
 
       const newCheckout = {
         checkout: {
@@ -476,7 +474,12 @@ function Checkout(props) {
           metode_pembayaran: "transfer_bank",
           tipe_kemasan: packaging,
         },
-        detail_checkout,
+        detail_checkout: {
+          ...detail_checkout,
+          nama_penerima: senderName.final
+          ? senderName.final
+          : "Daclen Official"
+        },
         user: {
           saldo: currentUser.komisi_user.total.toString(),
         },

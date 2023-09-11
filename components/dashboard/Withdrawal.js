@@ -17,11 +17,19 @@ import { colors, staticDimensions } from "../../styles/base";
 import { checkNumberEmpty } from "../../axios";
 import { withdrawalexplanation } from "./constants";
 import { websaldo } from "../../axios/constants";
+import { storePenarikanSaldo } from "../../axios/user";
+import { openWhatsapp } from "../whatsapp/Whatsapp";
+import {
+  adminWA,
+  adminWAbankdetailstemplate,
+  contactadminicon,
+} from "../profile/constants";
 
 const Withdrawal = (props) => {
   const [amount, setAmount] = useState("");
   const [misc, setMisc] = useState("");
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { token, currentUser } = props;
@@ -54,33 +62,77 @@ const Withdrawal = (props) => {
   }, [amount]);
 
   function editBankDetails() {
-    navigation.navigate("EditProfile", {
+    /*navigation.navigate("EditProfile", {
         exitRightAway: true,
-    });
+    });*/
+    let template = adminWAbankdetailstemplate.replace("#I", currentUser?.name);
+    console.log("openDaclenCare", template);
+    openWhatsapp(adminWA, template);
   }
 
-  function submit() {
-    Linking.openURL(websaldo);
-    navigation.goBack();
-  }
+  const submit = async () => {
+    /*Linking.openURL(websaldo);
+    navigation.goBack();*/
+    setLoading(true);
+    const result = await storePenarikanSaldo(token, amount);
+    console.log("storePenarikanSaldo result", result);
+    if (result === undefined || result === null || result?.data === undefined) {
+      setSuccess(false);
+      setError(
+        result?.error
+          ? result?.error
+          : "Gagal mengajukan permintaan menarik saldo."
+      );
+    } else {
+      setSuccess(true);
+      setError(
+        "Berhasil mengajukan penarikan penarikan saldo. Mohon menunggu konfirmasi dari Admin."
+      );
+    }
+    setLoading(false);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
+      {error ? (
+        <Text
+          style={[
+            styles.textError,
+            success && { backgroundColor: colors.daclen_green },
+          ]}
+        >
+          {error}
+        </Text>
+      ) : null}
       <ScrollView style={styles.container}>
         <Text style={styles.textCompulsory}>
           Masukkan jumlah untuk ditarik*
         </Text>
-        <TextInput
-          value={amount}
-          placeholder="0"
-          style={styles.textInput}
-          inputMode="numeric"
-          onChangeText={(amount) => setAmount(amount)}
-        />
+        <View style={styles.containerTextHorizontal}>
+          <Text style={styles.textCurrency}>Rp</Text>
+          <TextInput
+            value={amount}
+            placeholder="0"
+            style={[
+              styles.textInput,
+              {
+                marginTop: 0,
+                marginStart: 6,
+                alignSelf: "center",
+                flex: 1,
+              },
+            ]}
+            inputMode="numeric"
+            onChangeText={(amount) => setAmount(amount)}
+          />
+        </View>
+
         <Text
           style={[
             styles.textRemaining,
-            { color: error ? colors.daclen_red : colors.daclen_blue },
+            {
+              color: error && !success ? colors.daclen_red : colors.daclen_blue,
+            },
           ]}
         >{`Rp ${
           currentUser?.komisi_user
@@ -88,12 +140,13 @@ const Withdrawal = (props) => {
               ? currentUser?.komisi_user?.total_currency
               : "0"
             : "0"
-        } tersedia${error ? `\n${error}` : ""}`}</Text>
+        } tersedia`}</Text>
 
         <Text style={styles.text}>Catatan (opsional)</Text>
         <TextInput
           value={misc}
           style={[styles.textInput, { height: 60, textAlignVertical: "top" }]}
+          inputMode="decimal"
           onChangeText={(misc) => setMisc(misc)}
         />
 
@@ -132,11 +185,13 @@ const Withdrawal = (props) => {
               style={styles.containerHorizontal}
             >
               <MaterialCommunityIcons
-                name="credit-card-edit"
+                name={contactadminicon}
                 size={16}
-                color={colors.daclen_blue}
+                color={colors.daclen_green_dark}
               />
-              <Text style={styles.textEdit}>Ganti Keterangan Rekening</Text>
+              <Text style={styles.textEdit}>
+                Perubahan Keterangan Rekening
+              </Text>
             </TouchableOpacity>
           </View>
         )}
@@ -207,6 +262,12 @@ const styles = StyleSheet.create({
     marginTop: 8,
     alignItems: "center",
   },
+  containerTextHorizontal: {
+    backgroundColor: "transparent",
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
   button: {
     alignItems: "center",
     justifyContent: "center",
@@ -229,6 +290,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 24,
   },
+  textCurrency: {
+    color: colors.daclen_orange,
+    fontSize: 16,
+    fontWeight: "bold",
+    alignSelf: "center",
+    marginStart: 20,
+  },
   text: {
     color: colors.daclen_gray,
     fontSize: 12,
@@ -245,16 +313,25 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     fontSize: 14,
   },
+  textError: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "white",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: colors.daclen_danger,
+    textAlign: "center",
+  },
   textBankName: {
     fontWeight: "bold",
     fontSize: 16,
-    color: colors.daclen_green,
+    color: colors.daclen_blue,
     marginBottom: 4,
   },
   textEdit: {
     fontWeight: "bold",
-    fontSize: 16,
-    color: colors.daclen_blue,
+    fontSize: 12,
+    color: colors.daclen_green_dark,
     marginStart: 4,
   },
   textEntry: {

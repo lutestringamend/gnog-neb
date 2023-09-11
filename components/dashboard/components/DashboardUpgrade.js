@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -22,13 +22,28 @@ import {
 
 const DashboardUpgrade = (props) => {
   const navigation = useNavigation();
+  const [refreshing, setRefreshing] = useState(false);
   const { registerSnapToken, fetchingToken } = props;
+
+  useEffect(() => {
+    if (refreshing) {
+      setRefreshing(false);
+    }
+  }, [registerSnapToken]);
 
   function loadData() {
     if (props?.loadData === undefined || props?.loadData === null) {
       return;
     }
     props?.loadData();
+  }
+
+  function refreshPage() {
+    if (fetchingToken || refreshing) {
+      return;
+    }
+    setRefreshing(true);
+    loadData();
   }
 
   function proceedJoin() {
@@ -56,10 +71,11 @@ const DashboardUpgrade = (props) => {
   }
 
   function openKodeEtik() {
-    navigation.navigate("PDFViewer", {
+    Linking.openURL(dashboardkodeetikpdf);
+    /*navigation.navigate("PDFViewer", {
       title: "Kode Etik",
       uri: dashboardkodeetikpdf,
-    });
+    });*/
   }
 
   return (
@@ -67,8 +83,8 @@ const DashboardUpgrade = (props) => {
       style={styles.containerLogin}
       refreshControl={
         <RefreshControl
-          refreshing={fetchingToken}
-          onRefresh={() => loadData()}
+          refreshing={refreshing}
+          onRefresh={() => refreshPage()}
         />
       }
     >
@@ -95,19 +111,11 @@ const DashboardUpgrade = (props) => {
           },
         ]}
       >
-        {fetchingToken ? (
-          <ActivityIndicator
-            color={colors.daclen_light}
-            size="small"
-            style={styles.spinner}
-          />
-        ) : (
           <MaterialCommunityIcons
             name="cursor-pointer"
             size={20}
             color={colors.daclen_light}
           />
-        )}
         <Text style={styles.textButton}>{dashboardonboardingbutton}</Text>
       </TouchableOpacity>
       {registerSnapToken === null ? null : (

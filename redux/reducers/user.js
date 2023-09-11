@@ -56,7 +56,7 @@ export const initialState = {
   saldo: null,
   cart: null,
   cartError: null,
-  tempCart: null,
+  tempCart: [],
   currentAddress: null,
   masterkurir: [],
   couriers: [],
@@ -199,20 +199,38 @@ export const user = (state = initialState, action) => {
     case USER_TEMP_CART_NEW_ITEM_CHANGE:
       return {
         ...state,
-        tempCart: [...state.tempCart].concat({
-          id: action.id,
-          jumlah: action.data
-        }),
+        tempCart:
+          state.tempCart === null
+            ? [
+                {
+                  id: action.id,
+                  jumlah: action.data,
+                },
+              ]
+            : [...state.tempCart].concat({
+                id: action.id,
+                jumlah: action.data,
+              }),
       };
     case USER_TEMP_CART_ITEM_STATE_CHANGE:
       return {
         ...state,
-        tempCart: state.tempCart.map((item) =>
-          item.id === action.id ? {
-            id: item.id,
-            jumlah: action.data,
-          } : item
-        ),
+        tempCart:
+          state.tempCart === null
+            ? [
+                {
+                  id: action.id,
+                  jumlah: action.data,
+                },
+              ]
+            : state.tempCart.map((item) =>
+                item.id === action.id
+                  ? {
+                      id: item.id,
+                      jumlah: action.data,
+                    }
+                  : item
+              ),
       };
     case USER_CART_STATE_ERROR:
       return {

@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Text,
+  Linking,
 } from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { connect } from "react-redux";
@@ -18,6 +19,8 @@ import {
   aboutappicon,
   addressmenu,
   addressmenuicon,
+  adminWAnonusertemplate,
+  adminWAtemplate,
   changepassword,
   changepasswordicon,
   contactadmin,
@@ -40,9 +43,10 @@ import Header from "./Header";
 import ProfileMenuItem from "./ProfileMenuItem";
 import BSPopup from "../bottomsheets/BSPopup";
 import { openWhatsapp } from "../whatsapp/Whatsapp";
-import { adminWA, adminWAtemplate } from "./constants";
+import { adminWA } from "./constants";
 import { sentryLog } from "../../sentry";
 import { useNavigation } from "@react-navigation/native";
+import { websyaratketentuan } from "../../axios/constants";
 
 export const userLogOut = async (props, username) => {
   try {
@@ -99,6 +103,19 @@ function Profile(props) {
     }
   };
 
+  function openDaclenCare() {
+    let template = adminWAnonusertemplate;
+    if (!(currentUser?.name === undefined || currentUser?.name === null || currentUser?.name === "")) {
+      template = adminWAtemplate.replace("#I#", currentUser?.name);
+    }
+    console.log("openDaclenCare", template);
+    openWhatsapp(adminWA, template);
+  }
+
+  function openTnc() {
+    Linking.openURL(websyaratketentuan);
+  }
+
   const proceedLogout = async () => {
     setLoggingOut(true);
     await userLogOut(props, currentUser?.name);
@@ -149,16 +166,17 @@ function Profile(props) {
           text={contactadmin}
           icon={contactadminicon}
           screen={null}
-          onItemClick={() => openWhatsapp(adminWA, adminWAtemplate)}
+          onItemClick={() => openDaclenCare()}
           thickness={2}
         />
 
         <ProfileMenuItem
           text={tnc}
           icon={tncicon}
-          screen="Webview"
+          screen={null}
+          onItemClick={() => openTnc()}
           thickness={2}
-          webKey="tnc"
+          webKey={null}
         />
 
         <ProfileMenuItem

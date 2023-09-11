@@ -14,7 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import { colors, staticDimensions } from "../../../styles/base";
 import { openWhatsapp } from "../../whatsapp/Whatsapp";
-import { adminWA, adminWAtemplate } from "../../profile/constants";
+import { adminWA, adminWAnonusertemplate, adminWAtemplate } from "../../profile/constants";
 import {
   dashboardhadiahpdf,
   dashboardkodeetikpdf,
@@ -83,8 +83,11 @@ const DashboardButtons = ({ userId, username }) => {
   };
 
   function openDaclenCare() {
-    let template = `Halo, Daclen Care! Saya adalah seller${username === undefined || username === null ? "" : ` dengan id ${username}`} (${Platform.OS}).\n`;
-    console.log("Daclen care intro", template);
+    let template = adminWAnonusertemplate;
+    if (!(username === undefined || username === null || username === "")) {
+      template = adminWAtemplate.replace("#I#", username);
+    }
+    console.log("openDaclenCare", template);
     openWhatsapp(adminWA, template);
   }
 
