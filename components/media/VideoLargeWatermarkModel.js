@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   },
   containerUrl: {
     backgroundColor: colors.daclen_gray,
-    opacity: 0.8,
+    opacity: 0.9,
     justifyContent: "center",
     alignItems: "center",
     zIndex: 2,

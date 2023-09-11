@@ -628,9 +628,15 @@ function VideoPlayer(props) {
       setError("Memulai download video...");
       setLoading(true);
       try {
+        const targetDownload = FileSystem.documentDirectory + "raw_" + fileName;
+        console.log("downloadAsync", uri, targetDownload);
         const result = await FileSystem.downloadAsync(
           uri,
-          FileSystem.documentDirectory + "raw_" + fileName
+          targetDownload,
+          {
+            cache: true,
+            sessionType: FileSystem.FileSystemSessionType.BACKGROUND,
+          }
         );
         console.log(result);
         setSuccess(true);

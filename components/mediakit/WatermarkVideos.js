@@ -227,14 +227,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: colors.white,
+    backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
   },
   containerInside: {
     width: "100%",
     height: "100%",
-    backgroundColor: "transparent",
+    backgroundColor: colors.white,
     position: "absolute",
     top: 0,
     start: 0,
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   containerFlatlist: {
     flex: 1,
     width: "100%",
-    backgroundColor: colors.white,
+    backgroundColor: "transparent",
   },
   containerImage: {
     flex: 1,
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
   containerThumbnail: {
     flex: 1,
     aspectRatio: 1 / 1,
-    backgroundColor: "transparent",
+    backgroundColor: colors.daclen_lightgrey,
   },
   containerOrientation: {
     position: "absolute",
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
   imageList: {
     flex: 1,
     aspectRatio: 1 / 1,
-    backgroundColor: "transparent",
+    backgroundColor: colors.white,
   },
   textHeader: {
     backgroundColor: "transparent",
