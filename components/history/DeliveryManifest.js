@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     left: -8,
     top: 38,
     zIndex: 6,
-    backgroundColor: "transparent",
+    backgroundColor: colors.white,
   },
   verticalLine: {
     height: "100%",
@@ -62,13 +62,12 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   textManifest: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 18,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 14,
     color: colors.daclen_green,
-    marginBottom: 8,
   },
   textEntry: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins", fontSize: 10,
     color: colors.daclen_gray,
   },
 });

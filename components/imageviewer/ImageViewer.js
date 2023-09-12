@@ -8,7 +8,7 @@ import {
   Platform,
   ScrollView,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
 } from "react-native";
 import { Image } from "expo-image";
 import { connect } from "react-redux";
@@ -44,6 +44,9 @@ import {
 import ImageLargeWatermarkModel from "../media/ImageLargeWatermarkModel";
 import { imageviewerportraitheightmargin } from "../mediakit/constants";
 
+const screenWidth = Dimensions.get("window").width;
+const screenHeight = Dimensions.get("window").height;
+
 const ImageViewer = (props) => {
   const {
     id,
@@ -62,8 +65,6 @@ const ImageViewer = (props) => {
     disableWatermark,
   } = props.route.params;
 
-  const screenWidth = Dimensions.get("window").width;
-  const screenHeight = Dimensions.get("window").height;
   const resizedImgWidth = Platform.OS === "ios" ? width : pdfpagewidth - 20;
   const resizedImgHeight =
     Platform.OS === "ios"
@@ -71,12 +72,18 @@ const ImageViewer = (props) => {
       : Math.ceil((height * resizedImgWidth) / width);
 
   const portraitImageHeight = screenHeight - imageviewerportraitheightmargin;
-  const portraitImageWidth = Math.round(width * portraitImageHeight / height);
+  const portraitImageWidth = Math.round((width * portraitImageHeight) / height);
 
-  const productPhotoWidth = width > height ?
-    screenWidth - staticDimensions.productPhotoWidthMargin : portraitImageWidth;
+  const productPhotoWidth =
+    width > height || isSquare
+      ? screenWidth - staticDimensions.productPhotoWidthMargin
+      : portraitImageWidth;
   const ratio = width / productPhotoWidth;
-  const productPhotoHeight = isSquare ? productPhotoWidth : width > height ? height / ratio :  portraitImageHeight;
+  const productPhotoHeight = isSquare
+    ? productPhotoWidth
+    : width > height
+    ? height / ratio
+    : portraitImageHeight;
   const pdfRatio = resizedImgWidth / productPhotoWidth;
   const fontSize = font?.size?.ukuran ? font?.size?.ukuran : 48;
 
@@ -118,7 +125,15 @@ const ImageViewer = (props) => {
     }
 
     let logs = props.route.params;
-    console.log("init params", {...logs, screenWidth, screenHeight, portraitImageWidth, portraitImageHeight, productPhotoWidth, productPhotoHeight});
+    console.log("init params", {
+      ...logs,
+      screenWidth,
+      screenHeight,
+      portraitImageWidth,
+      portraitImageHeight,
+      productPhotoWidth,
+      productPhotoHeight,
+    });
   }, [uri]);
 
   useEffect(() => {
@@ -540,35 +555,39 @@ const ImageViewer = (props) => {
         </View>
       )}
 
-      <ScrollView contentContainerStyle={styles.scrollView} scrollEnabled={screenWidth > screenHeight}>
-        {watermarkData === null ||
-        watermarkData === undefined ||
-        disableWatermark ? (
-          <View style={[styles.containerImage, { width: productPhotoWidth }]}>
+      <ScrollView
+        contentContainerStyle={styles.scrollView}
+        scrollEnabled={screenWidth > screenHeight}
+      >
+        <View style={styles.containerInside}>
+          <ActivityIndicator
+            size={24}
+            color={loading ? colors.daclen_orange : colors.daclen_gray}
+            style={styles.spinnerMain}
+          />
+          {watermarkData === null ||
+          watermarkData === undefined ||
+          disableWatermark ? (
             <Image
-              source={thumbnail ? thumbnail : uri}
+              source={uri}
               style={[
-                styles.image,
-                { width: productPhotoWidth, height: productPhotoWidth },
+                styles.imageNormal,
+                {
+                  width: productPhotoWidth,
+                  height: productPhotoHeight,
+                },
               ]}
               contentFit="contain"
-              placeholder={blurhash}
+              placeholder={null}
               transition={0}
             />
-          </View>
-        ) : (
-          <View style={styles.containerInside}>
+          ) : (
             <View
               style={[
                 styles.containerImagePreview,
                 { width: productPhotoWidth, height: productPhotoHeight },
               ]}
             >
-              <ActivityIndicator
-                size={24}
-                color={loading ? colors.daclen_orange : colors.daclen_gray}
-                style={styles.spinnerMain}
-              />
               <ImageLargeWatermarkModel
                 width={width}
                 height={height}
@@ -584,15 +603,14 @@ const ImageViewer = (props) => {
                   position: "absolute",
                   top: 0,
                   start: 0,
-                  zIndex: 1,
-                }
-                }
+                  zIndex: 4,
+                }}
                 watermarkData={watermarkData}
                 username={currentUser?.name}
               />
             </View>
-          </View>
-        )}
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -637,9 +655,10 @@ const styles = StyleSheet.create({
     overflow: "visible",
   },
   containerImagePreview: {
-    backgroundColor: colors.white,
+    backgroundColor: "transparent",
     alignItems: "center",
     justifyContent: "center",
+    zIndex: 3,
   },
   image: {
     position: "absolute",
@@ -648,6 +667,11 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     zIndex: 4,
     overflow: "visible",
+  },
+  imageNormal: {
+    backgroundColor: "transparent",
+    zIndex: 4,
+    alignSelf: "center",
   },
   containerHorizontal: {
     width: "100%",
@@ -669,7 +693,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_orange,
   },
   textButton: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: "Poppins-Bold",
     marginStart: 10,
     color: colors.white,
@@ -698,6 +722,11 @@ const styles = StyleSheet.create({
     zIndex: 1,
     backgroundColor: "transparent",
     alignSelf: "center",
+    position: "absolute",
+    top: (screenHeight - 24) / 2,
+    bottom: (screenHeight - 24) / 2,
+    start: (screenWidth - 24) / 2,
+    end: (screenWidth - 24) / 2,
   },
 });
 

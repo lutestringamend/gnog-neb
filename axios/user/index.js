@@ -270,17 +270,23 @@ export const storePenarikanSaldo = async (token, saldo) => {
   console.log("storePenarikanSaldo", params);
 
   try {
-    const response = await Axioss.post(penarikansaldo, params, config)
-    .catch((error) => {
-      console.error(error);
-      sentryLog(error);
-      return {
-        data: null,
-        error: error.toString(),
+    const response = await Axioss.post(penarikansaldo, params, config).catch(
+      (error) => {
+        console.error(error);
+        sentryLog(error);
+        return {
+          data: null,
+          error: error.toString(),
+        };
       }
-    });
+    );
     const data = response?.data;
-    if (data?.saldo === undefined || data?.saldo === null || data?.saldo === "" || data?.saldo !== saldo) {
+    if (
+      data?.saldo === undefined ||
+      data?.saldo === null ||
+      data?.saldo === "" ||
+      data?.saldo !== saldo
+    ) {
       return {
         data: null,
         error: null,
@@ -296,10 +302,9 @@ export const storePenarikanSaldo = async (token, saldo) => {
     return {
       data: null,
       error: e.toString(),
-    }
+    };
   }
-
-}
+};
 
 export function getLaporanSaldo(id, token) {
   return (dispatch) => {
@@ -513,15 +518,6 @@ export function getOTP(id, token, nomor_telp) {
   };
 }
 
-/*const file = dataURLtoFile(uri);
-          formData.append("foto", file);
-          method = "base64 to file";
-          console.log("convert base64 to file", file);
-          
-          transformRequest: (data) => {
-            return data;
-          },*/
-
 export function updateUserPhoto(id, token, uri) {
   try {
     return (dispatch) => {
@@ -560,23 +556,12 @@ export function updateUserPhoto(id, token, uri) {
       };
 
       const url = updateuserphoto + "/" + id.toString();
-      /*if (Platform.OS === "android" && id === 8054) {
-        ToastAndroid.show(
-          `updateUserPhoto ${url}\nname: ${name}\nuri: ${uri}\ntype: ${type}`,
-          ToastAndroid.LONG
-        );
-        
-      }*/
-      console.log("updateUserPhoto " + url + " with formData and header");
-      //console.log({ config, formData });
+      console.log("updateUserPhoto", url);
 
       Axioss.post(url, formData, config)
         .then((response) => {
           const data = response.data;
           console.log(data);
-          /*if (Platform.OS === "android" && id === 8054) {
-              ToastAndroid.show(`response is ${JSON.stringify(data)}`);
-            }*/
           if (data?.session === "success") {
             dispatch({ type: USER_UPDATE_STATE_CHANGE, data: data });
           } else if (data?.errors !== undefined) {
@@ -679,8 +664,7 @@ export function updateUserData(
       };
 
       const url = updateuserdata + "/" + id.toString();
-      console.log("updateUserData " + url + " with params and header");
-      console.log({ config, params });
+      console.log("updateUserData", url, params);
 
       Axioss.post(url, params, config)
         .then((response) => {
@@ -1035,31 +1019,18 @@ export function getCurrentUser(token, storageCurrentUser) {
     console.log("getCurrentUser", `${token}`);
     Axioss.get(getcurrentuser, config)
       .then((response) => {
-        const data = response.data?.data;
+        const data = response?.data ? response?.data?.data : null;
         if (data === undefined || data === null) {
           //console.log("getCurrentUser response data is null");
-          dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
-          dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });
-          dispatch({ type: HISTORY_CLEAR_DATA });
-          dispatch({ type: MEDIA_KIT_CLEAR_DATA });
-          dispatch({ type: USER_TEMP_CART_STATE_CHANGE, data: null });
-          dispatch({ type: USER_CART_STATE_CHANGE, data: null });
-          dispatch({ type: USER_TOKEN_STATE_CHANGE, token: null });
-          userLogout();
-          /*try {
-            readStorageCurrentUser(dispatch, storageCurrentUser);
-          } catch (e) {
-            console.error(e);
-            sentryLog(e);
-          }*/
+          readStorageCurrentUser(dispatch, storageCurrentUser, null);
         } else {
           dispatch({ type: USER_STATE_CHANGE, data });
           dispatch({ type: USER_ADDRESS_STATE_CHANGE, data });
-          dispatch({ type: HISTORY_CLEAR_DATA });
-          dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
-          dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });
           setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, data);
         }
+        dispatch({ type: HISTORY_CLEAR_DATA });
+        dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
+        dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });
       })
       .catch((error) => {
         let errorJSON = error.toJSON();
@@ -1073,28 +1044,30 @@ export function getCurrentUser(token, storageCurrentUser) {
         //sentryLog(error);
         dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
         dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });
-        dispatch({ type: HISTORY_CLEAR_DATA });
-        if (status === 401 || status === 500) {
-          dispatch({ type: MEDIA_KIT_CLEAR_DATA });
-          dispatch({ type: USER_TOKEN_STATE_CHANGE, token: null });
-          dispatch({ type: USER_TEMP_CART_STATE_CHANGE, data: null });
-          dispatch({ type: USER_CART_STATE_CHANGE, data: null });
-          userLogout();
-          if (Platform.OS === "android") {
-            ToastAndroid.show("Tidak bisa login ke akun Anda. Mohon menghubungi Daclen Care untuk lebih lanjut.", ToastAndroid.show);
-          }
-        } else {
-          readStorageCurrentUser(dispatch, storageCurrentUser);
-        }
+        readStorageCurrentUser(dispatch, storageCurrentUser, status);
       });
   };
 }
 
-function readStorageCurrentUser(dispatch, storageCurrentUser) {
+function readStorageCurrentUser(dispatch, storageCurrentUser, status) {
   if (storageCurrentUser === undefined || storageCurrentUser === null) {
     console.log("storage currentUser also null");
     dispatch({ type: USER_STATE_CHANGE, data: null });
     dispatch({ type: USER_ADDRESS_STATE_CHANGE, data: null });
+    //dispatch({ type: HISTORY_CLEAR_DATA });
+    dispatch({ type: MEDIA_KIT_CLEAR_DATA });
+    dispatch({ type: USER_TEMP_CART_STATE_CHANGE, data: null });
+    dispatch({ type: USER_CART_STATE_CHANGE, data: null });
+    dispatch({ type: USER_TOKEN_STATE_CHANGE, token: null });
+    userLogout();
+    if (Platform.OS === "android") {
+      ToastAndroid.show(
+        `Terjadi kendala saat login. Mohon menghubungi Daclen Care untuk penjelasan lebih lanjut.${
+          status ? `\n${status.toString()}` : ""
+        }`,
+        ToastAndroid.LONG
+      );
+    }
   } else {
     console.log("reading from storage currentUser");
     dispatch({ type: USER_STATE_CHANGE, data: storageCurrentUser });

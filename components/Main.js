@@ -347,7 +347,7 @@ function Main(props) {
       props.products?.length < 1
     ) {
       return <SplashScreen loading={true} errorText={error} />;
-    } else if (Platform.OS === "windows") {
+    } else if (Platform.OS === "web") {
       return (
         <SafeAreaView style={styles.container}>
           <TabNavigator

@@ -50,9 +50,9 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: "Poppins-Bold",
-    fontSize: 18,
+    fontSize: 16,
     marginStart: 20,
-    color: "white",
+    color: colors.white,
     alignSelf: "center",
     flex: 1,
   },

@@ -121,13 +121,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   text: {
-    fontFamily: "Poppins", fontSize: 16,
+    fontFamily: "Poppins", fontSize: 14,
     textAlign: "center",
     backgroundColor: "transparent",
     color: colors.daclen_light,
   },
   textFocused: {
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     color: colors.white,
   },
 });

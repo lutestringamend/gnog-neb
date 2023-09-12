@@ -153,11 +153,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_gold_brown,
   },
   textButton: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins-SemiBold", fontSize: 12,
     color: colors.daclen_light,
   },
   textHeader: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins-SemiBold", fontSize: 12,
     color: colors.daclen_graydark,
     marginStart: 20,
     marginEnd: 8,
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     fontFamily: "Poppins-Bold",
     fontSize: 12,
-    color: colors.daclen_graydark,
+    color: colors.daclen_blue,
   },
 });
 

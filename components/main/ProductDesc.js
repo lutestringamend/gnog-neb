@@ -102,26 +102,26 @@ const styles = StyleSheet.create({
   },
   textHeader: {
     flex: 1,
-    fontSize: 16,
-    fontFamily: "Poppins-Bold",
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
     color: colors.daclen_blue,
   },
   textDesc: {
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins", fontSize: 12,
     backgroundColor: "transparent",
     color: colors.daclen_gray,
   },
   textSpecHeader: {
     flex: 1,
     padding: 8,
-    fontSize: 14,
-    fontFamily: "Poppins-Bold",
+    fontSize: 12,
+    fontFamily: "Poppins-SemiBold",
     color: colors.daclen_graydark,
   },
   textSpec: {
     flex: 1,
     padding: 8,
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_black,
   },
   arrow: {

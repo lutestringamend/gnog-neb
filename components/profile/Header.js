@@ -80,7 +80,7 @@ export default function Header(props) {
                 }
                 alt={userData?.username}
                 contentFit="cover"
-                placeholder={blurhash}
+                placeholder={require("../../assets/user.png")}
                 transition={0}
               />
             </View>
@@ -134,6 +134,7 @@ const styles = StyleSheet.create({
   },
   containerVertical: {
     marginHorizontal: 10,
+    alignItems: "flex-start",
   },
   containerLogin: {
     backgroundColor: "transparent",
@@ -152,20 +153,19 @@ const styles = StyleSheet.create({
   image: {
     width: 80,
     height: 80,
-    aspectRatio: 1 / 1,
+    backgroundColor: colors.daclen_light,
   },
   textName: {
     width: 240,
-    marginHorizontal: 10,
-    fontFamily: "Poppins", fontSize: 20,
+    marginEnd: 10,
+    fontSize: 16,
     color: colors.daclen_black,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     paddingBottom: 6,
   },
   text: {
-    width: 240,
-    marginHorizontal: 10,
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins", 
+    fontSize: 10,
     color: colors.daclen_gray,
   },
   button: {

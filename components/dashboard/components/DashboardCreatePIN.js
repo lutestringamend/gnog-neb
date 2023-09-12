@@ -43,13 +43,13 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 16,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     color: colors.daclen_light,
   },
   text: {
     textAlign: "center",
-    fontFamily: "Poppins-Bold",
-    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 12,
     marginHorizontal: 12,
     color: colors.daclen_light,
   },

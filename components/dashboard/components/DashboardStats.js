@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 12,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     color: colors.daclen_light,
     textAlign: "center",
   },
@@ -198,22 +198,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     fontSize: 12,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     color: colors.daclen_light,
   },
   textYellow: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontSize: 10,
     color: colors.daclen_yellow,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
   },
   text: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins", fontSize: 10,
     color: colors.daclen_light,
   },
   textBottom: {
     backgroundColor: "transparent",
     textAlign: "center",
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins-SemiBold", fontSize: 10,
     color: colors.daclen_light,
   },
   image: {

@@ -140,12 +140,12 @@ const styles = StyleSheet.create({
   text: {
     color: colors.daclen_blue,
     fontSize: 12,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
   },
   textReferral: {
     color: colors.daclen_gray,
     fontSize: 12,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
   },
   textInput: {
     borderWidth: 1,

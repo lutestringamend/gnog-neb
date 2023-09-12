@@ -68,8 +68,8 @@ const styles = StyleSheet.create({
     marginVertical: 40,
   },
   textLockHeader: {
-    fontSize: 20,
-    fontFamily: "Poppins-Bold",
+    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
     color: colors.daclen_light,
     textAlign: "center",
   },

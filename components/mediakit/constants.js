@@ -44,10 +44,11 @@ export const vwmarkrenderportraitheightcompressionconstant = 1;
 
 export const vwmarkdebuguserid = 1;
 
-export const imageviewerportraitheightmargin = 160;
+export const imageviewerportraitheightmargin = 240;
 
-export const videoplayerportraitpanelandroidheight = 160;
-export const videoplayerportraitiosheight = 200;
+export const videoplayerportraitpanelandroidheight = 200;
+export const videoplayerportraitiosheight = 240;
+export const videoplayermargintop = 24;
 
 export const tempvideoarray = [
   {

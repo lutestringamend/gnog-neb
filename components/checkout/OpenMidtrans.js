@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     fontSize: 14,
     fontFamily: "Poppins-Bold",
-    color: "white",
+    color: colors.white,
     paddingHorizontal: 20,
     paddingVertical: 10,
     backgroundColor: colors.daclen_danger,

@@ -314,7 +314,7 @@ function Checkout(props) {
               props.couriers[i].cost[0].etd
                 ? ` (${props.couriers[i].cost[0].etd} hari)`
                 : ""
-            } -- Rp ${props.couriers[i].cost[0].value}`,
+            } -- ${formatPrice(props.couriers[i].cost[0].value)}`,
             value: i.toString(),
           });
         }
@@ -783,7 +783,7 @@ function Checkout(props) {
           onPress={null}
         />
       </RBSheet>
-      <RBSheet ref={rbDisclaimer} openDuration={250} height={350}>
+      <RBSheet ref={rbDisclaimer} openDuration={250} height={420}>
         <BSPopup
           title="Konfirmasi Checkout"
           content={
@@ -859,7 +859,7 @@ const styles = StyleSheet.create({
   textError: {
     fontSize: 14,
     fontFamily: "Poppins-Bold",
-    color: "white",
+    color: colors.white,
     paddingHorizontal: 20,
     paddingVertical: 10,
     backgroundColor: colors.daclen_danger,

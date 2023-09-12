@@ -246,18 +246,18 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   textTitle: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 14,
     color: colors.daclen_black,
     marginVertical: 10,
   },
   textDate: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins", fontSize: 10,
     color: colors.daclen_gray,
   },
   textPrice: {
     fontFamily: "Poppins-Bold",
-    fontSize: 12,
+    fontSize: 10,
     color: colors.daclen_orange,
     marginStart: 10,
   },
@@ -285,9 +285,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_blue,
   },
   textButton: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "Poppins-Bold",
-    color: "white",
+    color: colors.white,
   },
   activityControl: {
     alignSelf: "center",

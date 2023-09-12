@@ -36,7 +36,7 @@ export default function DashboardUser(props) {
           }
           alt={currentUser?.name}
           contentFit="cover"
-          placeholder={null}
+          placeholder={require("../../../assets/user.png")}
           transition={100}
         />
       </TouchableOpacity>
@@ -100,32 +100,33 @@ const styles = StyleSheet.create({
     alignItems: "center",
     opacity: 0.95,
     backgroundColor: colors.daclen_grey_button,
-    paddingVertical: 12,
+    paddingVertical: 10,
     paddingHorizontal: 20,
   },
   textButton: {
-    fontSize: 14,
-    fontFamily: "Poppins-Bold",
+    fontSize: 12,
+    fontFamily: "Poppins-SemiBold",
     color: colors.daclen_green_button,
     textAlign: "center",
   },
   textName: {
-    fontFamily: "Poppins", fontSize: 14,
+    fontSize: 12,
     color: colors.daclen_light,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
   },
   text: {
     fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_light,
   },
   textReferral: {
-    fontFamily: "Poppins", fontSize: 10,
+    fontFamily: "Poppins", fontSize: 8,
     color: colors.daclen_lightgrey,
     marginTop: 6,
   },
   image: {
     width: 72,
     height: 72,
+    backgroundColor: colors.daclen_light,
     borderRadius: 36,
   },
 });

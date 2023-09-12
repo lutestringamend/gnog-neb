@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 10,
     paddingBottom: 20,
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins", fontSize: 10,
     color: colors.daclen_light,
     textAlign: "justify",
   },

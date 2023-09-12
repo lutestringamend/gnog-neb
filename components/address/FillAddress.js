@@ -24,6 +24,7 @@ import {
   changeAddress,
   updateReduxRajaOngkirWithKey,
   fetchRajaOngkir,
+  updateUserAlamat,
 } from "../../axios/address";
 import {
   generateUuid,
@@ -164,7 +165,9 @@ function FillAddress(props) {
 
   useEffect(() => {
     //console.log("address", address);
-    setLoading(false);
+    if (loading) {
+      setLoading(false);
+    }
   }, [address]);
 
   /*useEffect(() => {
@@ -463,11 +466,13 @@ function FillAddress(props) {
             kecamatan_name: inputNames.kecamatan,
           };
           props.incrementReduxUserAddresses(newAddress);
+          updateUserAlamat(token, currentUser?.id, newAddress);
         } else if (isDefault) {
           props.updateUserAddressData(currentUser, address, token);
         } else {
           let newAddresses = changeAddress(addresses, address?.id, address);
           props.updateReduxUserAddresses(newAddresses);
+          updateUserAlamat(token, currentUser?.id, address);
         }
       }
     } catch (e) {
@@ -839,7 +844,7 @@ const styles = StyleSheet.create({
   textError: {
     fontSize: 14,
     fontFamily: "Poppins-Bold",
-    color: "white",
+    color: colors.white,
     paddingHorizontal: 20,
     paddingVertical: 10,
     backgroundColor: colors.daclen_danger,
@@ -848,7 +853,7 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: 16,
     fontFamily: "Poppins-Bold",
-    color: "white",
+    color: colors.white,
     marginStart: 10,
   },
   textUid: {

@@ -233,14 +233,13 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   textTitle: {
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     fontSize: 12,
     color: colors.daclen_blue,
     marginTop: 12,
-    marginBottom: 4,
   },
   textInvoice: {
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     fontSize: 10,
     color: colors.daclen_black,
     marginBottom: 4,

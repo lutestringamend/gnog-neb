@@ -14,6 +14,7 @@ import Separator from "../profile/Separator";
 import { colors } from "../../styles/base";
 //import { defaultPackagingOptions } from "./constants";
 import { checkoutdefaultsendername } from "../main/constants";
+import { formatPrice } from "../../axios/cart";
 
 export default function CartDetails(props) {
   const navigation = useNavigation();
@@ -39,7 +40,7 @@ export default function CartDetails(props) {
     <View style={styles.container}>
       <View style={styles.containerEntry}>
         <Text style={styles.textEntryHeader}>Subtotal</Text>
-        <Text style={styles.textEntry}>Rp {props?.subtotal}</Text>
+        <Text style={styles.textEntry}>{`Rp ${props?.subtotal}`}</Text>
       </View>
       <View style={styles.containerEntry}>
         <Text style={styles.textEntryHeader}>Berat</Text>
@@ -130,19 +131,17 @@ export default function CartDetails(props) {
           <Text style={styles.textEntryHeader}>Biaya Pengiriman</Text>
           <View style={styles.containerRadioGroup}>
             <Text style={[styles.textEntry, styles.textStrikethrough]}>
-              {originalDeliveryFee > 0 ? `Rp ${originalDeliveryFee}` : "GRATIS"}
+              {originalDeliveryFee > 0 ? `${formatPrice(originalDeliveryFee)}` : "GRATIS"}
             </Text>
             <Text
               style={[
                 styles.textEntry,
                 styles.textDiscount,
-                discountedDeliveryFee <= 0
-                  ? { color: colors.daclen_green, fontFamily: "Poppins-Bold" }
-                  : null,
+                {fontFamily: "Poppins-Bold", color: colors.daclen_green},
               ]}
             >
               {discountedDeliveryFee > 0
-                ? `Rp ${discountedDeliveryFee}`
+                ? formatPrice(discountedDeliveryFee)
                 : "GRATIS"}
             </Text>
           </View>
@@ -205,6 +204,8 @@ const styles = StyleSheet.create({
   textStrikethrough: {
     textDecorationLine: "line-through",
     textDecorationStyle: "solid",
+    fontFamily: "Poppins",
+    color: colors.daclen_gray,
   },
   textEntry: {
     fontFamily: "Poppins-Bold",
@@ -240,6 +241,6 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: 14,
     fontFamily: "Poppins-Bold",
-    color: "white",
+    color: colors.white,
   },
 });

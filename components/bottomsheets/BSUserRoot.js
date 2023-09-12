@@ -133,24 +133,25 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_blue,
   },
   textButton: {
-    fontSize: 16,
-    fontFamily: "Poppins-Bold",
-    color: "white",
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
+    color: colors.white,
     textAlign: "center",
   },
   textTitle: {
     flex: 1,
-    fontFamily: "Poppins", fontSize: 16,
-    color: "white",
+    fontFamily: "Poppins", fontSize: 14,
+    color: colors.white,
     fontFamily: "Poppins-Bold",
   },
   text: {
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_gray,
   },
   textVerification: {
     fontSize: 12,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
+    textAlignVertical: "center",
     color: colors.daclen_light,
     backgroundColor: colors.daclen_lightgrey,
     paddingVertical: 4,
@@ -158,8 +159,8 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   textName: {
-    fontSize: 18,
-    fontFamily: "Poppins-Bold",
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
     color: colors.daclen_black,
   },
 });

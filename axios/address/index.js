@@ -5,7 +5,7 @@ import {
   USER_ADDRESS_UPDATE_STATE_CHANGE,
   USER_RAJAONGKIR_STATE_CHANGE,
 } from "../../redux/constants";
-import { updateuserdata, rajaongkirAPI } from "../constants";
+import { updateuserdata, rajaongkirAPI, updatealamat } from "../constants";
 import { getCurrentUser } from "../user";
 import { sentryLog } from "../../sentry";
 import { getObjectAsync, setObjectAsync } from "../../components/asyncstorage";
@@ -65,6 +65,55 @@ export function clearRajaOngkir(clearKota, clearKecamatan) {
     }
   };
 }
+
+export const updateUserAlamat = async (token, userId, address) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  };
+
+  const params = {
+    id: address?.id ? address?.id : "",
+    nama_depan: address?.nama_depan ? address?.nama_depan : "",
+    nama_belakang: address?.nama_belakang ? address?.nama_belakang : "",
+    nomor_telp: address?.nomor_telp ? address?.nomor_telp : "",
+    alamat: address?.alamat ? address?.alamat : "",
+    kode_pos: address?.kode_pos ? address?.kode_pos : "",
+    provinsi_id : address?.provinsi_id ? address?.provinsi_id : "",
+    kota_id : address?.kota_id ? address?.kota_id : "",
+    kecamatan_id : address?.kecamatan_id ? address?.kecamatan_id : "",
+    lat : address?.lat ? address?.lat : "",
+    long : address?.long ? address?.long : "",
+  }
+
+  const url = updatealamat + "/" + userId.toString();
+  console.log("updateUserAlamat", url, params);
+
+  try {
+    const response = await Axios.post(url, address, config).catch((error) => {
+      console.log(error);
+      sentryLog(error);
+      return {
+        response: null,
+        error: error.toString(),
+      };
+    });
+    console.log("updateUserAlamat response", response);
+    return {
+      response,
+      error,
+    };
+  } catch (e) {
+    console.log(e);
+    sentryLog(e);
+    return {
+      response: null,
+      error: e.toString(),
+    };
+  }
+};
 
 export const fetchRajaOngkir = async (token, key, param, id) => {
   if (

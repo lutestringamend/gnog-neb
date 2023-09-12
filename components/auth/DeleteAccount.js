@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
   textError: {
     fontSize: 14,
     fontFamily: "Poppins-Bold",
-    color: "white",
+    color: colors.white,
     padding: 20,
     backgroundColor: colors.daclen_danger,
     textAlign: "center",
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: 16,
     fontFamily: "Poppins-Bold",
-    color: "white",
+    color: colors.white,
   },
 });
 

@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: 16,
     fontFamily: "Poppins-Bold",
-    color: "white",
+    color: colors.white,
   },
   text: {
     fontSize: 18,
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_danger,
     paddingVertical: 10,
     paddingHorizontal: 32,
-    color: "white",
+    color: colors.white,
     fontSize: 12,
     fontFamily: "Poppins-Bold",
     textAlign: "center",

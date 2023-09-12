@@ -281,11 +281,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "Poppins-Bold",
     marginStart: 6,
-    color: "white",
+    color: colors.white,
   },
   textHeader: {
     fontSize: 14,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     color: colors.daclen_black,
     flex: 1,
   },

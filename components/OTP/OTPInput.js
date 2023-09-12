@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_blue,
   },
   SplitBoxText: {
-    fontFamily: "Poppins", fontSize: 20,
+    fontSize: 24,
     textAlign: "center",
     fontFamily: "Poppins-Bold",
     color: colors.daclen_graydark,

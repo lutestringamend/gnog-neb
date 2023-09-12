@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: 16,
     fontFamily: "Poppins-Bold",
-    color: "white",
+    color: colors.white,
     marginStart: 4,
     backgroundColor: "transparent",
   },

@@ -142,7 +142,7 @@ function Cart(props) {
           setLoading(true);
           setItemSize({
             number: parseInt(itemSize.text),
-            text: e,
+            text: itemSize.text,
           });
         }
       } catch (e) {
@@ -261,7 +261,7 @@ function Cart(props) {
           />
         ) : (
           <TextInput
-            style={[styles.textCart, { fontFamily: "Poppins", fontSize: textSize ? textSize : 16 }]}
+            style={[styles.textCart, { fontFamily: "Poppins-SemiBold", fontSize: textSize ? textSize : 16 }]}
             inputMode="decimal"
             value={itemSize.text}
             maxLength={2}
@@ -324,11 +324,12 @@ const styles = StyleSheet.create({
     color: colors.daclen_black,
     textAlign: "center",
     alignSelf: "center",
-    fontFamily: "Poppins", fontSize: 16,
+    fontSize: 16,
     width: 30,
   },
   textButton: {
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins-SemiBold", 
+    fontSize: 12,
     color: colors.daclen_black,
     textAlign: "center",
     textAlignVertical: "center",

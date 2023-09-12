@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Bold",
     fontSize: 14,
     backgroundColor: colors.daclen_orange,
-    color: "white",
+    color: colors.white,
   },
 });
 

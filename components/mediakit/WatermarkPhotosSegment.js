@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   textName: {
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     fontSize: 16,
     color: colors.daclen_black,
     alignSelf: "flex-start",

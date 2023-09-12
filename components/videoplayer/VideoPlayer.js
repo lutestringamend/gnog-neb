@@ -39,6 +39,7 @@ import { sentryLog } from "../../sentry";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY } from "../asyncstorage/constants";
 import {
+  videoplayermargintop,
   videoplayerportraitiosheight,
   videoplayerportraitpanelandroidheight,
   vwmarkdebuguserid,
@@ -846,6 +847,10 @@ function VideoPlayer(props) {
               style={[
                 styles.video,
                 {
+                  position: "absolute",
+                  top: videoplayermargintop,
+                  start: (screenWidth - videoSize.videoWidth) / 2,
+                  end: (screenWidth - videoSize.videoWidth) / 2,
                   width: videoSize.videoWidth,
                   height:
                     videoSize.videoOrientation === "landscape"
@@ -853,7 +858,6 @@ function VideoPlayer(props) {
                       : screenHeight === videoSize.videoHeight
                       ? screenHeight
                       : videoSize.videoHeight,
-                  alignSelf: "center",
                 },
               ]}
               source={{
@@ -899,7 +903,7 @@ function VideoPlayer(props) {
                 style={{
                   position: "absolute",
                   zIndex: 4,
-                  top: 0,
+                  top: videoplayermargintop,
                   start:
                     screenWidth !== videoSize.videoWidth
                       ? (screenWidth - videoSize.videoWidth) / 2
@@ -943,16 +947,13 @@ function VideoPlayer(props) {
               ? [
                   styles.containerPanelVideoPortrait,
                   {
-                    top:
-                      Platform.OS === "ios"
-                        ? screenHeight - videoplayerportraitiosheight
-                        : screenHeight - videoplayerportraitpanelandroidheight,
+                    bottom: 0,
                     width: screenWidth,
                     height:
                       Platform.OS === "ios"
                         ? videoplayerportraitiosheight
                         : videoplayerportraitpanelandroidheight,
-                    backgroundColor: "transparent"
+                    backgroundColor: "transparent",
                   },
                 ]
               : videoSize.isLandscape
@@ -1335,14 +1336,15 @@ const styles = StyleSheet.create({
   },
   textHeaderLandscape: {
     backgroundColor: "transparent",
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     color: colors.daclen_light,
-    fontFamily: "Poppins", fontSize: 12,
+    fontSize: 12,
   },
   textButton: {
-    fontSize: 16,
-    fontFamily: "Poppins-Bold",
-    color: "white",
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
+    color: colors.white,
+    alignSelf: "center",
     marginStart: 6,
   },
   textError: {
@@ -1356,8 +1358,8 @@ const styles = StyleSheet.create({
   },
   textErrorLarge: {
     marginTop: 10,
-    fontSize: 18,
-    fontFamily: "Poppins-Bold",
+    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
     textAlign: "center",
     color: colors.daclen_light,
     backgroundColor: "transparent",

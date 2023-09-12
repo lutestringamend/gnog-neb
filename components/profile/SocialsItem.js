@@ -48,16 +48,16 @@ export default function SocialsItem(props) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.daclen_bg_highlighted,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     marginHorizontal: 6,
     justifyContent: "center",
     alignItems: "center",
   },
   icon: {
-    width: 24,
-    height: 24,
+    width: 20,
+    height: 20,
     alignSelf: "center",
   },
 });

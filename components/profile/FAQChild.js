@@ -32,12 +32,12 @@ const styles = StyleSheet.create({
   },
   textQuestion: {
     fontSize: 14,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     color: colors.daclen_black,
     padding: 20,
   },
   textAnswer: {
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_gray,
     paddingHorizontal: 24,
   },

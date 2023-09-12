@@ -284,8 +284,8 @@ const styles = StyleSheet.create({
   },
   textLeader: {
     marginStart: 10,
-    fontFamily: "Poppins-Bold",
-    fontSize: 20,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 14,
     color: colors.daclen_light,
   },
   textUid: {
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "transparent",
+    backgroundColor: colors.daclen_light,
     elevation: 2,
   },
   spinner: {

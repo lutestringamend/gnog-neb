@@ -46,7 +46,7 @@ export const bonusrootpopup = {
 };
 
 export const dashboardbuttonsdefaultwidth = 160;
-export const dashboardbuttonsdefaultheight = 60;
+export const dashboardbuttonsdefaultheight = 72;
 export const dashboardbuttonsdefaultpaddingvertical = 12;
 export const dashboardbuttonsdefaultpaddinghorizontal = 10;
 export const dashboardbuttonsdefaultmarginbottom = 12;

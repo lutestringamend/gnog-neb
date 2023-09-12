@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
   },
   textCheckout: {
     fontFamily: "Poppins", fontSize: 14,
-    fontStyle: "bold",
+    
     color: colors.daclen_blue,
     marginTop: 2,
   },
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Poppins-Bold",
     marginStart: 10,
-    color: "white",
+    color: colors.white,
   },
 });
 

@@ -386,12 +386,13 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
+    backgroundColor: colors.white,
   },
   scrollView: {
     flex: 1,
     width: "100%",
     height: "100%",
-    backgroundColor: "white",
+    backgroundColor: "transparent",
   },
   containerFull: {
     flex: 1,
@@ -467,8 +468,8 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 16,
-    fontFamily: "Poppins-Bold",
-    color: "white",
+    fontFamily: "Poppins-SemiBold",
+    color: colors.white,
   },
   text: {
     color: colors.daclen_graydark,
@@ -478,7 +479,7 @@ const styles = StyleSheet.create({
   textChange: {
     color: colors.daclen_blue,
     fontSize: 14,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
   },
 });
 

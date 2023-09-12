@@ -16,10 +16,10 @@ import { addZeroToArray } from "../../../axios";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
-const modalWidth = 360;
+const modalWidth = 320;
 const modalHeight = 200;
-const digitTextWidth = 30;
-const digitTextHeight = 54;
+const digitTextWidth = 26;
+const digitTextHeight = 50;
 const defaultDigit = ["0", "0", "0", "0", "0", "0", "0", "0"];
 
 const DigitText = ({ number }) => {
@@ -244,6 +244,7 @@ const styles = StyleSheet.create({
   },
   containerDigitItem: {
     backgroundColor: "transparent",
+    justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 6,
     marginTop: 12,
@@ -275,7 +276,7 @@ const styles = StyleSheet.create({
     marginTop: (digitTextHeight - 12) / 2,
   },
   digitText: {
-    fontSize: 26,
+    fontSize: 20,
     fontFamily: "Poppins-Bold",
     color: colors.daclen_light,
     backgroundColor: "transparent",
@@ -286,8 +287,8 @@ const styles = StyleSheet.create({
   },
   timeLabel: {
     color: colors.daclen_light,
-    fontSize: 14,
-    fontFamily: "Poppins-Bold",
+    fontSize: 12,
+    fontFamily: "Poppins-SemiBold",
     marginTop: 12,
   },
   textOK: {

@@ -188,6 +188,21 @@ const WatermarkVideos = (props) => {
                       placeholder={blurhash}
                       transition={100}
                     />
+
+                  </View>
+
+                  <Text style={styles.textHeader}>{item?.nama}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          )}
+        </View>
+      )}
+    </View>
+  );
+};
+
+/*
                     <View
                       style={[
                         styles.containerOrientation,
@@ -210,18 +225,7 @@ const WatermarkVideos = (props) => {
                         style={{ alignSelf: "center" }}
                       />
                     </View>
-                  </View>
-
-                  <Text style={styles.textHeader}>{item?.nama}</Text>
-                </TouchableOpacity>
-              )}
-            />
-          )}
-        </View>
-      )}
-    </View>
-  );
-};
+*/
 
 const styles = StyleSheet.create({
   container: {

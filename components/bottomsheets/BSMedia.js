@@ -169,9 +169,9 @@ const styles = StyleSheet.create({
   },
   textTitle: {
     flex: 1,
-    fontFamily: "Poppins", fontSize: 16,
-    color: "white",
-    fontFamily: "Poppins-Bold",
+    fontSize: 14,
+    color: colors.white,
+    fontFamily: "Poppins-SemiBold",
   },
   button: {
     flexDirection: "row",
@@ -186,9 +186,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_red,
   },
   textButton: {
-    fontSize: 16,
-    fontFamily: "Poppins-Bold",
-    color: "white",
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
+    color: colors.white,
     marginStart: 16,
   },
 });

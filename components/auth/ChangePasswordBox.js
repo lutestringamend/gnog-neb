@@ -63,12 +63,12 @@ const styles = StyleSheet.create({
   text: {
     color: colors.daclen_blue,
     fontSize: 12,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
   },
   textChange: {
     color: colors.daclen_blue,
     fontSize: 14,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     alignSelf: "flex-end",
   },
   textInput: {

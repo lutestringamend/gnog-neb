@@ -63,13 +63,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   text: {
-    fontFamily: "Poppins", fontSize: 16,
+    fontFamily: "Poppins", fontSize: 14,
     color: colors.daclen_gray,
     flex: 1,
     marginHorizontal: 10,
   },
   textSecondary: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins-SemiBold", fontSize: 10,
     color: colors.daclen_blue,
     paddingHorizontal: 10,
   },

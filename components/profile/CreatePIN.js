@@ -131,8 +131,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   textLockHeader: {
-    fontSize: 20,
-    fontFamily: "Poppins-Bold",
+    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
     color: colors.daclen_black,
     textAlign: "center",
     marginTop: 32,

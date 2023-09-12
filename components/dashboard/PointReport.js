@@ -176,7 +176,10 @@ function PointReport(props) {
                             referralData.find(
                               ({ id }) => id === item?.refferal_user_id
                             )?.name
-                          }`}
+                           ? `\nReferral: ${
+                            referralData.find(
+                              ({ id }) => id === item?.refferal_user_id
+                            )?.name}` : ""}`}
                         </Text>
                       )}
                       {item?.checkout_id === undefined ||
@@ -253,40 +256,38 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   textTitle: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 14,
     color: colors.daclen_black,
     marginTop: 10,
   },
   textDate: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins", fontSize: 10,
     color: colors.daclen_gray,
     marginTop: 2,
   },
   textReferral: {
-    fontFamily: "Poppins", fontSize: 14,
-    fontStyle: "bold",
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_black,
     marginTop: 6,
   },
   textCheckout: {
-    fontFamily: "Poppins", fontSize: 14,
-    fontStyle: "bold",
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_blue,
     marginTop: 6,
   },
   textPoint: {
     fontFamily: "Poppins-Bold",
-    fontSize: 24,
+    fontSize: 20,
     color: colors.daclen_orange,
   },
   textTotalPoint: {
     fontFamily: "Poppins-Bold",
-    fontSize: 24,
+    fontSize: 20,
     color: colors.daclen_green,
   },
   textUid: {
-    fontFamily: "Poppins", fontSize: 16,
+    fontFamily: "Poppins", fontSize: 12,
     marginVertical: 20,
     textAlign: "center",
     padding: 10,
@@ -311,7 +312,7 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: 14,
     fontFamily: "Poppins-Bold",
-    color: "white",
+    color: colors.white,
   },
 });
 

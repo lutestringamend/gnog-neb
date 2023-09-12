@@ -45,7 +45,7 @@ export default function HistoryTabItem(props) {
         style={[
           styles.text,
           props?.activeTab === props?.name
-            ? { color: colors.daclen_light, fontFamily: "Poppins-Bold" }
+            ? { color: colors.daclen_light, fontFamily: "Poppins-SemiBold" }
             : props?.backgroundColor === undefined ||
               props?.backgroundColor === null
             ? null
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   text: {
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_black,
     marginStart: 8,
     textAlign: "center",

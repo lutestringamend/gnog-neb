@@ -86,16 +86,15 @@ import { colors, staticDimensions } from "./styles/base";
 import { sentryLog } from "./sentry";
 import { defaultpoppins } from "./styles/fonts";
 
-
+SplashScreen.preventAutoHideAsync();
 const Stack = createStackNavigator();
-
-export default function App() {
-  SplashScreen.preventAutoHideAsync();
-  Sentry.init({
+Sentry.init({
   dsn: SENTRY_DSN,
   enableInExpoDevelopment: true,
   debug: true,
-  });
+});
+
+export default function App() {
   try {
     const theme = useTheme();
     theme.colors.primary = colors.daclen_bg;

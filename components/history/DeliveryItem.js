@@ -204,10 +204,9 @@ const styles = StyleSheet.create({
     borderTopColor: colors.daclen_green,
   },
   textTitle: {
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     fontSize: 12,
     color: colors.daclen_blue,
-    marginBottom: 4,
   },
   textInvoice: {
     fontFamily: "Poppins-Bold",
@@ -216,7 +215,8 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   textEntry: {
-    fontFamily: "Poppins", fontSize: 10,
+    fontFamily: "Poppins", 
+    fontSize: 10,
     color: colors.daclen_gray,
   },
   textUid: {
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: 14,
     fontFamily: "Poppins-Bold",
-    color: "white",
+    color: colors.white,
   },
 });
 

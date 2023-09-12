@@ -252,9 +252,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_danger,
   },
   textButton: {
-    fontSize: 20,
-    fontFamily: "Poppins-Bold",
-    color: "white",
+    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
+    color: colors.white,
   },
 });
 

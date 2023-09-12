@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: 16,
     fontFamily: "Poppins-Bold",
-    color: "white",
+    color: colors.white,
   },
   textUid: {
     fontFamily: "Poppins", fontSize: 12,
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   textError: {
     fontSize: 14,
     fontFamily: "Poppins-Bold",
-    color: "white",
+    color: colors.white,
     paddingHorizontal: 20,
     paddingVertical: 10,
     backgroundColor: colors.daclen_danger,

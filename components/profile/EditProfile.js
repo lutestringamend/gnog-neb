@@ -392,7 +392,7 @@ function EditProfile(props) {
               }
               alt={user?.nama_lengkap}
               contentFit="cover"
-              placeholder={blurhash}
+              placeholder={require("../../assets/user.png")}
               transition={100}
             />
             {uploadingPhoto.pending || uploadingPhoto.uploading ? (
@@ -802,6 +802,7 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
+    backgroundColor: colors.daclen_light,
     borderColor: colors.daclen_lightgrey,
     borderWidth: 1,
     aspectRatio: 1 / 1,
@@ -809,7 +810,7 @@ const styles = StyleSheet.create({
   text: {
     color: colors.daclen_gray,
     fontSize: 12,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins",
     marginHorizontal: 20,
   },
   textCompulsory: {
@@ -855,7 +856,7 @@ const styles = StyleSheet.create({
   textError: {
     fontSize: 14,
     fontFamily: "Poppins-Bold",
-    color: "white",
+    color: colors.white,
     paddingHorizontal: 20,
     paddingVertical: 10,
     backgroundColor: colors.daclen_danger,
@@ -864,7 +865,7 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: 16,
     fontFamily: "Poppins-Bold",
-    color: "white",
+    color: colors.white,
   },
   textUid: {
     fontFamily: "Poppins", fontSize: 12,

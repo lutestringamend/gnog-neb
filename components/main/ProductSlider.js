@@ -24,7 +24,7 @@ function ProductSlider(props) {
         console.log("sliders are empty");
       } else {
         setLoading(false);
-        console.log("product id is " + props.id);
+        //console.log("product id is " + props.id);
         const check = props.productItems.find(({ id }) => id === props.id);
         if (check !== undefined) {
           setMainPhoto(
@@ -49,7 +49,7 @@ function ProductSlider(props) {
             ),
           ];
           setPhotos(data);
-          console.log(data);
+          //console.log("productSlider data", data);
         } else {
           console.log("check is " + check);
           setPhotos([]);
@@ -58,7 +58,7 @@ function ProductSlider(props) {
     }, [props?.id, props.productItems]);
 
     const openPhoto = (foto_url) => {
-      console.log(foto_url);
+      //console.log(foto_url);
       if (foto_url !== null && foto_url !== undefined) {
         setMainPhoto(foto_url);
       }
@@ -71,6 +71,7 @@ function ProductSlider(props) {
           title: props?.title,
           uri: mainPhoto,
           isSquare: true,
+          watermarkData: null,
         });
       }
     }
@@ -107,7 +108,7 @@ function ProductSlider(props) {
               data={photos}
               renderItem={({ item }) => (
                 <TouchableHighlight
-                  onPress={() => openPhoto(item.img)}
+                  onPress={() => openPhoto(item?.img)}
                   underlayColor={colors.daclen_orange}
                 >
                   <Image

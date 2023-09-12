@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_lightgrey_button,
   },
   textButton: {
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     color: colors.daclen_light,
   },
 });

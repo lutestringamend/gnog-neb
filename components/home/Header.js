@@ -53,7 +53,7 @@ const Header = (props) => {
           }
           alt={currentUser?.name}
           contentFit="cover"
-          placeholder={null}
+          placeholder={require("../../assets/user.png")}
           transition={100}
         />
       </TouchableOpacity>
@@ -137,6 +137,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
+    backgroundColor: colors.daclen_light,
   },
   gear: {
     backgroundColor: "transparent",
@@ -149,18 +150,18 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   textName: {
-    fontFamily: "Poppins", fontSize: 14,
+    fontSize: 12,
     color: colors.daclen_light,
     fontFamily: "Poppins-Bold",
   },
   text: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins", fontSize: 10,
     color: colors.daclen_light,
   },
   textReferral: {
     fontFamily: "Poppins", fontSize: 10,
     color: colors.daclen_lightgrey,
-    marginTop: 6,
+    marginTop: 4,
   },
   textAlert: {
     fontSize: 12,

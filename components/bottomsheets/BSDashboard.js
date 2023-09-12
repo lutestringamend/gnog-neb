@@ -88,13 +88,13 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: 16,
     fontFamily: "Poppins-Bold",
-    color: "white",
+    color: colors.white,
     textAlign: "center",
   },
   textTitle: {
     flex: 1,
     fontFamily: "Poppins", fontSize: 16,
-    color: "white",
+    color: colors.white,
     fontFamily: "Poppins-Bold",
   },
   text: {
