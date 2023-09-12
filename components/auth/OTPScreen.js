@@ -240,25 +240,25 @@ const styles = StyleSheet.create({
   },
   textHeader: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
     color: colors.daclen_black,
   },
   text: {
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
     marginVertical: 10,
     color: colors.daclen_gray,
     textAlign: "center",
   },
   textWhatsapp: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_green,
     textAlign: "center",
   },
   textRetry: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     marginTop: 10,
     marginBottom: 20,
     color: colors.daclen_orange,
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 10,
     marginBottom: 20,
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
   },
   button: {
     alignItems: "center",
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
   },
   textError: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
     padding: 20,
     backgroundColor: colors.daclen_danger,
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
   },
 });

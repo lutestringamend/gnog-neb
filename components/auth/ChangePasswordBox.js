@@ -63,12 +63,12 @@ const styles = StyleSheet.create({
   text: {
     color: colors.daclen_blue,
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
   },
   textChange: {
     color: colors.daclen_blue,
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     alignSelf: "flex-end",
   },
   textInput: {
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 2,
     marginBottom: 10,
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
   },
 });
 

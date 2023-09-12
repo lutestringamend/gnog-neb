@@ -54,12 +54,12 @@ const styles = StyleSheet.create({
   },
   textCashback: {
     color: colors.daclen_green,
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     paddingHorizontal: 20,
   },
   textDelivery: {
     color: colors.daclen_reddishbrown,
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     paddingHorizontal: 20,
   },
 });

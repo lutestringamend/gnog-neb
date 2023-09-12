@@ -164,7 +164,7 @@ function CartOld(props) {
           />
         ) : (
           <Text
-            style={[styles.textCart, { fontSize: textSize ? textSize : 16 }]}
+            style={[styles.textCart, { fontFamily: "Poppins", fontSize: textSize ? textSize : 16 }]}
           >
             {itemSize}
           </Text>
@@ -218,16 +218,16 @@ const styles = StyleSheet.create({
   },
   textCart: {
     backgroundColor: "transparent",
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_black,
     textAlign: "center",
     textAlignVertical: "center",
     alignSelf: "center",
-    fontSize: 16,
+    fontFamily: "Poppins", fontSize: 16,
     zIndex: 4,
   },
   textButton: {
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
     color: colors.daclen_black,
     textAlign: "center",
     textAlignVertical: "center",

@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: "center",
     marginHorizontal: 10,
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.black,
     backgroundColor: "white",
   },

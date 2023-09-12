@@ -553,7 +553,7 @@ function EditProfile(props) {
           <Text
             style={[
               styles.textCompulsory,
-              { fontSize: 18, marginTop: 20, marginBottom: 4 },
+              { fontFamily: "Poppins", fontSize: 18, marginTop: 20, marginBottom: 4 },
             ]}
           >
             Info Bank
@@ -809,19 +809,19 @@ const styles = StyleSheet.create({
   text: {
     color: colors.daclen_gray,
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     marginHorizontal: 20,
   },
   textCompulsory: {
     color: colors.daclen_orange,
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     marginHorizontal: 20,
   },
   textChange: {
     color: colors.daclen_blue,
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
     marginVertical: 4,
     marginHorizontal: 20,
@@ -834,7 +834,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
     marginHorizontal: 20,
     marginBottom: 20,
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
   },
   radioGroup: {
     marginTop: 4,
@@ -854,7 +854,7 @@ const styles = StyleSheet.create({
   },
   textError: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -863,11 +863,11 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
   },
   textUid: {
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_gray,
     marginHorizontal: 20,
     textAlign: "center",

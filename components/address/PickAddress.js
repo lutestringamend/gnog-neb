@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
   },
   textError: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -391,26 +391,26 @@ const styles = StyleSheet.create({
   textChange: {
     color: colors.daclen_blue,
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
     marginVertical: 4,
     marginHorizontal: 20,
   },
   textHeader: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_gray,
     marginHorizontal: 20,
     marginTop: 20,
   },
   textButton: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_light,
     marginStart: 10,
   },
   textUid: {
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_gray,
     marginHorizontal: 20,
     marginTop: 20,
@@ -418,7 +418,7 @@ const styles = StyleSheet.create({
   },
   textHiddenButton: {
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_light,
   },
   spinner: {

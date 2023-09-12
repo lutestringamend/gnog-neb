@@ -174,7 +174,7 @@ const Withdrawal = (props) => {
             <Text style={styles.textBankName}>
               {currentUser?.detail_user?.bank?.nama}
             </Text>
-            <Text style={[styles.textEntry, { fontWeight: "bold" }]}>
+            <Text style={[styles.textEntry, { fontFamily: "Poppins-Bold" }]}>
               {currentUser?.detail_user?.nomor_rekening}
             </Text>
             <Text style={styles.textEntry}>
@@ -280,27 +280,27 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
   },
   textCompulsory: {
     color: colors.daclen_orange,
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     marginHorizontal: 20,
     marginTop: 24,
   },
   textCurrency: {
     color: colors.daclen_orange,
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     alignSelf: "center",
     marginStart: 20,
   },
   text: {
     color: colors.daclen_gray,
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     marginHorizontal: 20,
     marginTop: 12,
   },
@@ -311,11 +311,11 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 2,
     marginHorizontal: 20,
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
   },
   textError: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -323,32 +323,32 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   textBankName: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 16,
     color: colors.daclen_blue,
     marginBottom: 4,
   },
   textEdit: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 12,
     color: colors.daclen_green_dark,
     marginStart: 4,
   },
   textEntry: {
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
     color: colors.daclen_black,
     marginBottom: 2,
   },
   textRemaining: {
     color: colors.daclen_blue,
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     marginHorizontal: 20,
     marginTop: 4,
   },
   textExplanation: {
     color: colors.daclen_gray,
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     marginHorizontal: 20,
   },
 });

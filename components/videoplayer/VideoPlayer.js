@@ -39,6 +39,8 @@ import { sentryLog } from "../../sentry";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY } from "../asyncstorage/constants";
 import {
+  videoplayerportraitiosheight,
+  videoplayerportraitpanelandroidheight,
   vwmarkdebuguserid,
   vwmarkdefaultsourceheight,
   vwmarkdefaultsourcewidth,
@@ -60,15 +62,33 @@ function VideoPlayer(props) {
 
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
+  const screenRatio = screenWidth / screenHeight;
+
+  const projectedPortraitVideoHeight = Math.round(screenWidth / ratio);
+  const readjustedPortraitVideoHeight =
+    screenHeight -
+    (Platform.OS === "ios"
+      ? videoplayerportraitiosheight
+      : videoplayerportraitpanelandroidheight);
+  const readjustedPortraitVideoWidth = Math.round(
+    readjustedPortraitVideoHeight * ratio
+  );
 
   const videoSize = {
-    isLandscape: screenWidth > screenHeight,
-    videoWidth: screenWidth,
-    videoHeight: Math.ceil((screenWidth * height) / width),
+    isLandscape: false,
+    videoWidth:
+      height > width
+        ? readjustedPortraitVideoWidth
+        : screenWidth,
+    videoHeight:
+      height > width
+        ? readjustedPortraitVideoHeight
+        : projectedPortraitVideoHeight,
     videoOrientation: height > width ? "portrait" : "landscape",
   };
 
   const videoToScreenRatio = parseFloat(width / screenWidth);
+  const videoToPreviewRatio = parseFloat(videoSize.videoWidth / screenWidth);
   const watermarkSize = {
     width,
     height,
@@ -139,20 +159,23 @@ function VideoPlayer(props) {
       checkSharing();
     }
 
-    console.log(
-      "videoId",
+    let logs = {
       videoId,
-      "width",
       width,
-      "height",
       height,
-      "screenVideoSize",
+      screenWidth,
+      screenHeight,
+      screenRatio,
+      projectedPortraitVideoHeight,
+      readjustedPortraitVideoWidth,
+      readjustedPortraitVideoHeight,
       videoSize,
-      "ratio",
       ratio,
-      "videoToScreenRatio",
-      videoToScreenRatio
-    );
+      videoToScreenRatio,
+      videoToPreviewRatio,
+    };
+
+    console.log("init logs", logs);
     if (videoSize.isLandscape === undefined || videoSize.isLandscape === null) {
       setError("unknown screen orientation");
     } else if (
@@ -630,14 +653,10 @@ function VideoPlayer(props) {
       try {
         const targetDownload = FileSystem.documentDirectory + "raw_" + fileName;
         console.log("downloadAsync", uri, targetDownload);
-        const result = await FileSystem.downloadAsync(
-          uri,
-          targetDownload,
-          {
-            cache: true,
-            sessionType: FileSystem.FileSystemSessionType.BACKGROUND,
-          }
-        );
+        const result = await FileSystem.downloadAsync(uri, targetDownload, {
+          cache: true,
+          sessionType: FileSystem.FileSystemSessionType.BACKGROUND,
+        });
         console.log(result);
         setSuccess(true);
         setOutput(
@@ -737,7 +756,7 @@ function VideoPlayer(props) {
               style={[
                 styles.textHeaderLandscape,
                 loading || error === null
-                  ? { fontSize: 16, paddingVertical: 9 }
+                  ? { fontFamily: "Poppins", fontSize: 16, paddingVertical: 9 }
                   : null,
               ]}
             >
@@ -813,7 +832,7 @@ function VideoPlayer(props) {
               styles.video,
               {
                 position: videoSize.isLandscape ? "absolute" : "relative",
-                width: "100%",
+                width: screenWidth,
                 height:
                   videoSize.videoOrientation === "landscape"
                     ? videoSize.videoHeight
@@ -831,9 +850,10 @@ function VideoPlayer(props) {
                   height:
                     videoSize.videoOrientation === "landscape"
                       ? videoSize.videoHeight
-                      : screenHeight > videoSize.videoHeight
+                      : screenHeight === videoSize.videoHeight
                       ? screenHeight
                       : videoSize.videoHeight,
+                  alignSelf: "center",
                 },
               ]}
               source={{
@@ -873,14 +893,17 @@ function VideoPlayer(props) {
               <VideoLargeWatermarkModel
                 width={videoSize.videoWidth}
                 height={videoSize.videoHeight}
-                videoToScreenRatio={1}
+                videoToScreenRatio={videoToPreviewRatio}
                 watermarkData={watermarkData}
                 orientation={videoSize?.videoOrientation}
                 style={{
                   position: "absolute",
                   zIndex: 4,
                   top: 0,
-                  start: 0,
+                  start:
+                    screenWidth !== videoSize.videoWidth
+                      ? (screenWidth - videoSize.videoWidth) / 2
+                      : 0,
                 }}
                 username={currentUser?.name}
               />
@@ -922,10 +945,14 @@ function VideoPlayer(props) {
                   {
                     top:
                       Platform.OS === "ios"
-                        ? Dimensions.get("window").height - 220
-                        : screenHeight - 140,
-                    elevation: 10,
-                    zIndex: 20,
+                        ? screenHeight - videoplayerportraitiosheight
+                        : screenHeight - videoplayerportraitpanelandroidheight,
+                    width: screenWidth,
+                    height:
+                      Platform.OS === "ios"
+                        ? videoplayerportraitiosheight
+                        : videoplayerportraitpanelandroidheight,
+                    backgroundColor: "transparent"
                   },
                 ]
               : videoSize.isLandscape
@@ -967,7 +994,10 @@ function VideoPlayer(props) {
               videoSize.isLandscape ? styles.buttonCircle : styles.button,
               {
                 backgroundColor:
-                  videoLoading || loading || !status.isLoaded || watermarkImage === null
+                  videoLoading ||
+                  loading ||
+                  !status.isLoaded ||
+                  watermarkImage === null
                     ? colors.daclen_gray
                     : colors.daclen_orange,
                 flex: 1,
@@ -1019,7 +1049,6 @@ function VideoPlayer(props) {
             )}
           </TouchableOpacity>
         </View>
-
       </ScrollView>
       {loading ? (
         <View style={styles.containerLoading}>
@@ -1056,9 +1085,9 @@ function VideoPlayer(props) {
             style={[
               styles.textUid,
               {
-                fontWeight: "bold",
+                fontFamily: "Poppins-Bold",
                 color: colors.daclen_graydark,
-                fontSize: 12,
+                fontFamily: "Poppins", fontSize: 12,
                 marginVertical: 10,
                 paddingBottom: 0,
               },
@@ -1179,12 +1208,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: "white",
+    backgroundColor: colors.black,
   },
   scrollView: {
     flex: 1,
     width: "100%",
-    backgroundColor: "white",
+    backgroundColor: "transparent",
   },
   containerLoading: {
     width: "100%",
@@ -1226,13 +1255,12 @@ const styles = StyleSheet.create({
     marginEnd: 20,
   },
   containerPanelVideoPortrait: {
-    width: "100%",
     position: "absolute",
     flexDirection: "row",
     justifyContent: "center",
-    backgroundColor: "transparent",
+    alignItems: "center",
     start: 0,
-    zIndex: 12,
+    zIndex: 20,
   },
   containerBodyVideoPortrait: {
     position: "absolute",
@@ -1271,7 +1299,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   video: {
-    backgroundColor: colors.daclen_black,
+    backgroundColor: colors.black,
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "center",
@@ -1280,6 +1308,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    alignSelf: "center",
+    width: 60,
+    height: 40,
     paddingVertical: 10,
     borderRadius: 4,
     marginHorizontal: 10,
@@ -1304,19 +1335,19 @@ const styles = StyleSheet.create({
   },
   textHeaderLandscape: {
     backgroundColor: "transparent",
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_light,
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
   },
   textButton: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
     marginStart: 6,
   },
   textError: {
     marginTop: 2,
-    fontSize: 10,
+    fontFamily: "Poppins", fontSize: 10,
     color: colors.daclen_light,
     backgroundColor: "transparent",
     textAlignVertical: "center",
@@ -1326,14 +1357,14 @@ const styles = StyleSheet.create({
   textErrorLarge: {
     marginTop: 10,
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
     color: colors.daclen_light,
     backgroundColor: "transparent",
     textAlignVertical: "center",
   },
   textUid: {
-    fontSize: 10,
+    fontFamily: "Poppins", fontSize: 10,
     width: "90%",
     marginHorizontal: 10,
     marginTop: 10,
@@ -1347,7 +1378,7 @@ const styles = StyleSheet.create({
     padding: 10,
     width: "90%",
     marginVertical: 4,
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
   },
 });
 

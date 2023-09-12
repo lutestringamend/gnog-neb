@@ -33,7 +33,7 @@ export default function MainHeader(props) {
           style={{ alignSelf: "center" }}
         />
       </TouchableOpacity>
-      <Text style={[styles.text, { fontSize: props?.textSize ? props?.textSize : null }]}>{props?.title}</Text>
+      <Text style={[styles.text, { fontFamily: "Poppins", fontSize: props?.textSize ? props?.textSize : null }]}>{props?.title}</Text>
     </View>
   );
 }
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   text: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 18,
     marginStart: 20,
     color: "white",

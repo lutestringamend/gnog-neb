@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
   },
 });

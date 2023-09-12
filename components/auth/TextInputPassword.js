@@ -21,7 +21,7 @@ function TextInputPassword(props) {
         secureTextEntry={isPasswordSecure}
         style={{
           flex: 1,
-          fontSize: props?.style.fontSize,
+          fontFamily: "Poppins", fontSize: props?.style.fontSize,
           height: "100%",
           marginEnd: 10,
         }}

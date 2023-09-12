@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_light,
   },
   text: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 16,
     textAlign: "center",
     marginHorizontal: 20,

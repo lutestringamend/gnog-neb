@@ -157,15 +157,15 @@ const styles = StyleSheet.create({
   textName: {
     width: 240,
     marginHorizontal: 10,
-    fontSize: 20,
+    fontFamily: "Poppins", fontSize: 20,
     color: colors.daclen_black,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     paddingBottom: 6,
   },
   text: {
     width: 240,
     marginHorizontal: 10,
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
     color: colors.daclen_gray,
   },
   button: {
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_light,
   },
   arrow: { alignSelf: "center", marginStart: 10, flex: 1 },

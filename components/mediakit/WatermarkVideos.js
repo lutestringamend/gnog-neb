@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   textHeader: {
     backgroundColor: "transparent",
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
     textAlignVertical: "center",
     height: 40,

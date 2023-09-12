@@ -88,7 +88,7 @@ export const bottomNav = {
   inactiveColor: colors.daclen_light,
   barBackground: "white",
   iconSize: 24,
-  fontSize: 16,
+  fontFamily: "Poppins", fontSize: 16,
 };
 
 export const blurhash = null;

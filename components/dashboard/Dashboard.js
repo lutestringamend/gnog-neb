@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
   },
   textError: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     paddingVertical: 10,
     paddingHorizontal: 20,
     color: colors.daclen_light,

@@ -103,11 +103,11 @@ const styles = StyleSheet.create({
   textHeader: {
     flex: 1,
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_blue,
   },
   textDesc: {
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
     backgroundColor: "transparent",
     color: colors.daclen_gray,
   },
@@ -115,13 +115,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 8,
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_graydark,
   },
   textSpec: {
     flex: 1,
     padding: 8,
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
     color: colors.daclen_black,
   },
   arrow: {

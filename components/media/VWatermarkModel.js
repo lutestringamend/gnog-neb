@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     backgroundColor: "transparent",
     color: colors.daclen_black,
-    fontWeight: "bold",
+    fontFamily: "Poppins-SemiBold",
     zIndex: 1,
   },
   textPhone: {
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     zIndex: 2,
     backgroundColor: "transparent",
     color: colors.white,
-    fontWeight: "bold",
+    fontFamily: "Poppins-SemiBold",
   },
 });
 

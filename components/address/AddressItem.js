@@ -232,19 +232,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   textName: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 14,
     backgroundColor: "transparent",
     color: colors.daclen_black,
   },
   textDesc: {
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     backgroundColor: "transparent",
     color: colors.daclen_gray,
   },
   textButton: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     backgroundColor: "transparent",
     color: colors.daclen_light,
     marginStart: 6,

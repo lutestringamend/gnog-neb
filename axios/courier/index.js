@@ -7,6 +7,7 @@ import {
   USER_RAJAONGKIR_STATE_CHANGE,
   USER_COURIERS_STATE_CHANGE
 } from "../../redux/constants";
+import { sentryLog } from "../../sentry";
 
 export function clearCourierData() {
   return (dispatch) => {
@@ -48,13 +49,17 @@ export function getKurirData(token, map) {
       },
     };
 
+    console.log("getKurirData", map);
     Axios.post(getkurirdata, map, config)
       .then((response) => {
-        console.log("getKurirData with header");
-        //console.log(config);
-        const data = response.data?.data?.costs;
-        console.log(response);
-        dispatch({ type: USER_COURIERS_STATE_CHANGE, data });
+        try {
+          const data = response.data?.data?.costs;
+          dispatch({ type: USER_COURIERS_STATE_CHANGE, data });
+        } catch (e) {
+          console.error(e);
+          sentryLog(e);
+          dispatch({ type: USER_COURIERS_STATE_CHANGE, data: null });
+        }
       })
       .catch((error) => {
         console.log(error);

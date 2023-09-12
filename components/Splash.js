@@ -62,14 +62,14 @@ const styles = StyleSheet.create({
   },
   textError: {
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_orange,
     textAlign: "center",
     backgroundColor: "transparent",
     marginHorizontal: 20,
   },
   textVersion: {
-    fontSize: 10,
+    fontFamily: "Poppins", fontSize: 10,
     color: colors.daclen_yellow,
     textAlign: "center",
     marginVertical: 32,

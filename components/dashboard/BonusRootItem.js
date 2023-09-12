@@ -150,13 +150,13 @@ const styles = StyleSheet.create({
   },
   textHeader: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     marginStart: 10,
     color: colors.daclen_light,
     overflow: "hidden",
   },
   text: {
-    fontSize: 16,
+    fontFamily: "Poppins", fontSize: 16,
     backgroundColor: "transparent",
   },
 });

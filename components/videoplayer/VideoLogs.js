@@ -10,7 +10,7 @@ const VideoLogs = (prop) => {
       >
         <Text
           style={{
-            fontSize: 10,
+            fontFamily: "Poppins", fontSize: 10,
             width: "95%",
             color: colors.daclen_gray,
             marginVertical: 10,

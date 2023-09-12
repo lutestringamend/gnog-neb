@@ -43,7 +43,7 @@ const WatermarkPhotosSegment = (props) => {
       link_x: item?.link_x,
       link_y: item?.link_y,
       font: item?.font,
-      fontSize: item?.font ? item?.font?.ukuran : 48,
+      fontFamily: "Poppins", fontSize: item?.font ? item?.font?.ukuran : 48,
       watermarkData,
       sharingAvailability,
     });
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   textName: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 16,
     color: colors.daclen_black,
     alignSelf: "flex-start",
@@ -286,12 +286,12 @@ const styles = StyleSheet.create({
     marginStart: 12,
   },
   textPrice: {
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_orange,
     marginTop: 6,
   },
   textButton: {
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
     color: colors.daclen_black,
     textAlign: "center",
     textAlignVertical: "center",

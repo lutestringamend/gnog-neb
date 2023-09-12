@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   textUrl: {
     backgroundColor: "transparent",
     color: colors.white,
-    fontWeight: "bold",
+    fontFamily: "Poppins-SemiBold",
     textAlign: "center",
     textAlignVertical: "center",
     alignSelf: "center",

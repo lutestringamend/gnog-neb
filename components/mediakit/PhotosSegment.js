@@ -63,7 +63,7 @@ const PhotosSegment = (props) => {
       link_x: item?.link_x,
       link_y: item?.link_y,
       font: item?.font,
-      fontSize: item?.font ? item?.font?.ukuran : 48,
+      fontFamily: "Poppins", fontSize: item?.font ? item?.font?.ukuran : 48,
       watermarkData,
       sharingAvailability,
     });
@@ -279,18 +279,18 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     marginStart: 6,
     color: "white",
   },
   textHeader: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_black,
     flex: 1,
   },
   textUid: {
-    fontSize: 16,
+    fontFamily: "Poppins", fontSize: 16,
     marginVertical: 20,
     textAlign: "center",
     padding: 10,

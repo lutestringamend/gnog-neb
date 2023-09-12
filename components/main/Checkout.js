@@ -16,7 +16,13 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { clearUserData, getCurrentUser } from "../../axios/user";
-import { clearKeranjang, formatPrice, storeCheckout, overhaulReduxCart, overhaulReduxTempCart } from "../../axios/cart";
+import {
+  clearKeranjang,
+  formatPrice,
+  storeCheckout,
+  overhaulReduxCart,
+  overhaulReduxTempCart,
+} from "../../axios/cart";
 import { callMasterkurir, getKurirData } from "../../axios/courier";
 import { clearHistoryData } from "../../axios/history";
 
@@ -165,7 +171,22 @@ function Checkout(props) {
 
         if (retrieveDeliveryData) {
           console.log("retrieving delivery data again");
-          retrieveDeliveryServices();
+          clearOutDelivery();
+          if (
+            addressId === null ||
+            addressId === "" ||
+            addressId === "default"
+          ) {
+            retrieveDeliveryServices(
+              currentAddress?.provinsi,
+              currentAddress?.kota
+            );
+          } else {
+            retrieveDeliveryServices(
+              customAddress?.provinsi,
+              customAddress?.kota
+            );
+          }
         }
       } catch (e) {
         console.log(e);
@@ -174,6 +195,7 @@ function Checkout(props) {
   }, [props.cart]);
 
   useEffect(() => {
+    console.log("addressId", addressId);
     if (
       addressId === null ||
       addressId === "" ||
@@ -181,7 +203,9 @@ function Checkout(props) {
       addresses?.length === undefined ||
       addresses?.length < 1
     ) {
-      console.log("addressId null addresses", addressId, addresses);
+      console.log("addresses", addresses);
+      clearOutDelivery();
+      retrieveDeliveryServices(currentAddress?.provinsi, currentAddress?.kota);
       setDefaultAddress();
     } else {
       checkCustomAddress();
@@ -190,10 +214,23 @@ function Checkout(props) {
   }, [addressId, addresses]);
 
   useEffect(() => {
+    if (
+      (addressId === null || addressId === "" || addressId === "default") &&
+      !(currentAddress?.provinsi == null || currentAddress?.kota === null)
+    ) {
+      clearOutDelivery();
+      retrieveDeliveryServices(currentAddress?.provinsi, currentAddress?.kota);
+    }
+  }, [currentAddress]);
+
+  useEffect(() => {
     if (customAddress === null) {
       return;
     }
-    clearOutDelivery();
+    if (!(addressId === null || addressId === "" || addressId === "default")) {
+      clearOutDelivery();
+      retrieveDeliveryServices(customAddress?.provinsi, customAddress?.kota);
+    }
     setDisplayAddress(
       `${customAddress?.nama_depan} ${
         customAddress?.nama_belakang ? customAddress?.nama_belakang : ""
@@ -208,6 +245,7 @@ function Checkout(props) {
       }  ${customAddress?.kode_pos}`
     );
     setAddressComplete(true);
+    console.log("customAddress", customAddress);
   }, [customAddress]);
 
   useEffect(() => {
@@ -246,8 +284,13 @@ function Checkout(props) {
   useEffect(() => {
     if (courierSlug === null) return;
     const theCourier = masterkurir.find(({ slug }) => slug === courierSlug);
+    console.log("theCourier", theCourier);
     setCourier(theCourier);
-    retrieveDeliveryServices();
+    if (addressId === null || addressId === "" || addressId === "default") {
+      retrieveDeliveryServices(currentAddress?.provinsi, currentAddress?.kota);
+    } else {
+      retrieveDeliveryServices(customAddress?.provinsi, customAddress?.kota);
+    }
   }, [courierSlug]);
 
   useEffect(() => {
@@ -339,7 +382,7 @@ function Checkout(props) {
     props.overhaulReduxCart(null);
     props.clearHistoryData();
     navigation.navigate("OpenMidtrans", { snapToken, snap_url });
-  }
+  };
 
   const setDefaultAddress = () => {
     if (
@@ -376,7 +419,15 @@ function Checkout(props) {
     try {
       for (let otherAddress of addresses) {
         if (otherAddress?.id === addressId) {
-          clearOutDelivery();
+          let provinsi = {
+            id: otherAddress?.provinsi_id,
+            name: otherAddress?.provinsi_name,
+          };
+          let kota = {
+            provinsi_id: otherAddress?.provinsi_id,
+            id: otherAddress?.kota_id,
+            name: otherAddress?.kota_name,
+          };
           let newAddress = {
             ...otherAddress,
             alamat_lain: true,
@@ -386,15 +437,8 @@ function Checkout(props) {
               : currentAddress?.email
               ? currentAddress?.email
               : "",
-            provinsi: {
-              id: otherAddress?.provinsi_id,
-              name: otherAddress?.provinsi_name,
-            },
-            kota: {
-              provinsi_id: otherAddress?.provinsi_id,
-              id: otherAddress?.kota_id,
-              name: otherAddress?.kota_name,
-            },
+            provinsi,
+            kota,
             kecamatan: {
               kota_id: otherAddress?.kota_id,
               id: otherAddress?.kecamatan_id,
@@ -422,8 +466,9 @@ function Checkout(props) {
   };
 
   const clearOutDelivery = () => {
-    setCourier(null);
-    setCourierSlug(null);
+    console.log("clearOutDelivery");
+    /*setCourier(null);
+    setCourierSlug(null);*/
     setCourierService(null);
     setCourierServices([]);
     setDeliveryFee(0);
@@ -439,18 +484,38 @@ function Checkout(props) {
     navigation.navigate("PickAddress", { isCheckout: true });
   };
 
-  const retrieveDeliveryServices = () => {
+  const retrieveDeliveryServices = (provinsi, kota) => {
+    /*let provinsi, kota;
+    if (addressId === null || addressId === "" || addressId === "default" || customAddress === null) {
+      provinsi = currentAddress?.provinsi;
+      kota = currentAddress?.kota;
+    } else {
+      provinsi = customAddress?.provinsi;
+      kota = customAddress?.kota;
+    }*/
+    if (
+      provinsi === undefined ||
+      kota === undefined ||
+      provinsi === null ||
+      kota === null ||
+      courierSlug === null
+    ) {
+      return;
+    }
+    if (!courierLoading) {
+      setCourierLoading(true);
+    }
     const courierMap = {
       slug: courierSlug,
-      provinsi: currentAddress.provinsi,
-      kota: currentAddress.kota,
-      berat: weight > props.cart.berat ? weight : props.cart.berat,
+      provinsi,
+      kota,
+      berat: weight > props.cart?.berat ? weight : props.cart?.berat,
       berat_dari_volume:
         weightVolume > props.cart.berat_dari_volume
           ? Math.ceil(weightVolume)
           : Math.ceil(props.cart.berat_dari_volume),
     };
-    console.log(courierMap);
+    console.log("new courierMap", courierMap);
     props.getKurirData(token, courierMap);
   };
 
@@ -461,12 +526,13 @@ function Checkout(props) {
           ? currentAddress
           : customAddress;
 
+      //console.log("createCheckoutJson courier", courier);
       const newCheckout = {
         checkout: {
           keranjang_id: props.cart.id,
           kurir: {
             slug: courierSlug,
-            nama: courier.nama,
+            nama: courier?.nama,
             gratis_ongkir: courierService.cost[0].potongan_biaya,
             data: courierService,
           },
@@ -477,8 +543,8 @@ function Checkout(props) {
         detail_checkout: {
           ...detail_checkout,
           nama_penerima: senderName.final
-          ? senderName.final
-          : "Daclen Official"
+            ? senderName.final
+            : "Daclen Official",
         },
         user: {
           saldo: currentUser.komisi_user.total.toString(),
@@ -552,7 +618,7 @@ function Checkout(props) {
       const chosenName = radioButtonsArray.find(
         ({ selected }) => selected === true
       );
-      setSenderName({final: chosenName?.value, temp: chosenName?.value});
+      setSenderName({ final: chosenName?.value, temp: chosenName?.value });
     } catch (e) {
       console.log(e);
     }
@@ -775,16 +841,16 @@ const styles = StyleSheet.create({
   },
   textAddressHeader: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_blue,
     marginBottom: 6,
   },
   textAddressDetail: {
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_gray,
   },
   textUid: {
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     marginVertical: 20,
     color: colors.daclen_gray,
     marginHorizontal: 20,
@@ -792,7 +858,7 @@ const styles = StyleSheet.create({
   },
   textError: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -805,7 +871,7 @@ const styles = StyleSheet.create({
     textAlignVertical: "center",
     marginTop: 20,
     marginHorizontal: 24,
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
   },
   arrowAddress: {
     marginStart: 10,

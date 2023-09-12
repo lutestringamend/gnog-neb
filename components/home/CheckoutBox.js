@@ -167,19 +167,19 @@ const styles = StyleSheet.create({
   textHeader: {
     color: colors.daclen_light,
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
   },
   textCartSize: {
     color: colors.daclen_light,
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     marginStart: 10,
     paddingVertical: 2,
     flex: 1,
   },
   textAddress: {
     color: colors.daclen_light,
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     marginStart: 10,
     flex: 1,
   },
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
   },
 });

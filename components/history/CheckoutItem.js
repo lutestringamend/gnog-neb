@@ -233,24 +233,24 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   textTitle: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 12,
     color: colors.daclen_blue,
     marginTop: 12,
     marginBottom: 4,
   },
   textInvoice: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 10,
     color: colors.daclen_black,
     marginBottom: 4,
   },
   textEntry: {
-    fontSize: 10,
+    fontFamily: "Poppins", fontSize: 10,
     color: colors.daclen_gray,
   },
   textUid: {
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     marginVertical: 20,
     color: colors.daclen_gray,
     textAlign: "center",

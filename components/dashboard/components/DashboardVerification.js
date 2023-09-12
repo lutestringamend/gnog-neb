@@ -75,19 +75,19 @@ const styles = StyleSheet.create({
   },
   textHeader: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
     color: colors.daclen_black,
   },
   text: {
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
     marginVertical: 20,
     color: colors.daclen_gray,
     textAlign: "center",
   },
   textButton: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_light,
   },
 });

@@ -44,6 +44,11 @@ export const vwmarkrenderportraitheightcompressionconstant = 1;
 
 export const vwmarkdebuguserid = 1;
 
+export const imageviewerportraitheightmargin = 160;
+
+export const videoplayerportraitpanelandroidheight = 160;
+export const videoplayerportraitiosheight = 200;
+
 export const tempvideoarray = [
   {
     uri: "https://daclen.com/mp4/source.mp4",

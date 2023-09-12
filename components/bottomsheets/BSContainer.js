@@ -62,8 +62,8 @@ const styles = StyleSheet.create({
   },
   textTitle: {
     flex: 1,
-    fontSize: 16,
+    fontFamily: "Poppins", fontSize: 16,
     color: "white",
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
   },
 });

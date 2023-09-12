@@ -191,13 +191,13 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_light,
     marginStart: 10,
   },
   text: {
     textAlign: "center",
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 14,
     marginHorizontal: 12,
     color: colors.daclen_light,
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   textInner: {
     marginTop: 20,
     textAlign: "center",
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 14,
     paddingVertical: 10,
     paddingHorizontal: 12,
@@ -218,8 +218,8 @@ const styles = StyleSheet.create({
   },
   textPrice: {
     textAlign: "center",
-    fontWeight: "bold",
-    fontSize: 40,
+    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins", fontSize: 40,
     marginHorizontal: 12,
     marginTop: 10,
     marginBottom: 20,

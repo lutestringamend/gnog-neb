@@ -192,7 +192,7 @@ function PointReport(props) {
 
                     <View style={styles.containerDescHorizontal}>
                       <View style={styles.containerPoints}>
-                        <Text style={[styles.textPoint, { fontSize: 12 }]}>
+                        <Text style={[styles.textPoint, { fontFamily: "Poppins", fontSize: 12 }]}>
                           Poin
                         </Text>
                         <Text style={styles.textPoint}>
@@ -200,7 +200,7 @@ function PointReport(props) {
                         </Text>
                       </View>
                       <View style={styles.containerPoints}>
-                        <Text style={[styles.textTotalPoint, { fontSize: 12 }]}>
+                        <Text style={[styles.textTotalPoint, { fontFamily: "Poppins", fontSize: 12 }]}>
                           Total
                         </Text>
                         <Text style={styles.textTotalPoint}>
@@ -253,40 +253,40 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   textTitle: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 16,
     color: colors.daclen_black,
     marginTop: 10,
   },
   textDate: {
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_gray,
     marginTop: 2,
   },
   textReferral: {
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
     fontStyle: "bold",
     color: colors.daclen_black,
     marginTop: 6,
   },
   textCheckout: {
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
     fontStyle: "bold",
     color: colors.daclen_blue,
     marginTop: 6,
   },
   textPoint: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 24,
     color: colors.daclen_orange,
   },
   textTotalPoint: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 24,
     color: colors.daclen_green,
   },
   textUid: {
-    fontSize: 16,
+    fontFamily: "Poppins", fontSize: 16,
     marginVertical: 20,
     textAlign: "center",
     padding: 10,
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
   },
 });

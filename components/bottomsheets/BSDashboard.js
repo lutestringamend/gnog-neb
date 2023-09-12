@@ -87,18 +87,18 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
     textAlign: "center",
   },
   textTitle: {
     flex: 1,
-    fontSize: 16,
+    fontFamily: "Poppins", fontSize: 16,
     color: "white",
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
   },
   text: {
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
     marginVertical: 20,
     color: colors.daclen_gray,
     width: "80%",

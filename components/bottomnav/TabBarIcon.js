@@ -11,7 +11,7 @@ export default function TabBarIcon(props) {
         style={{
           fontSize: bottomNav.fontSize,
           color: props?.focused ? bottomNav.focusedColor : bottomNav.color,
-          fontWeight: props?.focused ? "bold" : "normal",
+          fontFamily: props?.focused ? "Poppins-Bold" : "Poppins",
         }}
       >
         {props?.title}

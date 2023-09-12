@@ -62,13 +62,13 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   textManifest: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 18,
     color: colors.daclen_green,
     marginBottom: 8,
   },
   textEntry: {
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_gray,
   },
 });

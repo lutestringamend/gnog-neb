@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     height: 50,
   },
   textName: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     width: 120,
     fontSize: 14,
     color: colors.daclen_black,
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     marginStart: 12,
   },
   textPrice: {
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_orange,
     position: "absolute",
     zIndex: 2,
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   textButton: {
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
     color: colors.daclen_black,
     textAlign: "center",
     textAlignVertical: "center",

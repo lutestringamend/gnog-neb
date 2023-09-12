@@ -131,13 +131,13 @@ const styles = StyleSheet.create({
   },
   textAddress: {
     color: "white",
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     textAlign: "center",
     flex: 1,
   },
   textLogin: {
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
     color: colors.daclen_yellow,
     marginHorizontal: 14,

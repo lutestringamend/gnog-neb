@@ -20,7 +20,7 @@ export const watermarkStyle = {
     start: 1,
     backgroundColor: "transparent",
     color: colors.daclen_light,
-    fontSize: 48,
+    fontFamily: "Poppins", fontSize: 48,
     textHorizontalMargin: 0,
   };
 

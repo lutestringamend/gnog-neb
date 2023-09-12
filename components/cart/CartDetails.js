@@ -137,7 +137,7 @@ export default function CartDetails(props) {
                 styles.textEntry,
                 styles.textDiscount,
                 discountedDeliveryFee <= 0
-                  ? { color: colors.daclen_green, fontWeight: "bold" }
+                  ? { color: colors.daclen_green, fontFamily: "Poppins-Bold" }
                   : null,
               ]}
             >
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   },
   textEntryHeader: {
     flex: 1,
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
     color: colors.daclen_graydark,
     marginHorizontal: 10,
   },
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     textDecorationStyle: "solid",
   },
   textEntry: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 14,
     marginHorizontal: 10,
     color: colors.daclen_graydark,
@@ -217,13 +217,13 @@ const styles = StyleSheet.create({
     color: colors.daclen_orange,
   },
   textDiscount: {
-    fontSize: 16,
+    fontFamily: "Poppins", fontSize: 16,
     color: colors.daclen_red,
   },
   textIncompleteAddress: {
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
     color: colors.daclen_danger,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
   },
   button: {
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
   },
 });

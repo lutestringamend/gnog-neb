@@ -1023,9 +1023,9 @@ function VideoPlayer(props) {
             style={[
               styles.textUid,
               {
-                fontWeight: "bold",
+                fontFamily: "Poppins-Bold",
                 color: colors.daclen_graydark,
-                fontSize: 12,
+                fontFamily: "Poppins", fontSize: 12,
                 marginVertical: 10,
                 paddingBottom: 0,
               },
@@ -1254,19 +1254,19 @@ const styles = StyleSheet.create({
   },
   textHeaderLandscape: {
     backgroundColor: "transparent",
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_light,
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
   },
   textButton: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
     marginStart: 6,
   },
   textError: {
     marginTop: 2,
-    fontSize: 10,
+    fontFamily: "Poppins", fontSize: 10,
     color: colors.daclen_light,
     backgroundColor: "transparent",
     textAlignVertical: "center",
@@ -1274,7 +1274,7 @@ const styles = StyleSheet.create({
     height: 16,
   },
   textUid: {
-    fontSize: 10,
+    fontFamily: "Poppins", fontSize: 10,
     width: "90%",
     marginHorizontal: 10,
     marginTop: 10,
@@ -1288,7 +1288,7 @@ const styles = StyleSheet.create({
     padding: 10,
     width: "90%",
     marginVertical: 4,
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
   },
 });
 

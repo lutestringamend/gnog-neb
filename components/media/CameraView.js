@@ -318,12 +318,12 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
   },
   text: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_light,
     textAlign: "center",
     padding: 20,
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     color: "white",
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
     elevation: 10,
   },

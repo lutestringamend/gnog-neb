@@ -159,13 +159,13 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
     marginStart: 10,
   },
   textReferral: {
     color: "white",
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     textAlign: "center",
     flex: 1,
   },

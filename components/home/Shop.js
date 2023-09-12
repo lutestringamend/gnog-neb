@@ -454,13 +454,13 @@ const styles = StyleSheet.create({
   textHeader: {
     flex: 1,
     fontSize: 20,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "left",
   },
   textCartNumber: {
     backgroundColor: "transparent",
     fontSize: 10,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_light,
   },
   image: {
@@ -472,7 +472,7 @@ const styles = StyleSheet.create({
   },
   textError: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -481,7 +481,7 @@ const styles = StyleSheet.create({
   },
   textUid: {
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     marginVertical: 20,
     textAlign: "center",
     color: colors.daclen_light,

@@ -83,13 +83,13 @@ const styles = StyleSheet.create({
   },
   textLogin: {
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
     color: colors.daclen_yellow,
   },
   text: {
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
     marginEnd: 6,
     color: colors.daclen_lightgrey,

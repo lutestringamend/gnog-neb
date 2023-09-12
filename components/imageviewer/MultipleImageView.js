@@ -610,13 +610,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_orange,
   },
   textLogs: {
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     margin: 20,
     color: colors.daclen_gray,
   },
   textLoading: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
     backgroundColor: "transparent",
     color: colors.daclen_black,
@@ -624,7 +624,7 @@ const styles = StyleSheet.create({
   textError: {
     width: "100%",
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -634,7 +634,7 @@ const styles = StyleSheet.create({
   },
   textWatermark: {
     position: "absolute",
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
   },
   spinner: {
     marginVertical: 20,

@@ -140,12 +140,12 @@ const styles = StyleSheet.create({
   text: {
     color: colors.daclen_blue,
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
   },
   textReferral: {
     color: colors.daclen_gray,
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
   },
   textInput: {
     borderWidth: 1,
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 2,
     marginBottom: 10,
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
   },
 });
 

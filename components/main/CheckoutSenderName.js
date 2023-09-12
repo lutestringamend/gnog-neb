@@ -35,7 +35,7 @@ senderName, setSenderName,
     alignItems: "center",
   },
     textUid: {
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_gray,
     textAlign: "center",
   },
@@ -47,7 +47,7 @@ senderName, setSenderName,
     marginTop: 2,
     marginHorizontal: 20,
     marginBottom: 20,
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
   },
 */
 
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   textCompulsory: {
     color: colors.daclen_orange,
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     marginTop: 20,
     marginHorizontal: 20,
   },

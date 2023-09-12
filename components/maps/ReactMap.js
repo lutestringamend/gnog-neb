@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   text: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 16,
     textAlign: "center",
     backgroundColor: colors.daclen_danger,
@@ -206,6 +206,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_light,
     padding: 10,
     color: colors.daclen_gray,
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
   },
 });

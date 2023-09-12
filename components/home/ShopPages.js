@@ -119,9 +119,9 @@ const styles = StyleSheet.create({
   },
   textCart: {
     color: colors.daclen_graydark,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
   },
 });
 

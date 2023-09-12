@@ -24,14 +24,14 @@ export default function UserRootHeaderItem({
     >
       <View style={styles.container}>
         <Text
-          style={{ fontSize: 12, fontWeight: "bold", color: color ? color : colors.daclen_gray }}
+          style={{ fontFamily: "Poppins", fontSize: 12, fontFamily: "Poppins-Bold", color: color ? color : colors.daclen_gray }}
         >
           {title}
         </Text>
         <Text
           style={{
-            fontSize: 24,
-            fontWeight: "bold",
+            fontFamily: "Poppins", fontSize: 24,
+            fontFamily: "Poppins-Bold",
             color: color ? color : colors.daclen_gray,
             marginTop: 6,
           }}

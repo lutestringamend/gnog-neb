@@ -45,6 +45,19 @@ export const bonusrootpopup = {
   height: 300,
 };
 
+export const dashboardbuttonsdefaultwidth = 160;
+export const dashboardbuttonsdefaultheight = 60;
+export const dashboardbuttonsdefaultpaddingvertical = 12;
+export const dashboardbuttonsdefaultpaddinghorizontal = 10;
+export const dashboardbuttonsdefaultmarginbottom = 12;
+export const dashboardbuttonsdefaultfontsize = 14;
+export const dashboardbuttonsdefaulticonsize = 24;
+export const dashboardbuttonsdefaultborderwidth = 1;
+export const dashboardbuttonsdefaultborderradius = 2;
+
+export const dashboardbuttonsdefaultscreenwidth = 390;
+export const dashboardbuttonsmaxratio = 1.25;
+
 export const userroottitle = "USER ROOTS";
 
 export const dashboardbrowser = "Buka Dashboard Web";

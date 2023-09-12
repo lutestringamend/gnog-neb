@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingVertical: 10,
     paddingHorizontal: 20,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 14,
     backgroundColor: colors.daclen_orange,
     color: "white",

@@ -284,12 +284,12 @@ const styles = StyleSheet.create({
   },
   textLeader: {
     marginStart: 10,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 20,
     color: colors.daclen_light,
   },
   textUid: {
-    fontSize: 16,
+    fontFamily: "Poppins", fontSize: 16,
     marginVertical: 20,
     textAlign: "center",
     padding: 10,

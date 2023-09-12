@@ -109,13 +109,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   textCheckoutDetail: {
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
     color: colors.daclen_orange,
     marginHorizontal: 10,
   },
   textPrice: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
   },
   button: {
     minWidth: 120,
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
   },
 });

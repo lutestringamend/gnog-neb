@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Platform, SafeAreaView, StyleSheet } from "react-native";
 import * as Sentry from "sentry-expo";
+import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useTheme } from "react-native-paper";
+import { useFonts } from "expo-font";
 import * as NavigationBar from "expo-navigation-bar";
 
 import { Provider } from "react-redux";
@@ -33,7 +35,7 @@ import {
 import { SENTRY_DSN } from "./sentry/constants";
 
 import MainScreen from "./components/Main";
-import SplashScreen from "./components/Splash";
+import Splash from "./components/Splash";
 import History from "./components/history/History";
 import Dashboard from "./components/dashboard/Dashboard";
 import HistoryCheckoutScreen from "./components/history/Checkout";
@@ -82,21 +84,35 @@ import WmarkTestScreen from "./components/media/WmarkTestScreen";
 import { appname, mainhttp } from "./axios/constants";
 import { colors, staticDimensions } from "./styles/base";
 import { sentryLog } from "./sentry";
+import { defaultpoppins } from "./styles/fonts";
+
 
 const Stack = createStackNavigator();
 
 export default function App() {
+  SplashScreen.preventAutoHideAsync();
   Sentry.init({
-    dsn: SENTRY_DSN,
-    enableInExpoDevelopment: true,
-    debug: true,
+  dsn: SENTRY_DSN,
+  enableInExpoDevelopment: true,
+  debug: true,
   });
-
   try {
     const theme = useTheme();
     theme.colors.primary = colors.daclen_bg;
     theme.colors.primaryContainer = colors.daclen_black;
     theme.colors.secondaryContainer = "transparent";
+
+    const [fontsLoaded] = useFonts(defaultpoppins);
+
+    const onLayoutRootView = useCallback(async () => {
+      if (fontsLoaded) {
+        await SplashScreen.hideAsync();
+      }
+    }, [fontsLoaded]);
+
+    if (!fontsLoaded) {
+      return null;
+    }
 
     setCustomView(customViewProps);
     setCustomTextInput(customTextInputProps);
@@ -121,7 +137,7 @@ export default function App() {
     };
 
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
         <StatusBar
           backgroundColor="transparent"
           translucent={true}
@@ -358,7 +374,7 @@ export default function App() {
   } catch (error) {
     console.error(error);
     sentryLog(error);
-    return <SplashScreen errorText={error.message} />;
+    return <Splash errorText={error.message} />;
   }
 }
 
@@ -373,7 +389,7 @@ const styles = StyleSheet.create({
 
 const customViewProps = {
   style: {
-    backgroundColor: "white",
+    backgroundColor: colors.white,
   },
 };
 
@@ -382,6 +398,7 @@ const customTextInputProps = {
   style: {
     borderWidth: 1,
     borderColor: colors.daclen_gray,
+    fontFamily: "Poppins",
     paddingVertical: 10,
     paddingHorizontal: 10,
     backgroundColor: "white",
@@ -391,7 +408,7 @@ const customTextInputProps = {
 
 const customTextProps = {
   style: {
-    fontFamily: Platform.OS === "ios" ? "HelveticaNeue" : "Helvetica",
+    fontFamily: "Poppins",
     color: colors.daclen_black,
     letterSpacing: 0.25,
   },

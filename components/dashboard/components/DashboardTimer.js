@@ -16,7 +16,7 @@ import { addZeroToArray } from "../../../axios";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
-const modalWidth = screenWidth * 0.95;
+const modalWidth = 360;
 const modalHeight = 200;
 const digitTextWidth = 30;
 const digitTextHeight = 54;
@@ -113,8 +113,8 @@ const DashboardTimer = (props) => {
             {
               width: modalWidth,
               height: modalHeight,
-              start: screenWidth * 0.025,
-              end: screenWidth * 0.025,
+              start: (screenWidth - modalWidth) / 2,
+              end: (screenWidth - modalWidth) / 2,
               top: screenHeight * 0.2,
             },
           ]}
@@ -261,14 +261,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   textHeader: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 16,
     color: colors.daclen_light,
     textAlign: "center",
     zIndex: 2,
   },
   textWall: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 28,
     color: colors.daclen_light,
     backgroundColor: "transparent",
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   },
   digitText: {
     fontSize: 26,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_light,
     backgroundColor: "transparent",
     alignSelf: "center",
@@ -287,14 +287,14 @@ const styles = StyleSheet.create({
   timeLabel: {
     color: colors.daclen_light,
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     marginTop: 12,
   },
   textOK: {
     backgroundColor: "transparent",
     color: colors.timer_green_dark,
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
     textAlignVertical: "center",
     alignSelf: "center",

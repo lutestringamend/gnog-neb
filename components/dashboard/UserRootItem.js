@@ -263,15 +263,15 @@ const styles = StyleSheet.create({
   },
   textHeader: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_light,
     marginStart: 6,
     overflow: "hidden",
   },
   text: {
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_black,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
     backgroundColor: "transparent",
   },

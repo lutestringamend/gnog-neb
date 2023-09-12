@@ -66,11 +66,11 @@ function WatermarkModel(props) {
     width: "50%",
     backgroundColor: "transparent",
     color: watermarkStyle.color,
-    fontSize: trueFontSize,
+    fontFamily: "Poppins", fontSize: trueFontSize,
     height: "100%",
     textAlign: text_align ? text_align : watermarkStyle.textAlign,
     textAlignVertical: "center",
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
   };
   const [layoutDone, setLayoutDone] = useState(false);
 

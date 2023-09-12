@@ -338,14 +338,14 @@ const styles = StyleSheet.create({
   text: {
     color: colors.daclen_gray,
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
   },
   textHeader: {
     color: colors.daclen_light,
     flex: 1,
     textAlign: "center",
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     backgroundColor: "transparent",
   },
 });

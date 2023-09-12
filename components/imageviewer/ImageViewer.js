@@ -8,6 +8,7 @@ import {
   Platform,
   ScrollView,
   TouchableOpacity,
+  Dimensions
 } from "react-native";
 import { Image } from "expo-image";
 import { connect } from "react-redux";
@@ -41,6 +42,7 @@ import {
   pdfpagewidth,
 } from "./constants";
 import ImageLargeWatermarkModel from "../media/ImageLargeWatermarkModel";
+import { imageviewerportraitheightmargin } from "../mediakit/constants";
 
 const ImageViewer = (props) => {
   const {
@@ -59,20 +61,27 @@ const ImageViewer = (props) => {
     sharingAvailability,
     disableWatermark,
   } = props.route.params;
+
+  const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
   const resizedImgWidth = Platform.OS === "ios" ? width : pdfpagewidth - 20;
   const resizedImgHeight =
     Platform.OS === "ios"
       ? height
       : Math.ceil((height * resizedImgWidth) / width);
 
-  const productPhotoWidth =
-    dimensions.fullWidth - staticDimensions.productPhotoWidthMargin;
+  const portraitImageHeight = screenHeight - imageviewerportraitheightmargin;
+  const portraitImageWidth = Math.round(width * portraitImageHeight / height);
+
+  const productPhotoWidth = width > height ?
+    screenWidth - staticDimensions.productPhotoWidthMargin : portraitImageWidth;
   const ratio = width / productPhotoWidth;
+  const productPhotoHeight = isSquare ? productPhotoWidth : width > height ? height / ratio :  portraitImageHeight;
   const pdfRatio = resizedImgWidth / productPhotoWidth;
   const fontSize = font?.size?.ukuran ? font?.size?.ukuran : 48;
 
   //const [productPhotoHeight, setProductPhotoHeight] = useState(0);
-  const productPhotoHeight = isSquare ? productPhotoWidth : height / ratio;
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sharing, setSharing] = useState(false);
@@ -108,7 +117,8 @@ const ImageViewer = (props) => {
       setError("Perangkat tidak mengizinkan untuk membagikan file");
     }
 
-    console.log("ImageViewer route params", props.route.params);
+    let logs = props.route.params;
+    console.log("init params", {...logs, screenWidth, screenHeight, portraitImageWidth, portraitImageHeight, productPhotoWidth, productPhotoHeight});
   }, [uri]);
 
   useEffect(() => {
@@ -530,7 +540,7 @@ const ImageViewer = (props) => {
         </View>
       )}
 
-      <ScrollView contentContainerStyle={styles.scrollView}>
+      <ScrollView contentContainerStyle={styles.scrollView} scrollEnabled={screenWidth > screenHeight}>
         {watermarkData === null ||
         watermarkData === undefined ||
         disableWatermark ? (
@@ -660,14 +670,14 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     marginStart: 10,
     color: colors.white,
   },
   textError: {
     width: "100%",
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.white,
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -677,7 +687,7 @@ const styles = StyleSheet.create({
   },
   textWatermark: {
     position: "absolute",
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
   },
   spinner: {
     marginVertical: 20,

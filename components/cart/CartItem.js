@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   },
   textProduct: {
     flex: 1,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 14,
     color: colors.daclen_gray,
     textAlignVertical: "center",
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     marginEnd: 12,
   },
   textProductPrice: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 14,
     color: colors.daclen_black,
     alignSelf: "center",

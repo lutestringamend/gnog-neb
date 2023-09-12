@@ -31,7 +31,7 @@ export default function MainItem(props) {
             style={[
               styles.text,
               {
-                fontSize: props?.fontSize ? props?.fontSize : 24,
+                fontFamily: "Poppins", fontSize: props?.fontSize ? props?.fontSize : 24,
                 color: props?.color ? props?.color : colors.daclen_light,
                 marginTop: 6,
               },
@@ -85,6 +85,6 @@ const styles = StyleSheet.create({
   text: {
     color: colors.daclen_light,
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
   },
 });

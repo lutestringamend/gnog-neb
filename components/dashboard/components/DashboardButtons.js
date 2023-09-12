@@ -7,6 +7,7 @@ import {
   Linking,
   Platform,
   Share,
+  Dimensions,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Clipboard from "expo-clipboard";
@@ -14,7 +15,11 @@ import { useNavigation } from "@react-navigation/native";
 
 import { colors, staticDimensions } from "../../../styles/base";
 import { openWhatsapp } from "../../whatsapp/Whatsapp";
-import { adminWA, adminWAnonusertemplate, adminWAtemplate } from "../../profile/constants";
+import {
+  adminWA,
+  adminWAnonusertemplate,
+  adminWAtemplate,
+} from "../../profile/constants";
 import {
   dashboardhadiahpdf,
   dashboardkodeetikpdf,
@@ -24,19 +29,64 @@ import {
   webdashboard,
   webreferral,
 } from "../../../axios/constants";
+import {
+  dashboardbuttonsdefaultborderradius,
+  dashboardbuttonsdefaultborderwidth,
+  dashboardbuttonsdefaultfontsize,
+  dashboardbuttonsdefaultheight,
+  dashboardbuttonsdefaulticonsize,
+  dashboardbuttonsdefaultmarginbottom,
+  dashboardbuttonsdefaultpaddinghorizontal,
+  dashboardbuttonsdefaultpaddingvertical,
+  dashboardbuttonsdefaultscreenwidth,
+  dashboardbuttonsdefaultwidth,
+  dashboardbuttonsmaxratio,
+} from "../constants";
+
+const screenWidth = Dimensions.get("window").width;
+const ratio =
+  screenWidth / dashboardbuttonsdefaultscreenwidth > dashboardbuttonsmaxratio
+    ? dashboardbuttonsmaxratio
+    : screenWidth / dashboardbuttonsdefaultscreenwidth;
 
 export const DashButton = (props) => {
   return (
-    <TouchableOpacity style={styles.button} onPress={() => props?.onPress()}>
+    <TouchableOpacity
+      style={[
+        styles.button,
+        {
+          paddingVertical: Math.round(
+            ratio * dashboardbuttonsdefaultpaddingvertical
+          ),
+          paddingHorizontal: Math.round(
+            ratio * dashboardbuttonsdefaultpaddinghorizontal
+          ),
+          width: Math.round(ratio * dashboardbuttonsdefaultwidth),
+          height: Math.round(ratio * dashboardbuttonsdefaultheight),
+          marginBottom: Math.round(ratio * dashboardbuttonsdefaultmarginbottom),
+          borderWidth: Math.round(ratio * dashboardbuttonsdefaultborderwidth),
+          borderRadius: Math.round(ratio * dashboardbuttonsdefaultborderradius),
+        },
+      ]}
+      onPress={() => props?.onPress()}
+    >
       {props?.icon ? (
         <MaterialCommunityIcons
           name={props?.icon}
-          size={24}
+          size={Math.round(ratio * dashboardbuttonsdefaulticonsize)}
           color={colors.daclen_light}
         />
       ) : null}
 
-      <Text style={[styles.textButton, { marginStart: props?.icon ? 10 : 0 }]}>
+      <Text
+        style={[
+          styles.textButton,
+          {
+            marginStart: props?.icon ? 10 : 0,
+            fontSize: Math.round(ratio * dashboardbuttonsdefaultfontsize),
+          },
+        ]}
+      >
         {props?.text}
       </Text>
     </TouchableOpacity>
@@ -95,7 +145,7 @@ const DashboardButtons = ({ userId, username }) => {
     navigation.navigate("PDFViewer", {
       title: "Kode Etik",
       uri: dashboardkodeetikpdf,
-    })
+    });
   }
 
   function openBlog() {
@@ -180,15 +230,15 @@ const DashboardButtons = ({ userId, username }) => {
 
 const styles = StyleSheet.create({
   containerMain: {
-    width: "100%",
+    width: "90%",
     backgroundColor: "transparent",
+    alignSelf: "center",
     marginBottom: staticDimensions.pageBottomPadding,
   },
   container: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginHorizontal: 20,
   },
   containerVertical: {
     flex: 1,
@@ -196,22 +246,14 @@ const styles = StyleSheet.create({
   },
   button: {
     flexDirection: "row",
-    borderWidth: 1,
-    borderRadius: 2,
     borderColor: colors.daclen_light,
     alignSelf: "center",
     alignItems: "center",
     opacity: 0.9,
     backgroundColor: colors.daclen_lightgrey_button,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    width: 160,
-    height: 60,
-    marginBottom: 12,
   },
   textButton: {
-    fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_light,
   },
 });

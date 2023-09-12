@@ -537,16 +537,16 @@ const styles = StyleSheet.create({
   },
   textAddressHeader: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_blue,
     marginBottom: 6,
   },
   textAddressDetail: {
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_gray,
   },
   textUid: {
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     marginVertical: 20,
     color: colors.daclen_gray,
     marginHorizontal: 20,

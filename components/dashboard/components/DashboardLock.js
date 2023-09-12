@@ -69,13 +69,13 @@ const styles = StyleSheet.create({
   },
   textLockHeader: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_light,
     textAlign: "center",
   },
   textSubheader: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_green_button,
     textAlign: "center",
   },

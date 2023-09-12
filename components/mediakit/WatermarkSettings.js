@@ -27,6 +27,7 @@ import {
   ASYNC_WATERMARK_PHOTOS_PDF_KEY,
   ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY,
 } from "../asyncstorage/constants";
+import { sentryLog } from "../../sentry";
 
 const WatermarkSettings = (props) => {
   const { token, currentUser, watermarkData } = props;
@@ -83,20 +84,19 @@ const WatermarkSettings = (props) => {
   }
 
   const changingWatermarkData = async () => {
+    setSuccess(true);
+    setError("Setting Watermark telah diganti");
+    setLoading(false);
     try {
       await setObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY, watermarkData);
       await setObjectAsync(ASYNC_WATERMARK_PHOTOS_PDF_KEY, null);
       await setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY, null);
       props.updateReduxMediaKitPhotosUri([]);
       props.overwriteWatermarkVideos([]);
-      setSuccess(true);
-      setError("Setting Watermark telah diganti");
     } catch (e) {
       console.error(e);
-      setSuccess(false);
-      setError(e.toString());
+      sentryLog(e);
     }
-    setLoading(false);
   };
 
   const changeWatermark = () => {
@@ -241,23 +241,23 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
   },
   textUid: {
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_gray,
     textAlign: "center",
   },
   textCompulsory: {
     color: colors.daclen_orange,
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     marginHorizontal: 20,
   },
   textError: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: "white",
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
   textChange: {
     color: colors.daclen_blue,
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
     marginVertical: 4,
   },
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
     marginHorizontal: 20,
     marginBottom: 20,
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
   },
   spinner: {
     alignSelf: "center",

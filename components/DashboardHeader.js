@@ -151,14 +151,14 @@ const styles = StyleSheet.create({
   },
   textLogin: {
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
     color: colors.daclen_light,
     marginEnd: 6,
   },
   textUsername: {
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     textAlign: "center",
     color: colors.daclen_light,
     marginEnd: 6,

@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_light,
   },
   text: {
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
     color: colors.daclen_graydark,
     marginVertical: 10,
     marginHorizontal: 20,

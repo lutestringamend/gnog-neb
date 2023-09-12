@@ -105,21 +105,21 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     color: colors.daclen_green_button,
     textAlign: "center",
   },
   textName: {
-    fontSize: 14,
+    fontFamily: "Poppins", fontSize: 14,
     color: colors.daclen_light,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
   },
   text: {
-    fontSize: 12,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_light,
   },
   textReferral: {
-    fontSize: 10,
+    fontFamily: "Poppins", fontSize: 10,
     color: colors.daclen_lightgrey,
     marginTop: 6,
   },

@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1 / 1,
   },
   textUid: {
-    fontSize: 16,
+    fontFamily: "Poppins", fontSize: 16,
     marginVertical: 20,
     textAlign: "center",
     padding: 10,
