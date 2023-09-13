@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   SplitOTPBoxesContainer: {
     width: "100%",
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "center",
     backgroundColor: "transparent",
   },
   TextInputHidden: {
@@ -95,8 +95,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingVertical: 20,
     paddingHorizontal: 28,
-    minWidth: 50,
-    minHeight: 60,
+    width: 72,
+    height: 72,
   },
   SplitBoxesFocused: {
     borderColor: colors.daclen_light,

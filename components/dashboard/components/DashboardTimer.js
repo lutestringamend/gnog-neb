@@ -115,8 +115,8 @@ const DashboardTimer = (props) => {
               height: modalHeight,
               start: (screenWidth - modalWidth) / 2,
               end: (screenWidth - modalWidth) / 2,
-              top: (screenHeight - modalHeight) / 2,
-              bottom: (screenHeight - modalHeight) / 2,
+              top: ((screenHeight - modalHeight) / 2) - 40,
+              bottom: ((screenHeight - modalHeight) / 2) + 40,
             },
           ]}
         >
