@@ -216,6 +216,18 @@ export function disableForceLogout() {
   };
 }
 
+export const eliminateSpaceFromString = (text) => {
+  try {
+    if (text.includes(" ")) {
+      const newText = text.split(" ").join("");
+      return newText;
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  return text;
+}
+
 export function clearUserData() {
   return (dispatch) => {
     console.log("clearUserData");
@@ -281,6 +293,7 @@ export const storePenarikanSaldo = async (token, saldo) => {
       }
     );
     const data = response?.data;
+    console.log("storePenarikanSaldo response", data);
     if (
       data?.saldo === undefined ||
       data?.saldo === null ||

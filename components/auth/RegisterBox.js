@@ -4,12 +4,18 @@ import { View, TextInput, StyleSheet, Text, Platform } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { setAuthData } from "../../axios/user";
+import { eliminateSpaceFromString, setAuthData } from "../../axios/user";
 import TextInputPassword from "./TextInputPassword";
 import { colors } from "../../styles/base";
 
 function RegisterBox(props) {
   const { errorArray } = props;
+
+  const checkInputUsername = () => {
+    const name = eliminateSpaceFromString(props.authData?.username);
+    props.setAuthData({ ...props.authData, name });
+  }
+
   return (
     <View style={styles.container}>
       <Text
@@ -20,7 +26,7 @@ function RegisterBox(props) {
           },
         ]}
       >
-        Username* (digunakan untuk referral Anda)
+        Username* (tanpa spasi, digunakan untuk referral Anda)
       </Text>
       <TextInput
         placeholder={
@@ -30,6 +36,7 @@ function RegisterBox(props) {
         }
         style={styles.textInput}
         onChangeText={(name) => props.setAuthData({ ...props.authData, name })}
+        onEndEditing={() => checkInputUsername()}
       />
       <Text
         style={[

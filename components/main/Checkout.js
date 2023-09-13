@@ -43,6 +43,11 @@ import { sentryLog } from "../../sentry";
 import { ASYNC_HISTORY_CHECKOUT_KEY } from "../asyncstorage/constants";
 import { setObjectAsync } from "../asyncstorage";
 
+const defaultSaldo = {
+  used: 0,
+  available: 0,
+};
+
 function Checkout(props) {
   const [cart, setCart] = useState([]);
   const [error, setError] = useState(null);
@@ -75,6 +80,7 @@ function Checkout(props) {
   const [weight, setWeight] = useState(0);
   const [weightVolume, setWeightVolume] = useState(0);
   const [deliveryFee, setDeliveryFee] = useState(0);
+  const [saldo, setSaldo] = useState(defaultSaldo);
   const [totalPrice, setTotalPrice] = useState(0);
   const [checkoutJson, setCheckoutJson] = useState(null);
 
@@ -103,8 +109,17 @@ function Checkout(props) {
       backHome();
       return;
     }
-    props.callMasterkurir(token);
 
+    if (currentUser?.komisi_user === undefined || currentUser?.komisi_user === null || currentUser?.komisi_user?.total === undefined || currentUser?.komisi_user?.total === null) {
+      setSaldo(defaultSaldo);
+    } else {
+      setSaldo({
+        available: parseInt(currentUser?.komisi_user?.total),
+        used: 0,
+      })
+    }
+
+    props.callMasterkurir(token);
     let newSenderNameChoices = [checkoutdefaultsendernameoption];
     if (!(currentUser?.name === undefined || currentUser?.name === null)) {
       newSenderNameChoices.unshift({
@@ -377,6 +392,26 @@ function Checkout(props) {
     }
   }, [checkout]);
 
+  useEffect(() => {
+    console.log("saldo", saldo);
+    if (checkoutJson === null) {
+      return;
+    }
+    setCheckoutJson({
+      ...checkoutJson,
+      user: {
+        saldo: (saldo.available - saldo.used).toString(),
+      },
+    })
+  }, [saldo]);
+
+  useEffect(() => {
+    if (checkoutJson === null) {
+      return;
+    }
+    console.log("checkoutJson", checkoutJson);
+  }, [checkoutJson]);
+
   const proceedMidtrans = async (snapToken, snap_url) => {
     props.overhaulReduxTempCart([]);
     props.overhaulReduxCart(null);
@@ -547,10 +582,10 @@ function Checkout(props) {
             : "Daclen Official",
         },
         user: {
-          saldo: currentUser.komisi_user.total.toString(),
+          saldo: (saldo.available - saldo.used).toString(),
         },
       };
-      console.log("createCheckoutJson", newCheckout);
+      //console.log("createCheckoutJson", newCheckout);
       setCheckoutJson(newCheckout);
       setAllowCheckout(true);
     } catch (e) {
@@ -731,6 +766,9 @@ function Checkout(props) {
                   : 0
               }
               addressComplete={addressComplete}
+              saldo={saldo}
+              setSaldo={setSaldo}
+              totalPrice={totalPrice}
             />
 
             <Separator thickness={10} />
@@ -746,7 +784,7 @@ function Checkout(props) {
       {totalPrice > 0 && (
         <CartAction
           isCart={true}
-          totalPrice={totalPrice}
+          totalPrice={totalPrice - saldo.used}
           buttonAction={() => rbDisclaimer.current.open()}
           buttonText={null}
           buttonDisabled={!allowCheckout || afterCheckout}

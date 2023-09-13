@@ -34,6 +34,11 @@ function LoginBox(props) {
     props.setAuthData({...props.authData, email: storagePreviousUsername });
   }
 
+  const checkInputUsername = () => {
+    const email = eliminateSpaceFromString(props.authData?.email);
+    props.setAuthData({ ...props.authData, email });
+  }
+
   if (previousUsername === null) {
     return (
       <ActivityIndicator
@@ -51,6 +56,7 @@ function LoginBox(props) {
         placeholder={previousUsername}
         style={styles.textInput}
         onChangeText={(email) => props.setAuthData({...props.authData, email })}
+        onEndEditing={() => checkInputUsername()}
       />
       <Text style={styles.text}>Password</Text>
       <TextInputPassword

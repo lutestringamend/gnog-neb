@@ -96,13 +96,11 @@ export const dashboardonboardingtext3 =
 export const dashboardonboardingbutton = "Bergabung Sekarang!";
 
 export const withdrawalexplanation = `
-- Minimal penarikan saldo Rp. 50.000,-.
-- Maksimal penarikan saldo adalah Rp. 25.000.000,- atau sesuai kebijakan tiap bank.
-- Metode transfer menggunakan sistem Real Time Online (RTO).
-- Transfer uang melalui RTO dilakukan secara internet banking.
-- Untuk bank yang selain kami gunakan akan dikenakan biaya admin.
-- Saldo anda akan dikurangi biaya admin sebesar Rp. 6.500,- jika biaya admin dikenakan.
-- Biaya admin dapat berbeda-beda pada setiap bank.
+- Minimal penarikan saldo Rp. 50.000,-. 
+- Maksimal penarikan saldo adalah Rp. 25.000.000,- atau sesuai kebijakan tiap bank. 
+- Metode transfer menggunakan sistem Real Time Online (RTO). 
+- Transfer uang melalui RTO dilakukan secara internet banking. 
+- Setiap penarikan saldo, dikenakan biaya admin sebesar Rp10.000,-. 
 - Transfer uang akan diproses admin pada waktu kerja dari hari senin - jumat, pada pukul 8:00 WIB - 17:00 WIB
 `;
 

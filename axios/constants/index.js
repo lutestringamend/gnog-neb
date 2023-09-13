@@ -74,8 +74,8 @@ export const contentbannertiga = "api/mobile/content/tiga-banner"
 export const mediakitphoto = "api/mobile/media-kit/foto"
 export const mediakitvideo = "api/admin/media-kit/video"
 
-export const personalwebsiteurl = "https://daclen.com/web/"
-export const personalwebsiteurlshort = "daclen.com/web/"
+export const personalwebsiteurl = "https://daclen.com/toko/"
+export const personalwebsiteurlshort = "daclen.com/toko/"
 export const resetpassword = "https://daclen.com/password/reset"
 export const websyaratketentuan = "https://daclen.com/home/syarat-ketentuan";
 export const webreferral = "https://daclen.com/register/"

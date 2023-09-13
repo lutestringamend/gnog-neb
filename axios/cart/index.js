@@ -354,6 +354,19 @@ export function getKeranjang(token) {
   };
 }
 
+export const calculateSaldoAvailable = (saldo, totalPrice) => {
+  try {
+    if (parseInt(totalPrice) >= parseInt(saldo)) {
+      return 0;
+    } else {
+      return parseInt(saldo) - parseInt(totalPrice);
+    }
+  } catch (e) {
+    console.error(e);
+    return checkNumberEmpty(saldo);
+  }
+}
+
 export const formatPrice = (num) => {
   if (checkNumberEmpty(num) > 0) {
     return new Intl.NumberFormat(localisationID, {

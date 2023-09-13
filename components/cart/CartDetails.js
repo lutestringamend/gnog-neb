@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
   Text,
   TouchableOpacity,
   ActivityIndicator,
+  Switch,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
@@ -14,13 +15,47 @@ import Separator from "../profile/Separator";
 import { colors } from "../../styles/base";
 //import { defaultPackagingOptions } from "./constants";
 import { checkoutdefaultsendername } from "../main/constants";
-import { formatPrice } from "../../axios/cart";
+import { calculateSaldoAvailable, formatPrice } from "../../axios/cart";
 
 export default function CartDetails(props) {
+  const [useSaldo, setUseSaldo] = useState(false);
   const navigation = useNavigation();
+
+  useEffect(() => {
+    if (
+      props?.saldo === undefined ||
+      props?.saldo === null ||
+      props?.saldo?.used === undefined ||
+      props?.saldo?.used === null
+    ) {
+      return;
+    }
+    setUseSaldo(props?.saldo?.used > 0);
+  }, [props?.saldo]);
+
   function openAddress() {
     navigation.navigate("Address", { isCheckout: true });
   }
+
+  const setSaldo = (value) => {
+    if (props?.setSaldo === undefined || props?.setSaldo === null) {
+      return;
+    }
+    if (value) {
+      props?.setSaldo({
+        ...props?.saldo,
+        used:
+          props?.saldo?.available < props?.totalPrice
+            ? props?.saldo?.available
+            : props?.totalPrice,
+      });
+    } else {
+      props?.setSaldo({
+        ...props?.saldo,
+        used: 0,
+      });
+    }
+  };
 
   const originalDeliveryFee = props?.isCart
     ? props?.courierService?.cost[0]?.value.toString()
@@ -131,13 +166,15 @@ export default function CartDetails(props) {
           <Text style={styles.textEntryHeader}>Biaya Pengiriman</Text>
           <View style={styles.containerRadioGroup}>
             <Text style={[styles.textEntry, styles.textStrikethrough]}>
-              {originalDeliveryFee > 0 ? `${formatPrice(originalDeliveryFee)}` : "GRATIS"}
+              {originalDeliveryFee > 0
+                ? `${formatPrice(originalDeliveryFee)}`
+                : "GRATIS"}
             </Text>
             <Text
               style={[
                 styles.textEntry,
                 styles.textDiscount,
-                {fontFamily: "Poppins-Bold", color: colors.daclen_green},
+                { fontFamily: "Poppins-Bold", color: colors.daclen_green },
               ]}
             >
               {discountedDeliveryFee > 0
@@ -145,6 +182,60 @@ export default function CartDetails(props) {
                 : "GRATIS"}
             </Text>
           </View>
+        </View>
+      )}
+
+      {!props?.isCart ||
+      props?.totalPrice === undefined ||
+      props?.totalPrice === null ||
+      props?.totalPrice <= 0 ||
+      props?.saldo === null ||
+      props?.saldo?.available === undefined ||
+      props?.saldo?.available === null ||
+      props?.saldo?.available <= 0 ? null : (
+        <View style={styles.containerHorizontal}>
+          <MaterialCommunityIcons
+            name="cash-refund"
+            size={32}
+            color={colors.daclen_blue}
+            style={{ alignSelf: "center" }}
+          />
+          <View style={styles.containerSaldo}>
+            <Text style={styles.textSaldoHeader}>
+              {`Gunakan Saldo Daclen (${formatPrice(
+                props?.saldo?.available < props?.totalPrice
+                  ? props?.saldo?.available
+                  : props?.totalPrice
+              )})`}
+            </Text>
+            <Text style={styles.textSaldo}>{`Saldo tersisa ${
+              useSaldo
+                ? calculateSaldoAvailable(
+                    props?.saldo?.available,
+                    props?.totalPrice
+                  ) > 0
+                  ? formatPrice(
+                      calculateSaldoAvailable(
+                        props?.saldo?.available,
+                        props?.totalPrice
+                      )
+                    )
+                  : "Rp 0"
+                : formatPrice(props?.saldo?.available)
+            } `}</Text>
+          </View>
+          <Switch
+            style={styles.switch}
+            onValueChange={(value) => setSaldo(value)}
+            disabled={props?.setSaldo === undefined || props?.setSaldo === null}
+            value={useSaldo}
+            ios_backgroundColor={colors.daclen_lightgrey}
+            trackColor={{
+              true: colors.daclen_lightgrey,
+              false: colors.daclen_lightgrey,
+            }}
+            thumbColor={colors.daclen_light}
+          />
         </View>
       )}
 
@@ -179,7 +270,7 @@ export default function CartDetails(props) {
 const styles = StyleSheet.create({
   container: {
     marginVertical: 20,
-    backgroundColor: "white",
+    backgroundColor: colors.white,
   },
   containerRadio: {
     marginVertical: 12,
@@ -195,9 +286,27 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: 10,
   },
+  containerHorizontal: {
+    backgroundColor: "transparent",
+    flexDirection: "row",
+    marginVertical: 10,
+    marginHorizontal: 20,
+    alignItems: "center",
+  },
+  containerSaldo: {
+    backgroundColor: "transparent",
+    marginStart: 10,
+    flex: 1,
+  },
+  switch: {
+    backgroundColor: "transparent",
+    marginStart: 10,
+    alignSelf: "center",
+  },
   textEntryHeader: {
     flex: 1,
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins",
+    fontSize: 14,
     color: colors.daclen_graydark,
     marginHorizontal: 10,
   },
@@ -218,14 +327,29 @@ const styles = StyleSheet.create({
     color: colors.daclen_orange,
   },
   textDiscount: {
-    fontFamily: "Poppins", fontSize: 16,
+    fontFamily: "Poppins",
+    fontSize: 16,
     color: colors.daclen_red,
   },
   textIncompleteAddress: {
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins",
+    fontSize: 14,
     color: colors.daclen_danger,
     fontFamily: "Poppins-Bold",
     textAlign: "center",
+  },
+  textSaldoHeader: {
+    backgroundColor: "transparent",
+    color: colors.daclen_black,
+    fontFamily: "Poppins-Bold",
+    fontSize: 12,
+  },
+  textSaldo: {
+    backgroundColor: "transparent",
+    color: colors.daclen_blue,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 12,
+    marginTop: 2,
   },
   button: {
     alignSelf: "center",
