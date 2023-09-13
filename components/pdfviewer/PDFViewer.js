@@ -1,7 +1,8 @@
 import React from "react";
 import { SafeAreaView, StyleSheet } from "react-native";
-import PDFReader from "@hashiprobr/expo-pdf-reader";
+//import PDFReader from "@hashiprobr/expo-pdf-reader";
 import { colors } from "../../styles/base";
+import WebView from "react-native-webview";
 
 function ErrorScreen({ title, message, uri }) {
   return (
@@ -35,7 +36,7 @@ const PDFViewer = (props) => {
   try {
     return (
       <SafeAreaView style={styles.container}>
-        <PDFReader source={uri ? { uri } : content} />
+        <WebView source={uri ? { uri } : content} />
       </SafeAreaView>
     );
   } catch (e) {
