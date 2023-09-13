@@ -9,7 +9,7 @@ export const staticDimensions = {
   authPageRegisterBottomPadding: 300,
   blogTextWidthMargin: 20,
   webviewWidthMargin: 24,
-  productPhotoWidthMargin: 10,
+  productPhotoWidthMargin: 12,
   youtubeEmbedAspectRatio: 560 / 340,
 }
 

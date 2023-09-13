@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -8,6 +8,9 @@ import { defaultRegion } from "../address/constants";
 import { checkIfCoordIsStringThenParse } from "../address";
 import { sentryLog } from "../../sentry";
 import { defaultlatitude, defaultlatitudedelta, defaultlongitude, defaultlongitudedelta } from "../../axios/constants";
+
+const { width, height } = Dimensions.get("window");
+
 
 export default function ReactMap(props) {
   const [region, setRegion] = useState({
@@ -106,7 +109,7 @@ export default function ReactMap(props) {
         <MapView
           ref={ref}
           provider={PROVIDER_GOOGLE}
-          style={styles.maps}
+          style={[styles.maps, { width, height }]}
           initialRegion={defaultRegion}
           region={region}
           showsUserLocation={true}
@@ -165,11 +168,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   maps: {
-    width: "100%",
-    height: "100%",
     position: "absolute",
     top: 0,
     start: 0,
+    bottom: 0,
+    end: 0,
     zIndex: 1,
   },
   text: {

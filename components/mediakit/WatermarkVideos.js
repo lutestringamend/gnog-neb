@@ -283,6 +283,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Bold",
     textAlign: "center",
     textAlignVertical: "center",
+    marginHorizontal: 10,
     height: 40,
     paddingVertical: 4,
     color: colors.daclen_black,

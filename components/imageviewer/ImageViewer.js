@@ -71,8 +71,21 @@ const ImageViewer = (props) => {
       ? height
       : Math.ceil((height * resizedImgWidth) / width);
 
-  const portraitImageHeight = screenHeight - imageviewerportraitheightmargin;
-  const portraitImageWidth = Math.round((width * portraitImageHeight) / height);
+  const projectedImageHeight = screenHeight - imageviewerportraitheightmargin;
+  const projectedImageWidth = Math.round(
+    (width * projectedImageHeight) / height
+  );
+
+  const portraitImageWidth =
+    projectedImageWidth >=
+    screenWidth - 2 * staticDimensions.productPhotoWidthMargin
+      ? screenWidth - 2 * staticDimensions.productPhotoWidthMargin
+      : projectedImageWidth;
+  const portraitImageHeight =
+    projectedImageWidth >=
+    screenWidth - 2 * staticDimensions.productPhotoWidthMargin
+      ? Math.round((height * portraitImageWidth) / width)
+      : projectedImageHeight;
 
   const productPhotoWidth =
     width > height || isSquare
@@ -129,6 +142,8 @@ const ImageViewer = (props) => {
       ...logs,
       screenWidth,
       screenHeight,
+      projectedImageWidth,
+      projectedImageHeight,
       portraitImageWidth,
       portraitImageHeight,
       productPhotoWidth,
