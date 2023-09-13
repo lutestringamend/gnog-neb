@@ -69,13 +69,13 @@ const WatermarkSettings = (props) => {
     setTempWatermarkData({
       name:
             currentUser?.detail_user === undefined ||
-            currentUser?.detail_user?.nama_lengkap === undefined ||
-            currentUser?.detail_user?.nama_lengkap === null ||
-            currentUser?.detail_user?.nama_lengkap === ""
+            currentUser?.detail_user?.nama_depan === undefined ||
+            currentUser?.detail_user?.nama_depan === null ||
+            currentUser?.detail_user?.nama_depan === ""
               ? currentUser?.name
                 ? currentUser?.name
                 : ""
-              : currentUser?.detail_user?.nama_lengkap,
+              : currentUser?.detail_user?.nama_depan,
           phone: currentUser?.nomor_telp ? currentUser?.nomor_telp : "",
           url: currentUser?.name
             ? `${personalwebsiteurlshort}${currentUser?.name}`

@@ -75,7 +75,7 @@ export const updateUserAlamat = async (token, userId, address) => {
   };
 
   const params = {
-    id: address?.id ? address?.id : "",
+    uuid: address?.id ? address?.id : "",
     nama_depan: address?.nama_depan ? address?.nama_depan : "",
     nama_belakang: address?.nama_belakang ? address?.nama_belakang : "",
     nomor_telp: address?.nomor_telp ? address?.nomor_telp : "",

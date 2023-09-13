@@ -178,7 +178,7 @@ function Checkout(props) {
 
                     <TouchableOpacity
                       onPress={() => openItem(item?.id)}
-                      disabled={loading || item?.status === "ditolak" || item?.status === "diverifikasi"}
+                      disabled={loading}
                       style={[
                         styles.button,
                         item?.status === "ditolak"

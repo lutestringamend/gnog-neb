@@ -184,7 +184,7 @@ function CheckoutItem(props) {
         totalPrice={checkout?.total}
         buttonAction={() => openMidtrans()}
         buttonText={checkout?.status}
-        buttonDisabled={snapToken === null || loadingSnap}
+        buttonDisabled={snapToken === null || loadingSnap || checkout?.status === "ditolak" || checkout?.status === "diverifikasi"} 
         enableProcessing={true}
       />
     </SafeAreaView>
