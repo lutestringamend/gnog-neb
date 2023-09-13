@@ -851,7 +851,7 @@ function VideoPlayer(props) {
               ? [
                   styles.containerPanelVideoPortrait,
                   {
-                    bottom: Platform.OS === "ios" ? 160 : 120,
+                    top: videoSize.videoHeight,
                     width: screenWidth,
                     height:
                       Platform.OS === "ios"

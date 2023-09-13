@@ -76,12 +76,13 @@ const styles = StyleSheet.create({
   OTPInputContainer: {
     justifyContent: "center",
     alignItems: "center",
+    alignSelf: "center",
     backgroundColor: "transparent",
   },
   SplitOTPBoxesContainer: {
-    width: "100%",
     flexDirection: "row",
     justifyContent: "center",
+    alignSelf: "center",
     backgroundColor: "transparent",
   },
   TextInputHidden: {
