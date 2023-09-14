@@ -1013,8 +1013,8 @@ function VideoPlayer(props) {
                   : resultUri === null
                   ? "Proses"
                   : Platform.OS === "android"
-                  ? "Ada di Galeri"
-                  : "Ada di Camera Roll"}
+                  ? "Terproses"
+                  : "Terproses"}
               </Text>
             )}
           </TouchableOpacity>
