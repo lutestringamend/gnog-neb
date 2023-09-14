@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Platform, SafeAreaView, StyleSheet, Text, ToastAndroid } from "react-native";
 import * as Sentry from "sentry-expo";
-import * as Updates from 'expo-updates';
+//import * as Updates from 'expo-updates';
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useTheme } from "react-native-paper";
@@ -88,10 +88,10 @@ import { colors, staticDimensions } from "./styles/base";
 import { sentryLog } from "./sentry";
 import { defaultpoppins } from "./styles/fonts";
 
-const defaultUpdateStatus = {
+/*const defaultUpdateStatus = {
   ready: false,
   message: expoupdateschecking,
-};
+};*/
 
 SplashScreen.preventAutoHideAsync();
 const Stack = createStackNavigator();
@@ -102,7 +102,7 @@ Sentry.init({
 });
 
 export default function App() {
-  const [updateStatus, setUpdateStatus] = useState(defaultUpdateStatus);
+  /*const [updateStatus, setUpdateStatus] = useState(defaultUpdateStatus);
 
   useEffect(() => {
     try {
@@ -146,7 +146,7 @@ export default function App() {
         ready: true,
         message: `${expoupdateserror}\n${error.toString()}`});
     }
-  }
+  }*/
 
   try {
     const theme = useTheme();
@@ -195,9 +195,9 @@ export default function App() {
 
 
 
-    if (!updateStatus.ready) {
+    /*if (!updateStatus.ready) {
       return <Splash errorText={updateStatus.message} />;
-    }
+    }*/
 
     return (
       <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
