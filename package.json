@@ -47,7 +47,7 @@
     "expo-sharing": "~11.2.2",
     "expo-splash-screen": "^0.20.5",
     "expo-status-bar": "~1.4.4",
-    "expo-updates": "^0.18.12",
+    "expo-updates": "0.16.4",
     "fbjs": "^3.0.4",
     "ffmpeg-kit-react-native": "5.1.0",
     "moment": "^2.29.4",
