@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     backgroundColor: "transparent",
     textAlign: "center",
-    color: colors.daclen_gray,
+    color: colors.daclen_black,
   },
   text: {
     fontFamily: "Poppins-Bold",
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     fontFamily: "Poppins",
     fontSize: 12,
-    color: colors.daclen_black,
+    color: colors.daclen_gray,
   },
 });
 
