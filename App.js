@@ -105,13 +105,21 @@ export default function App() {
   const [updateStatus, setUpdateStatus] = useState(defaultUpdateStatus);
 
   useEffect(() => {
-    if (Platform.OS === "android") {
-      onFetchUpdateAsync();
-    } else {
+    try {
+      if (Platform.OS === "android") {
+        onFetchUpdateAsync();
+      } else {
+        setUpdateStatus({
+          ready: true,
+          message: "",
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      sentryLog(e);
       setUpdateStatus({
         ready: true,
-        message: "",
-      });
+        message: `${expoupdateserror}\n${e.toString()}`});
     }
   }, []);
 
