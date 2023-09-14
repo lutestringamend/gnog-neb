@@ -16,9 +16,11 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "channel": "dev",
-      "android": {},
+      "android": {
+        "channel": "dev"
+      },
       "ios": {
+        "channel": "dev-ios",
         "resourceClass": "m1-medium",
         "simulator": "true"
       }
@@ -34,7 +36,6 @@
       }
     },
     "production": {
-      "channel": "production",
       "android": {
         "channel": "production"
       },
