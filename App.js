@@ -83,7 +83,7 @@ import SaldoReport from "./components/dashboard/SaldoReport";
 import TimerExplanation from "./components/dashboard/components/TimerExplanation";
 import WmarkTestScreen from "./components/media/WmarkTestScreen";
 
-import { appname, expoupdateschecking, expoupdateserror, expoupdatesinstalled, expoupdatesinstalling, mainhttp } from "./axios/constants";
+import { appname } from "./axios/constants";
 import { colors, staticDimensions } from "./styles/base";
 import { sentryLog } from "./sentry";
 import { defaultpoppins } from "./styles/fonts";
