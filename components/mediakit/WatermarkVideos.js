@@ -279,13 +279,12 @@ const styles = StyleSheet.create({
   },
   textHeader: {
     backgroundColor: "transparent",
-    fontSize: 12,
-    fontFamily: "Poppins-Bold",
+    fontSize: 10,
+    fontFamily: "Poppins-SemiBold",
     textAlign: "center",
     textAlignVertical: "center",
     marginHorizontal: 10,
-    height: 40,
-    paddingVertical: 4,
+    height: 48,
     color: colors.daclen_black,
   },
 });

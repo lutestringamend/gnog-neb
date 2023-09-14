@@ -77,10 +77,7 @@ function VideoPlayer(props) {
 
   const videoSize = {
     isLandscape: false,
-    videoWidth:
-      height > width
-        ? readjustedPortraitVideoWidth
-        : screenWidth,
+    videoWidth: height > width ? readjustedPortraitVideoWidth : screenWidth,
     videoHeight:
       height > width
         ? readjustedPortraitVideoHeight
@@ -436,7 +433,7 @@ function VideoPlayer(props) {
         .then((uri) => onManualCapture(uri))
         .catch((e) => onManualCaptureFailure(e));
     }
-  }
+  };
 
   function onManualCapture(uri) {
     //console.log("watermarkUri", uri, "watermarkSize", watermarkSize);
@@ -518,9 +515,9 @@ function VideoPlayer(props) {
     )
       return;
     if (resultUri !== null) {
-      if (sharingAvailability) {
+      /*if (sharingAvailability) {
         shareFileAsync(resultUri, sharingOptionsMP4);
-      }
+      }*/
       return;
     }
 
@@ -703,13 +700,13 @@ function VideoPlayer(props) {
             ((videoSize.videoOrientation === "portrait"
               ? vwmarkrenderportraitwidthcompressionconstant
               : vwmarkrenderlandscapewidthcompressionconstant) *
-              (Platform.OS === "ios" ? 2 : 1)),
+              (Platform.OS === "ios" ? 4 : 1)),
           height:
             watermarkSize.height /
             ((videoSize.videoOrientation === "portrait"
               ? vwmarkrenderportraitheightcompressionconstant
               : vwmarkrenderlandscapeheightcompressionconstant) *
-              (Platform.OS === "ios" ? 2 : 1)),
+              (Platform.OS === "ios" ? 4 : 1)),
           useRenderInContext: Platform.OS === "ios",
         }}
         style={[
@@ -749,7 +746,8 @@ function VideoPlayer(props) {
           </TouchableOpacity>
 
           <View style={styles.containerHeaderText}>
-            <Text allowFontScaling={false}
+            <Text
+              allowFontScaling={false}
               style={[
                 styles.textHeaderLandscape,
                 loading || error === null
@@ -760,7 +758,9 @@ function VideoPlayer(props) {
               {title ? title : "Video Watermark"}
             </Text>
             {loading || error === null ? null : (
-              <Text allowFontScaling={false} style={styles.textError}>{error}</Text>
+              <Text allowFontScaling={false} style={styles.textError}>
+                {error}
+              </Text>
             )}
           </View>
           {watermarkLoading || videoLoading ? (
@@ -808,7 +808,9 @@ function VideoPlayer(props) {
               },
             ]}
           >
-            <Text allowFontScaling={false} style={styles.textHeaderLandscape}>{title}</Text>
+            <Text allowFontScaling={false} style={styles.textHeaderLandscape}>
+              {title}
+            </Text>
             <TouchableOpacity
               style={styles.buttonClose}
               onPress={() => onBackPress()}
@@ -859,7 +861,7 @@ function VideoPlayer(props) {
               source={{
                 uri,
               }}
-              useNativeControls={false}
+              useNativeControls
               resizeMode={ResizeMode.STRETCH}
               videoStyle={{
                 width: videoSize.videoWidth,
@@ -943,7 +945,8 @@ function VideoPlayer(props) {
               ? [
                   styles.containerPanelVideoPortrait,
                   {
-                    top: videoSize.videoHeight - (Platform.OS === "ios" ? 140 : 100),
+                    top:
+                      videoSize.videoHeight - (Platform.OS === "ios" ? 80 : 40),
                     width: screenWidth,
                     height:
                       Platform.OS === "ios"
@@ -961,27 +964,57 @@ function VideoPlayer(props) {
             style={[
               videoSize.isLandscape ? styles.buttonCircle : styles.button,
               {
-                backgroundColor: status.isLoaded
-                  ? colors.daclen_blue
-                  : colors.daclen_gray,
+                backgroundColor:
+                  loading ||
+                  videoLoading ||
+                  !status.isLoaded ||
+                  watermarkImage === null
+                    ? colors.daclen_gray
+                    : rawUri === null || resultUri === null
+                    ? colors.daclen_blue
+                    : colors.daclen_green,
                 flex: 1,
               },
             ]}
-            onPress={() =>
-              status.isPlaying
-                ? video.current.pauseAsync()
-                : video.current.playAsync()
+            onPress={() => processVideo()}
+            disabled={
+              loading ||
+              videoLoading ||
+              !status.isLoaded ||
+              watermarkImage === null ||
+              (rawUri !== null && resultUri !== null)
             }
-            disabled={videoLoading || !status.isLoaded}
           >
-            <MaterialCommunityIcons
-              name={status.isPlaying ? "pause" : "play"}
-              size={18}
-              color="white"
-            />
+            {loading ? (
+              <ActivityIndicator
+                size="small"
+                color={colors.daclen_light}
+                style={{
+                  alignSelf: "center",
+                }}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name={
+                  rawUri === null
+                    ? "file-download"
+                    : resultUri === null
+                    ? "pinwheel"
+                    : "check-bold"
+                }
+                size={18}
+                color={colors.daclen_light}
+              />
+            )}
             {videoSize.isLandscape ? null : (
               <Text allowFontScaling={false} style={styles.textButton}>
-                {status.isPlaying ? "Pause" : "Play"}
+                {rawUri === null
+                  ? "Download"
+                  : resultUri === null
+                  ? "Proses"
+                  : Platform.OS === "android"
+                  ? "Ada di Galeri"
+                  : "Ada di Camera Roll"}
               </Text>
             )}
           </TouchableOpacity>
@@ -991,57 +1024,37 @@ function VideoPlayer(props) {
               videoSize.isLandscape ? styles.buttonCircle : styles.button,
               {
                 backgroundColor:
+                  !sharingAvailability ||
                   videoLoading ||
                   loading ||
                   !status.isLoaded ||
-                  watermarkImage === null
+                  watermarkImage === null ||
+                  rawUri === null ||
+                  resultUri === null
                     ? colors.daclen_gray
                     : colors.daclen_orange,
                 flex: 1,
               },
             ]}
-            onPress={() => processVideo()}
+            onPress={() => shareFileAsync(resultUri, sharingOptionsMP4)}
             disabled={
+              !sharingAvailability ||
               loading ||
               videoLoading ||
               !status.isLoaded ||
-              watermarkImage === null
+              watermarkImage === null ||
+              rawUri === null ||
+              resultUri === null
             }
           >
-            {watermarkLoading ? (
-              <ActivityIndicator
-                size="small"
-                color="white"
-                style={{
-                  alignSelf: "center",
-                }}
-              />
-            ) : (
-              <MaterialCommunityIcons
-                name={
-                  rawUri === null
-                    ? "download"
-                    : resultUri === null
-                    ? "pinwheel"
-                    : sharingAvailability
-                    ? "share-variant"
-                    : "file-download"
-                }
-                size={18}
-                color="white"
-              />
-            )}
+            <MaterialCommunityIcons
+              name="share-variant"
+              size={18}
+              color={colors.daclen_light}
+            />
             {videoSize.isLandscape ? null : (
               <Text allowFontScaling={false} style={styles.textButton}>
-                {rawUri === null
-                  ? "Download"
-                  : resultUri === null
-                  ? "Proses"
-                  : sharingAvailability
-                  ? "Share"
-                  : Platform.OS === "android"
-                  ? "Buka Galeri"
-                  : "Buka Camera Roll"}
+                Share
               </Text>
             )}
           </TouchableOpacity>
@@ -1055,7 +1068,11 @@ function VideoPlayer(props) {
               color={colors.daclen_light}
               style={{ alignSelf: "center" }}
             />
-            {error ? <Text allowFontScaling={false} style={styles.textErrorLarge}>{error}</Text> : null}
+            {error ? (
+              <Text allowFontScaling={false} style={styles.textErrorLarge}>
+                {error}
+              </Text>
+            ) : null}
           </View>
         </View>
       ) : null}
@@ -1345,7 +1362,8 @@ const styles = StyleSheet.create({
   },
   textError: {
     marginTop: 2,
-    fontFamily: "Poppins", fontSize: 10,
+    fontFamily: "Poppins",
+    fontSize: 10,
     color: colors.daclen_light,
     backgroundColor: "transparent",
     textAlignVertical: "center",
@@ -1362,7 +1380,8 @@ const styles = StyleSheet.create({
     textAlignVertical: "center",
   },
   textUid: {
-    fontFamily: "Poppins", fontSize: 10,
+    fontFamily: "Poppins",
+    fontSize: 10,
     width: "90%",
     marginHorizontal: 10,
     marginTop: 10,
@@ -1376,7 +1395,8 @@ const styles = StyleSheet.create({
     padding: 10,
     width: "90%",
     marginVertical: 4,
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins",
+    fontSize: 14,
   },
 });
 
