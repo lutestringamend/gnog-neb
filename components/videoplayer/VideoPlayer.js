@@ -842,6 +842,30 @@ function VideoPlayer(props) {
         >
           <TouchableOpacity
             style={[
+              styles.buttonCircle,
+              {
+                backgroundColor: status.isLoaded
+                  ? colors.daclen_blue
+                  : colors.daclen_gray,
+                marginTop: 0,
+                marginStart: 10,
+              },
+            ]}
+            onPress={() =>
+              status.isPlaying
+                ? video.current.pauseAsync()
+                : video.current.playAsync()
+            }
+            disabled={videoLoading || !status.isLoaded}
+          >
+            <MaterialCommunityIcons
+              name={status.isPlaying ? "pause" : "play"}
+              size={18}
+              color={colors.daclen_light}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
               videoSize.isLandscape ? styles.buttonCircle : styles.button,
               {
                 backgroundColor:
@@ -851,7 +875,7 @@ function VideoPlayer(props) {
                   watermarkImage === null
                     ? colors.daclen_gray
                     : rawUri === null || resultUri === null
-                    ? colors.daclen_blue
+                    ? colors.daclen_orange
                     : colors.daclen_green,
                 flex: 1,
               },
@@ -1075,9 +1099,10 @@ const styles = StyleSheet.create({
   buttonCircle: {
     alignItems: "center",
     justifyContent: "center",
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    alignSelf: "center",
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     marginTop: 12,
     backgroundColor: colors.daclen_blue,
   },
