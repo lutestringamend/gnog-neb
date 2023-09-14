@@ -104,6 +104,34 @@ export const withdrawalexplanation = `
 - Transfer uang akan diproses admin pada waktu kerja dari hari senin - jumat, pada pukul 8:00 WIB - 17:00 WIB
 `;
 
+export const countdowntitle = "COUNTDOWN";
+export const countdowndays = "DAYS";
+export const countdownhours = "HOURS";
+export const countdownminutes = "MINUTES";
+export const countdownseconds = "SECOND";
+export const countdownbottom = "90 Days Recruitment target: "
+
+export const timereplanationtext = `
+1. Tampilan dasar countdown terdiri atas 4 warna, yaitu Merah, Oranye, Hijau dan Biru yang merupakan indikasi sisa waktu yang tersedia
+a. Tampilan berwarna Hijau akan tampil saat sisa waktu rekrutment berada pada rentang 90 hingga 60 hari
+b. Tampilan berwarna Oranye akan tampil saat sisa waktu rekrutment berada pada rentang waktu 59 hingga 30 Hari
+c. Tampilan berwarna Merah akan tampil saat sisa waktu rekrutment berada pada rentang waktu 29 hingga 0 Hari
+d. Tampilan berwarna biru akan tampil saat seller telah berhasil melakukan rekrutment lebih dari atau sama dengan 3 orang dalam 3 bulan tersebut
+2. Perhitungan waktu dalam format Hari : Jam : Menit : Detik
+3. Periode perhitungan waktu dimulai sejak seller tersebut terdaftar sebagai seller daclen
+dibuktikan dengan transaksi pembayaran registrasi member yang berhasil dan divalidasi oleh
+sistem
+4. Jika setelah perhitungan waktu berakhir seller tersebut tidak mendapatkan 3 rekruitment,
+maka akun seller tersebut akan di nonaktifkan
+5. Khusus untuk tampilan countdown berwarna merah, block tampilan akan dibuat berkedip-
+kedip lambat sedangkan tulisannya / angkanya tetap tidak berkedip
+6. Khusus untuk tampilan countdown berwarna biru, waktu tampil akan “freeze” saat target
+tercapai, sedangkan total rekrutment akan terus bertambah sampai rentang waktu perioda tersebut berakhir
+ 
+7. Jika dalam 14 hari sebelum masa waktu berakhir belum mendapat 3 seller, maka akan dikirimkan pesan otomatis sebagai pengingat dari sistem website daclen kepada seller tersebut
+8. Periode perhitungan waktu akan otomatis di ulang setiap 90 hari dari tanggal seller tersebut terdaftar di sistem daclen
+`;
+
 export const devuserroottree = {
   data: {
     id: 1,

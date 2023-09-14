@@ -77,7 +77,7 @@ export default function DashboardUser(props) {
         } Daclen`}</Text>
         {regDate === undefined || regDate === null ? null : (
           <Text allowFontScaling={false} style={styles.text}>
-            {`Bergabung ${convertDateISOStringtoDisplayDate(regDate, true)}`}
+            {`Join Date ${convertDateISOStringtoDisplayDate(regDate, true)}`}
           </Text>
         )}
 

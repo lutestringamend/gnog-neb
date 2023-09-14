@@ -7,19 +7,30 @@ import {
   Dimensions,
   ActivityIndicator,
 } from "react-native";
+//import { BlurView } from "expo-blur";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../../../styles/base";
 import moment from "moment";
 import { sentryLog } from "../../../sentry";
 import { addZeroToArray } from "../../../axios";
+import { useNavigation } from "@react-navigation/native";
+import {
+  countdownbottom,
+  countdowndays,
+  countdownhours,
+  countdownminutes,
+  countdownseconds,
+  countdowntitle,
+} from "../constants";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
-const modalWidth = 320;
-const modalHeight = 200;
-const digitTextWidth = 26;
-const digitTextHeight = 50;
+const modalWidth =
+  screenWidth < 320 ? 320 : screenWidth > 400 ? 400 : screenWidth;
+const modalHeight = 214;
+const digitTextWidth = 32;
+const digitTextHeight = 48;
 const defaultDigit = ["0", "0", "0", "0", "0", "0", "0", "0"];
 
 const DigitText = ({ number }) => {
@@ -83,8 +94,10 @@ const ContainerDigit = ({ digit1, digit2, label }) => {
 };
 
 const DashboardTimer = (props) => {
-  const { recruitmentTimer, setShowTimerModal } = props;
+  const { recruitmentTimer, setShowTimerModal, regDateInMs, target_rekrutmen } =
+    props;
   const [digits, setDigits] = useState(defaultDigit);
+  const navigation = useNavigation();
 
   useEffect(() => {
     try {
@@ -127,92 +140,122 @@ const DashboardTimer = (props) => {
           {
             width: screenWidth,
             height: screenHeight,
+            zIndex: 100,
+            elevation: 4,
           },
         ]}
         onPress={() => setShowTimerModal((showTimerModal) => !showTimerModal)}
       >
-        <View
-          style={[
-            styles.containerTimer,
-            {
-              width: modalWidth,
-              height: modalHeight,
-              start: (screenWidth - modalWidth) / 2,
-              end: (screenWidth - modalWidth) / 2,
-              top: (screenHeight - modalHeight) / 2 - 40,
-              bottom: (screenHeight - modalHeight) / 2 + 40,
-            },
-          ]}
-        >
-          <LinearGradient
-            colors={[colors.timer_green_light, colors.timer_green_dark]}
+                  <View
             style={[
-              styles.background,
+              styles.containerTimer,
               {
                 width: modalWidth,
                 height: modalHeight,
-                borderRadius: 12,
+                start: (screenWidth - modalWidth) / 2,
+                end: (screenWidth - modalWidth) / 2,
+                top: (screenHeight - modalHeight) / 2 - 40,
+                bottom: (screenHeight - modalHeight) / 2 + 40,
               },
             ]}
-          />
-          <View style={styles.containerModalTitle}>
-            <Text allowFontScaling={false} style={styles.textHeader}>
-              COUNTDOWN RECRUITMENT
-            </Text>
-            <MaterialCommunityIcons
-              name="help-circle"
-              size={20}
-              color={colors.daclen_light}
-              style={styles.help}
+          >
+            <LinearGradient
+              colors={[colors.timer_green_light, colors.timer_green_dark]}
+              style={[
+                styles.background,
+                {
+                  width: modalWidth,
+                  height: modalHeight,
+                  borderRadius: 12,
+                },
+              ]}
             />
-          </View>
+            <TouchableOpacity
+              style={styles.containerModalTitle}
+              onPress={() =>
+                navigation.navigate("TimerExplanation", {
+                  regDateInMs,
+                  recruitmentTimer,
+                  target_rekrutmen,
+                })
+              }
+            >
+              <Text allowFontScaling={false} style={styles.textHeader}>
+                {countdowntitle}
+              </Text>
+              <MaterialCommunityIcons
+                name="help-circle"
+                size={20}
+                color={colors.daclen_light}
+                style={styles.help}
+              />
+            </TouchableOpacity>
 
-          {digits === defaultDigit ? (
-            <ActivityIndicator
-              size="large"
-              color={colors.daclen_light}
-              style={{ alignSelf: "center", marginVertical: 32 }}
-            />
-          ) : (
-            <View style={[styles.containerCountdown, { width: modalWidth }]}>
-              <ContainerDigit
-                digit1={digits[0]}
-                digit2={digits[1]}
-                label="Hari"
+            {digits === defaultDigit ? (
+              <ActivityIndicator
+                size="large"
+                color={colors.daclen_light}
+                style={{ alignSelf: "center", marginVertical: 32 }}
               />
-              <Text allowFontScaling={false} style={styles.textWall}>
-                :
+            ) : (
+              <View style={[styles.containerCountdown, { width: modalWidth }]}>
+                <ContainerDigit
+                  digit1={digits[0]}
+                  digit2={digits[1]}
+                  label={countdowndays}
+                />
+                <Text allowFontScaling={false} style={styles.textWall}>
+                  :
+                </Text>
+                <ContainerDigit
+                  digit1={digits[2]}
+                  digit2={digits[3]}
+                  label={countdownhours}
+                />
+                <Text allowFontScaling={false} style={styles.textWall}>
+                  :
+                </Text>
+                <ContainerDigit
+                  digit1={digits[4]}
+                  digit2={digits[5]}
+                  label={countdownminutes}
+                />
+                <Text allowFontScaling={false} style={styles.textWall}>
+                  :
+                </Text>
+                <ContainerDigit
+                  digit1={digits[6]}
+                  digit2={digits[7]}
+                  label={countdownseconds}
+                />
+              </View>
+            )}
+
+            <Text
+              allowFontScaling={false}
+              style={[
+                styles.textBottom,
+                {
+                  start: 0,
+                  end: 0,
+                  width: modalWidth,
+                  bottom: 28,
+                },
+              ]}
+            >
+              {`${countdownbottom}${
+                target_rekrutmen > 1
+                  ? `${target_rekrutmen} Sellers`
+                  : `${target_rekrutmen} Seller`
+              }`}
+            </Text>
+
+            <View style={[styles.containerOK, { start: modalWidth / 2 - 60 }]}>
+              <Text allowFontScaling={false} style={styles.textOK}>
+                OK
               </Text>
-              <ContainerDigit
-                digit1={digits[2]}
-                digit2={digits[3]}
-                label="Jam"
-              />
-              <Text allowFontScaling={false} style={styles.textWall}>
-                :
-              </Text>
-              <ContainerDigit
-                digit1={digits[4]}
-                digit2={digits[5]}
-                label="Menit"
-              />
-              <Text allowFontScaling={false} style={styles.textWall}>
-                :
-              </Text>
-              <ContainerDigit
-                digit1={digits[6]}
-                digit2={digits[7]}
-                label="Detik"
-              />
             </View>
-          )}
-
-          <View style={[styles.containerOK, { start: modalWidth / 2 - 60 }]}>
-            <Text allowFontScaling={false} style={styles.textOK}>
-              OK
-            </Text>
           </View>
-        </View>
       </TouchableOpacity>
     );
   } catch (e) {
@@ -224,6 +267,9 @@ const DashboardTimer = (props) => {
           {
             width: screenWidth,
             height: screenHeight,
+            zIndex: 100,
+            elevation: 4,
+            opacity: 0.95,
           },
         ]}
         onPress={() => setShowTimerModal((showTimerModal) => !showTimerModal)}
@@ -244,7 +290,7 @@ const DashboardTimer = (props) => {
         >
           <View style={styles.containerModalTitle}>
             <Text allowFontScaling={false} style={styles.textHeader}>
-              COUNTDOWN RECRUITMENT
+              {countdowntitle}
             </Text>
             <MaterialCommunityIcons
               name="help-circle"
@@ -265,7 +311,7 @@ const DashboardTimer = (props) => {
               <ContainerDigit
                 digit1={digits[0]}
                 digit2={digits[1]}
-                label="Hari"
+                label={countdowndays}
               />
               <Text allowFontScaling={false} style={styles.textWall}>
                 :
@@ -273,7 +319,7 @@ const DashboardTimer = (props) => {
               <ContainerDigit
                 digit1={digits[2]}
                 digit2={digits[3]}
-                label="Jam"
+                label={countdownhours}
               />
               <Text allowFontScaling={false} style={styles.textWall}>
                 :
@@ -281,7 +327,7 @@ const DashboardTimer = (props) => {
               <ContainerDigit
                 digit1={digits[4]}
                 digit2={digits[5]}
-                label="Menit"
+                label={countdownminutes}
               />
               <Text allowFontScaling={false} style={styles.textWall}>
                 :
@@ -289,10 +335,29 @@ const DashboardTimer = (props) => {
               <ContainerDigit
                 digit1={digits[6]}
                 digit2={digits[7]}
-                label="Detik"
+                label={countdownseconds}
               />
             </View>
           )}
+
+          <Text
+            allowFontScaling={false}
+            style={[
+              styles.textBottom,
+              {
+                start: 0,
+                end: 0,
+                width: modalWidth,
+                bottom: 28,
+              },
+            ]}
+          >
+            {`${countdownbottom}${
+              target_rekrutmen > 1
+                ? `${target_rekrutmen} Sellers`
+                : `${target_rekrutmen} Seller`
+            }`}
+          </Text>
 
           <View style={[styles.containerOK, { start: modalWidth / 2 - 60 }]}>
             <Text allowFontScaling={false} style={styles.textOK}>
@@ -305,17 +370,31 @@ const DashboardTimer = (props) => {
   }
 };
 
+/*
+        <BlurView
+          intensity={10}
+          style={[
+            styles.container,
+            {
+              width: screenWidth,
+              height: screenHeight,
+
+              opacity: 0.95,
+            },
+          ]}
+        >
+
+        </BlurView>
+*/
+
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
     top: 0,
     start: 0,
-    zIndex: 100,
-    elevation: 4,
     backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
-    opacity: 0.95,
   },
   background: {
     position: "absolute",
@@ -380,9 +459,18 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     flexDirection: "row",
   },
+  textBottom: {
+    backgroundColor: "transparent",
+    textAlign: "center",
+    fontFamily: "Poppins",
+    fontSize: 12,
+    position: "absolute",
+    color: colors.daclen_light,
+    zIndex: 6,
+  },
   textHeader: {
     fontFamily: "Poppins-Bold",
-    fontSize: 16,
+    fontSize: 20,
     color: colors.daclen_light,
     textAlign: "center",
     zIndex: 2,
@@ -396,7 +484,7 @@ const styles = StyleSheet.create({
     marginTop: (digitTextHeight - 12) / 2,
   },
   digitText: {
-    fontSize: 20,
+    fontSize: 26,
     fontFamily: "Poppins-Bold",
     color: colors.daclen_light,
     backgroundColor: "transparent",

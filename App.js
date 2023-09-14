@@ -80,6 +80,7 @@ import CreatePIN from "./components/profile/CreatePIN";
 import UserRoots from "./components/dashboard/UserRoots";
 import BonusRoot from "./components/dashboard/BonusRoot";
 import SaldoReport from "./components/dashboard/SaldoReport";
+import TimerExplanation from "./components/dashboard/components/TimerExplanation";
 import WmarkTestScreen from "./components/media/WmarkTestScreen";
 
 import { appname, expoupdateschecking, expoupdateserror, expoupdatesinstalled, expoupdatesinstalling, mainhttp } from "./axios/constants";
@@ -302,6 +303,14 @@ export default function App() {
                 name="Webview"
                 component={WebviewScreen}
                 options={{ ...defaultOptions, headerShown: false }}
+              />
+              <Stack.Screen
+                name="TimerExplanation"
+                component={TimerExplanation}
+                options={{
+                  ...defaultOptions,
+                  title: "Countdown Recruitment",
+                }}
               />
               <Stack.Screen
                 name="FAQ"

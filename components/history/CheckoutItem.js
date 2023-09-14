@@ -122,20 +122,20 @@ function CheckoutItem(props) {
           <View style={styles.container}>
             <View style={styles.containerHeader}>
               <View style={styles.containerDescVertical}>
-                <Text allowFontScaling={false} style={[styles.textTitle, { marginTop: 0 }]}>
+                <Text style={[styles.textTitle, { marginTop: 0 }]}>
                   Nomor Invoice
                 </Text>
-                <Text allowFontScaling={false} styles={styles.textInvoice}>{checkout?.invoice}</Text>
-                <Text allowFontScaling={false} style={styles.textTitle}>Info Penerima</Text>
-                <Text allowFontScaling={false} styles={styles.textEntry}>
+                <Text styles={styles.textInvoice}>{checkout?.invoice}</Text>
+                <Text style={styles.textTitle}>Info Penerima</Text>
+                <Text styles={styles.textEntry}>
                   {`${checkout.detail_checkout?.nama_lengkap}\n${checkout.detail_checkout?.email}\n${checkout.detail_checkout?.nomor_telp}`}
                 </Text>
 
-                <Text allowFontScaling={false} style={styles.textTitle}>Kurir Pengiriman</Text>
-                <Text allowFontScaling={false} styles={styles.textEntry}>{checkout.kurir?.nama}</Text>
+                <Text style={styles.textTitle}>Kurir Pengiriman</Text>
+                <Text styles={styles.textEntry}>{checkout.kurir?.nama}</Text>
 
-                <Text allowFontScaling={false} style={styles.textTitle}>Alamat Pengiriman</Text>
-                <Text allowFontScaling={false} styles={styles.textEntry}>
+                <Text style={styles.textTitle}>Alamat Pengiriman</Text>
+                <Text styles={styles.textEntry}>
                   {checkout.detail_checkout?.alamat_lengkap}
                 </Text>
               </View>
@@ -143,7 +143,7 @@ function CheckoutItem(props) {
             <Separator thickness={5} />
             <View style={styles.containerFlatlist}>
               {checkout.keranjang?.produk?.length < 1 ? (
-                <Text allowFontScaling={false} style={styles.textUid}>Tidak ada Checkout</Text>
+                <Text style={styles.textUid}>Tidak ada Checkout</Text>
               ) : (
                 <FlashList
                   estimatedItemSize={10}
@@ -184,8 +184,7 @@ function CheckoutItem(props) {
         totalPrice={checkout?.total}
         buttonAction={() => openMidtrans()}
         buttonText={checkout?.status}
-        buttonDisabled={snapToken === null || loadingSnap || checkout?.status === "ditolak" || checkout?.status === "diverifikasi"} 
-        enableProcessing={true}
+        buttonDisabled={snapToken === null || loadingSnap}
       />
     </SafeAreaView>
   );
@@ -233,23 +232,24 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   textTitle: {
-    fontFamily: "Poppins-SemiBold",
+    fontWeight: "bold",
     fontSize: 12,
     color: colors.daclen_blue,
     marginTop: 12,
+    marginBottom: 4,
   },
   textInvoice: {
-    fontFamily: "Poppins-SemiBold",
+    fontWeight: "bold",
     fontSize: 10,
     color: colors.daclen_black,
     marginBottom: 4,
   },
   textEntry: {
-    fontFamily: "Poppins", fontSize: 10,
+    fontSize: 10,
     color: colors.daclen_gray,
   },
   textUid: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontSize: 12,
     marginVertical: 20,
     color: colors.daclen_gray,
     textAlign: "center",

@@ -7,6 +7,8 @@ import {
   statuspengiriman,
   statusidpengiriman,
   dashboardhtml,
+  cancelcheckout,
+  confirmcheckout,
 } from "../constants";
 
 import {
@@ -23,6 +25,8 @@ import {
   HISTORY_CHECKOUTS_INCREMENT_CHANGE,
   HISTORY_DELIVERIES_INCREMENT_CHANGE,
 } from "../../redux/constants";
+import { Platform, ToastAndroid } from "react-native";
+import { sentryLog } from "../../sentry";
 
 export function clearHistoryData() {
   return (dispatch) => {
@@ -168,6 +172,78 @@ export function getDeliveryItem(pengiriman_id) {
     console.log("getDeliveryItem for id " + pengiriman_id);
     dispatch({ type: HISTORY_DELIVERY_STATE_CHANGE, id: pengiriman_id });
   };
+}
+
+export const confirmCheckout = async (token, checkout_id) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  };
+
+  const url = confirmcheckout.replace("#ID#", checkout_id);
+  console.log("confirmCheckout", url);
+
+  try {
+    const response = await Axios.post(url, config)
+      .catch((error) => {
+        console.log(error);
+        sentryLog(error);
+        if (Platform.OS == "android") {
+          ToastAndroid.show(error.toString(), ToastAndroid.LONG);
+        }
+        return false;
+      });
+      if (response?.data === undefined || response?.data?.message === undefined) {
+        return false;
+      } else {
+        return true;
+      }
+  } catch (e) {
+    console.error(e);
+    if (Platform.OS == "android") {
+      ToastAndroid.show(e.toString(), ToastAndroid.LONG);
+    }
+    return false;
+  }
+  
+}
+
+export const cancelCheckout = async (token, checkout_id) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  };
+
+  const url = cancelcheckout.replace("#ID#", checkout_id);
+  console.log("cancelCheckout", url);
+
+  try {
+    const response = await Axios.post(url, config)
+      .catch((error) => {
+        console.log(error);
+        sentryLog(error);
+        if (Platform.OS == "android") {
+          ToastAndroid.show(error.toString(), ToastAndroid.LONG);
+        }
+        return false;
+      });
+    if (response?.data === undefined || response?.data?.message === undefined) {
+      return false;
+    } else {
+      return true;
+    }
+  } catch (e) {
+    console.error(e);
+    if (Platform.OS == "android") {
+      ToastAndroid.show(e.toString(), ToastAndroid.LONG);
+    }
+    return false;
+  }
+
 }
 
 export function postPembayaran(token, checkout_id) {

@@ -1,6 +1,13 @@
 import Axios from "../index";
 
-import { getfaq, syaratketentuanhtml, mediakithtml, monthNames, monthNamesShort, tempdeadlineintervalinmiliseconds } from "../constants/index";
+import {
+  getfaq,
+  syaratketentuanhtml,
+  mediakithtml,
+  monthNames,
+  monthNamesShort,
+  tempdeadlineintervalinmiliseconds,
+} from "../constants/index";
 import privacyHTML from "../../components/profile/privacy";
 
 import {
@@ -63,11 +70,24 @@ export function convertDateISOStringtoMiliseconds(str) {
   }
 }
 
+export function convertDateMilisecondstoDisplayDate(ms, isShort) {
+  try {
+    let date = new Date(ms);
+    return `${date.getDate().toString()} ${
+      isShort ? monthNamesShort[date.getMonth()] : monthNames[date.getMonth()]
+    } ${date.getFullYear().toString()}`;
+  } catch (e) {
+    console.error(e);
+    return "";
+  }
+}
 
 export function convertDateISOStringtoDisplayDate(str, isShort) {
   try {
     let date = new Date(str);
-    return `${date.getDate().toString()} ${isShort ? monthNamesShort[date.getMonth()] : monthNames[date.getMonth()]} ${date.getFullYear().toString()}`;
+    return `${date.getDate().toString()} ${
+      isShort ? monthNamesShort[date.getMonth()] : monthNames[date.getMonth()]
+    } ${date.getFullYear().toString()}`;
   } catch (e) {
     console.error(e);
     return str;
@@ -76,9 +96,9 @@ export function convertDateISOStringtoDisplayDate(str, isShort) {
 
 export function convertDateObjecttoDisplayLocaleDate(date) {
   try {
-    return `${addZero(date.getFullYear())}-${addZero((
+    return `${addZero(date.getFullYear())}-${addZero(
       date.getMonth() + 1
-    ))}-${addZero(date.getDate())}`;
+    )}-${addZero(date.getDate())}`;
   } catch (e) {
     console.error(e);
     return "";

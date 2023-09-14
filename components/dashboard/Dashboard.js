@@ -328,6 +328,8 @@ const Dashboard = (props) => {
           recruitmentTimer={recruitmentTimer}
           showTimerModal={showTimerModal}
           setShowTimerModal={setShowTimerModal}
+          regDateInMs={regDateInMs}
+          target_rekrutmen={currentUser?.target_rekrutmen}
         />
       )}
     </View>

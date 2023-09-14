@@ -120,11 +120,7 @@ export default function DashboardStats(props) {
   
         <TouchableOpacity style={styles.containerBottom} onPress={() => showTimerModal()}>
         <Text allowFontScaling={false} style={styles.textBottom}>
-          {`Target Recruitment Bulan Ini: ${
-              currentUser?.target_rekrutmen
-              ? currentUser?.target_rekrutmen
-              : "0"
-            } Reseller`}
+            Countdown Recruitment
         </Text>
         <MaterialCommunityIcons
           name="timer"

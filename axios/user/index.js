@@ -217,6 +217,9 @@ export function disableForceLogout() {
 }
 
 export const eliminateSpaceFromString = (text) => {
+  if (text === null || text === "") {
+    return text;
+  }
   try {
     if (text.includes(" ")) {
       const newText = text.split(" ").join("");
