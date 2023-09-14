@@ -49,8 +49,8 @@ const ShopItem = (props) => {
             />
           </TouchableOpacity>
           <View style={styles.containerInfo}>
-            <Text style={styles.textName}>{nama}</Text>
-            <Text style={styles.textPrice}>Rp {harga_currency}</Text>
+            <Text allowFontScaling={false} style={styles.textName}>{nama}</Text>
+            <Text allowFontScaling={false} style={styles.textPrice}>Rp {harga_currency}</Text>
           </View>
         </View>
       )}
@@ -67,7 +67,7 @@ const ShopItem = (props) => {
           ]}
           onPress={() => openProduct()}
         >
-          <Text style={styles.textButton}>DETAIL</Text>
+          <Text allowFontScaling={false} style={styles.textButton}>DETAIL</Text>
         </TouchableOpacity>
         <View
           style={[

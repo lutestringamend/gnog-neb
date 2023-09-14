@@ -207,7 +207,7 @@ function Cart(props) {
             style={{ alignSelf: "center" }}
           />
         ) : (
-          <Text style={styles.textButton}>
+          <Text allowFontScaling={false} style={styles.textButton}>
             {token === null
               ? `Login/Register\nAkun`
               : currentUser?.isActive

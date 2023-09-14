@@ -88,12 +88,12 @@ const DashboardUpgrade = (props) => {
         />
       }
     >
-      <Text style={styles.text}>{dashboardonboardingtext1}</Text>
-      <Text style={styles.textPrice}>Rp 300.000,-</Text>
+      <Text allowFontScaling={false} style={styles.text}>{dashboardonboardingtext1}</Text>
+      <Text allowFontScaling={false} style={styles.textPrice}>Rp 300.000,-</Text>
       {dashboardonboardingtext2 ? (
-        <Text style={styles.text}>{dashboardonboardingtext2}</Text>
+        <Text allowFontScaling={false} style={styles.text}>{dashboardonboardingtext2}</Text>
       ) : null}
-      <Text style={styles.textInner}>
+      <Text allowFontScaling={false} style={styles.textInner}>
         {registerSnapToken?.message_pembayaran
           ? registerSnapToken?.message_pembayaran
           : dashboardonboardingtext3}
@@ -116,7 +116,7 @@ const DashboardUpgrade = (props) => {
             size={20}
             color={colors.daclen_light}
           />
-        <Text style={styles.textButton}>{dashboardonboardingbutton}</Text>
+        <Text allowFontScaling={false} style={styles.textButton}>{dashboardonboardingbutton}</Text>
       </TouchableOpacity>
       {registerSnapToken === null ? null : (
         <TouchableOpacity
@@ -144,7 +144,7 @@ const DashboardUpgrade = (props) => {
               color={colors.daclen_light}
             />
           )}
-          <Text style={styles.textButton}>Cek Status Pembayaran</Text>
+          <Text allowFontScaling={false} style={styles.textButton}>Cek Status Pembayaran</Text>
         </TouchableOpacity>
       )}
       <TouchableOpacity
@@ -161,7 +161,7 @@ const DashboardUpgrade = (props) => {
           size={20}
           color={colors.daclen_light}
         />
-        <Text style={styles.textButton}>Kode Etik</Text>
+        <Text allowFontScaling={false} style={styles.textButton}>Kode Etik</Text>
       </TouchableOpacity>
     </ScrollView>
   );

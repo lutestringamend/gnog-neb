@@ -303,7 +303,7 @@ function Shop(props) {
               cart?.jumlah_produk < 1) &&
               tempCartSize < 1) ? null : (
               <View style={styles.containerNumber}>
-                <Text style={styles.textCartNumber}>
+                <Text allowFontScaling={false} style={styles.textCartNumber}>
                   {tempCartSize > 0
                     ? tempCartSize
                     : cart?.jumlah_produk
@@ -316,7 +316,7 @@ function Shop(props) {
         </View>
       )}
 
-      {cartError ? <Text style={styles.textError}>{cartError}</Text> : null}
+      {cartError ? <Text allowFontScaling={false} style={styles.textError}>{cartError}</Text> : null}
 
       <View style={styles.containerFlatlist}>
         {loading ? (
@@ -326,13 +326,13 @@ function Shop(props) {
             style={{ alignSelf: "center", marginVertical: 20 }}
           />
         ) : category === "" && props.products.length < 1 ? (
-          <Text style={styles.textUid}>Tidak ada produk tersedia</Text>
+          <Text allowFontScaling={false} style={styles.textUid}>Tidak ada produk tersedia</Text>
         ) : props.searchFilter !== null && products.length < 1 ? (
-          <Text style={styles.textUid}>
+          <Text allowFontScaling={false} style={styles.textUid}>
             Tidak menemukan produk dari kata pencarian "{props.searchFilter}"
           </Text>
         ) : category !== "" && products.length < 1 ? (
-          <Text style={styles.textUid}>
+          <Text allowFontScaling={false} style={styles.textUid}>
             Tidak ada produk tersedia di kategori ini
           </Text>
         ) : (

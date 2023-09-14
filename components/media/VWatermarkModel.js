@@ -49,7 +49,7 @@ function VWatermarkModel(props) {
       watermarkData?.name === "" ||
       watermarkData?.name?.length === undefined ||
       watermarkData?.name?.length < 1 ? null : (
-        <Text
+        <Text allowFontScaling={false}
           style={[
             styles.textName,
             {
@@ -73,7 +73,7 @@ function VWatermarkModel(props) {
       watermarkData?.phone === "" ||
       watermarkData?.phone?.length === undefined ||
       watermarkData?.phone?.length < 1 ? null : (
-        <Text
+        <Text allowFontScaling={false}
           style={[
             styles.textPhone,
             {

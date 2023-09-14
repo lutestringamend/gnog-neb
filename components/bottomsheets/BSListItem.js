@@ -9,7 +9,7 @@ export default function BSListItem(props) {
       style={styles.container}
       onPress={() => props?.onPress(props?.item)}
     >
-      <Text style={styles.text}>{props?.item?.name ? props?.item?.name : props?.item?.nama}</Text>
+      <Text allowFontScaling={false} style={styles.text}>{props?.item?.name ? props?.item?.name : props?.item?.nama}</Text>
       {!props?.isLast && <Separator thickness={1} />}
     </TouchableOpacity>
   );

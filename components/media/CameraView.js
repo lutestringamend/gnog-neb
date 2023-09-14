@@ -164,7 +164,7 @@ function CameraView(props) {
         />
       ) : permission?.status !== "granted" ? (
         <View style={styles.containerPermission}>
-          <Text style={styles.text}>
+          <Text allowFontScaling={false} style={styles.text}>
             {permission?.status === "denied"
               ? "Anda telah menolak memberikan izin akses kamera\nMohon buka manajemen aplikasi di pengaturan HP Anda dan berikan izin"
               : "Mohon berikan izin akses kamera"}
@@ -174,7 +174,7 @@ function CameraView(props) {
               style={styles.button}
               onPress={() => startRecheckingPermissions()}
             >
-              <Text style={styles.textButton}>Minta Izin</Text>
+              <Text allowFontScaling={false} style={styles.textButton}>Minta Izin</Text>
             </TouchableOpacity>
           ) : null}
         </View>
@@ -198,7 +198,7 @@ function CameraView(props) {
         />
       )}
 
-      {loadingText ? <Text style={styles.textDebug}>{loadingText}</Text> : null}
+      {loadingText ? <Text allowFontScaling={false} style={styles.textDebug}>{loadingText}</Text> : null}
 
       {capturing || !ready ? (
         <ActivityIndicator

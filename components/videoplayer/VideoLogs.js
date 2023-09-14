@@ -8,7 +8,7 @@ const VideoLogs = (prop) => {
       <ScrollView
         style={{ flex: 1, paddingBottom: staticDimensions.pageBottomPadding }}
       >
-        <Text
+        <Text allowFontScaling={false}
           style={{
             fontFamily: "Poppins", fontSize: 10,
             width: "95%",

@@ -89,7 +89,7 @@ function DeleteAccount(props) {
           />
         ) : (
           error && (
-            <Text
+            <Text allowFontScaling={false}
               style={[
                 styles.textError,
                 success && { backgroundColor: colors.daclen_green },
@@ -106,13 +106,13 @@ function DeleteAccount(props) {
           />
         </View>
         <View style={styles.containerContent}>
-          <Text style={styles.textHeader}>Penghapusan Akun Daclen</Text>
-          <Text style={styles.text}>
+          <Text allowFontScaling={false} style={styles.textHeader}>Penghapusan Akun Daclen</Text>
+          <Text allowFontScaling={false} style={styles.text}>
             Mohon mengisi alamat email aktif yang digunakan oleh Anda beserta
             dengan password akun. Tim admin akan mengirimkan instruksi dan link
             untuk penghapusan akun dalam waktu 3 hari kerja.
           </Text>
-          <Text
+          <Text allowFontScaling={false}
             style={[
               styles.text,
               {
@@ -129,7 +129,7 @@ function DeleteAccount(props) {
 
           {success ? null : (
             <View>
-              <Text style={styles.textInputHeader}>Alamat Email Aktif</Text>
+              <Text allowFontScaling={false} style={styles.textInputHeader}>Alamat Email Aktif</Text>
               <TextInput
                 placeholder={
                   auth?.email
@@ -139,7 +139,7 @@ function DeleteAccount(props) {
                 style={styles.textInput}
                 onChangeText={(email) => setAuth({ ...auth, email })}
               />
-              <Text style={styles.textInputHeader}>Password</Text>
+              <Text allowFontScaling={false} style={styles.textInputHeader}>Password</Text>
               <TextInputPassword
                 style={styles.textInput}
                 onChangeText={(password) => setAuth({ ...auth, password })}
@@ -155,7 +155,7 @@ function DeleteAccount(props) {
             ]}
             disabled={loading || success}
           >
-            <Text style={styles.textButton}>Hapus Akun Daclen</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>Hapus Akun Daclen</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

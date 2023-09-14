@@ -10,12 +10,12 @@ export default function FAQChild(props) {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => setExpand(!expand)}>
-        <Text style={styles.textQuestion}>Q: {props?.pertanyaan}</Text>
+        <Text allowFontScaling={false} style={styles.textQuestion}>Q: {props?.pertanyaan}</Text>
       </TouchableOpacity>
       {expand && (
         <View style={styles.container}>
-          <Text style={styles.textAnswer}>A:</Text>
-          <Text style={[styles.textAnswer, { paddingBottom: 20 }]}>
+          <Text allowFontScaling={false} style={styles.textAnswer}>A:</Text>
+          <Text allowFontScaling={false} style={[styles.textAnswer, { paddingBottom: 20 }]}>
             {props?.jawaban}
           </Text>
         </View>

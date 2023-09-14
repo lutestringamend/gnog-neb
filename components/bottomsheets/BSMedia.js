@@ -85,7 +85,7 @@ function BSMedia(props) {
   return (
     <View style={styles.container}>
       <View style={styles.containerHorizontal}>
-        <Text style={styles.textTitle}>{props?.title}</Text>
+        <Text allowFontScaling={false} style={styles.textTitle}>{props?.title}</Text>
         <TouchableOpacity
           style={styles.icon}
           onPress={() => props?.closeThis()}
@@ -107,7 +107,7 @@ function BSMedia(props) {
           disabled={props?.disabled}
         >
           <MaterialCommunityIcons name="camera" size={18} color="white" />
-          <Text style={styles.textButton}>Foto dari Kamera</Text>
+          <Text allowFontScaling={false} style={styles.textButton}>Foto dari Kamera</Text>
         </TouchableOpacity>
         {Platform.OS === "ios" ? null : (
           <TouchableOpacity
@@ -127,7 +127,7 @@ function BSMedia(props) {
               size={18}
               color="white"
             />
-            <Text style={styles.textButton}>
+            <Text allowFontScaling={false} style={styles.textButton}>
               {`Ambil dari ${Platform.OS === "ios" ? "Camera Roll" : "Galeri"}`}
             </Text>
           </TouchableOpacity>
@@ -136,7 +136,7 @@ function BSMedia(props) {
           onPress={() => props?.closeThis()}
           style={styles.button}
         >
-          <Text style={[styles.textButton, { marginStart: 0 }]}>Batal</Text>
+          <Text allowFontScaling={false} style={[styles.textButton, { marginStart: 0 }]}>Batal</Text>
         </TouchableOpacity>
       </View>
     </View>

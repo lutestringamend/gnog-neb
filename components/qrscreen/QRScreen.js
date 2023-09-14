@@ -28,14 +28,14 @@ const QRScreen = (props) => {
   return (
     <SafeAreaView style={styles.container}>
       {error ? (
-        <Text
+        <Text allowFontScaling={false}
           style={styles.textError}
         >
           {error}
         </Text>
       ) : null}
       <ScrollView style={styles.container}>
-        <Text style={styles.text}>
+        <Text allowFontScaling={false} style={styles.text}>
           {text}
         </Text>
         {loading ? (
@@ -80,7 +80,7 @@ const QRScreen = (props) => {
           disabled={loading || elapsed <= 0}
         >
           <MaterialCommunityIcons name="refresh" size={18} color="white" />
-          <Text style={styles.textButton}>Refresh Kode QR</Text>
+          <Text allowFontScaling={false} style={styles.textButton}>Refresh Kode QR</Text>
         </TouchableOpacity>
 */
 

@@ -24,7 +24,7 @@ export default function ProductDesc(props) {
       <Separator thickness={2} />
       <TouchableOpacity onPress={() => setDesc((desc) => !desc)}>
         <View style={styles.containerHeader}>
-          <Text style={styles.textHeader}>Deskripsi</Text>
+          <Text allowFontScaling={false} style={styles.textHeader}>Deskripsi</Text>
           {desc ? (
             <MaterialCommunityIcons name="chevron-up" size={24} />
           ) : (
@@ -43,7 +43,7 @@ export default function ProductDesc(props) {
       <Separator thickness={2} />
       <TouchableOpacity onPress={() => setSpec((spec) => !spec)}>
         <View style={styles.containerHeader}>
-          <Text style={styles.textHeader}>Spesifikasi</Text>
+          <Text allowFontScaling={false} style={styles.textHeader}>Spesifikasi</Text>
           {spec ? (
             <MaterialCommunityIcons name="chevron-up" size={24} />
           ) : (
@@ -55,13 +55,13 @@ export default function ProductDesc(props) {
       {spec ? (
         <View style={styles.containerVertical}>
           <View style={styles.containerSpec}>
-            <Text style={styles.textSpecHeader}>Dimensi</Text>
-            <Text style={styles.textSpec}>{props?.dimensi} cm</Text>
+            <Text allowFontScaling={false} style={styles.textSpecHeader}>Dimensi</Text>
+            <Text allowFontScaling={false} style={styles.textSpec}>{props?.dimensi} cm</Text>
           </View>
 
           <View style={styles.containerSpec}>
-            <Text style={styles.textSpecHeader}>Berat</Text>
-            <Text style={styles.textSpec}>
+            <Text allowFontScaling={false} style={styles.textSpecHeader}>Berat</Text>
+            <Text allowFontScaling={false} style={styles.textSpec}>
               {(props?.berat / 1000).toFixed(2)} kg
             </Text>
           </View>

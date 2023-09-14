@@ -49,11 +49,11 @@ const CartItem = (props) => {
             style={styles.containerHorizontal}
             onPress={() => openProduct(props?.item?.id)}
           >
-            <Text style={styles.textProduct}>
+            <Text allowFontScaling={false} style={styles.textProduct}>
               {props?.item?.nama}
               {!props?.isCart && ` x${props?.item?.jumlah}`}
             </Text>
-            <Text style={styles.textProductPrice}>
+            <Text allowFontScaling={false} style={styles.textProductPrice}>
               Rp {props?.item?.subtotal_currency}
             </Text>
           </TouchableOpacity>

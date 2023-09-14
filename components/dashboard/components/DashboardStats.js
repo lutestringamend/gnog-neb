@@ -48,7 +48,7 @@ export default function DashboardStats(props) {
   try {
     return (
       <View style={styles.container}>
-        <Text style={styles.textHeader}>
+        <Text allowFontScaling={false} style={styles.textHeader}>
           {`${monthNames[new Date().getMonth()]} ${new Date()
             .getFullYear()
             .toString()}`}
@@ -56,25 +56,25 @@ export default function DashboardStats(props) {
   
         <View style={styles.containerHorizontal}>
           <View style={styles.containerVertical}>
-            <Text style={styles.text}>Penjualan Bulan Ini</Text>
-            <Text style={styles.textYellow}>{`${
+            <Text allowFontScaling={false} style={styles.text}>Penjualan Bulan Ini</Text>
+            <Text allowFontScaling={false} style={styles.textYellow}>{`${
               currentUser?.jumlah_invoice ? currentUser?.jumlah_invoice : "0"
             } Invoice`}</Text>
-            <Text style={styles.textYellow}>
+            <Text allowFontScaling={false} style={styles.textYellow}>
               {currentUser?.total_nominal_penjualan
                 ? formatPrice(currentUser?.total_nominal_penjualan)
                 : "Rp 0"}
             </Text>
           </View>
           <TouchableOpacity style={styles.button} onPress={() => openHistory()}>
-            <Text style={styles.textButton}>{`Riwayat\nTransaksi`}</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>{`Riwayat\nTransaksi`}</Text>
           </TouchableOpacity>
         </View>
   
         <View style={styles.containerHorizontal}>
           <View style={styles.containerVertical}>
-            <Text style={styles.text}>Home Point Value</Text>
-            <Text style={styles.text}>{`${
+            <Text allowFontScaling={false} style={styles.text}>Home Point Value</Text>
+            <Text allowFontScaling={false} style={styles.text}>{`${
               currentUser?.poin_user?.hpv ? currentUser?.poin_user?.hpv : "0"
             } Point`}</Text>
           </View>
@@ -82,14 +82,14 @@ export default function DashboardStats(props) {
             style={styles.button}
             onPress={() => openSyaratBonusRoot()}
           >
-            <Text style={styles.textButton}>{`Syarat\nBonus Root`}</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>{`Syarat\nBonus Root`}</Text>
           </TouchableOpacity>
         </View>
   
         <View style={styles.containerHorizontal}>
           <View style={styles.containerVertical}>
-            <Text style={styles.text}>Akumulasi Poin</Text>
-            <Text style={styles.text}>{`${
+            <Text allowFontScaling={false} style={styles.text}>Akumulasi Poin</Text>
+            <Text allowFontScaling={false} style={styles.text}>{`${
               currentUser?.poin_user?.total ? currentUser?.poin_user?.total : "0"
             } Point`}</Text>
           </View>
@@ -97,29 +97,29 @@ export default function DashboardStats(props) {
             style={styles.button}
             onPress={() => openLaporanPoint()}
           >
-            <Text style={styles.textButton}>{`Laporan\nPoint`}</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>{`Laporan\nPoint`}</Text>
           </TouchableOpacity>
         </View>
   
         <View style={styles.containerHorizontal}>
           <View style={styles.containerVertical}>
-            <Text
+            <Text allowFontScaling={false}
               style={[styles.textYellow, { color: colors.daclen_green_pale }]}
             >{`Bonus Jaringan Level A`}</Text>
-            <Text style={styles.text}>{`Agen Anda: ${
+            <Text allowFontScaling={false} style={styles.text}>{`Agen Anda: ${
               currentUser?.jumlah_agen ? currentUser?.jumlah_agen : "0"
             } Orang`}</Text>
-            <Text style={styles.text}>{`Reseller Anda: ${
+            <Text allowFontScaling={false} style={styles.text}>{`Reseller Anda: ${
               currentUser?.jumlah_reseller ? currentUser?.jumlah_reseller : "0"
             } Orang`}</Text>
           </View>
           <TouchableOpacity style={styles.button} onPress={() => openUserRoots()}>
-            <Text style={styles.textButton}>{`Tampilkan\nAgen & Reseller`}</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>{`Tampilkan\nAgen & Reseller`}</Text>
           </TouchableOpacity>
         </View>
   
         <TouchableOpacity style={styles.containerBottom} onPress={() => showTimerModal()}>
-        <Text style={styles.textBottom}>
+        <Text allowFontScaling={false} style={styles.textBottom}>
           {`Target Recruitment Bulan Ini: ${
               currentUser?.target_rekrutmen
               ? currentUser?.target_rekrutmen

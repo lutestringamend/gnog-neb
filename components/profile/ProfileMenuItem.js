@@ -38,9 +38,9 @@ const ProfileMenuItem = ({ text, textSecondary, icon, webKey, screen, thickness,
             size={20}
             style={styles.icon}
           />
-          <Text style={styles.text}>{text}</Text>
+          <Text allowFontScaling={false} style={styles.text}>{text}</Text>
           {textSecondary && (
-            <Text style={styles.textSecondary}>{textSecondary}</Text>
+            <Text allowFontScaling={false} style={styles.textSecondary}>{textSecondary}</Text>
           )}
           <MaterialCommunityIcons
             name="chevron-right"

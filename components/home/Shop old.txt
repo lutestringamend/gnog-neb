@@ -110,7 +110,7 @@ function Shop(props) {
   return (
     <View style={styles.container}>
       <View style={styles.containerHorizontal}>
-        <Text
+        <Text allowFontScaling={false}
           style={[
             styles.textHeader,
             {
@@ -188,13 +188,13 @@ function Shop(props) {
             style={{ alignSelf: "center", marginVertical: 20 }}
           />
         ) : category === "" && props.products.length < 1 ? (
-          <Text style={styles.textUid}>Tidak ada produk tersedia</Text>
+          <Text allowFontScaling={false} style={styles.textUid}>Tidak ada produk tersedia</Text>
         ) : props.searchFilter !== null && products.length < 1 ? (
-          <Text style={styles.textUid}>
+          <Text allowFontScaling={false} style={styles.textUid}>
             Tidak menemukan produk dari kata pencarian "{props.searchFilter}"
           </Text>
         ) : category !== "" && products.length < 1 ? (
-          <Text style={styles.textUid}>
+          <Text allowFontScaling={false} style={styles.textUid}>
             Tidak ada produk tersedia di kategori ini
           </Text>
         ) : (

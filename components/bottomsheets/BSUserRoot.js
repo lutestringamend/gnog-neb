@@ -12,7 +12,7 @@ export default function BSUserRoot(props) {
   return (
     <View style={styles.container}>
       <View style={styles.containerHorizontal}>
-        <Text style={styles.textTitle}>{props?.title}</Text>
+        <Text allowFontScaling={false} style={styles.textTitle}>{props?.title}</Text>
         <TouchableOpacity
           style={styles.icon}
           onPress={() => props?.closeThis()}
@@ -32,8 +32,8 @@ export default function BSUserRoot(props) {
           />
         </View>
         <View style={styles.containerInfo}>
-          <Text style={styles.textName}>{data?.name}</Text>
-          <Text
+          <Text allowFontScaling={false} style={styles.textName}>{data?.name}</Text>
+          <Text allowFontScaling={false}
             style={[
               styles.textVerification,
               {
@@ -45,16 +45,16 @@ export default function BSUserRoot(props) {
           >
             {data?.isVerified ? data?.nomor_telp ? data?.nomor_telp : userverified : phonenotverified}
           </Text>
-          <Text style={styles.text}>
+          <Text allowFontScaling={false} style={styles.text}>
             PV: {data?.pv ? data?.pv : "0"}
           </Text>
-          <Text style={styles.text}>
+          <Text allowFontScaling={false} style={styles.text}>
             RPV: {data?.rpv ? data?.rpv : "0"}
           </Text>
-          <Text style={styles.text}>
+          <Text allowFontScaling={false} style={styles.text}>
             HPV: {data?.hpv ? data?.hpv : "0"}
           </Text>
-          <Text style={styles.text}>
+          <Text allowFontScaling={false} style={styles.text}>
             Poin Bulan Ini:{" "}
             {data?.user?.poin_user_this_month
               ? data?.user?.poin_user_this_month
@@ -68,7 +68,7 @@ export default function BSUserRoot(props) {
           onPress={() => props?.closeThis()}
           style={styles.button}
         >
-          <Text style={styles.textButton}>OK</Text>
+          <Text allowFontScaling={false} style={styles.textButton}>OK</Text>
         </TouchableOpacity>
       )}
     </View>

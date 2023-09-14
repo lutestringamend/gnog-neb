@@ -82,7 +82,7 @@ const SaldoReport = (props) => {
           style={styles.button}
         >
           <MaterialCommunityIcons name="cash-refund" size={18} color="white" />
-          <Text style={styles.textButton}>Tarik Saldo</Text>
+          <Text allowFontScaling={false} style={styles.textButton}>Tarik Saldo</Text>
         </TouchableOpacity>
       </View>
       {loading ? (
@@ -100,7 +100,7 @@ const SaldoReport = (props) => {
         />
       ) : token === null || currentUser?.id === undefined ? (
         <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.textUid}>
+          <Text allowFontScaling={false} style={styles.textUid}>
             Anda harus Login / Register untuk mengecek riwayat saldo
           </Text>
         </TouchableOpacity>
@@ -115,7 +115,7 @@ const SaldoReport = (props) => {
           }
         >
           {saldo?.data?.length === undefined || saldo?.data?.length < 1 ? (
-            <Text style={styles.textUid}>
+            <Text allowFontScaling={false} style={styles.textUid}>
               Anda belum memiliki riwayat saldo
             </Text>
           ) : (
@@ -149,7 +149,7 @@ const SaldoReport = (props) => {
                         }
                         style={styles.icon}
                       />
-                      <Text
+                      <Text allowFontScaling={false}
                         style={[
                           styles.textTitle,
                           {
@@ -164,7 +164,7 @@ const SaldoReport = (props) => {
                       >
                         {item?.status}
                       </Text>
-                      <Text style={styles.textDate}>
+                      <Text allowFontScaling={false} style={styles.textDate}>
                         {moment(
                           item?.tanggal_dibuat
                             ? item?.tanggal_dibuat
@@ -179,7 +179,7 @@ const SaldoReport = (props) => {
                     {item?.saldo === undefined ||
                     item?.saldo === null ||
                     item?.saldo === 0 ? null : (
-                      <Text
+                      <Text allowFontScaling={false}
                         style={[
                           styles.textPoint,
                           {
@@ -195,7 +195,7 @@ const SaldoReport = (props) => {
                     )}
 
                     {item?.keterangan || item?.nomor_invoice ? (
-                      <Text style={styles.textReferral}>{`${
+                      <Text allowFontScaling={false} style={styles.textReferral}>{`${
                         item?.keterangan ? `${item?.keterangan}\n` : ""
                       }${
                         item?.nomor_invoice
@@ -206,7 +206,7 @@ const SaldoReport = (props) => {
 
                     {item?.total_saldo === undefined ||
                     item?.total_saldo === null ? null : (
-                      <Text style={styles.textTotalPoint}>
+                      <Text allowFontScaling={false} style={styles.textTotalPoint}>
                         {`Saldo Total: ${
                           item?.total_saldo <= 0
                             ? "Rp 0"

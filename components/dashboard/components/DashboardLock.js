@@ -34,7 +34,7 @@ const DashboardLock = (props) => {
 
   return (
     <View style={styles.containerLock}>
-      <Text style={styles.textLockHeader}>Masukkan PIN untuk Membuka</Text>
+      <Text allowFontScaling={false} style={styles.textLockHeader}>Masukkan PIN untuk Membuka</Text>
       <OTPInput
         code={otp}
         setCode={setOtp}
@@ -43,14 +43,14 @@ const DashboardLock = (props) => {
         style={styles.containerOTP}
       />
       <TouchableOpacity onPress={() => resetPIN()}>
-      <Text style={styles.textSubheader}>Reset PIN</Text>
+      <Text allowFontScaling={false} style={styles.textSubheader}>Reset PIN</Text>
       </TouchableOpacity>
 
     </View>
   );
 };
 
-// <Text style={styles.textSubheader}>{`Halaman Profil akan dikunci lagi secara otomatis dalam ${PROFILE_LOCK_TIMEOUT_IN_MILISECONDS/60000} menit setelah Anda memasukkan PIN`}</Text>
+// <Text allowFontScaling={false} style={styles.textSubheader}>{`Halaman Profil akan dikunci lagi secara otomatis dalam ${PROFILE_LOCK_TIMEOUT_IN_MILISECONDS/60000} menit setelah Anda memasukkan PIN`}</Text>
 
 const styles = StyleSheet.create({
   containerLock: {

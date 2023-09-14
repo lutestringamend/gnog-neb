@@ -20,7 +20,7 @@ export default function BSDashboard(props) {
   return (
     <View style={styles.container}>
       <View style={styles.containerHorizontal}>
-        <Text style={styles.textTitle}>{props?.data?.title}</Text>
+        <Text allowFontScaling={false} style={styles.textTitle}>{props?.data?.title}</Text>
         <TouchableOpacity
           style={styles.icon}
           onPress={() => props?.closeThis()}
@@ -35,7 +35,7 @@ export default function BSDashboard(props) {
             style={styles.logo}
           />)}
       
-      <Text style={styles.text}>{props?.data?.desc}</Text>
+      <Text allowFontScaling={false} style={styles.text}>{props?.data?.desc}</Text>
       
 
       {props?.closeThis === null ? null : (
@@ -43,7 +43,7 @@ export default function BSDashboard(props) {
           onPress={() => buttonPress()}
           style={styles.button}
         >
-          <Text style={styles.textButton}>{props?.data?.button}</Text>
+          <Text allowFontScaling={false} style={styles.textButton}>{props?.data?.button}</Text>
         </TouchableOpacity>
       )}
     </View>

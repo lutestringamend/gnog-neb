@@ -105,7 +105,7 @@ const CreatePIN = (props) => {
       />
       {error ? (
         <TouchableOpacity onPress={() => resetInput()}>
-          <Text style={styles.textSubheader}>{error}</Text>
+          <Text allowFontScaling={false} style={styles.textSubheader}>{error}</Text>
         </TouchableOpacity>
       ) : null}
       {loading ? (

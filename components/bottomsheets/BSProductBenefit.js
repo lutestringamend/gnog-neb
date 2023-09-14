@@ -12,7 +12,7 @@ export default function BSProductBenefit(props) {
           color={colors.daclen_green}
           size={20}
         />
-        <Text style={styles.textCashback}>
+        <Text allowFontScaling={false} style={styles.textCashback}>
           Anda bisa mendapatkan hingga {props?.poin} poin untuk pembelian produk
           ini, dan cashback Rp{" "}
           {((props?.komisi * props?.harga_value) / 100).toFixed(0)}.
@@ -30,7 +30,7 @@ export default function BSProductBenefit(props) {
           color={colors.daclen_reddishbrown}
           size={20}
         />
-        <Text style={styles.textDelivery}>
+        <Text allowFontScaling={false} style={styles.textDelivery}>
           Gratis pengiriman untuk wilayah Jabodetabek dan potongan biaya sebesar
           50% sampai dengan Rp20.000 untuk seluruh wilayah.
         </Text>

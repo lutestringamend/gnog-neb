@@ -96,42 +96,42 @@ function DeliveryItem(props) {
             <View style={styles.containerHeader}>
               <View style={styles.containerDescHorizontal}>
                 <View style={styles.containerDescVertical}>
-                  <Text style={styles.textTitle}>Nomor Resi</Text>
-                  <Text styles={styles.textInvoice}>
+                  <Text allowFontScaling={false} style={styles.textTitle}>Nomor Resi</Text>
+                  <Text allowFontScaling={false} styles={styles.textInvoice}>
                     {delivery?.nomor_resi}
                   </Text>
                 </View>
                 <View style={styles.containerDescVertical}>
-                  <Text style={styles.textTitle}>Info Penerima</Text>
-                  <Text styles={styles.textEntry}>
+                  <Text allowFontScaling={false} style={styles.textTitle}>Info Penerima</Text>
+                  <Text allowFontScaling={false} styles={styles.textEntry}>
                     {deliveryStatus.summary?.receiver_name}
                   </Text>
                 </View>
               </View>
               <View style={styles.containerDescHorizontal}>
                 <View style={styles.containerDescVertical}>
-                  <Text style={styles.textTitle}>Kurir Pengiriman</Text>
-                  <Text styles={styles.textInvoice}>
+                  <Text allowFontScaling={false} style={styles.textTitle}>Kurir Pengiriman</Text>
+                  <Text allowFontScaling={false} styles={styles.textInvoice}>
                     {delivery?.nama_kurir}
                   </Text>
                 </View>
                 <View style={styles.containerDescVertical}>
-                  <Text style={styles.textTitle}>Alamat Pengiriman</Text>
-                  <Text styles={styles.textEntry}>
+                  <Text allowFontScaling={false} style={styles.textTitle}>Alamat Pengiriman</Text>
+                  <Text allowFontScaling={false} styles={styles.textEntry}>
                     {deliveryStatus.summary?.destination}
                   </Text>
                 </View>
               </View>
               <View style={styles.containerDescHorizontal}>
                 <View style={styles.containerDescVertical}>
-                  <Text style={styles.textTitle}>Status</Text>
-                  <Text styles={styles.textInvoice}>
+                  <Text allowFontScaling={false} style={styles.textTitle}>Status</Text>
+                  <Text allowFontScaling={false} styles={styles.textInvoice}>
                     {deliveryStatus?.delivery_status?.status}
                   </Text>
-                  <Text styles={styles.textEntry}>
+                  <Text allowFontScaling={false} styles={styles.textEntry}>
                     {deliveryStatus?.delivery_status?.pod_receiver}
                   </Text>
-                  <Text styles={styles.textEntry}>
+                  <Text allowFontScaling={false} styles={styles.textEntry}>
                     {deliveryStatus?.delivery_status?.pod_date}{" "}
                     {deliveryStatus?.delivery_status?.pod_time}
                   </Text>
@@ -143,7 +143,7 @@ function DeliveryItem(props) {
                       onPress={() => openCheckoutItem(delivery?.checkout_id)}
                       style={styles.button}
                     >
-                      <Text style={styles.textButton}>Info Checkout</Text>
+                      <Text allowFontScaling={false} style={styles.textButton}>Info Checkout</Text>
                     </TouchableOpacity>
                   )}
                 </View>

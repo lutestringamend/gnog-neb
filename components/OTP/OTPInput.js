@@ -42,7 +42,7 @@ const OTPInput = ({ code, setCode, maximumLength, setIsPinReady, style }) => {
         ]}
         key={index}
       >
-        <Text
+        <Text allowFontScaling={false}
           style={[
             styles.SplitBoxText,
             isInputBoxFocused && isValueFocused ? { color: colors.daclen_light } : null,

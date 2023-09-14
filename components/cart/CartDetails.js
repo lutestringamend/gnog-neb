@@ -74,12 +74,12 @@ export default function CartDetails(props) {
   return (
     <View style={styles.container}>
       <View style={styles.containerEntry}>
-        <Text style={styles.textEntryHeader}>Subtotal</Text>
-        <Text style={styles.textEntry}>{`Rp ${props?.subtotal}`}</Text>
+        <Text allowFontScaling={false} style={styles.textEntryHeader}>Subtotal</Text>
+        <Text allowFontScaling={false} style={styles.textEntry}>{`Rp ${props?.subtotal}`}</Text>
       </View>
       <View style={styles.containerEntry}>
-        <Text style={styles.textEntryHeader}>Berat</Text>
-        <Text style={styles.textEntry}>
+        <Text allowFontScaling={false} style={styles.textEntryHeader}>Berat</Text>
+        <Text allowFontScaling={false} style={styles.textEntry}>
           {props?.berat}
           {" kg"}
         </Text>
@@ -92,8 +92,8 @@ export default function CartDetails(props) {
         }
         style={styles.containerEntry}
       >
-        <Text style={styles.textEntryHeader}>Nama Pengirim</Text>
-        <Text style={[styles.textEntry, { color: colors.daclen_blue }]}>
+        <Text allowFontScaling={false} style={styles.textEntryHeader}>Nama Pengirim</Text>
+        <Text allowFontScaling={false} style={[styles.textEntry, { color: colors.daclen_blue }]}>
           {props?.senderName ? props?.senderName : checkoutdefaultsendername}
         </Text>
 
@@ -108,14 +108,14 @@ export default function CartDetails(props) {
       </TouchableOpacity>
 
       <View style={styles.containerEntry}>
-        <Text style={styles.textEntryHeader}>Pengemasan</Text>
-        <Text style={styles.textEntry}>Box</Text>
+        <Text allowFontScaling={false} style={styles.textEntryHeader}>Pengemasan</Text>
+        <Text allowFontScaling={false} style={styles.textEntry}>Box</Text>
       </View>
 
       {props?.isCart &&
         (props?.addressComplete ? (
           <View style={styles.containerRadio}>
-            <Text style={styles.textEntryHeader}>Pengiriman</Text>
+            <Text allowFontScaling={false} style={styles.textEntryHeader}>Pengiriman</Text>
             {props?.courierChoices?.length > 0 && (
               <View style={styles.containerRadioGroup}>
                 <RadioGroup
@@ -138,7 +138,7 @@ export default function CartDetails(props) {
                 ) : (
                   props?.courierSlug !== "" &&
                   props?.courierSlug !== null && (
-                    <Text style={[styles.textEntry, { marginHorizontal: 0 }]}>
+                    <Text allowFontScaling={false} style={[styles.textEntry, { marginHorizontal: 0 }]}>
                       Tidak ada pengiriman tersedia dari kurir ini
                     </Text>
                   )
@@ -148,7 +148,7 @@ export default function CartDetails(props) {
           </View>
         ) : (
           <View style={styles.containerRadio}>
-            <Text style={styles.textIncompleteAddress}>
+            <Text allowFontScaling={false} style={styles.textIncompleteAddress}>
               Anda harus mengisi alamat dengan lengkap sebelum melanjutkan
               Checkout
             </Text>
@@ -156,21 +156,21 @@ export default function CartDetails(props) {
               onPress={() => openAddress()}
               style={styles.button}
             >
-              <Text style={styles.textButton}>Lengkapi Alamat Pengiriman</Text>
+              <Text allowFontScaling={false} style={styles.textButton}>Lengkapi Alamat Pengiriman</Text>
             </TouchableOpacity>
           </View>
         ))}
 
       {(!props?.isCart || props?.courierService) && (
         <View style={[styles.containerRadio, { flexDirection: "row" }]}>
-          <Text style={styles.textEntryHeader}>Biaya Pengiriman</Text>
+          <Text allowFontScaling={false} style={styles.textEntryHeader}>Biaya Pengiriman</Text>
           <View style={styles.containerRadioGroup}>
-            <Text style={[styles.textEntry, styles.textStrikethrough]}>
+            <Text allowFontScaling={false} style={[styles.textEntry, styles.textStrikethrough]}>
               {originalDeliveryFee > 0
                 ? `${formatPrice(originalDeliveryFee)}`
                 : "GRATIS"}
             </Text>
-            <Text
+            <Text allowFontScaling={false}
               style={[
                 styles.textEntry,
                 styles.textDiscount,
@@ -201,14 +201,14 @@ export default function CartDetails(props) {
             style={{ alignSelf: "center" }}
           />
           <View style={styles.containerSaldo}>
-            <Text style={styles.textSaldoHeader}>
+            <Text allowFontScaling={false} style={styles.textSaldoHeader}>
               {`Gunakan Saldo Daclen (${formatPrice(
                 props?.saldo?.available < props?.totalPrice
                   ? props?.saldo?.available
                   : props?.totalPrice
               )})`}
             </Text>
-            <Text style={styles.textSaldo}>{`Saldo tersisa ${
+            <Text allowFontScaling={false} style={styles.textSaldo}>{`Saldo tersisa ${
               useSaldo
                 ? calculateSaldoAvailable(
                     props?.saldo?.available,
@@ -245,10 +245,10 @@ export default function CartDetails(props) {
       props?.cashback === null ||
       props?.cashback <= 0 ? null : (
         <View style={[styles.containerEntry, { marginVertical: 20 }]}>
-          <Text style={[styles.textEntryHeader, styles.textCashback]}>
+          <Text allowFontScaling={false} style={[styles.textEntryHeader, styles.textCashback]}>
             Komisi Penjualan
           </Text>
-          <Text style={[styles.textEntry, styles.textCashback]}>
+          <Text allowFontScaling={false} style={[styles.textEntry, styles.textCashback]}>
             {props?.cashback}
           </Text>
         </View>

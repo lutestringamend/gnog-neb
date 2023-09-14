@@ -753,7 +753,7 @@ function VideoPlayer(props) {
           </TouchableOpacity>
 
           <View style={styles.containerHeaderText}>
-            <Text
+            <Text allowFontScaling={false}
               style={[
                 styles.textHeaderLandscape,
                 loading || error === null
@@ -764,7 +764,7 @@ function VideoPlayer(props) {
               {title ? title : "Video Watermark"}
             </Text>
             {loading || error === null ? null : (
-              <Text style={styles.textError}>{error}</Text>
+              <Text allowFontScaling={false} style={styles.textError}>{error}</Text>
             )}
           </View>
           {watermarkLoading || videoLoading ? (
@@ -812,7 +812,7 @@ function VideoPlayer(props) {
               },
             ]}
           >
-            <Text style={styles.textHeaderLandscape}>{title}</Text>
+            <Text allowFontScaling={false} style={styles.textHeaderLandscape}>{title}</Text>
             <TouchableOpacity
               style={styles.buttonClose}
               onPress={() => onBackPress()}
@@ -984,7 +984,7 @@ function VideoPlayer(props) {
               color="white"
             />
             {videoSize.isLandscape ? null : (
-              <Text style={styles.textButton}>
+              <Text allowFontScaling={false} style={styles.textButton}>
                 {status.isPlaying ? "Pause" : "Play"}
               </Text>
             )}
@@ -1036,7 +1036,7 @@ function VideoPlayer(props) {
               />
             )}
             {videoSize.isLandscape ? null : (
-              <Text style={styles.textButton}>
+              <Text allowFontScaling={false} style={styles.textButton}>
                 {rawUri === null
                   ? "Download"
                   : resultUri === null
@@ -1059,7 +1059,7 @@ function VideoPlayer(props) {
               color={colors.daclen_light}
               style={{ alignSelf: "center" }}
             />
-            {error ? <Text style={styles.textErrorLarge}>{error}</Text> : null}
+            {error ? <Text allowFontScaling={false} style={styles.textErrorLarge}>{error}</Text> : null}
           </View>
         </View>
       ) : null}
@@ -1082,7 +1082,7 @@ function VideoPlayer(props) {
         {userId === vwmarkdebuguserid &&
         Platform.OS === "web" &&
         !videoSize.isLandscape ? (
-          <Text
+          <Text allowFontScaling={false}
             style={[
               styles.textUid,
               {
@@ -1121,7 +1121,7 @@ function VideoPlayer(props) {
             disabled={videoLoading || loading}
           >
             <MaterialCommunityIcons name="text-box" size={18} color="white" />
-            <Text style={styles.textButton}>Logs</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>Logs</Text>
           </TouchableOpacity>
         )}
 
@@ -1148,7 +1148,7 @@ function VideoPlayer(props) {
               size={18}
               color="white"
             />
-            <Text style={styles.textButton}>Share Watermark</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>Share Watermark</Text>
           </TouchableOpacity>
         ) : null}
 
@@ -1171,7 +1171,7 @@ function VideoPlayer(props) {
             disabled={loading || videoLoading}
           >
             <MaterialCommunityIcons name="share" size={18} color="white" />
-            <Text style={styles.textButton}>Share Raw Video</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>Share Raw Video</Text>
           </TouchableOpacity>
         ) : null}
 
@@ -1196,12 +1196,12 @@ function VideoPlayer(props) {
             onPress={() => resetResultUri()}
           >
             <MaterialCommunityIcons name="restore" size={18} color="white" />
-            <Text style={styles.textButton}>Reset</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>Reset</Text>
           </TouchableOpacity>
         ) : null}
 
         {userId !== vwmarkdebuguserid || videoSize.isLandscape ? null : (
-          <Text style={styles.textUid}>{output}</Text>
+          <Text allowFontScaling={false} style={styles.textUid}>{output}</Text>
         )}
 */
 

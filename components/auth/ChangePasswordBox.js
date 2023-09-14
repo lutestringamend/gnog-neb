@@ -21,7 +21,7 @@ function ChangePasswordBox(props) {
   }
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Password Lama*</Text>
+      <Text allowFontScaling={false} style={styles.text}>Password Lama*</Text>
       <TextInputPassword
         style={styles.textInput}
         secureTextEntry={true}
@@ -29,7 +29,7 @@ function ChangePasswordBox(props) {
           props.setAuthData({ ...props.authData, old_password })
         }
       />
-      <Text style={styles.text}>Password Baru*</Text>
+      <Text allowFontScaling={false} style={styles.text}>Password Baru*</Text>
       <TextInputPassword
         style={styles.textInput}
         secureTextEntry={true}
@@ -37,7 +37,7 @@ function ChangePasswordBox(props) {
           props.setAuthData({ ...props.authData, new_password })
         }
       />
-      <Text style={styles.text}>Konfirmasi Password Baru*</Text>
+      <Text allowFontScaling={false} style={styles.text}>Konfirmasi Password Baru*</Text>
       <TextInputPassword
         style={styles.textInput}
         secureTextEntry={true}
@@ -46,7 +46,7 @@ function ChangePasswordBox(props) {
         }
       />
       <TouchableOpacity onPress={() => resetPassword()}>
-        <Text style={styles.textChange}>Lupa Password?</Text>
+        <Text allowFontScaling={false} style={styles.textChange}>Lupa Password?</Text>
       </TouchableOpacity>
     </View>
   );

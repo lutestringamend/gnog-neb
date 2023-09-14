@@ -512,7 +512,7 @@ const MultipleImageView = (props) => {
           style={styles.container}
           contentContainerStyle={styles.containerLoading}
         >
-          {error ? <Text style={styles.textError}>{error}</Text> : null}
+          {error ? <Text allowFontScaling={false} style={styles.textError}>{error}</Text> : null}
           {loading ? (
             <ActivityIndicator
               size="large"
@@ -521,7 +521,7 @@ const MultipleImageView = (props) => {
             />
           ) : null}
 
-          <Text style={styles.textLoading}>
+          <Text allowFontScaling={false} style={styles.textLoading}>
             {loading
               ? `Menyimpan ${
                   tiSize <= 0 ? "foto" : `${tiSize} foto`
@@ -529,7 +529,7 @@ const MultipleImageView = (props) => {
               : "Berhasil menyimpan file PDF"}
           </Text>
           {Platform.OS === "web" ? (
-            <Text style={styles.textLogs}>{logs}</Text>
+            <Text allowFontScaling={false} style={styles.textLogs}>{logs}</Text>
           ) : null}
         </ScrollView>
       </SafeAreaView>

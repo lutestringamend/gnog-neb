@@ -88,10 +88,10 @@ const BonusRootItem = ({
               size={14}
               color={colors.daclen_light}
             />
-            <Text style={styles.textHeader}>{title}</Text>
+            <Text allowFontScaling={false} style={styles.textHeader}>{title}</Text>
           </View>
           <View style={styles.containerValue}>
-            <Text
+            <Text allowFontScaling={false}
               style={[
                 styles.text,
                 {

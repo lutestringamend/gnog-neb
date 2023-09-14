@@ -88,7 +88,7 @@ function Header(props) {
         style={styles.containerAddress}
         onPress={() => openAddress()}
       >
-        <Text style={styles.textAddress}>
+        <Text allowFontScaling={false} style={styles.textAddress}>
           {displayAddress ? displayAddress : "Alamat Pengiriman"}
         </Text>
         <MaterialCommunityIcons
@@ -98,7 +98,7 @@ function Header(props) {
         />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => openLogin()}>
-        <Text style={styles.textLogin}>
+        <Text allowFontScaling={false} style={styles.textLogin}>
           {username ? username : "Login/Register"}
         </Text>
       </TouchableOpacity>

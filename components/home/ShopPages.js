@@ -67,7 +67,7 @@ function ShopPages(props) {
             style={{ alignSelf: "center" }}
           />
         ) : (
-          <Text style={styles.textCart}>
+          <Text allowFontScaling={false} style={styles.textCart}>
             {`${currentIndex + 1} / ${props.maxIndex}`}
           </Text>
         )}

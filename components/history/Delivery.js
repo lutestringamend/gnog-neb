@@ -132,7 +132,7 @@ function Delivery(props) {
           deliveries === null ||
           deliveries?.length === undefined ||
           deliveries?.length < 1 ? (
-            <Text style={styles.textUid}>
+            <Text allowFontScaling={false} style={styles.textUid}>
               Anda belum memiliki riwayat Pengiriman
             </Text>
           ) : (
@@ -166,13 +166,13 @@ function Delivery(props) {
 
                     <View style={styles.containerDescVertical}>
                       <TouchableOpacity onPress={() => openItem(item?.id)}>
-                        <Text style={styles.textTitle}>{item?.nomor_resi}</Text>
+                        <Text allowFontScaling={false} style={styles.textTitle}>{item?.nomor_resi}</Text>
                       </TouchableOpacity>
                       <View style={styles.containerDescHorizontal}>
-                        <Text style={styles.textDate}>
+                        <Text allowFontScaling={false} style={styles.textDate}>
                           {item?.tgl_pengiriman}
                         </Text>
-                        <Text style={styles.textPrice}>{item?.nama_kurir}</Text>
+                        <Text allowFontScaling={false} style={styles.textPrice}>{item?.nama_kurir}</Text>
                       </View>
                     </View>
                     <TouchableOpacity
@@ -185,7 +185,7 @@ function Delivery(props) {
                         },
                       ]}
                     >
-                      <Text style={styles.textButton}>
+                      <Text allowFontScaling={false} style={styles.textButton}>
                         {item?.status === null
                           ? "Detil"
                           : capitalizeFirstLetter(item?.status)}
@@ -199,7 +199,7 @@ function Delivery(props) {
           )
         ) : (
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-            <Text style={styles.textUid}>
+            <Text allowFontScaling={false} style={styles.textUid}>
               Anda harus Login / Register untuk mengecek riwayat Pengiriman
             </Text>
           </TouchableOpacity>

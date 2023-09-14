@@ -97,6 +97,11 @@ export const dashboardhadiahpdf = "https://daclen.com/asset/HADIAH.pdf"
 export const dashboardkodeetikpdf = "https://daclen.com/asset/KE.pdf"
 export const dashboardpenjelasanbisnispdf = "https://daclen.com/asset/PB.pdf"
 
+//EXPO UPDATES
+export const expoupdateschecking = "Sedang mengecek update terbaru..."
+export const expoupdatesinstalling = "Mengunduh update terbaru..."
+export const expoupdateserror = "Gagal mengecek update"
+export const expoupdatesinstalled = "Update terbaru terpasang"
 
 export const monthNames = [
     "Januari",

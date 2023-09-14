@@ -500,7 +500,7 @@ function FillAddress(props) {
   return (
     <SafeAreaView style={styles.container}>
       {error ? (
-        <Text
+        <Text allowFontScaling={false}
           style={[
             styles.textError,
             success && { backgroundColor: colors.daclen_green },
@@ -538,13 +538,13 @@ function FillAddress(props) {
               />
             )}
 
-            <Text style={styles.textButton}>Tentukan di Peta</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>Tentukan di Peta</Text>
           </TouchableOpacity>
         )}
 
         {isDefault ? null : (
           <View style={styles.containerVertical}>
-            <Text style={[styles.textCompulsory]}>Nama Depan Penerima*</Text>
+            <Text allowFontScaling={false} style={[styles.textCompulsory]}>Nama Depan Penerima*</Text>
             <TextInput
               value={address?.nama_depan}
               style={[
@@ -561,7 +561,7 @@ function FillAddress(props) {
               }
               editable={!isDefault}
             />
-            <Text style={styles.text}>Nama Belakang Penerima (opsional)</Text>
+            <Text allowFontScaling={false} style={styles.text}>Nama Belakang Penerima (opsional)</Text>
             <TextInput
               value={address?.nama_belakang}
               style={styles.textInput}
@@ -575,7 +575,7 @@ function FillAddress(props) {
 
         {isDefault ? null : (
           <View style={styles.containerVertical}>
-            <Text style={styles.textCompulsory}>Nomor Telepon*</Text>
+            <Text allowFontScaling={false} style={styles.textCompulsory}>Nomor Telepon*</Text>
             <TextInput
               value={address?.nomor_telp}
               style={[
@@ -596,7 +596,7 @@ function FillAddress(props) {
           </View>
         )}
 
-        <Text style={styles.textCompulsory}>Alamat Lengkap*</Text>
+        <Text allowFontScaling={false} style={styles.textCompulsory}>Alamat Lengkap*</Text>
         <TextInput
           value={address?.alamat}
           style={[
@@ -610,7 +610,7 @@ function FillAddress(props) {
           ]}
           onChangeText={(alamat) => setAddress({ ...address, alamat })}
         />
-        <Text style={styles.textCompulsory}>Provinsi*</Text>
+        <Text allowFontScaling={false} style={styles.textCompulsory}>Provinsi*</Text>
         <BSTextInput
           disabled={loading}
           onPress={() => openProvinsi()}
@@ -628,7 +628,7 @@ function FillAddress(props) {
             setAddress({ ...address, provinsi_id })
           }
         />
-        <Text style={styles.textCompulsory}>Kota/Kabupaten*</Text>
+        <Text allowFontScaling={false} style={styles.textCompulsory}>Kota/Kabupaten*</Text>
         <BSTextInput
           disabled={loading || props.rajaongkir?.provinsi === null}
           onPress={() => openKota()}
@@ -650,7 +650,7 @@ function FillAddress(props) {
           ]}
           onChangeText={(kota_id) => setAddress({ ...address, kota_id })}
         />
-        <Text style={styles.textCompulsory}>Kecamatan*</Text>
+        <Text allowFontScaling={false} style={styles.textCompulsory}>Kecamatan*</Text>
         <BSTextInput
           disabled={
             loading ||
@@ -680,7 +680,7 @@ function FillAddress(props) {
             setAddress({ ...address, kecamatan_id })
           }
         />
-        <Text style={styles.text}>Kode Pos (opsional)</Text>
+        <Text allowFontScaling={false} style={styles.text}>Kode Pos (opsional)</Text>
         <TextInput
           value={address?.kode_pos}
           style={styles.textInput}
@@ -709,7 +709,7 @@ function FillAddress(props) {
               color={colors.daclen_light}
             />
           )}
-          <Text style={styles.textButton}>Simpan Alamat</Text>
+          <Text allowFontScaling={false} style={styles.textButton}>Simpan Alamat</Text>
         </TouchableOpacity>
 
         {isDefault || isRealtime || isNew ? null : (
@@ -739,7 +739,7 @@ function FillAddress(props) {
                 color={colors.daclen_light}
               />
             )}
-            <Text style={styles.textButton}>Hapus Alamat</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>Hapus Alamat</Text>
           </TouchableOpacity>
         )}
 
@@ -764,7 +764,7 @@ function FillAddress(props) {
 }
 
 /*
-<Text style={styles.text}>Catatan (opsional)</Text>
+<Text allowFontScaling={false} style={styles.text}>Catatan (opsional)</Text>
       <TextInput
         value={address?.catatan}
         style={styles.textInput}

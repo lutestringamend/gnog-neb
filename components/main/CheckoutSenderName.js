@@ -6,7 +6,7 @@ import { colors } from "../../styles/base";
 const CheckoutSenderName = ({ senderNameChoices, onPressRadioButtonSenderName }) => {
   return (
     <View style={styles.containerInfo}>
-      <Text style={styles.textCompulsory}>Kirim paket atas nama*</Text>
+      <Text allowFontScaling={false} style={styles.textCompulsory}>Kirim paket atas nama*</Text>
       <RadioGroup
         radioButtons={senderNameChoices}
         onPress={onPressRadioButtonSenderName}
@@ -19,7 +19,7 @@ const CheckoutSenderName = ({ senderNameChoices, onPressRadioButtonSenderName })
 /*
 senderName, setSenderName, 
       <View style={styles.containerPrivacy}>
-        <Text style={styles.textUid}>
+        <Text allowFontScaling={false} style={styles.textUid}>
           Anda bisa mengganti Nama Pengirim yang akan dipakai dalam delivery.
         </Text>
       </View>

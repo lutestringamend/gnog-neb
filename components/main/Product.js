@@ -147,9 +147,9 @@ function Product(props) {
         <ScrollView style={styles.scrollView}>
           <ProductSlider id={product?.id} title={name} />
           <View style={styles.containerInfo}>
-            <Text style={styles.text}>{name}</Text>
+            <Text allowFontScaling={false} style={styles.text}>{name}</Text>
             <View style={styles.containerTitle}>
-              <Text style={styles.textPrice}>Rp {product?.harga_currency}</Text>
+              <Text allowFontScaling={false} style={styles.textPrice}>Rp {product?.harga_currency}</Text>
               {token === null ||
               currentUser === null ||
               currentUser?.id === undefined ||
@@ -165,9 +165,9 @@ function Product(props) {
             product?.tag_produk?.length === undefined ||
             product?.tag_produk?.length < 1 ? null : (
               <View style={styles.containerCategory}>
-                <Text style={styles.textCategory}>Kategori</Text>
+                <Text allowFontScaling={false} style={styles.textCategory}>Kategori</Text>
                 {product?.tag_produk.map(({ nama }) => (
-                  <Text key={nama} style={styles.textTag}>
+                  <Text allowFontScaling={false} key={nama} style={styles.textTag}>
                     {nama}
                   </Text>
                 ))}
@@ -184,7 +184,7 @@ function Product(props) {
                     size={20}
                     color="white"
                   />
-                  <Text style={styles.textBenefit}>Foto Promosi</Text>
+                  <Text allowFontScaling={false} style={styles.textBenefit}>Foto Promosi</Text>
                 </View>
               </TouchableOpacity>
             )}
@@ -240,7 +240,7 @@ function Product(props) {
           )}
 
           <View style={styles.containerNumber}>
-            <Text style={styles.textNumber}>
+            <Text allowFontScaling={false} style={styles.textNumber}>
               {tempCartSize > 0 ? tempCartSize : cart?.jumlah_produk}
             </Text>
           </View>
@@ -259,7 +259,7 @@ function Product(props) {
                     size={20}
                     color="white"
                   />
-                  <Text style={styles.textBenefit}>Keuntungan</Text>
+                  <Text allowFontScaling={false} style={styles.textBenefit}>Keuntungan</Text>
                 </View>
               </TouchableOpacity>
             )}

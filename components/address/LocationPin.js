@@ -452,7 +452,7 @@ const LocationPin = (props) => {
             </View>
           </View>
           {text === null ? null : (
-            <Text
+            <Text allowFontScaling={false}
               style={[
                 styles.text,
                 {
@@ -473,7 +473,7 @@ const LocationPin = (props) => {
         {loading ? null : (
           <View style={styles.containerInfo}>
             <View style={styles.containerBottom}>
-              <Text style={styles.textFullAddress}>
+              <Text allowFontScaling={false} style={styles.textFullAddress}>
                 {moving
                   ? "Pindahkan pin..."
                   : addressText
@@ -487,7 +487,7 @@ const LocationPin = (props) => {
                   style={styles.spinner}
                 />
               ) : (
-                <Text style={styles.textRegion}>
+                <Text allowFontScaling={false} style={styles.textRegion}>
                   {regionText
                     ? regionText
                     : "Mohon pindahkan pin ke lokasi lain"}
@@ -526,7 +526,7 @@ const LocationPin = (props) => {
                 />
               )}
 
-              <Text style={styles.textButton}>
+              <Text allowFontScaling={false} style={styles.textButton}>
                 {region === null || locale === null || !eligible
                   ? "Isi Alamat Tanpa Titik"
                   : addressProcessing
@@ -543,7 +543,7 @@ const LocationPin = (props) => {
     sentryLog(e);
     return (
       <SafeAreaView style={styles.container}>
-        <Text style={styles.text}>{e.toString()}</Text>
+        <Text allowFontScaling={false} style={styles.text}>{e.toString()}</Text>
       </SafeAreaView>
     );
   }

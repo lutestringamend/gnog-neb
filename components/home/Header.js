@@ -59,13 +59,13 @@ const Header = (props) => {
       </TouchableOpacity>
 
       <View style={styles.containerVertical}>
-        <Text style={styles.textName}>
+        <Text allowFontScaling={false} style={styles.textName}>
           {currentUser?.detail_user?.nama_lengkap
             ? currentUser?.detail_user?.nama_lengkap
             : currentUser?.name}
         </Text>
-        <Text style={styles.text}>{`${currentUser?.status ? capitalizeFirstLetter(currentUser?.status) : "Reseller"} Daclen`}</Text>
-        <Text style={styles.textReferral}>
+        <Text allowFontScaling={false} style={styles.text}>{`${currentUser?.status ? capitalizeFirstLetter(currentUser?.status) : "Reseller"} Daclen`}</Text>
+        <Text allowFontScaling={false} style={styles.textReferral}>
           {`Referral Id: ${currentUser?.name}`}
         </Text>
       </View>
@@ -88,7 +88,7 @@ const Header = (props) => {
             onPress={() => goCheckout()}
             style={[styles.containerUser, { marginTop: 10 }]}
           >
-            <Text style={[styles.textAlert, { color: colors.daclen_orange }]}>
+            <Text allowFontScaling={false} style={[styles.textAlert, { color: colors.daclen_orange }]}>
               RIWAYAT
             </Text>
             <MaterialCommunityIcons

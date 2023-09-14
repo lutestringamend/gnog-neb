@@ -188,7 +188,7 @@ function PickAddress(props) {
           onPress={() => onAddressPress(data?.item?.id)}
           disabled={addressId === data?.item?.id}
         >
-          <Text style={styles.textHiddenButton}>
+          <Text allowFontScaling={false} style={styles.textHiddenButton}>
             {addressId === data?.item?.id ? "Terpilih" : "Pilih"}
           </Text>
         </TouchableOpacity>
@@ -197,13 +197,13 @@ function PickAddress(props) {
           style={[styles.backRightBtn, styles.backRightBtnLeft]}
           onPress={() => editAddress(data?.item)}
         >
-          <Text style={styles.textHiddenButton}>Edit</Text>
+          <Text allowFontScaling={false} style={styles.textHiddenButton}>Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.backRightBtn, styles.backRightBtnRight]}
           onPress={() => deleteAddressData(data?.item)}
         >
-          <Text style={styles.textHiddenButton}>Hapus</Text>
+          <Text allowFontScaling={false} style={styles.textHiddenButton}>Hapus</Text>
         </TouchableOpacity>
       </View>
     );
@@ -225,7 +225,7 @@ function PickAddress(props) {
             disabled={originalId === addressId}
             onPress={() => restoreAddressId()}
           >
-            <Text style={styles.textError}>{changeText}</Text>
+            <Text allowFontScaling={false} style={styles.textError}>{changeText}</Text>
           </TouchableOpacity>
         ) : null}
         <ScrollView style={styles.containerScroll}>
@@ -233,7 +233,7 @@ function PickAddress(props) {
             source={require("../../assets/alamat.png")}
             style={styles.logo}
           />
-          <Text
+          <Text allowFontScaling={false}
             style={[styles.textUid, { textAlign: "center", marginBottom: 12 }]}
           >
             Mohon mengisi alamat lengkap yang akan digunakan untuk informasi
@@ -250,7 +250,7 @@ function PickAddress(props) {
             }
             disabled={loading}
           >
-            <Text style={styles.textChange}>Baca {privacypolicy}</Text>
+            <Text allowFontScaling={false} style={styles.textChange}>Baca {privacypolicy}</Text>
           </TouchableOpacity>
 
           <AddressItem
@@ -274,7 +274,7 @@ function PickAddress(props) {
                 size={18}
                 color={colors.daclen_light}
               />
-              <Text style={styles.textButton}>
+              <Text allowFontScaling={false} style={styles.textButton}>
                 {addresses?.length === undefined || addresses?.length < 1
                   ? "Tambah Alamat Lainnya"
                   : "Tambah Alamat Baru"}
@@ -320,7 +320,7 @@ function PickAddress(props) {
     sentryLog(e);
     return (
       <View style={styles.container}>
-        <Text style={styles.textError}>{e.toString()}</Text>
+        <Text allowFontScaling={false} style={styles.textError}>{e.toString()}</Text>
       </View>
     );
   }
@@ -328,7 +328,7 @@ function PickAddress(props) {
 
 /*
 
-          <Text style={styles.textHeader}>Alamat Lainnya</Text>
+          <Text allowFontScaling={false} style={styles.textHeader}>Alamat Lainnya</Text>
 
             <FlatList
               horizontal={false}

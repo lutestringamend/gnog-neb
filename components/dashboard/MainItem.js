@@ -19,7 +19,7 @@ export default function MainItem(props) {
     >
       <View style={styles.containerHorizontal}>
         <View style={styles.container}>
-          <Text
+          <Text allowFontScaling={false}
             style={[
               styles.text,
               { color: props?.color ? props?.color : colors.daclen_light },
@@ -27,7 +27,7 @@ export default function MainItem(props) {
           >
             {props?.title}
           </Text>
-          <Text
+          <Text allowFontScaling={false}
             style={[
               styles.text,
               {

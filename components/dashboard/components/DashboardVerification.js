@@ -18,8 +18,8 @@ const DashboardVerification = () => {
         />
       </View>
       <View style={styles.containerContent}>
-        <Text style={styles.textHeader}>Verifikasi Nomor Handphone</Text>
-        <Text style={styles.text}>
+        <Text allowFontScaling={false} style={styles.textHeader}>Verifikasi Nomor Handphone</Text>
+        <Text allowFontScaling={false} style={styles.text}>
           Anda perlu verifikasi nomor handphone melalui Whatsapp sebelum bisa
           menggunakan Dashboard.
         </Text>
@@ -28,7 +28,7 @@ const DashboardVerification = () => {
           onPress={() => navigation.navigate("VerifyPhone")}
           style={styles.button}
         >
-          <Text style={styles.textButton}>Verifikasi</Text>
+          <Text allowFontScaling={false} style={styles.textButton}>Verifikasi</Text>
         </TouchableOpacity>
       </View>
     </View>

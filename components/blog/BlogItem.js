@@ -55,12 +55,12 @@ function BlogItem(props) {
               <View style={styles.containerDescHorizontal}>
                 {props?.tag_blog?.length > 0
                   ? props?.tag_blog.map(({ nama }) => (
-                      <Text key={nama} style={styles.textCategory}>{nama}</Text>
+                      <Text allowFontScaling={false} key={nama} style={styles.textCategory}>{nama}</Text>
                     ))
                   : null}
               </View>
-              <Text style={styles.textDate}>{props?.created_at}</Text>
-              <Text style={styles.textTitle}>{props?.judul}</Text>
+              <Text allowFontScaling={false} style={styles.textDate}>{props?.created_at}</Text>
+              <Text allowFontScaling={false} style={styles.textTitle}>{props?.judul}</Text>
               <RenderHTML
                 style={styles.textDesc}
                 contentWidth={

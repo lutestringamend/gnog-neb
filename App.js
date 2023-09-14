@@ -1,6 +1,7 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Platform, SafeAreaView, StyleSheet } from "react-native";
 import * as Sentry from "sentry-expo";
+import * as Updates from 'expo-updates';
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useTheme } from "react-native-paper";
@@ -81,7 +82,7 @@ import BonusRoot from "./components/dashboard/BonusRoot";
 import SaldoReport from "./components/dashboard/SaldoReport";
 import WmarkTestScreen from "./components/media/WmarkTestScreen";
 
-import { appname, mainhttp } from "./axios/constants";
+import { appname, expoupdateschecking, expoupdateserror, expoupdatesinstalled, expoupdatesinstalling, mainhttp } from "./axios/constants";
 import { colors, staticDimensions } from "./styles/base";
 import { sentryLog } from "./sentry";
 import { defaultpoppins } from "./styles/fonts";
@@ -95,6 +96,33 @@ Sentry.init({
 });
 
 export default function App() {
+  const [updateStatus, setUpdateStatus] = useState(null);
+
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      onFetchUpdateAsync();
+    } else {
+      setUpdateStatus(expoupdatesinstalled);
+    }
+  }, []);
+
+  const onFetchUpdateAsync = async () => {
+    try {
+      const update = await Updates.checkForUpdateAsync();
+      console.log("expo Updates", update);
+      if (update.isAvailable) {
+        setUpdateStatus(expoupdatesinstalling);
+        await Updates.fetchUpdateAsync();
+        await Updates.reloadAsync();
+      } else {
+        setUpdateStatus(expoupdatesinstalled);
+      }
+    } catch (error) {
+      console.log("expo updates error", error.toString());
+      setUpdateStatus(`${expoupdateserror}\n${error.toString()}`)
+    }
+  }
+
   try {
     const theme = useTheme();
     theme.colors.primary = colors.daclen_bg;
@@ -134,6 +162,12 @@ export default function App() {
       headerTintColor: colors.daclen_light,
       title: appname,
     };
+
+
+
+    if (updateStatus !== expoupdatesinstalled) {
+      return <Splash errorText={updateStatus === null ? expoupdateschecking : updateStatus} />;
+    }
 
     return (
       <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>

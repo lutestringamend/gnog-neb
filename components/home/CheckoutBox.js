@@ -84,14 +84,14 @@ function CheckoutBox(props) {
         />
       </TouchableOpacity>
 
-      <Text style={styles.textHeader}>Ringkasan</Text>
+      <Text allowFontScaling={false} style={styles.textHeader}>Ringkasan</Text>
       <View style={[styles.containerHorizontal, { marginTop: 16 }]}>
         <MaterialCommunityIcons
           name="shopping"
           size={20}
           color={colors.daclen_orange}
         />
-        <Text style={styles.textCartSize}>
+        <Text allowFontScaling={false} style={styles.textCartSize}>
           {cart?.jumlah_produk.toString()} item di keranjang
         </Text>
       </View>
@@ -103,7 +103,7 @@ function CheckoutBox(props) {
             size={20}
             color={colors.daclen_orange}
           />
-          <Text style={styles.textAddress}>
+          <Text allowFontScaling={false} style={styles.textAddress}>
             {displayAddress
               ? displayAddress
               : "Alamat Pengiriman belum dipilih"}
@@ -123,7 +123,7 @@ function CheckoutBox(props) {
         }
         style={styles.button}
       >
-        <Text style={styles.textButton}>Lanjut ke Pembelian</Text>
+        <Text allowFontScaling={false} style={styles.textButton}>Lanjut ke Pembelian</Text>
       </TouchableOpacity>
     </View>
   );

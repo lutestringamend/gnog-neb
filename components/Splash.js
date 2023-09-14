@@ -24,11 +24,11 @@ function SplashScreen(props) {
 
       <View style={styles.containerText}>
         {props?.errorText ? (
-          <Text style={styles.textError}>{props?.errorText}</Text>
+          <Text allowFontScaling={false} style={styles.textError}>{props?.errorText}</Text>
         ) : props?.loading ? (
           <ActivityIndicator size="small" color={colors.daclen_orange} />
         ) : null}
-        <Text style={styles.textVersion}>{versionText}</Text>
+        <Text allowFontScaling={false} style={styles.textVersion}>{versionText}</Text>
       </View>
     </SafeAreaView>
   );
@@ -62,14 +62,14 @@ const styles = StyleSheet.create({
   },
   textError: {
     fontSize: 12,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     color: colors.daclen_orange,
     textAlign: "center",
     backgroundColor: "transparent",
     marginHorizontal: 20,
   },
   textVersion: {
-    fontFamily: "Poppins", fontSize: 10,
+    fontFamily: "Poppins-SemiBold", fontSize: 10,
     color: colors.daclen_yellow,
     textAlign: "center",
     marginVertical: 32,

@@ -86,12 +86,12 @@ export default function Header(props) {
             </View>
 
             <View style={styles.containerVertical}>
-              <Text style={styles.textName}>{userData?.displayName}</Text>
+              <Text allowFontScaling={false} style={styles.textName}>{userData?.displayName}</Text>
               {currentUser?.email ? (
-                <Text style={styles.text}>{currentUser?.email}</Text>
+                <Text allowFontScaling={false} style={styles.text}>{currentUser?.email}</Text>
               ) : null}
               {currentUser?.nomor_telp ? (
-                <Text style={styles.text}>{currentUser?.nomor_telp}</Text>
+                <Text allowFontScaling={false} style={styles.text}>{currentUser?.nomor_telp}</Text>
               ) : null}
             </View>
           </View>
@@ -104,11 +104,11 @@ export default function Header(props) {
         </TouchableOpacity>
       ) : (
         <View style={styles.containerLogin}>
-          <Text style={[styles.text, { textAlign: "center", width: "100%" }]}>
+          <Text allowFontScaling={false} style={[styles.text, { textAlign: "center", width: "100%" }]}>
             Login / Register untuk berbelanja dengan Daclen
           </Text>
           <TouchableOpacity style={styles.button} onPress={() => openLogin()}>
-            <Text style={styles.textButton}>Login / Register</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>Login / Register</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -187,4 +187,4 @@ const styles = StyleSheet.create({
   arrow: { alignSelf: "center", marginStart: 10, flex: 1 },
 });
 
-//<Text style={[styles.text, { width: 200 }]}>{props?.token}</Text>
+//<Text allowFontScaling={false} style={[styles.text, { width: 200 }]}>{props?.token}</Text>

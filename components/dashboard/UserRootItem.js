@@ -139,10 +139,10 @@ const UserRootItem = ({
                 size={14}
                 color={colors.daclen_light}
               />
-              <Text style={styles.textHeader}>{userData?.name}</Text>
+              <Text allowFontScaling={false} style={styles.textHeader}>{userData?.name}</Text>
             </View>
             <View style={styles.containerValue}>
-              <Text style={styles.text}>
+              <Text allowFontScaling={false} style={styles.text}>
                 {`${isCurrentUser ? "Saya - " : ""}${
                   status ? capitalizeFirstLetter(status) : "Reseller"
                 }${

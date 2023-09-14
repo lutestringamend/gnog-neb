@@ -5,7 +5,7 @@ import { colors } from '../../styles/base';
 export default function ReactMap(props) {
   return (
     <View style={[styles.container, props?.style ? props?.style : null]}>
-        <Text style={styles.text}>MapView tidak disupport di web</Text>
+        <Text allowFontScaling={false} style={styles.text}>MapView tidak disupport di web</Text>
     </View>
   );
 }

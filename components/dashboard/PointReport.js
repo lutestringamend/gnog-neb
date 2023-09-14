@@ -119,7 +119,7 @@ function PointReport(props) {
         />
       ) : token === null || currentUser?.id === undefined ? (
         <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.textUid}>
+          <Text allowFontScaling={false} style={styles.textUid}>
             Anda harus Login / Register untuk mengecek riwayat pengumpulan poin
           </Text>
         </TouchableOpacity>
@@ -134,7 +134,7 @@ function PointReport(props) {
           }
         >
           {points?.data?.length === undefined || points?.data?.length < 1 ? (
-            <Text style={styles.textUid}>
+            <Text allowFontScaling={false} style={styles.textUid}>
               Anda belum memiliki riwayat pengumpulan poin
             </Text>
           ) : (
@@ -155,14 +155,14 @@ function PointReport(props) {
                     />
 
                     <View style={styles.containerDescVertical}>
-                      <Text style={styles.textTitle}>
+                      <Text allowFontScaling={false} style={styles.textTitle}>
                         {item?.user_id === currentUser?.id
                           ? currentUser?.name
                           : item?.user_id}
                       </Text>
 
                       {item?.terakhir_diubah === null ? null : (
-                        <Text style={styles.textDate}>
+                        <Text allowFontScaling={false} style={styles.textDate}>
                           {moment(item?.terakhir_diubah).format("DD MMMM YYYY")}
                         </Text>
                       )}
@@ -171,7 +171,7 @@ function PointReport(props) {
                       referralData?.length < 1 ||
                       item?.refferal_user_id === undefined ||
                       item?.refferal_user_id === null ? null : (
-                        <Text style={styles.textReferral}>
+                        <Text allowFontScaling={false} style={styles.textReferral}>
                           {`Poin Didapatkan dari Referral\nReferral: ${
                             referralData.find(
                               ({ id }) => id === item?.refferal_user_id
@@ -188,25 +188,25 @@ function PointReport(props) {
                           onPress={() => openItem(item?.checkout_id)}
                           disabled={loading}
                         >
-                          <Text style={styles.textCheckout}>{`Poin Didapatkan dari Checkout\nBuka Checkout`}</Text>
+                          <Text allowFontScaling={false} style={styles.textCheckout}>{`Poin Didapatkan dari Checkout\nBuka Checkout`}</Text>
                         </TouchableOpacity>
                       )}
                     </View>
 
                     <View style={styles.containerDescHorizontal}>
                       <View style={styles.containerPoints}>
-                        <Text style={[styles.textPoint, { fontFamily: "Poppins", fontSize: 12 }]}>
+                        <Text allowFontScaling={false} style={[styles.textPoint, { fontFamily: "Poppins", fontSize: 12 }]}>
                           Poin
                         </Text>
-                        <Text style={styles.textPoint}>
+                        <Text allowFontScaling={false} style={styles.textPoint}>
                           {item?.poin ? item?.poin : "0"}
                         </Text>
                       </View>
                       <View style={styles.containerPoints}>
-                        <Text style={[styles.textTotalPoint, { fontFamily: "Poppins", fontSize: 12 }]}>
+                        <Text allowFontScaling={false} style={[styles.textTotalPoint, { fontFamily: "Poppins", fontSize: 12 }]}>
                           Total
                         </Text>
-                        <Text style={styles.textTotalPoint}>
+                        <Text allowFontScaling={false} style={styles.textTotalPoint}>
                           {item?.total_poin ? item?.total_poin : "0"}
                         </Text>
                       </View>

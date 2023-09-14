@@ -150,7 +150,7 @@ const WatermarkVideos = (props) => {
       {mediaKitVideos?.length === undefined || loading ? null : (
         <View style={styles.containerInside}>
           {mediaKitVideos?.length < 1 ? (
-            <Text style={styles.textUid}>
+            <Text allowFontScaling={false} style={styles.textUid}>
               Tidak ada Video Promosi tersedia.
             </Text>
           ) : (
@@ -191,7 +191,7 @@ const WatermarkVideos = (props) => {
 
                   </View>
 
-                  <Text style={styles.textHeader}>{item?.nama}</Text>
+                  <Text allowFontScaling={false} style={styles.textHeader}>{item?.nama}</Text>
                 </TouchableOpacity>
               )}
             />

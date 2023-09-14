@@ -122,20 +122,20 @@ function CheckoutItem(props) {
           <View style={styles.container}>
             <View style={styles.containerHeader}>
               <View style={styles.containerDescVertical}>
-                <Text style={[styles.textTitle, { marginTop: 0 }]}>
+                <Text allowFontScaling={false} style={[styles.textTitle, { marginTop: 0 }]}>
                   Nomor Invoice
                 </Text>
-                <Text styles={styles.textInvoice}>{checkout?.invoice}</Text>
-                <Text style={styles.textTitle}>Info Penerima</Text>
-                <Text styles={styles.textEntry}>
+                <Text allowFontScaling={false} styles={styles.textInvoice}>{checkout?.invoice}</Text>
+                <Text allowFontScaling={false} style={styles.textTitle}>Info Penerima</Text>
+                <Text allowFontScaling={false} styles={styles.textEntry}>
                   {`${checkout.detail_checkout?.nama_lengkap}\n${checkout.detail_checkout?.email}\n${checkout.detail_checkout?.nomor_telp}`}
                 </Text>
 
-                <Text style={styles.textTitle}>Kurir Pengiriman</Text>
-                <Text styles={styles.textEntry}>{checkout.kurir?.nama}</Text>
+                <Text allowFontScaling={false} style={styles.textTitle}>Kurir Pengiriman</Text>
+                <Text allowFontScaling={false} styles={styles.textEntry}>{checkout.kurir?.nama}</Text>
 
-                <Text style={styles.textTitle}>Alamat Pengiriman</Text>
-                <Text styles={styles.textEntry}>
+                <Text allowFontScaling={false} style={styles.textTitle}>Alamat Pengiriman</Text>
+                <Text allowFontScaling={false} styles={styles.textEntry}>
                   {checkout.detail_checkout?.alamat_lengkap}
                 </Text>
               </View>
@@ -143,7 +143,7 @@ function CheckoutItem(props) {
             <Separator thickness={5} />
             <View style={styles.containerFlatlist}>
               {checkout.keranjang?.produk?.length < 1 ? (
-                <Text style={styles.textUid}>Tidak ada Checkout</Text>
+                <Text allowFontScaling={false} style={styles.textUid}>Tidak ada Checkout</Text>
               ) : (
                 <FlashList
                   estimatedItemSize={10}

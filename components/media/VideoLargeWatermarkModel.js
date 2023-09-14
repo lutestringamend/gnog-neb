@@ -116,7 +116,7 @@ function VideoLargeWatermarkModel(props) {
             },
           ]}
         >
-          <Text
+          <Text allowFontScaling={false}
             style={[
               styles.textUrl,
               {

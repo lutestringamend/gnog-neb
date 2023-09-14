@@ -92,15 +92,15 @@ const DashboardBottom = (props) => {
   return (
     <View style={styles.container}>
       <View style={styles.containerHorizontal}>
-        <Text style={styles.textHeader}>{`PERSONAL\nWEBSITE`}</Text>
+        <Text allowFontScaling={false} style={styles.textHeader}>{`PERSONAL\nWEBSITE`}</Text>
         <TouchableOpacity style={styles.button} onPress={() => openQRLink()}>
-          <Text style={styles.textButton}>QR Link</Text>
+          <Text allowFontScaling={false} style={styles.textButton}>QR Link</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
           onPress={() => openPersonalWebsite()}
         >
-          <Text style={styles.textButton}>BUKA</Text>
+          <Text allowFontScaling={false} style={styles.textButton}>BUKA</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
@@ -109,7 +109,7 @@ const DashboardBottom = (props) => {
           ]}
           onPress={() => shareURL()}
         >
-          <Text style={styles.textButton}>
+          <Text allowFontScaling={false} style={styles.textButton}>
             {props?.isSharingAvailable ? "BAGIKAN" : "SALIN"}
           </Text>
         </TouchableOpacity>
@@ -117,7 +117,7 @@ const DashboardBottom = (props) => {
       {currentUser === null ||
       currentUser?.name === undefined ||
       currentUser?.name === null ? null : (
-        <Text style={styles.textLink}>
+        <Text allowFontScaling={false} style={styles.textLink}>
           {`${personalwebsiteurlshort}${currentUser?.name}`}
         </Text>
       )}

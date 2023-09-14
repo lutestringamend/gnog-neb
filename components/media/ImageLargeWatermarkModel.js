@@ -81,7 +81,7 @@ function ImageLargeWatermarkModel(props) {
           },
         ]}
       >
-        <Text
+        <Text allowFontScaling={false}
           style={[
             styles.textUrl,
             {
@@ -110,7 +110,7 @@ function ImageLargeWatermarkModel(props) {
           },
         ]}
       >
-        <Text
+        <Text allowFontScaling={false}
           style={[
             styles.textUrl,
             {
@@ -126,7 +126,7 @@ function ImageLargeWatermarkModel(props) {
               : watermarkData?.name
           }`}
         </Text>
-        <Text
+        <Text allowFontScaling={false}
           style={[
             styles.textUrl,
             {

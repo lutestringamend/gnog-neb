@@ -401,10 +401,10 @@ function Checkout(props) {
               color={colors.daclen_blue}
             />
             <View style={styles.containerTitle}>
-              <Text style={styles.textAddressHeader}>
+              <Text allowFontScaling={false} style={styles.textAddressHeader}>
                 Edit Alamat Pengiriman
               </Text>
-              <Text
+              <Text allowFontScaling={false}
                 style={[
                   styles.textAddressDetail,
                   !addressComplete && { color: colors.daclen_danger },
@@ -442,7 +442,7 @@ function Checkout(props) {
               cart === null ||
               cart?.length === undefined ||
               cart?.length < 1 ? (
-                <Text style={styles.textUid}>Tidak ada Checkout</Text>
+                <Text allowFontScaling={false} style={styles.textUid}>Tidak ada Checkout</Text>
               ) : (
                 <FlashList
                   estimatedItemSize={10}
@@ -487,7 +487,7 @@ function Checkout(props) {
             />
 
             <Separator thickness={10} />
-            <Text style={styles.textUid}>
+            <Text allowFontScaling={false} style={styles.textUid}>
               Data personal Anda akan digunakan untuk proses pemesanan dalam
               membantu kenyamanan Anda melalui aplikasi ini, dan keperluan lain
               yang dijelaskan dalam syarat dan ketentuan kami.

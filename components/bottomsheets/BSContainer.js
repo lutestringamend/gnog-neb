@@ -16,7 +16,7 @@ export default function BSContainer(props) {
   return (
     <View style={styles.container}>
       <View style={styles.containerHorizontal}>
-        <Text style={styles.textTitle}>{props?.title}</Text>
+        <Text allowFontScaling={false} style={styles.textTitle}>{props?.title}</Text>
         <TouchableOpacity style={styles.icon} onPress={() => props?.closeThis()}>
           <MaterialCommunityIcons name="chevron-down" size={28} color="white" />
         </TouchableOpacity>

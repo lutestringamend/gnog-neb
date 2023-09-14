@@ -37,7 +37,7 @@ function Alert(props) {
         <TouchableOpacity
           onPress={() => navigation.navigate("HistoryCheckout")}
         >
-          <Text style={styles.textHasCheckout}>
+          <Text allowFontScaling={false} style={styles.textHasCheckout}>
             Anda masih memiliki Checkout yang belum dilunasi. Mohon melunasi
             terlebih dahulu.
           </Text>

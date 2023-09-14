@@ -39,7 +39,7 @@ function MainScreen(props) {
       />
       <View style={styles.container}>
         {props?.error ? (
-          <Text style={styles.textError}>{props?.error}</Text>
+          <Text allowFontScaling={false} style={styles.textError}>{props?.error}</Text>
         ) : null}
         {props?.content === null || props?.content === undefined ? (
           <ActivityIndicator
@@ -86,7 +86,7 @@ export default function OpenMidtrans(props) {
       return (
         <MainScreen
           checkoutId={checkoutId}
-          content={<Text style={styles.text}>Tidak ada snap token!</Text>}
+          content={<Text allowFontScaling={false} style={styles.text}>Tidak ada snap token!</Text>}
         />
       );
     } else if (Platform.OS !== "web") {
@@ -130,7 +130,7 @@ export default function OpenMidtrans(props) {
           error={error}
           content={
             <TouchableOpacity onPress={() => openSnapUrl()}>
-              <Text style={styles.textUrl}>{linkText}</Text>
+              <Text allowFontScaling={false} style={styles.textUrl}>{linkText}</Text>
             </TouchableOpacity>
           }
         />

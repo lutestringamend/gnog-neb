@@ -278,7 +278,7 @@ function Login(props) {
           />
 
           <View style={styles.containerBox}>
-            <Text style={styles.textHeader}>
+            <Text allowFontScaling={false} style={styles.textHeader}>
               {isChangePassword
                 ? "Ganti Password"
                 : isLogin
@@ -318,7 +318,7 @@ function Login(props) {
                   }}
                 />
               ) : (
-                <Text style={styles.textButton}>
+                <Text allowFontScaling={false} style={styles.textButton}>
                   {isChangePassword
                     ? "Ganti Password"
                     : isLogin
@@ -332,21 +332,21 @@ function Login(props) {
 
             {!isChangePassword && !resetPIN ? (
               <View style={styles.containerAdditional}>
-                <Text style={styles.text}>
+                <Text allowFontScaling={false} style={styles.text}>
                   {isLogin ? "Belum punya akun?" : "Sudah punya akun?"}
                 </Text>
                 <TouchableOpacity
                   onPress={() => setLogin(!isLogin)}
                   disabled={loading}
                 >
-                  <Text style={styles.textChange}>
+                  <Text allowFontScaling={false} style={styles.textChange}>
                     {isLogin ? "Register" : "Login"}
                   </Text>
                 </TouchableOpacity>
               </View>
             ) : null}
 
-            {error ? <Text style={styles.textError}>{error}</Text> : null}
+            {error ? <Text allowFontScaling={false} style={styles.textError}>{error}</Text> : null}
           </View>
         </View>
       </ScrollView>

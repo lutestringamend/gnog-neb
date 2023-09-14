@@ -23,12 +23,12 @@ export default function UserRootHeaderItem({
       ]}
     >
       <View style={styles.container}>
-        <Text
+        <Text allowFontScaling={false}
           style={{ fontFamily: "Poppins", fontSize: 12, fontFamily: "Poppins-Bold", color: color ? color : colors.daclen_gray }}
         >
           {title}
         </Text>
-        <Text
+        <Text allowFontScaling={false}
           style={{
             fontFamily: "Poppins", fontSize: 24,
             fontFamily: "Poppins-Bold",

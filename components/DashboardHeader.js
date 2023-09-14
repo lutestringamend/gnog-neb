@@ -77,10 +77,10 @@ const Header = (props) => {
             currentUser?.name === undefined ||
             currentUser?.name === null
           ) ? (
-            <Text style={styles.textUsername}>{currentUser?.name}</Text>
+            <Text allowFontScaling={false} style={styles.textUsername}>{currentUser?.name}</Text>
           ) : null
         ) : (
-          <Text style={styles.textLogin}>
+          <Text allowFontScaling={false} style={styles.textLogin}>
             {props?.settingText ? props?.settingText : "SETTING"}
           </Text>
         )}

@@ -206,7 +206,7 @@ const Dashboard = (props) => {
       />
 
       {message?.text === null || message?.text === "" ? null : (
-        <Text
+        <Text allowFontScaling={false}
           style={[
             styles.textError,
             {

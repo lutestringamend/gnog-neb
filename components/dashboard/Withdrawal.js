@@ -95,7 +95,7 @@ const Withdrawal = (props) => {
   return (
     <SafeAreaView style={styles.container}>
       {error ? (
-        <Text
+        <Text allowFontScaling={false}
           style={[
             styles.textError,
             success && { backgroundColor: colors.daclen_green },
@@ -105,11 +105,11 @@ const Withdrawal = (props) => {
         </Text>
       ) : null}
       <ScrollView style={styles.container}>
-        <Text style={styles.textCompulsory}>
+        <Text allowFontScaling={false} style={styles.textCompulsory}>
           Masukkan jumlah untuk ditarik*
         </Text>
         <View style={styles.containerTextHorizontal}>
-          <Text style={styles.textCurrency}>Rp</Text>
+          <Text allowFontScaling={false} style={styles.textCurrency}>Rp</Text>
           <TextInput
             value={amount}
             placeholder="0"
@@ -127,7 +127,7 @@ const Withdrawal = (props) => {
           />
         </View>
 
-        <Text
+        <Text allowFontScaling={false}
           style={[
             styles.textRemaining,
             {
@@ -142,7 +142,7 @@ const Withdrawal = (props) => {
             : "0"
         } tersedia`}</Text>
 
-        <Text style={styles.text}>Catatan (opsional)</Text>
+        <Text allowFontScaling={false} style={styles.text}>Catatan (opsional)</Text>
         <TextInput
           value={misc}
           style={[styles.textInput, { height: 60, textAlignVertical: "top" }]}
@@ -150,7 +150,7 @@ const Withdrawal = (props) => {
           onChangeText={(misc) => setMisc(misc)}
         />
 
-        <Text style={styles.textCompulsory}>Penarikan ke</Text>
+        <Text allowFontScaling={false} style={styles.textCompulsory}>Penarikan ke</Text>
 
         {currentUser?.detail_user === undefined ||
         currentUser?.detail_user?.nomor_rekening === undefined ||
@@ -167,17 +167,17 @@ const Withdrawal = (props) => {
               { backgroundColor: colors.daclen_blue, marginTop: 4 },
             ]}
           >
-            <Text style={styles.textButton}>Lengkapi Keterangan Rekening</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>Lengkapi Keterangan Rekening</Text>
           </TouchableOpacity>
         ) : (
           <View style={styles.containerItem}>
-            <Text style={styles.textBankName}>
+            <Text allowFontScaling={false} style={styles.textBankName}>
               {currentUser?.detail_user?.bank?.nama}
             </Text>
-            <Text style={[styles.textEntry, { fontFamily: "Poppins-Bold" }]}>
+            <Text allowFontScaling={false} style={[styles.textEntry, { fontFamily: "Poppins-Bold" }]}>
               {currentUser?.detail_user?.nomor_rekening}
             </Text>
-            <Text style={styles.textEntry}>
+            <Text allowFontScaling={false} style={styles.textEntry}>
               {currentUser?.detail_user?.cabang_bank}
             </Text>
             <TouchableOpacity
@@ -189,17 +189,17 @@ const Withdrawal = (props) => {
                 size={16}
                 color={colors.daclen_green_dark}
               />
-              <Text style={styles.textEdit}>
+              <Text allowFontScaling={false} style={styles.textEdit}>
                 Perubahan Keterangan Rekening
               </Text>
             </TouchableOpacity>
           </View>
         )}
 
-        <Text style={styles.textCompulsory}>
+        <Text allowFontScaling={false} style={styles.textCompulsory}>
           Syarat dan Ketentuan Penarikan Saldo
         </Text>
-        <Text style={styles.textExplanation}>{withdrawalexplanation}</Text>
+        <Text allowFontScaling={false} style={styles.textExplanation}>{withdrawalexplanation}</Text>
         <TouchableOpacity
           onPress={() => submit()}
           style={[
@@ -234,7 +234,7 @@ const Withdrawal = (props) => {
               style={{ alignSelf: "center" }}
             />
           ) : (
-            <Text style={styles.textButton}>Kirim Permintaan</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>Kirim Permintaan</Text>
           )}
         </TouchableOpacity>
       </ScrollView>

@@ -139,7 +139,7 @@ function OTPScreen(props) {
           />
         ) : (
           error && (
-            <Text
+            <Text allowFontScaling={false}
               style={[
                 styles.textError,
                 success && { backgroundColor: colors.daclen_green },
@@ -153,15 +153,15 @@ function OTPScreen(props) {
           <Image source={require("../../assets/otp.png")} style={styles.logo} />
         </View>
         <View style={styles.containerContent}>
-          <Text style={styles.text}>
+          <Text allowFontScaling={false} style={styles.text}>
             Kode OTP telah dikirim ke nomor Whatsapp yang tertera di bawah ini.
             Masukkan kode OTP untuk menyelesaikan verifikasi.
           </Text>
 
-          <Text style={styles.textWhatsapp}>{props.phoneOTP?.nomor_telp}</Text>
+          <Text allowFontScaling={false} style={styles.textWhatsapp}>{props.phoneOTP?.nomor_telp}</Text>
 
           <TouchableOpacity onPress={() => requestNewOTP()}>
-            <Text style={styles.textRetry}>
+            <Text allowFontScaling={false} style={styles.textRetry}>
               {ongoing && timerCount > 0
                 ? `Mohon menunggu ${timerCount} detik sebelum meminta OTP baru`
                 : "Minta OTP Baru"}
@@ -188,7 +188,7 @@ function OTPScreen(props) {
             ]}
             disabled={loading || !ongoing}
           >
-            <Text style={styles.textButton}>Verifikasi OTP</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>Verifikasi OTP</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

@@ -99,7 +99,7 @@ function BlogFeed(props) {
           />
         </View>
       ) : (
-        <Text style={styles.textUid}>Tidak ada blog tersedia</Text>
+        <Text allowFontScaling={false} style={styles.textUid}>Tidak ada blog tersedia</Text>
       )}
       {paginationLoading ? (
         <ActivityIndicator

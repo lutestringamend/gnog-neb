@@ -41,7 +41,7 @@ const DigitText = ({ number }) => {
           },
         ]}
       />
-      <Text style={styles.digitText}>{number.toString()}</Text>
+      <Text allowFontScaling={false} style={styles.digitText}>{number.toString()}</Text>
     </View>
   );
 };
@@ -53,7 +53,7 @@ const ContainerDigit = ({ digit1, digit2, label }) => {
         <DigitText number={digit1} />
         <DigitText number={digit2} />
       </View>
-      <Text style={styles.timeLabel}>{label}</Text>
+      <Text allowFontScaling={false} style={styles.timeLabel}>{label}</Text>
     </View>
   );
 };
@@ -131,7 +131,7 @@ const DashboardTimer = (props) => {
               },
             ]}
           />
-          <Text style={styles.textHeader}>COUNTDOWN RECRUITMENT</Text>
+          <Text allowFontScaling={false} style={styles.textHeader}>COUNTDOWN RECRUITMENT</Text>
 
           {digits === defaultDigit ? (
             <ActivityIndicator
@@ -146,19 +146,19 @@ const DashboardTimer = (props) => {
                 digit2={digits[1]}
                 label="Hari"
               />
-              <Text style={styles.textWall}>:</Text>
+              <Text allowFontScaling={false} style={styles.textWall}>:</Text>
               <ContainerDigit
                 digit1={digits[2]}
                 digit2={digits[3]}
                 label="Jam"
               />
-              <Text style={styles.textWall}>:</Text>
+              <Text allowFontScaling={false} style={styles.textWall}>:</Text>
               <ContainerDigit
                 digit1={digits[4]}
                 digit2={digits[5]}
                 label="Menit"
               />
-              <Text style={styles.textWall}>:</Text>
+              <Text allowFontScaling={false} style={styles.textWall}>:</Text>
               <ContainerDigit
                 digit1={digits[6]}
                 digit2={digits[7]}
@@ -168,7 +168,7 @@ const DashboardTimer = (props) => {
           )}
 
           <View style={[styles.containerOK, { start: modalWidth / 2 - 60 }]}>
-            <Text style={styles.textOK}>OK</Text>
+            <Text allowFontScaling={false} style={styles.textOK}>OK</Text>
           </View>
         </View>
       </TouchableOpacity>

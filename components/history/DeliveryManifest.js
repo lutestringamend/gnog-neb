@@ -10,12 +10,12 @@ export default function DeliveryManifest(props) {
       <View style={styles.verticalLine} />
       <View style={styles.containerItem}>
         <TouchableOpacity onPress={() => console.log(props?.item)}>
-          <Text style={styles.textManifest}>
+          <Text allowFontScaling={false} style={styles.textManifest}>
             {props?.item?.manifest_description}
           </Text>
-          <Text style={styles.textEntry}>{props?.item?.city_name}</Text>
+          <Text allowFontScaling={false} style={styles.textEntry}>{props?.item?.city_name}</Text>
 
-          <Text style={styles.textEntry}>
+          <Text allowFontScaling={false} style={styles.textEntry}>
             {props?.item?.manifest_date === null &&
             props?.item?.manifest_time === null
               ? props?.waybill_date + "  " + props?.waybill_time

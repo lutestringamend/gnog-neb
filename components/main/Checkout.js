@@ -669,7 +669,7 @@ function Checkout(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {error ? <Text style={styles.textError}>{error}</Text> : null}
+      {error ? <Text allowFontScaling={false} style={styles.textError}>{error}</Text> : null}
       <ScrollView style={styles.scrollView}>
         <TouchableOpacity
           onPress={() => openAddress()}
@@ -681,10 +681,10 @@ function Checkout(props) {
             color={colors.daclen_blue}
           />
           <View style={styles.containerTitle}>
-            <Text style={styles.textAddressHeader}>
+            <Text allowFontScaling={false} style={styles.textAddressHeader}>
               Pilih Alamat Pengiriman
             </Text>
-            <Text
+            <Text allowFontScaling={false}
               style={[
                 styles.textAddressDetail,
                 !addressComplete && { color: colors.daclen_danger },
@@ -722,7 +722,7 @@ function Checkout(props) {
               cart === null ||
               cart?.length === undefined ||
               cart?.length < 1 ? (
-                <Text style={styles.textUid}>Tidak ada Checkout</Text>
+                <Text allowFontScaling={false} style={styles.textUid}>Tidak ada Checkout</Text>
               ) : (
                 <FlashList
                   estimatedItemSize={10}
@@ -772,7 +772,7 @@ function Checkout(props) {
             />
 
             <Separator thickness={10} />
-            <Text style={styles.textUid}>
+            <Text allowFontScaling={false} style={styles.textUid}>
               Data personal Anda akan digunakan untuk proses pemesanan dalam
               membantu kenyamanan Anda melalui aplikasi ini, dan keperluan lain
               yang dijelaskan dalam syarat dan ketentuan kami.
@@ -825,7 +825,7 @@ function Checkout(props) {
         <BSPopup
           title="Konfirmasi Checkout"
           content={
-            <Text style={styles.textDisclaimer}>{checkoutdisclaimer}</Text>
+            <Text allowFontScaling={false} style={styles.textDisclaimer}>{checkoutdisclaimer}</Text>
           }
           buttonPositive="Setuju"
           buttonPositiveColor={colors.daclen_orange}

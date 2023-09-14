@@ -140,7 +140,7 @@ const PhotosSegment = (props) => {
     return (
       <SafeAreaView style={styles.containerFlatlist}>
         <View style={styles.containerHeader}>
-          <Text style={styles.textHeader}>{savedUri === null || savedUri === "" ?  "Download dan Share Foto" : "Share"}</Text>
+          <Text allowFontScaling={false} style={styles.textHeader}>{savedUri === null || savedUri === "" ?  "Download dan Share Foto" : "Share"}</Text>
           {savedUri === null || savedUri === "" ? null : (
             <TouchableOpacity
               onPress={() => shareFileAsync()}
@@ -152,7 +152,7 @@ const PhotosSegment = (props) => {
                 color="white"
               />
 
-              <Text style={styles.textButton}>Share</Text>
+              <Text allowFontScaling={false} style={styles.textButton}>Share</Text>
             </TouchableOpacity>
           )}
           {!(
@@ -181,7 +181,7 @@ const PhotosSegment = (props) => {
                 />
               )}
 
-              <Text style={styles.textButton}>Download All as PDF</Text>
+              <Text allowFontScaling={false} style={styles.textButton}>Download All as PDF</Text>
             </TouchableOpacity>
           ) : null}
         </View>

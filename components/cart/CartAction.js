@@ -57,8 +57,8 @@ export default function CartAction(props) {
   return (
     <View style={styles.containerCheckout}>
       <View style={styles.containerCheckoutDetails}>
-        <Text style={[styles.textCheckoutDetail, { color }]}>Total</Text>
-        <Text style={[styles.textCheckoutDetail, styles.textPrice, { color }]}>
+        <Text allowFontScaling={false} style={[styles.textCheckoutDetail, { color }]}>Total</Text>
+        <Text allowFontScaling={false} style={[styles.textCheckoutDetail, styles.textPrice, { color }]}>
           {formatPrice(props?.totalPrice)}
         </Text>
       </View>
@@ -75,7 +75,7 @@ export default function CartAction(props) {
               style={{ alignSelf: "center", elevation: 2 }}
             />
           ) : (
-            <Text style={styles.textButton}>
+            <Text allowFontScaling={false} style={styles.textButton}>
               {props?.buttonText === null
                 ? "Bayar Pesanan"
                 : capitalizeFirstLetter(props?.buttonText)}

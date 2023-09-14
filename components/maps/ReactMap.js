@@ -123,7 +123,7 @@ export default function ReactMap(props) {
           style={styles.marker}
         >
           {showRegion ? (
-            <Text style={styles.textLog}>{JSON.stringify(region)}</Text>
+            <Text allowFontScaling={false} style={styles.textLog}>{JSON.stringify(region)}</Text>
           ) : (
             <MaterialCommunityIcons
               name="map-marker"
@@ -153,7 +153,7 @@ export default function ReactMap(props) {
     console.error(e);
     return (
       <View style={styles.container}>
-        <Text style={styles.text}>{e.toString()}</Text>
+        <Text allowFontScaling={false} style={styles.text}>{e.toString()}</Text>
       </View>
     );
   }

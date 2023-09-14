@@ -169,7 +169,7 @@ const UserRoots = (props) => {
           placeholder={require("../../assets/user.png")}
           transition={0}
         />
-        <Text style={styles.textLeader}>
+        <Text allowFontScaling={false} style={styles.textLeader}>
           {hpv?.data?.name ? hpv?.data?.name : "DACLEN"}
         </Text>
       </TouchableOpacity>
@@ -229,7 +229,7 @@ const UserRoots = (props) => {
                 ))}
               </View>
             ) : (
-              <Text style={styles.textUid}>User Roots kosong.</Text>
+              <Text allowFontScaling={false} style={styles.textUid}>User Roots kosong.</Text>
             )}
           </View>
         )}

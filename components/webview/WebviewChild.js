@@ -22,7 +22,7 @@ export function ErrorView(props) {
   return (
     <View style={styles.containerVertical}>
       {props?.error ? (
-        <Text style={styles.textError}>{props?.error}</Text>
+        <Text allowFontScaling={false} style={styles.textError}>{props?.error}</Text>
       ) : null}
       {props?.onOpenExternalLink && (
         <TouchableOpacity
@@ -30,7 +30,7 @@ export function ErrorView(props) {
           style={styles.button}
         >
           <MaterialCommunityIcons name="web" size={16} color="white" />
-          <Text style={styles.textButton}>Buka di Browser</Text>
+          <Text allowFontScaling={false} style={styles.textButton}>Buka di Browser</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -50,7 +50,7 @@ function WebviewChild(props) {
         {props?.title && <MainHeader title={props?.title} icon="arrow-left" />}
         {props?.url !== undefined && props?.url !== null && (
           <TouchableOpacity onPress={() => openExternalLink()}>
-            <Text style={styles.textDaclen}>
+            <Text allowFontScaling={false} style={styles.textDaclen}>
               Selengkapnya di Website Daclen
             </Text>
           </TouchableOpacity>

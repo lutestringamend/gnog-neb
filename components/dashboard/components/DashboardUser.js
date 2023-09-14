@@ -42,13 +42,13 @@ export default function DashboardUser(props) {
       </TouchableOpacity>
 
       <View style={styles.containerVertical}>
-        <Text style={styles.textName}>
+        <Text allowFontScaling={false} style={styles.textName}>
           {currentUser?.detail_user?.nama_lengkap
             ? currentUser?.detail_user?.nama_lengkap
             : currentUser?.name}
         </Text>
         {currentUser?.komisi_user ? (
-          <Text style={[styles.textName, { color: colors.daclen_yellow }]}>
+          <Text allowFontScaling={false} style={[styles.textName, { color: colors.daclen_yellow }]}>
             {`Saldo: Rp ${
               currentUser?.komisi_user?.total_currency
                 ? currentUser?.komisi_user?.total_currency
@@ -57,13 +57,13 @@ export default function DashboardUser(props) {
           </Text>
         ) : null}
 
-        <Text style={styles.text}>{`${currentUser?.status ? capitalizeFirstLetter(currentUser?.status) : "Reseller"} Daclen`}</Text>
-        <Text style={styles.textReferral}>
+        <Text allowFontScaling={false} style={styles.text}>{`${currentUser?.status ? capitalizeFirstLetter(currentUser?.status) : "Reseller"} Daclen`}</Text>
+        <Text allowFontScaling={false} style={styles.textReferral}>
           {`Referral Id: ${currentUser?.name}`}
         </Text>
       </View>
       <TouchableOpacity style={styles.button} onPress={() => openWithdrawal()}>
-            <Text style={styles.textButton}>
+            <Text allowFontScaling={false} style={styles.textButton}>
                 {`CAIRKAN\nSALDO`}
             </Text>
       </TouchableOpacity>

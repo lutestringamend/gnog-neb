@@ -354,7 +354,7 @@ function EditProfile(props) {
     return (
       <View style={styles.container}>
         {error ? (
-          <Text
+          <Text allowFontScaling={false}
             style={[
               styles.textError,
               success && { backgroundColor: colors.daclen_green },
@@ -414,9 +414,9 @@ function EditProfile(props) {
             )}
           </TouchableOpacity>
 
-          <Text style={styles.textCompulsory}>Nomor Telepon*</Text>
+          <Text allowFontScaling={false} style={styles.textCompulsory}>Nomor Telepon*</Text>
           {currentUser?.nomor_telp_verified_at && (
-            <Text style={[styles.text, { marginBottom: 4 }]}>
+            <Text allowFontScaling={false} style={[styles.text, { marginBottom: 4 }]}>
               Telah diverifikasi pada
               {moment(currentUser?.nomor_telp_verified_at).format(
                 " MMM DD YYYY, HH:mm"
@@ -445,9 +445,9 @@ function EditProfile(props) {
             onChangeText={(nomor_telp) => setUser({ ...user, nomor_telp })}
           />
 
-          <Text style={styles.textCompulsory}>Email*</Text>
+          <Text allowFontScaling={false} style={styles.textCompulsory}>Email*</Text>
           {currentUser?.email_verified_at && (
-            <Text style={[styles.text, { marginBottom: 4 }]}>
+            <Text allowFontScaling={false} style={[styles.text, { marginBottom: 4 }]}>
               Telah diverifikasi pada
               {moment(currentUser?.email_verified_at).format(
                 " MMM DD YYYY, HH:mm"
@@ -475,7 +475,7 @@ function EditProfile(props) {
             onChangeText={(email) => setUser({ ...user, email })}
           />
 
-          <Text style={styles.textCompulsory}>Nama depan*</Text>
+          <Text allowFontScaling={false} style={styles.textCompulsory}>Nama depan*</Text>
           <TextInput
             value={user?.nama_depan}
             style={[
@@ -492,7 +492,7 @@ function EditProfile(props) {
               currentUser?.bank_set === undefined || !currentUser?.bank_set
             }
           />
-          <Text style={styles.text}>Nama belakang (opsional)</Text>
+          <Text allowFontScaling={false} style={styles.text}>Nama belakang (opsional)</Text>
           <TextInput
             value={user?.nama_belakang}
             style={styles.textInput}
@@ -504,7 +504,7 @@ function EditProfile(props) {
             }
           />
 
-          <Text style={styles.text}>Jenis kelamin (opsional)</Text>
+          <Text allowFontScaling={false} style={styles.text}>Jenis kelamin (opsional)</Text>
           <RadioGroup
             containerStyle={styles.radioGroup}
             radioButtons={genderArray}
@@ -512,7 +512,7 @@ function EditProfile(props) {
             layout="row"
           />
 
-          <Text style={styles.textCompulsory}>Tanggal Lahir*</Text>
+          <Text allowFontScaling={false} style={styles.textCompulsory}>Tanggal Lahir*</Text>
           {Platform.OS === "web" ? (
             <TextInput
               value={user?.tanggal_lahir ? user?.tanggal_lahir : ""}
@@ -550,7 +550,7 @@ function EditProfile(props) {
 
           <Separator thickness={2} />
 
-          <Text
+          <Text allowFontScaling={false}
             style={[
               styles.textCompulsory,
               { fontFamily: "Poppins", fontSize: 18, marginTop: 20, marginBottom: 4 },
@@ -558,7 +558,7 @@ function EditProfile(props) {
           >
             Info Bank
           </Text>
-          <Text
+          <Text allowFontScaling={false}
             style={[styles.text, { marginBottom: 20, textAlign: "justify" }]}
           >
             {currentUser?.bank_set === undefined || !currentUser?.bank_set
@@ -566,7 +566,7 @@ function EditProfile(props) {
               : bankinfodescset}
           </Text>
 
-          <Text style={styles.textCompulsory}>Nomor Rekening*</Text>
+          <Text allowFontScaling={false} style={styles.textCompulsory}>Nomor Rekening*</Text>
           <TextInput
             value={
               currentUser?.bank_set
@@ -593,7 +593,7 @@ function EditProfile(props) {
             }
           />
 
-          <Text style={styles.textCompulsory}>Nama Bank*</Text>
+          <Text allowFontScaling={false} style={styles.textCompulsory}>Nama Bank*</Text>
           <BSTextInput
             disabled={loading || currentUser?.bank_set}
             onPress={() => openBottomSheet()}
@@ -617,7 +617,7 @@ function EditProfile(props) {
             ]}
           />
 
-          <Text style={styles.text}>Cabang Bank</Text>
+          <Text allowFontScaling={false} style={styles.text}>Cabang Bank</Text>
           <TextInput
             value={
               currentUser?.bank_set
@@ -634,7 +634,7 @@ function EditProfile(props) {
           />
 
           <View style={styles.containerPrivacy}>
-            <Text style={styles.textUid}>
+            <Text allowFontScaling={false} style={styles.textUid}>
               Informasi di atas akan digunakan untuk pengiriman Checkout Anda
               dan dikirimkan ke pihak ketiga sebagai jasa pengantaran.
             </Text>
@@ -647,7 +647,7 @@ function EditProfile(props) {
               }
               disabled={loading}
             >
-              <Text style={styles.textChange}>Baca {privacypolicy}</Text>
+              <Text allowFontScaling={false} style={styles.textChange}>Baca {privacypolicy}</Text>
             </TouchableOpacity>
           </View>
 
@@ -671,7 +671,7 @@ function EditProfile(props) {
                 style={{ alignSelf: "center" }}
               />
             ) : (
-              <Text style={styles.textButton}>Simpan Profil</Text>
+              <Text allowFontScaling={false} style={styles.textButton}>Simpan Profil</Text>
             )}
           </TouchableOpacity>
           <TouchableOpacity
@@ -684,7 +684,7 @@ function EditProfile(props) {
             ]}
             disabled={loading}
           >
-            <Text style={styles.textButton}>Hapus Akun Daclen</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>Hapus Akun Daclen</Text>
           </TouchableOpacity>
         </ScrollView>
         <RBSheet ref={rbSheetMedia} openDuration={250} height={300}>
@@ -724,7 +724,7 @@ function EditProfile(props) {
           color={colors.daclen_orange}
           style={{ alignSelf: "center", marginVertical: 20 }}
         />
-        <Text style={styles.textUid}>{e?.message}</Text>
+        <Text allowFontScaling={false} style={styles.textUid}>{e?.message}</Text>
       </View>
     );
   }

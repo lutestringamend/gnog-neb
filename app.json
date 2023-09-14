@@ -136,6 +136,12 @@
           "initialOrientation": "PORTRAIT"
         }
       ],
+      [
+        "expo-updates",
+        {
+          "username": "daclenmobile"
+        }
+      ],
       "sentry-expo"
     ],
     "hooks": {

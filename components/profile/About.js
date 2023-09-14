@@ -57,9 +57,9 @@ export default function About() {
           />
         </TouchableOpacity>
 
-        <Text style={styles.textCaption}>{appVersion}</Text>
-        <Text style={styles.textDesc}>{abouttext}</Text>
-        <Text style={styles.textSocials}>Media Sosial</Text>
+        <Text allowFontScaling={false} style={styles.textCaption}>{appVersion}</Text>
+        <Text allowFontScaling={false} style={styles.textDesc}>{abouttext}</Text>
+        <Text allowFontScaling={false} style={styles.textSocials}>Media Sosial</Text>
         <View style={styles.containerSocials}>
           <SocialsItem link={instagramurl} icon="ig" />
           <SocialsItem link={facebookurl} icon="fb" />
@@ -71,7 +71,7 @@ export default function About() {
             icon="youtube"
           />
         </View>
-        <Text style={styles.textCaption}>{copyrighttext}</Text>
+        <Text allowFontScaling={false} style={styles.textCaption}>{copyrighttext}</Text>
       </ScrollView>
     </SafeAreaView>
   );

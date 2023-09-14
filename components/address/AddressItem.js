@@ -71,7 +71,7 @@ const AddressItem = (props) => {
 
             <View style={styles.containerVertical}>
               <View style={styles.containerHorizontalFlat}>
-                <Text
+                <Text allowFontScaling={false}
                   style={[
                     styles.textName,
                     {
@@ -92,7 +92,7 @@ const AddressItem = (props) => {
                 </Text>
               </View>
 
-              <Text style={[styles.textDesc, { marginTop: 6 }]}>
+              <Text allowFontScaling={false} style={[styles.textDesc, { marginTop: 6 }]}>
                 {isDefault
                   ? `${item?.alamat}${
                       item?.provinsi?.name ? `, ${item?.provinsi?.name}` : ""
@@ -103,13 +103,13 @@ const AddressItem = (props) => {
               </Text>
 
               {isDefault ? (
-                <Text
+                <Text allowFontScaling={false}
                   style={[styles.textDesc, { marginTop: 6 }]}
                 >{`${item?.nama_depan} ${item?.nama_belakang}\n${item?.nomor_telp}`}</Text>
               ) : item?.nomor_telp === undefined ||
                 item?.nomor_telp === null ||
                 item?.nomor_telp === "" ? null : (
-                <Text style={styles.textDesc}>{item?.nomor_telp}</Text>
+                <Text allowFontScaling={false} style={styles.textDesc}>{item?.nomor_telp}</Text>
               )}
             </View>
           </View>
@@ -135,7 +135,7 @@ const AddressItem = (props) => {
               color={colors.daclen_light}
             />
 
-            <Text style={styles.textButton}>
+            <Text allowFontScaling={false} style={styles.textButton}>
               {isSelected ? "Terpilih" : "Pilih"}
             </Text>
           </TouchableOpacity>
@@ -162,7 +162,7 @@ const AddressItem = (props) => {
               size={16}
               color={colors.daclen_light}
             />
-            <Text style={styles.textButton}>Edit</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>Edit</Text>
           </TouchableOpacity>
         </View> : null}
 

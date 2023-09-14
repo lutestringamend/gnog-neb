@@ -81,7 +81,7 @@ export default function Main(props) {
           style={styles.button}
         >
           <MaterialCommunityIcons name="briefcase" size={18} color="white" />
-          <Text style={styles.textButton}>Materi Promosi</Text>
+          <Text allowFontScaling={false} style={styles.textButton}>Materi Promosi</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => navigation.navigate("PointReportScreen")}
@@ -91,7 +91,7 @@ export default function Main(props) {
           ]}
         >
           <MaterialCommunityIcons name="hand-coin" size={18} color="white" />
-          <Text style={styles.textButton}>Laporan Poin</Text>
+          <Text allowFontScaling={false} style={styles.textButton}>Laporan Poin</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -102,7 +102,7 @@ export default function Main(props) {
           ]}
         >
           <MaterialCommunityIcons name="percent" size={18} color="white" />
-          <Text style={styles.textButton}>Syarat Bonus Root</Text>
+          <Text allowFontScaling={false} style={styles.textButton}>Syarat Bonus Root</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -118,7 +118,7 @@ export default function Main(props) {
           ]}
         >
           <MaterialCommunityIcons name="bitcoin" size={18} color="white" />
-          <Text style={styles.textButton}>Laporan Saldo</Text>
+          <Text allowFontScaling={false} style={styles.textButton}>Laporan Saldo</Text>
         </TouchableOpacity>
 */
 

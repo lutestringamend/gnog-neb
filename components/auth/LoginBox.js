@@ -51,20 +51,20 @@ function LoginBox(props) {
   
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Username / Email</Text>
+      <Text allowFontScaling={false} style={styles.text}>Username / Email</Text>
       <TextInput
         placeholder={previousUsername}
         style={styles.textInput}
         onChangeText={(email) => props.setAuthData({...props.authData, email })}
         onEndEditing={() => checkInputUsername()}
       />
-      <Text style={styles.text}>Password</Text>
+      <Text allowFontScaling={false} style={styles.text}>Password</Text>
       <TextInputPassword
         style={styles.textInput}
         onChangeText={(password) => props.setAuthData({...props.authData, password })}
       />
       <TouchableOpacity onPress={() => resetPassword()}>
-        <Text style={styles.textChange}>Lupa Password?</Text>
+        <Text allowFontScaling={false} style={styles.textChange}>Lupa Password?</Text>
       </TouchableOpacity>
     </View>
   );

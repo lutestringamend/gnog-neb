@@ -67,7 +67,7 @@ const WatermarkPhotosSegment = (props) => {
           onPress={() => openSegmentScreen()}
           style={styles.containerScrollHeader}
         >
-          <Text style={[styles.textName, { flex: 1 }]}>{title}</Text>
+          <Text allowFontScaling={false} style={[styles.textName, { flex: 1 }]}>{title}</Text>
           <MaterialCommunityIcons
             name="chevron-right"
             size={20}
@@ -155,8 +155,8 @@ const WatermarkPhotosSegment = (props) => {
             )}
 
             <View style={styles.containerInfo}>
-              <Text style={styles.textName}>{title}</Text>
-              <Text
+              <Text allowFontScaling={false} style={styles.textName}>{title}</Text>
+              <Text allowFontScaling={false}
                 style={styles.textPrice}
               >{`${photos?.length} foto tersedia`}</Text>
             </View>

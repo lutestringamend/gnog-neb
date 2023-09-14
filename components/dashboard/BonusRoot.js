@@ -135,7 +135,7 @@ function BonusRoot(props) {
         />
       ) : token === null || activeTab === null ? (
         <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.textUid}>
+          <Text allowFontScaling={false} style={styles.textUid}>
             Anda harus Login / Register untuk membaca Syarat Bonus Root
           </Text>
         </TouchableOpacity>
@@ -176,7 +176,7 @@ function BonusRoot(props) {
             }
           >
             <View style={styles.containerTable}>
-              <Text
+              <Text allowFontScaling={false}
                 style={[
                   styles.textTableHeader,
                   { color: bonusrootlevelcolors[activeTab] },
@@ -185,8 +185,8 @@ function BonusRoot(props) {
                 Syarat Bonus Root Level {syaratRoot[activeTab]?.level}
               </Text>
               <View style={styles.containerSpec}>
-                <Text style={styles.textSpecHeader}>{pvtitle}</Text>
-                <Text
+                <Text allowFontScaling={false} style={styles.textSpecHeader}>{pvtitle}</Text>
+                <Text allowFontScaling={false}
                   style={[
                     styles.textSpec,
                     { color: bonusrootlevelcolors[activeTab] },
@@ -197,8 +197,8 @@ function BonusRoot(props) {
               </View>
 
               <View style={styles.containerSpec}>
-                <Text style={styles.textSpecHeader}>{bonusfirstroot}</Text>
-                <Text
+                <Text allowFontScaling={false} style={styles.textSpecHeader}>{bonusfirstroot}</Text>
+                <Text allowFontScaling={false}
                   style={[
                     styles.textSpec,
                     { color: bonusrootlevelcolors[activeTab] },
@@ -211,8 +211,8 @@ function BonusRoot(props) {
                 </Text>
               </View>
               <View style={styles.containerSpec}>
-                <Text style={styles.textSpecHeader}>{bonussecondroot}</Text>
-                <Text
+                <Text allowFontScaling={false} style={styles.textSpecHeader}>{bonussecondroot}</Text>
+                <Text allowFontScaling={false}
                   style={[
                     styles.textSpec,
                     { color: bonusrootlevelcolors[activeTab] },
@@ -269,7 +269,7 @@ function BonusRoot(props) {
                             },
                           ]}
                         />
-                        <Text
+                        <Text allowFontScaling={false}
                           style={[
                             styles.textRootHeader,
                             {

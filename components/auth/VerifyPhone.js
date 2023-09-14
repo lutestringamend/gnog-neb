@@ -109,7 +109,7 @@ function VerifyPhone(props) {
             style={{ alignSelf: "center", marginVertical: 20 }}
           />
         ) : error ? (
-          <Text
+          <Text allowFontScaling={false}
             style={[
               styles.textError,
               success && { backgroundColor: colors.daclen_green },
@@ -125,19 +125,19 @@ function VerifyPhone(props) {
           />
         </View>
         <View style={styles.containerContent}>
-          <Text style={styles.textHeader}>Verifikasi Nomor Handphone</Text>
-          <Text style={styles.text}>
+          <Text allowFontScaling={false} style={styles.textHeader}>Verifikasi Nomor Handphone</Text>
+          <Text allowFontScaling={false} style={styles.text}>
             Nomor telepon aktif kamu diperlukan untuk melakukan checkout. Ayo
             isi nomor telepon kamu agar kami dapat mudah menghubungi kamu.
           </Text>
 
           {validOTP && timerCount > 0 ? (
-            <Text style={styles.textInputHeaderCenter}>
+            <Text allowFontScaling={false} style={styles.textInputHeaderCenter}>
               Mohon menunggu {timerCount} detik sebelum meminta OTP baru
             </Text>
           ) : (
             <View>
-              <Text style={styles.textInputHeader}>
+              <Text allowFontScaling={false} style={styles.textInputHeader}>
                 Nomor Whatsapp Aktif (Wajib Diisi)
               </Text>
               <TextInput
@@ -160,7 +160,7 @@ function VerifyPhone(props) {
             ]}
             disabled={loading}
           >
-            <Text style={styles.textButton}>
+            <Text allowFontScaling={false} style={styles.textButton}>
               {validOTP ? "Isi OTP" : "Verifikasi"}
             </Text>
           </TouchableOpacity>

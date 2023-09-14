@@ -44,8 +44,8 @@ const ShopItem = (props) => {
             placeholder={blurhash}
             transition={0}
           />
-          <Text style={styles.text}>{nama}</Text>
-          <Text style={styles.textPrice}>Rp {harga_currency}</Text>
+          <Text allowFontScaling={false} style={styles.text}>{nama}</Text>
+          <Text allowFontScaling={false} style={styles.textPrice}>Rp {harga_currency}</Text>
         </TouchableOpacity>
       )}
 

@@ -110,7 +110,7 @@ function CartOld(props) {
             style={{ alignSelf: "center" }}
           />
         ) : (
-          <Text style={styles.textButton}>
+          <Text allowFontScaling={false} style={styles.textButton}>
             {token === null
               ? `Login/Register\nAkun`
               : currentUser?.isActive
@@ -163,7 +163,7 @@ function CartOld(props) {
             style={{ alignSelf: "center" }}
           />
         ) : (
-          <Text
+          <Text allowFontScaling={false}
             style={[styles.textCart, { fontFamily: "Poppins", fontSize: textSize ? textSize : 16 }]}
           >
             {itemSize}

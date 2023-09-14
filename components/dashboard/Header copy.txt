@@ -31,12 +31,12 @@ export default function Header(props) {
         />
       </TouchableOpacity>
 
-      <Text style={styles.text}>Referral</Text>
+      <Text allowFontScaling={false} style={styles.text}>Referral</Text>
       <TouchableOpacity
         onPress={() => openLogin()}
         style={styles.containerUser}
       >
-        <Text style={styles.textLogin}>
+        <Text allowFontScaling={false} style={styles.textLogin}>
           {username ? username : "Login/Register"}
         </Text>
         <MaterialCommunityIcons

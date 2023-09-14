@@ -32,7 +32,7 @@ const TabButton = (props) => {
       underlayColor={colors.daclen_blue}
       disabled={props?.isActive}
     >
-      <Text style={[styles.text, props?.isActive ? styles.textFocused : null]}>
+      <Text allowFontScaling={false} style={[styles.text, props?.isActive ? styles.textFocused : null]}>
         {props?.title}
       </Text>
     </TouchableHighlight>

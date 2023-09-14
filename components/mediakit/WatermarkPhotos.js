@@ -46,7 +46,7 @@ const WatermarkPhotos = ({
             photos === undefined ||
             photos === null ||
             photoKeys?.length === undefined ? null : photoKeys?.length < 1 ? (
-            <Text style={styles.textUid}>Tidak ada Foto Promosi tersedia.</Text>
+            <Text allowFontScaling={false} style={styles.textUid}>Tidak ada Foto Promosi tersedia.</Text>
           ) : (
             <FlashList
               estimatedItemSize={10}

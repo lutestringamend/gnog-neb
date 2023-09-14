@@ -24,7 +24,7 @@ export default function BSPopup(props) {
   return (
     <View style={styles.container}>
       <View style={styles.containerHorizontal}>
-        <Text style={styles.textTitle}>{props?.title}</Text>
+        <Text allowFontScaling={false} style={styles.textTitle}>{props?.title}</Text>
         <TouchableOpacity
           style={styles.icon}
           onPress={() => props?.closeThis()}
@@ -52,7 +52,7 @@ export default function BSPopup(props) {
       {props?.content !== undefined ? (
         props?.content
       ) : (
-        <Text style={styles.text}>{props?.text}</Text>
+        <Text allowFontScaling={false} style={styles.text}>{props?.text}</Text>
       )}
       {loading ? (
         <ActivityIndicator
@@ -73,7 +73,7 @@ export default function BSPopup(props) {
               ]}
               disabled={loading || props?.buttonDisabled}
             >
-              <Text style={styles.textButton}>{props?.buttonPositive}</Text>
+              <Text allowFontScaling={false} style={styles.textButton}>{props?.buttonPositive}</Text>
             </TouchableOpacity>
           )}
 
@@ -85,7 +85,7 @@ export default function BSPopup(props) {
                 { backgroundColor: props?.buttonNegativeColor },
               ]}
             >
-              <Text style={styles.textButton}>{props?.buttonNegative}</Text>
+              <Text allowFontScaling={false} style={styles.textButton}>{props?.buttonNegative}</Text>
             </TouchableOpacity>
           )}
         </View>

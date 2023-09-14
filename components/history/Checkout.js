@@ -132,7 +132,7 @@ function Checkout(props) {
           checkouts === null ||
           checkouts?.length === undefined ||
           checkouts?.length < 1 ? (
-            <Text style={styles.textUid}>
+            <Text allowFontScaling={false} style={styles.textUid}>
               Anda belum memiliki riwayat Checkout
             </Text>
           ) : (
@@ -166,11 +166,11 @@ function Checkout(props) {
 
                     <View style={styles.containerDescVertical}>
                       <TouchableOpacity onPress={() => openItem(item?.id)}>
-                        <Text style={styles.textTitle}>{item?.invoice}</Text>
+                        <Text allowFontScaling={false} style={styles.textTitle}>{item?.invoice}</Text>
                       </TouchableOpacity>
                       <View style={styles.containerDescHorizontal}>
-                        <Text style={styles.textDate}>{item?.created_at}</Text>
-                        <Text style={styles.textPrice}>
+                        <Text allowFontScaling={false} style={styles.textDate}>{item?.created_at}</Text>
+                        <Text allowFontScaling={false} style={styles.textPrice}>
                           Rp {item?.total_currency}
                         </Text>
                       </View>
@@ -188,7 +188,7 @@ function Checkout(props) {
                             },
                       ]}
                     >
-                      <Text style={styles.textButton}>
+                      <Text allowFontScaling={false} style={styles.textButton}>
                         {item?.status === null
                           ? "Bayar Pesanan"
                           : capitalizeFirstLetter(item?.status)}
@@ -202,7 +202,7 @@ function Checkout(props) {
           )
         ) : (
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-            <Text style={styles.textUid}>
+            <Text allowFontScaling={false} style={styles.textUid}>
               Anda harus Login / Register untuk mengecek riwayat Checkout
             </Text>
           </TouchableOpacity>
@@ -229,10 +229,10 @@ function Checkout(props) {
                 )
               }
             >
-              <Text style={styles.textUid}>Increment</Text>
+              <Text allowFontScaling={false} style={styles.textUid}>Increment</Text>
             </TouchableOpacity>
             {checkouts.map(({ id, index }) => (
-              <Text key={index} style={styles.textUid}>
+              <Text allowFontScaling={false} key={index} style={styles.textUid}>
                 {`[${id.toString()}]`}
               </Text>
             ))}

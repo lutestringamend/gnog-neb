@@ -7,14 +7,14 @@ const DashboardLogout = () => {
   const navigation = useNavigation();
   return (
     <View style={styles.containerLogin}>
-      <Text style={styles.text}>
+      <Text allowFontScaling={false} style={styles.text}>
         Login / Register untuk berbelanja dengan Daclen
       </Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate("Login")}
       >
-        <Text style={styles.textButton}>Login / Register</Text>
+        <Text allowFontScaling={false} style={styles.textButton}>Login / Register</Text>
       </TouchableOpacity>
     </View>
   );

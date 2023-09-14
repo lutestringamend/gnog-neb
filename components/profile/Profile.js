@@ -204,7 +204,7 @@ function Profile(props) {
             style={styles.button}
             onPress={() => rbSheet.current.open()}
           >
-            <Text style={styles.textButton}>Logout</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>Logout</Text>
           </TouchableOpacity>
         )}
       </ScrollView>

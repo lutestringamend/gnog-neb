@@ -108,7 +108,7 @@ const WatermarkSettings = (props) => {
   return (
     <View style={styles.container}>
       {error ? (
-        <Text
+        <Text allowFontScaling={false}
           style={[
             styles.textError,
             success && { backgroundColor: colors.daclen_green },
@@ -124,14 +124,14 @@ const WatermarkSettings = (props) => {
       currentUser?.id === null ||
       currentUser?.name === null ? (
         <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.textUid}>
+          <Text allowFontScaling={false} style={styles.textUid}>
             Anda harus Login / Register untuk mengganti Watermark
           </Text>
         </TouchableOpacity>
       ) : (
         <ScrollView style={styles.containerInfo}>
           <View style={styles.containerPrivacy}>
-            <Text style={styles.textUid}>
+            <Text allowFontScaling={false} style={styles.textUid}>
               Kirimkan foto dan video promosi dari katalog Daclen dengan
               watermark spesial untuk kamu. Watermark berisi nama, nomor telepon
               dan link referral.
@@ -145,11 +145,11 @@ const WatermarkSettings = (props) => {
               }
               disabled={loading}
             >
-              <Text style={styles.textChange}>Baca {privacypolicy}</Text>
+              <Text allowFontScaling={false} style={styles.textChange}>Baca {privacypolicy}</Text>
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.textCompulsory}>Nama*</Text>
+          <Text allowFontScaling={false} style={styles.textCompulsory}>Nama*</Text>
           <TextInput
             value={tempWatermarkData?.name}
             style={styles.textInput}
@@ -158,7 +158,7 @@ const WatermarkSettings = (props) => {
             }
             maxLength={vwmarktextnamecharlimit}
           />
-          <Text style={styles.textCompulsory}>Nomor telepon*</Text>
+          <Text allowFontScaling={false} style={styles.textCompulsory}>Nomor telepon*</Text>
           <TextInput
             value={tempWatermarkData?.phone}
             style={[styles.textInput, { marginBottom: 0 }]}
@@ -189,12 +189,12 @@ const WatermarkSettings = (props) => {
                   style={styles.spinner}
                 />
               ) : (
-                <Text style={styles.textButton}>Ganti</Text>
+                <Text allowFontScaling={false} style={styles.textButton}>Ganti</Text>
               )}
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => reset()} style={styles.button}>
-              <Text style={styles.textButton}>Reset</Text>
+              <Text allowFontScaling={false} style={styles.textButton}>Reset</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

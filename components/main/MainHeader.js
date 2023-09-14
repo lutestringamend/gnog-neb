@@ -33,7 +33,7 @@ export default function MainHeader(props) {
           style={{ alignSelf: "center" }}
         />
       </TouchableOpacity>
-      <Text style={[styles.text, { fontFamily: "Poppins", fontSize: props?.textSize ? props?.textSize : null }]}>{props?.title}</Text>
+      <Text allowFontScaling={false} style={[styles.text, { fontFamily: "Poppins", fontSize: props?.textSize ? props?.textSize : null }]}>{props?.title}</Text>
     </View>
   );
 }

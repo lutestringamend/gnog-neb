@@ -478,7 +478,7 @@ const ImageViewer = (props) => {
         </ViewShot>
       )}
       {error ? (
-        <Text
+        <Text allowFontScaling={false}
           style={[
             styles.textError,
             success && { backgroundColor: colors.daclen_green },
@@ -524,7 +524,7 @@ const ImageViewer = (props) => {
                 />
               )}
 
-              <Text style={styles.textButton}>Share Foto</Text>
+              <Text allowFontScaling={false} style={styles.textButton}>Share Foto</Text>
             </TouchableOpacity>
           </View>
 
@@ -564,7 +564,7 @@ const ImageViewer = (props) => {
                 />
               )}
 
-              <Text style={styles.textButton}>Share PDF</Text>
+              <Text allowFontScaling={false} style={styles.textButton}>Share PDF</Text>
             </TouchableOpacity>
           </View>
         </View>

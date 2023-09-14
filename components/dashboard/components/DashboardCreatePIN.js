@@ -7,14 +7,14 @@ const DashboardCreatePIN = () => {
   const navigation = useNavigation();
   return (
     <View style={styles.containerLogin}>
-      <Text style={styles.text}>
+      <Text allowFontScaling={false} style={styles.text}>
         Anda perlu membuat PIN 4 digit untuk mengamankan halaman Profil
       </Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate("CreatePIN")}
       >
-        <Text style={styles.textButton}>Buat PIN Baru</Text>
+        <Text allowFontScaling={false} style={styles.textButton}>Buat PIN Baru</Text>
       </TouchableOpacity>
     </View>
   );

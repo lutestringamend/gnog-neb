@@ -47,7 +47,7 @@ const Header = (props) => {
         onPress={() => onSettingPress()}
         style={styles.containerUser}
       >
-        <Text style={styles.textLogin}>SETTING WATERMARK</Text>
+        <Text allowFontScaling={false} style={styles.textLogin}>SETTING WATERMARK</Text>
         <Image source={require("../../assets/gear.png")} style={styles.gear} />
       </TouchableOpacity>
     </View>
