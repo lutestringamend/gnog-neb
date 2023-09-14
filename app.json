@@ -2,7 +2,7 @@
   "expo": {
     "name": "Daclen",
     "slug": "daclen",
-    "version": "1.2.9.5",
+    "version": "1.2.10",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
     "userInterfaceStyle": "light",
@@ -134,12 +134,6 @@
         "expo-screen-orientation",
         {
           "initialOrientation": "PORTRAIT"
-        }
-      ],
-      [
-        "expo-updates",
-        {
-          "username": "daclenmobile"
         }
       ],
       "sentry-expo"

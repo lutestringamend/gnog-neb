@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Platform, SafeAreaView, StyleSheet, Text, ToastAndroid } from "react-native";
 import * as Sentry from "sentry-expo";
-//import * as Updates from 'expo-updates';
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useTheme } from "react-native-paper";
@@ -88,11 +87,6 @@ import { colors, staticDimensions } from "./styles/base";
 import { sentryLog } from "./sentry";
 import { defaultpoppins } from "./styles/fonts";
 
-/*const defaultUpdateStatus = {
-  ready: false,
-  message: expoupdateschecking,
-};*/
-
 SplashScreen.preventAutoHideAsync();
 const Stack = createStackNavigator();
 Sentry.init({
@@ -102,52 +96,6 @@ Sentry.init({
 });
 
 export default function App() {
-  /*const [updateStatus, setUpdateStatus] = useState(defaultUpdateStatus);
-
-  useEffect(() => {
-    try {
-      if (Platform.OS === "android") {
-        onFetchUpdateAsync();
-      } else {
-        setUpdateStatus({
-          ready: true,
-          message: "",
-        });
-      }
-    } catch (e) {
-      console.error(e);
-      sentryLog(e);
-      setUpdateStatus({
-        ready: true,
-        message: `${expoupdateserror}\n${e.toString()}`});
-    }
-  }, []);
-
-  const onFetchUpdateAsync = async () => {
-    try {
-      const update = await Updates.checkForUpdateAsync();
-      console.log("expo Updates", update);
-      if (update.isAvailable) {
-        setUpdateStatus({
-          ready: false,
-          message: expoupdatesinstalling,
-        });
-        await Updates.fetchUpdateAsync();
-        await Updates.reloadAsync();
-      } else {
-        setUpdateStatus({
-          ready: false,
-          message: expoupdatesinstalled,
-        });
-      }
-    } catch (error) {
-      console.log("expo updates error", error.toString());
-      setUpdateStatus({
-        ready: true,
-        message: `${expoupdateserror}\n${error.toString()}`});
-    }
-  }*/
-
   try {
     const theme = useTheme();
     theme.colors.primary = colors.daclen_bg;
@@ -192,12 +140,6 @@ export default function App() {
       headerTintColor: colors.daclen_light,
       title: appname,
     };
-
-
-
-    /*if (!updateStatus.ready) {
-      return <Splash errorText={updateStatus.message} />;
-    }*/
 
     return (
       <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
