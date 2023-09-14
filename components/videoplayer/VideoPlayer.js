@@ -19,6 +19,7 @@ import { bindActionCreators } from "redux";
 import * as FileSystem from "expo-file-system";
 import { saveToLibraryAsync, usePermissions } from "expo-media-library";
 import { Video, ResizeMode } from "expo-av";
+import { FFmpegKit, ReturnCode } from "ffmpeg-kit-react-native";
 import ViewShot from "react-native-view-shot";
 import { isAvailableAsync, shareAsync } from "expo-sharing";
 import { useNavigation } from "@react-navigation/native";
@@ -26,11 +27,14 @@ import { useNavigation } from "@react-navigation/native";
 import { colors, staticDimensions } from "../../styles/base";
 import {
   getFileName,
+  setBasicFFMPEGCommand,
+  setFFMPEGCommand,
+  setFilterFFMPEG,
   updateWatermarkVideo,
   overwriteWatermarkVideos,
 } from "../media";
 //import { useScreenDimensions } from "../../hooks/useScreenDimensions";
-import { sharingOptionsMP4 } from "../media/constants";
+import { defaultffmpegcodec, sharingOptionsMP4 } from "../media/constants";
 import { sentryLog } from "../../sentry";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY } from "../asyncstorage/constants";
@@ -125,6 +129,11 @@ function VideoPlayer(props) {
   );
   const [sharingAvailability, setSharingAvailability] = useState(false);
   const [updateStorage, setUpdateStorage] = useState(false);
+
+  //debugging ffmpeg
+  /*const [customFilter, setCustomFilter] = useState(
+    `${setFilterFFMPEG("top-left", 0, 0)} ${defaultffmpegcodec}`
+  );*/
 
   useEffect(() => {
     const checkSharing = async () => {
@@ -497,7 +506,106 @@ function VideoPlayer(props) {
   };
 
   const processVideo = async () => {
-    return;
+    if (
+      uri === undefined ||
+      uri === null ||
+      watermarkImage === null ||
+      watermarkLoading ||
+      loading
+    )
+      return;
+    if (resultUri !== null) {
+      /*if (sharingAvailability) {
+        shareFileAsync(resultUri, sharingOptionsMP4);
+      }*/
+      return;
+    }
+
+    const resultVideo =
+      Platform.OS === "web" ? "d:/test.mp4" : await getResultPath();
+
+    let sourceVideo = rawUri;
+    if (rawUri === undefined || rawUri === null) {
+      sourceVideo = await startDownload();
+    }
+
+    const ffmpegCommand = setFFMPEGCommand(
+      sourceVideo,
+      watermarkImage,
+      resultVideo,
+      "top-left",
+      0,
+      0,
+      width,
+      height
+    );
+
+    setOutput((output) => `${output}\nffmpeg ${ffmpegCommand}`);
+    setLoading(true);
+    setSuccess(true);
+    setError("Memproses video dengan watermark...");
+
+    try {
+      FFmpegKit.execute(ffmpegCommand)
+        .then(async (session) => {
+          console.log("session", session);
+          const returnCode = await session.getReturnCode();
+          const sessionOutput = await session.getOutput();
+          const sessionId = session.getSessionId();
+          //const logs = await session.getLogs();
+          setLoading(false);
+          setFullLogs(sessionOutput.toString());
+          if (ReturnCode.isSuccess(returnCode)) {
+            setSuccess(true);
+            setError(`Proses watermark disimpan di ${resultVideo}`);
+            setOutput(
+              (output) =>
+                `${output}\nffmpeg session ${sessionId.toString()} successful returnCode ${returnCode.toString()}`
+            );
+            setResultUri(resultVideo);
+            //shareFileAsync(resultUri, sharingOptionsMP4);
+            saveWatermarkVideo(resultVideo);
+          } else if (ReturnCode.isCancel(returnCode)) {
+            setSuccess(false);
+            setError(`Pembuatan video dibatalkan`);
+            setOutput(
+              (output) =>
+                `${output}\nffmpeg session ${sessionId.toString()} cancelled returnCode ${returnCode.toString()}`
+            );
+          } else {
+            setSuccess(false);
+            setError(`Error memproses video`);
+            setOutput(
+              (output) =>
+                `${output}\nffmpeg session ${sessionId.toString()} error returnCode ${returnCode.toString()}`
+            );
+            if (userId === 8054) {
+              navigation.navigate("VideoLogsScreen", {
+                text: `ffmpeg ${ffmpegCommand}\n\nsession ${sessionId.toString()} returnCode ${returnCode.toString()}\n\nsession output:\n\n${sessionOutput}`,
+              });
+            }
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          setLoading(false);
+          setSuccess(false);
+          setError("Gagal memproses video dengan watermark");
+          setOutput(
+            (output) => `${output}\n${ffmpegCommand}\nprocessing error`
+          );
+          setFullLogs(error.toString());
+          sentryLog(error);
+        });
+    } catch (e) {
+      console.error(e);
+      setLoading(false);
+      setSuccess(false);
+      setError("Gagal memproses video dengan watermark");
+      setOutput((output) => `${output}\n${ffmpegCommand}\nprocessing error`);
+      setFullLogs(e.toString());
+      sentryLog(e);
+    }
   };
 
   const shareFileAsync = async (uri, sharingOptions) => {
@@ -841,7 +949,7 @@ function VideoPlayer(props) {
               : styles.containerPanelPortrait
           }
         >
-          <TouchableOpacity
+                   <TouchableOpacity
             style={[
               styles.buttonCircle,
               {
@@ -876,7 +984,7 @@ function VideoPlayer(props) {
                   watermarkImage === null
                     ? colors.daclen_gray
                     : rawUri === null || resultUri === null
-                    ? colors.daclen_orange
+                    ? colors.daclen_blue
                     : colors.daclen_green,
                 flex: 1,
               },
@@ -984,6 +1092,144 @@ function VideoPlayer(props) {
     </SafeAreaView>
   );
 }
+
+/*
+
+        {userId === vwmarkdebuguserid &&
+        Platform.OS === "web" &&
+        !videoSize.isLandscape ? (
+          <TextInput
+            style={styles.textInput}
+            value={customFilter}
+            onChangeText={(text) => setCustomFilter((customFilter) => text)}
+          />
+        ) : null}
+
+        {userId === vwmarkdebuguserid &&
+        Platform.OS === "web" &&
+        !videoSize.isLandscape ? (
+          <Text allowFontScaling={false}
+            style={[
+              styles.textUid,
+              {
+                fontFamily: "Poppins-Bold",
+                color: colors.daclen_graydark,
+                fontFamily: "Poppins", fontSize: 12,
+                marginVertical: 10,
+                paddingBottom: 0,
+              },
+            ]}
+          >
+            {setBasicFFMPEGCommand(
+              "%RAWURI%",
+              "%WTEXT%",
+              "%RESULT%",
+              customFilter
+            )}
+          </Text>
+        ) : null}
+
+        {userId !== vwmarkdebuguserid ||
+        fullLogs === null ||
+        videoSize.isLandscape ? null : (
+          <TouchableOpacity
+            style={[
+              videoSize.isLandscape ? styles.buttonCircle : styles.button,
+              {
+                backgroundColor:
+                  loading || videoLoading
+                    ? colors.daclen_gray
+                    : colors.daclen_indigo,
+                width: "90%",
+              },
+            ]}
+            onPress={() => openFullLogs()}
+            disabled={videoLoading || loading}
+          >
+            <MaterialCommunityIcons name="text-box" size={18} color="white" />
+            <Text allowFontScaling={false} style={styles.textButton}>Logs</Text>
+          </TouchableOpacity>
+        )}
+
+        {userId === vwmarkdebuguserid &&
+        watermarkImage !== null &&
+        !videoSize.isLandscape ? (
+          <TouchableOpacity
+            style={[
+              videoSize.isLandscape ? styles.buttonCircle : styles.button,
+              {
+                backgroundColor:
+                  loading || videoLoading
+                    ? colors.daclen_gray
+                    : colors.daclen_reddishbrown,
+                width: "90%",
+                marginTop: 10,
+              },
+            ]}
+            onPress={() => shareFileAsync(watermarkImage, sharingOptionsMP4)}
+            disabled={loading || videoLoading}
+          >
+            <MaterialCommunityIcons
+              name="content-save"
+              size={18}
+              color="white"
+            />
+            <Text allowFontScaling={false} style={styles.textButton}>Share Watermark</Text>
+          </TouchableOpacity>
+        ) : null}
+
+        {userId === vwmarkdebuguserid &&
+        rawUri !== null &&
+        !videoSize.isLandscape ? (
+          <TouchableOpacity
+            style={[
+              videoSize.isLandscape ? styles.buttonCircle : styles.button,
+              {
+                backgroundColor:
+                  loading || videoLoading
+                    ? colors.daclen_gray
+                    : colors.daclen_black,
+                width: "90%",
+                marginTop: 10,
+              },
+            ]}
+            onPress={() => shareFileAsync(rawUri, sharingOptionsMP4)}
+            disabled={loading || videoLoading}
+          >
+            <MaterialCommunityIcons name="share" size={18} color="white" />
+            <Text allowFontScaling={false} style={styles.textButton}>Share Raw Video</Text>
+          </TouchableOpacity>
+        ) : null}
+
+        {userId === vwmarkdebuguserid &&
+        rawUri !== null &&
+        watermarkImage !== null &&
+        !loading &&
+        !videoLoading &&
+        !videoSize.isLandscape ? (
+          <TouchableOpacity
+            style={[
+              videoSize.isLandscape ? styles.buttonCircle : styles.button,
+              {
+                backgroundColor:
+                  loading || videoLoading
+                    ? colors.daclen_gray
+                    : colors.daclen_cyan,
+                width: "90%",
+                marginTop: 10,
+              },
+            ]}
+            onPress={() => resetResultUri()}
+          >
+            <MaterialCommunityIcons name="restore" size={18} color="white" />
+            <Text allowFontScaling={false} style={styles.textButton}>Reset</Text>
+          </TouchableOpacity>
+        ) : null}
+
+        {userId !== vwmarkdebuguserid || videoSize.isLandscape ? null : (
+          <Text allowFontScaling={false} style={styles.textUid}>{output}</Text>
+        )}
+*/
 
 const styles = StyleSheet.create({
   container: {
@@ -1100,7 +1346,6 @@ const styles = StyleSheet.create({
   buttonCircle: {
     alignItems: "center",
     justifyContent: "center",
-    alignSelf: "center",
     width: 40,
     height: 40,
     borderRadius: 20,
