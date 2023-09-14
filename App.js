@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Platform, SafeAreaView, StyleSheet } from "react-native";
+import { Platform, SafeAreaView, StyleSheet, Text, ToastAndroid } from "react-native";
 import * as Sentry from "sentry-expo";
 import * as Updates from 'expo-updates';
 import * as SplashScreen from "expo-splash-screen";
@@ -87,6 +87,11 @@ import { colors, staticDimensions } from "./styles/base";
 import { sentryLog } from "./sentry";
 import { defaultpoppins } from "./styles/fonts";
 
+const defaultUpdateStatus = {
+  ready: false,
+  message: expoupdateschecking,
+};
+
 SplashScreen.preventAutoHideAsync();
 const Stack = createStackNavigator();
 Sentry.init({
@@ -96,13 +101,16 @@ Sentry.init({
 });
 
 export default function App() {
-  const [updateStatus, setUpdateStatus] = useState(null);
+  const [updateStatus, setUpdateStatus] = useState(defaultUpdateStatus);
 
   useEffect(() => {
     if (Platform.OS === "android") {
       onFetchUpdateAsync();
     } else {
-      setUpdateStatus(expoupdatesinstalled);
+      setUpdateStatus({
+        ready: true,
+        message: "",
+      });
     }
   }, []);
 
@@ -111,15 +119,23 @@ export default function App() {
       const update = await Updates.checkForUpdateAsync();
       console.log("expo Updates", update);
       if (update.isAvailable) {
-        setUpdateStatus(expoupdatesinstalling);
+        setUpdateStatus({
+          ready: false,
+          message: expoupdatesinstalling,
+        });
         await Updates.fetchUpdateAsync();
         await Updates.reloadAsync();
       } else {
-        setUpdateStatus(expoupdatesinstalled);
+        setUpdateStatus({
+          ready: false,
+          message: expoupdatesinstalled,
+        });
       }
     } catch (error) {
       console.log("expo updates error", error.toString());
-      setUpdateStatus(`${expoupdateserror}\n${error.toString()}`)
+      setUpdateStatus({
+        ready: true,
+        message: `${expoupdateserror}\n${error.toString()}`});
     }
   }
 
@@ -140,6 +156,11 @@ export default function App() {
     if (!fontsLoaded) {
       return null;
     }
+
+    Text.defaultProps = {};
+    Text.defaultProps.allowFontScaling = false;
+    Text.defaultProps.maxFontSizeMultiplier = 0;
+    Text.defaultProps.fontFamily = "Poppins";
 
     setCustomView(customViewProps);
     setCustomTextInput(customTextInputProps);
@@ -165,8 +186,8 @@ export default function App() {
 
 
 
-    if (updateStatus !== expoupdatesinstalled) {
-      return <Splash errorText={updateStatus === null ? expoupdateschecking : updateStatus} />;
+    if (!updateStatus.ready) {
+      return <Splash errorText={updateStatus.message} />;
     }
 
     return (
@@ -208,7 +229,7 @@ export default function App() {
               <Stack.Screen
                 name="Product"
                 component={ProductScreen}
-                options={defaultOptions}
+                options={{ ...defaultOptions, title: "Keterangan Produk" }}
               />
               <Stack.Screen
                 name="Checkout"
@@ -444,6 +465,8 @@ const customTextProps = {
     fontFamily: "Poppins",
     color: colors.daclen_black,
     letterSpacing: 0.25,
+    allowFontScaling: false,
+    maxFontSizeMultiplier: 0,
   },
 };
 

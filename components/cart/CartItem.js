@@ -10,7 +10,7 @@ import { colors, blurhash } from "../../styles/base";
 const CartItem = (props) => {
   const navigation = useNavigation();
   const openProduct = (id) => {
-    navigation.navigate("Product", { id });
+    navigation.navigate("Product", { id, nama: props?.item?.nama });
   };
 
   if (

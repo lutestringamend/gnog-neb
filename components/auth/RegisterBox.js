@@ -12,7 +12,7 @@ function RegisterBox(props) {
   const { errorArray } = props;
 
   const checkInputUsername = () => {
-    const name = eliminateSpaceFromString(props.authData?.username);
+    const name = eliminateSpaceFromString(props.authData?.name);
     props.setAuthData({ ...props.authData, name });
   }
 
@@ -35,6 +35,7 @@ function RegisterBox(props) {
             : ""
         }
         style={styles.textInput}
+        value={props.authData?.name ? props.authData?.name : ""}
         onChangeText={(name) => props.setAuthData({ ...props.authData, name })}
         onEndEditing={() => checkInputUsername()}
       />

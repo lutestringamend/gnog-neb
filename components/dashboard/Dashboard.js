@@ -49,6 +49,7 @@ const Dashboard = (props) => {
   const [refreshing, setRefreshing] = useState(false);
   const [fetchingToken, setFetchingToken] = useState(false);
   const [showTimerModal, setShowTimerModal] = useState(true);
+  const [regDate, setRegDate] = useState(null);
 
   const {
     currentUser,
@@ -57,6 +58,7 @@ const Dashboard = (props) => {
     hpv,
     profileLock,
     profilePIN,
+    regDateInMs,
     recruitmentTimer,
   } = props;
 
@@ -78,6 +80,17 @@ const Dashboard = (props) => {
       currentUser?.status_member === undefined ||
       currentUser?.status_member === "premium"
     ) {
+      if (
+        currentUser?.inv === undefined ||
+        currentUser?.inv === null ||
+        currentUser?.inv?.length === undefined ||
+        currentUser?.inv[0] === undefined ||
+        currentUser?.inv[0] === null
+      ) {
+        setRegDate(null);
+      } else {
+        setRegDate(currentUser?.inv[0]?.created_at ? currentUser?.inv[0]?.created_at : currentUser?.inv[0]?.updated_at ? currentUser?.inv[0]?.updated_at : null);
+      }
       return;
     }
 
@@ -86,6 +99,8 @@ const Dashboard = (props) => {
     } else if (registerSnapToken === null) {
       checkAsyncSnapToken();
     }
+
+    
   }, [currentUser]);
 
   useEffect(() => {
@@ -206,7 +221,8 @@ const Dashboard = (props) => {
       />
 
       {message?.text === null || message?.text === "" ? null : (
-        <Text allowFontScaling={false}
+        <Text
+          allowFontScaling={false}
           style={[
             styles.textError,
             {
@@ -252,7 +268,10 @@ const Dashboard = (props) => {
           <DashboardLock receiveOTP={(e) => receiveOTP(e)} />
         ) : (
           <View style={styles.scrollView}>
-            <DashboardUser currentUser={currentUser} />
+            <DashboardUser
+              currentUser={currentUser}
+              regDate={regDate}
+            />
             <DashboardStats
               currentUser={currentUser}
               recruitmentTimer={recruitmentTimer}
@@ -353,6 +372,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
+  regDateInMs: store.userState.regDateInMs,
   registerSnapToken: store.userState.registerSnapToken,
   profilePIN: store.userState.profilePIN,
   profileLock: store.userState.profileLock,

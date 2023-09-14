@@ -12,7 +12,7 @@ import TextInputPassword from "./TextInputPassword";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { resetPassword, setAuthData } from "../../axios/user";
+import { eliminateSpaceFromString, resetPassword, setAuthData } from "../../axios/user";
 import { colors } from "../../styles/base";
 import { getObjectAsync } from "../asyncstorage";
 import { ASYNC_USER_PREVIOUS_USERNAME } from "../asyncstorage/constants";
@@ -55,6 +55,7 @@ function LoginBox(props) {
       <TextInput
         placeholder={previousUsername}
         style={styles.textInput}
+        value={props.authData?.email ? props.authData?.email : ""}
         onChangeText={(email) => props.setAuthData({...props.authData, email })}
         onEndEditing={() => checkInputUsername()}
       />

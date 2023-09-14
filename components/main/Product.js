@@ -147,7 +147,7 @@ function Product(props) {
         <ScrollView style={styles.scrollView}>
           <ProductSlider id={product?.id} title={name} />
           <View style={styles.containerInfo}>
-            <Text allowFontScaling={false} style={styles.text}>{name}</Text>
+            <Text allowFontScaling={false} style={styles.text}>{name ? name : product?.nama ? product?.nama : ""}</Text>
             <View style={styles.containerTitle}>
               <Text allowFontScaling={false} style={styles.textPrice}>Rp {product?.harga_currency}</Text>
               {token === null ||

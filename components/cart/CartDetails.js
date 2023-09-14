@@ -191,8 +191,7 @@ export default function CartDetails(props) {
       props?.totalPrice <= 0 ||
       props?.saldo === null ||
       props?.saldo?.available === undefined ||
-      props?.saldo?.available === null ||
-      props?.saldo?.available <= 0 ? null : (
+      props?.saldo?.available === null ? null : (
         <View style={styles.containerHorizontal}>
           <MaterialCommunityIcons
             name="cash-refund"
@@ -202,13 +201,13 @@ export default function CartDetails(props) {
           />
           <View style={styles.containerSaldo}>
             <Text allowFontScaling={false} style={styles.textSaldoHeader}>
-              {`Gunakan Saldo Daclen (${formatPrice(
+              {`Gunakan Saldo Daclen (${props?.saldo?.available <= 0 ? "Rp 0" : formatPrice(
                 props?.saldo?.available < props?.totalPrice
                   ? props?.saldo?.available
                   : props?.totalPrice
               )})`}
             </Text>
-            <Text allowFontScaling={false} style={styles.textSaldo}>{`Saldo tersisa ${
+            <Text allowFontScaling={false} style={styles.textSaldo}>{props?.saldo?.available <= 0 ? "Saldo Anda kosong" : `Saldo tersisa ${
               useSaldo
                 ? calculateSaldoAvailable(
                     props?.saldo?.available,
@@ -227,7 +226,7 @@ export default function CartDetails(props) {
           <Switch
             style={styles.switch}
             onValueChange={(value) => setSaldo(value)}
-            disabled={props?.setSaldo === undefined || props?.setSaldo === null}
+            disabled={props?.saldo?.available <= 0 || props?.setSaldo === undefined || props?.setSaldo === null}
             value={useSaldo}
             ios_backgroundColor={colors.daclen_lightgrey}
             trackColor={{

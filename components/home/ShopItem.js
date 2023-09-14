@@ -131,9 +131,9 @@ const styles = StyleSheet.create({
   },
   textName: {
     fontFamily: "Poppins-Bold",
-    width: 100,
     fontSize: 14,
     color: colors.daclen_black,
+    marginEnd: 10,
     alignSelf: "flex-start",
   },
   image: {
@@ -157,6 +157,7 @@ const styles = StyleSheet.create({
     color: colors.daclen_black,
     textAlign: "center",
     textAlignVertical: "center",
+    marginHorizontal: 10,
     alignSelf: "center",
   },
 });

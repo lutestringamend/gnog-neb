@@ -1,6 +1,6 @@
 import Axios from "../index";
 
-import { getfaq, syaratketentuanhtml, mediakithtml } from "../constants/index";
+import { getfaq, syaratketentuanhtml, mediakithtml, monthNames, monthNamesShort, tempdeadlineintervalinmiliseconds } from "../constants/index";
 import privacyHTML from "../../components/profile/privacy";
 
 import {
@@ -9,12 +9,34 @@ import {
   PROFILE_PRIVACY_CHANGE,
   PROFILE_TNC_CHANGE,
   PROFILE_CLEAR_DATA,
+  USER_REG_DATE_IN_MS_STATE_CHANGE,
 } from "../../redux/constants";
 
 export function clearProfileData() {
   return (dispatch) => {
     dispatch({ type: PROFILE_CLEAR_DATA });
   };
+}
+
+export function updateReduxRegDateInMs(data) {
+  return (dispatch) => {
+    console.log("updateReduxRegDateInMs", data);
+    dispatch({ type: USER_REG_DATE_IN_MS_STATE_CHANGE, data });
+  };
+}
+
+export function getRecruitmentDeadlineinMiliseconds(str) {
+  try {
+    let date = new Date(str);
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+    return date.getTime() + tempdeadlineintervalinmiliseconds;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 }
 
 export function convertDisplayLocaleDatetoDateObject(dateString) {
@@ -28,6 +50,27 @@ export function convertDisplayLocaleDatetoDateObject(dateString) {
   } catch (e) {
     console.error(e);
     return null;
+  }
+}
+
+export function convertDateISOStringtoMiliseconds(str) {
+  try {
+    let date = new Date(str);
+    return date.getTime();
+  } catch (e) {
+    console.error(e);
+    return 0;
+  }
+}
+
+
+export function convertDateISOStringtoDisplayDate(str, isShort) {
+  try {
+    let date = new Date(str);
+    return `${date.getDate().toString()} ${isShort ? monthNamesShort[date.getMonth()] : monthNames[date.getMonth()]} ${date.getFullYear().toString()}`;
+  } catch (e) {
+    console.error(e);
+    return str;
   }
 }
 

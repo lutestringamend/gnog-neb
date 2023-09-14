@@ -7,7 +7,7 @@ import {
   Dimensions,
   ActivityIndicator,
 } from "react-native";
-//import CountDown from "react-native-countdown-component";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../../../styles/base";
 import moment from "moment";
@@ -23,27 +23,49 @@ const digitTextHeight = 50;
 const defaultDigit = ["0", "0", "0", "0", "0", "0", "0", "0"];
 
 const DigitText = ({ number }) => {
-  return (
-    <View
-      style={[
-        styles.containerDigitText,
-        { width: digitTextWidth, height: digitTextHeight },
-      ]}
-    >
-      <LinearGradient
-        colors={[colors.timer_green_dark, colors.timer_green_light]}
+  try {
+    return (
+      <View
         style={[
-          styles.background,
+          styles.containerDigitText,
+          { width: digitTextWidth, height: digitTextHeight },
+        ]}
+      >
+        <LinearGradient
+          colors={[colors.timer_green_dark, colors.timer_green_light]}
+          style={[
+            styles.background,
+            {
+              width: digitTextWidth,
+              height: digitTextHeight,
+              borderRadius: 6,
+            },
+          ]}
+        />
+        <Text allowFontScaling={false} style={styles.digitText}>
+          {number.toString()}
+        </Text>
+      </View>
+    );
+  } catch (e) {
+    console.error(e);
+    return (
+      <View
+        style={[
+          styles.containerDigitText,
           {
             width: digitTextWidth,
             height: digitTextHeight,
-            borderRadius: 6,
+            backgroundColor: colors.timer_green_dark,
           },
         ]}
-      />
-      <Text allowFontScaling={false} style={styles.digitText}>{number.toString()}</Text>
-    </View>
-  );
+      >
+        <Text allowFontScaling={false} style={styles.digitText}>
+          {number.toString()}
+        </Text>
+      </View>
+    );
+  }
 };
 
 const ContainerDigit = ({ digit1, digit2, label }) => {
@@ -53,7 +75,9 @@ const ContainerDigit = ({ digit1, digit2, label }) => {
         <DigitText number={digit1} />
         <DigitText number={digit2} />
       </View>
-      <Text allowFontScaling={false} style={styles.timeLabel}>{label}</Text>
+      <Text allowFontScaling={false} style={styles.timeLabel}>
+        {label}
+      </Text>
     </View>
   );
 };
@@ -115,8 +139,8 @@ const DashboardTimer = (props) => {
               height: modalHeight,
               start: (screenWidth - modalWidth) / 2,
               end: (screenWidth - modalWidth) / 2,
-              top: ((screenHeight - modalHeight) / 2) - 40,
-              bottom: ((screenHeight - modalHeight) / 2) + 40,
+              top: (screenHeight - modalHeight) / 2 - 40,
+              bottom: (screenHeight - modalHeight) / 2 + 40,
             },
           ]}
         >
@@ -131,7 +155,17 @@ const DashboardTimer = (props) => {
               },
             ]}
           />
-          <Text allowFontScaling={false} style={styles.textHeader}>COUNTDOWN RECRUITMENT</Text>
+          <View style={styles.containerModalTitle}>
+            <Text allowFontScaling={false} style={styles.textHeader}>
+              COUNTDOWN RECRUITMENT
+            </Text>
+            <MaterialCommunityIcons
+              name="help-circle"
+              size={20}
+              color={colors.daclen_light}
+              style={styles.help}
+            />
+          </View>
 
           {digits === defaultDigit ? (
             <ActivityIndicator
@@ -146,19 +180,25 @@ const DashboardTimer = (props) => {
                 digit2={digits[1]}
                 label="Hari"
               />
-              <Text allowFontScaling={false} style={styles.textWall}>:</Text>
+              <Text allowFontScaling={false} style={styles.textWall}>
+                :
+              </Text>
               <ContainerDigit
                 digit1={digits[2]}
                 digit2={digits[3]}
                 label="Jam"
               />
-              <Text allowFontScaling={false} style={styles.textWall}>:</Text>
+              <Text allowFontScaling={false} style={styles.textWall}>
+                :
+              </Text>
               <ContainerDigit
                 digit1={digits[4]}
                 digit2={digits[5]}
                 label="Menit"
               />
-              <Text allowFontScaling={false} style={styles.textWall}>:</Text>
+              <Text allowFontScaling={false} style={styles.textWall}>
+                :
+              </Text>
               <ContainerDigit
                 digit1={digits[6]}
                 digit2={digits[7]}
@@ -168,30 +208,102 @@ const DashboardTimer = (props) => {
           )}
 
           <View style={[styles.containerOK, { start: modalWidth / 2 - 60 }]}>
-            <Text allowFontScaling={false} style={styles.textOK}>OK</Text>
+            <Text allowFontScaling={false} style={styles.textOK}>
+              OK
+            </Text>
           </View>
         </View>
       </TouchableOpacity>
     );
   } catch (e) {
     console.log("DashboardTimer error", e);
-    return null;
+    return (
+      <TouchableOpacity
+        style={[
+          styles.container,
+          {
+            width: screenWidth,
+            height: screenHeight,
+          },
+        ]}
+        onPress={() => setShowTimerModal((showTimerModal) => !showTimerModal)}
+      >
+        <View
+          style={[
+            styles.containerTimer,
+            {
+              backgroundColor: colors.timer_green_light,
+              width: modalWidth,
+              height: modalHeight,
+              start: (screenWidth - modalWidth) / 2,
+              end: (screenWidth - modalWidth) / 2,
+              top: (screenHeight - modalHeight) / 2 - 40,
+              bottom: (screenHeight - modalHeight) / 2 + 40,
+            },
+          ]}
+        >
+          <View style={styles.containerModalTitle}>
+            <Text allowFontScaling={false} style={styles.textHeader}>
+              COUNTDOWN RECRUITMENT
+            </Text>
+            <MaterialCommunityIcons
+              name="help-circle"
+              size={20}
+              color={colors.daclen_light}
+              style={styles.help}
+            />
+          </View>
+
+          {digits === defaultDigit ? (
+            <ActivityIndicator
+              size="large"
+              color={colors.daclen_light}
+              style={{ alignSelf: "center", marginVertical: 32 }}
+            />
+          ) : (
+            <View style={[styles.containerCountdown, { width: modalWidth }]}>
+              <ContainerDigit
+                digit1={digits[0]}
+                digit2={digits[1]}
+                label="Hari"
+              />
+              <Text allowFontScaling={false} style={styles.textWall}>
+                :
+              </Text>
+              <ContainerDigit
+                digit1={digits[2]}
+                digit2={digits[3]}
+                label="Jam"
+              />
+              <Text allowFontScaling={false} style={styles.textWall}>
+                :
+              </Text>
+              <ContainerDigit
+                digit1={digits[4]}
+                digit2={digits[5]}
+                label="Menit"
+              />
+              <Text allowFontScaling={false} style={styles.textWall}>
+                :
+              </Text>
+              <ContainerDigit
+                digit1={digits[6]}
+                digit2={digits[7]}
+                label="Detik"
+              />
+            </View>
+          )}
+
+          <View style={[styles.containerOK, { start: modalWidth / 2 - 60 }]}>
+            <Text allowFontScaling={false} style={styles.textOK}>
+              OK
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
   }
 };
-
-/*
-         <CountDown
-            until={moment.duration(recruitmentTimer).asSeconds()}
-            size={32}
-            onFinish={() => console.log("Finished")}
-            style={styles.containerCountdown}
-            digitStyle={{ backgroundColor: "transparent" }}
-            digitTxtStyle={styles.digitText}
-            timeLabelStyle={styles.timeLabel}
-            timeToShow={["D", "H", "M"]}
-            timeLabels={{ d: "HARI", h: "JAM", m: "MENIT" }}
-          />
-*/
 
 const styles = StyleSheet.create({
   container: {
@@ -221,6 +333,12 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     paddingHorizontal: 12,
     elevation: 6,
+  },
+  containerModalTitle: {
+    backgroundColor: "transparent",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
   containerCountdown: {
     backgroundColor: "transparent",
@@ -268,6 +386,7 @@ const styles = StyleSheet.create({
     color: colors.daclen_light,
     textAlign: "center",
     zIndex: 2,
+    alignSelf: "center",
   },
   textWall: {
     fontFamily: "Poppins-Bold",
@@ -300,6 +419,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     textAlignVertical: "center",
     alignSelf: "center",
+  },
+  help: {
+    marginStart: 10,
   },
 });
 

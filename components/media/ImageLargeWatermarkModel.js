@@ -90,11 +90,9 @@ function ImageLargeWatermarkModel(props) {
             },
           ]}
         >
-          {`${personalwebsiteurlshort}${
-            username?.length > vwmarktextnamecharlimit
-              ? username?.substring(0, vwmarktextnamecharlimit)
-              : username
-          }`}
+          {`${watermarkData?.url ? watermarkData?.url : username ? `${personalwebsiteurlshort}${
+            username
+          }` : ""}`}
         </Text>
       </View>
 

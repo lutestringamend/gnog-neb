@@ -68,6 +68,13 @@ function VideoLargeWatermarkModel(props) {
     return null;
   }
 
+  function onLoadEnd() {
+    if (props?.onLoadEnd === undefined || props?.onLoadEnd === null) {
+      return;
+    }
+    props?.onLoadEnd();
+  }
+
   return (
     <View
       style={[
@@ -89,6 +96,7 @@ function VideoLargeWatermarkModel(props) {
             start: displayWatermarkPositionStart,
           },
         ]}
+        onLoadEnd={() => onLoadEnd()}
       />
       {watermarkData === undefined ||
       watermarkData === null ||
@@ -126,11 +134,9 @@ function VideoLargeWatermarkModel(props) {
               },
             ]}
           >
-            {`${personalwebsiteurlshort}${
-              username?.length > vwmarktextnamecharlimit
-                ? username.substring(0, vwmarktextnamecharlimit)
-                : username
-            }`}
+             {`${watermarkData?.url ? watermarkData?.url : username ? `${personalwebsiteurlshort}${
+            username
+          }` : ""}`}
           </Text>
         </View>
       )}

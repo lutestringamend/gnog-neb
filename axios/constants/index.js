@@ -25,7 +25,7 @@ export const defaultlatitudelongbits = "-4603892706931430400";
 export const defaultlongitudelongbits = "4637272587357913000";
 
 export const testerusercode = "devdcn";
-export const temprecruitmentdeadline = 1701882000000;
+export const tempdeadlineintervalinmiliseconds = 7776000000;
 
 export const finalblognumber = 9999
 export const productpaginationnumber = 100

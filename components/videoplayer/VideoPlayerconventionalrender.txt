@@ -121,7 +121,7 @@ function VideoPlayer(props) {
   const [videoLoading, setVideoLoading] = useState(false);
   const [captureFailure, setCaptureFailure] = useState(false);
   //const [watermarkSize, setWatermarkSize] = useState();
-  const [watermarkLoading, setWatermarkLoading] = useState(false);
+  const [watermarkLoading, setWatermarkLoading] = useState(true);
   const [status, setStatus] = useState({ isLoaded: false });
   const [watermarkImage, setWatermarkImage] = useState(null);
   const [rawUri, setRawUri] = useState(null);
@@ -271,6 +271,34 @@ function VideoPlayer(props) {
   }, [watermarkLayout]);*/
 
   useEffect(() => {
+    if (captureFailure) {
+      return;
+    } else if (watermarkSize.width < width && watermarkSize.height < height) {
+      console.log("watermarkSize and capturing", watermarkSize);
+      setOutput(
+        (output) =>
+          `${output}\nwatermarkSize and capturing ${JSON.stringify(
+            watermarkSize
+          )}`
+      );
+      if (Platform.OS === "web") {
+        setWatermarkLoading(false);
+      } else if (!watermarkLoading) {
+        setWatermarkLoading(true);
+        waterRef.current
+          .capture()
+          .then((uri) => onManualCapture(uri))
+          .catch((e) => onManualCaptureFailure(e));
+      }
+    } else {
+      console.log("watermarkSize", watermarkSize);
+      setOutput(
+        (output) => `${output}\nwatermarkSize ${JSON.stringify(watermarkSize)}`
+      );
+    }
+  }, [captureFailure]);
+
+  useEffect(() => {
     setOutput((output) => `${output}\nwatermarkImage ${watermarkImage}`);
     if (watermarkImage !== null) {
       setWatermarkLoading(false);
@@ -414,28 +442,6 @@ function VideoPlayer(props) {
 
   function onBackPress() {
     navigation.goBack();
-  }
-
-  const renderWatermark = async () => {
-    if (captureFailure || watermarkLoading || watermarkImage !== null) {
-      return;
-    }
-    console.log("renderWatermark", watermarkSize);
-    setOutput(
-      (output) =>
-        `${output}\nwatermarkSize and capturing ${JSON.stringify(
-          watermarkSize
-        )}`
-    );
-    if (Platform.OS === "web") {
-      setWatermarkLoading(true);
-    } else if (!watermarkLoading) {
-      setWatermarkLoading(true);
-      waterRef.current
-        .capture()
-        .then((uri) => onManualCapture(uri))
-        .catch((e) => onManualCaptureFailure(e));
-    }
   }
 
   function onManualCapture(uri) {
@@ -719,7 +725,7 @@ function VideoPlayer(props) {
             height: watermarkSize.height,
           },
         ]}
-        captureMode=""
+        captureMode={Platform.OS === "web" ? "" : "mount"}
         onCapture={onCapture}
         onCaptureFailure={onCaptureFailure}
       >
@@ -730,7 +736,6 @@ function VideoPlayer(props) {
           watermarkData={watermarkData}
           orientation={videoSize?.videoOrientation}
           username={currentUser?.name}
-          onLoadEnd={() => renderWatermark()}
         />
       </ViewShot>
 

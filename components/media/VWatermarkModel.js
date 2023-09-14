@@ -27,6 +27,13 @@ function VWatermarkModel(props) {
     return null;
   }
 
+  function onLoadEnd() {
+    if (props?.onLoadEnd === undefined || props?.onLoadEnd === null) {
+      return;
+    }
+    props?.onLoadEnd();
+  }
+
   return (
     <View
       style={[styles.container, style ? style : null]}
@@ -41,6 +48,7 @@ function VWatermarkModel(props) {
           },
         ]}
         resizeMode="stretch"
+        onLoadEnd={() => onLoadEnd()}
       />
       {watermarkData === undefined ||
       watermarkData === null ||
@@ -49,7 +57,7 @@ function VWatermarkModel(props) {
       watermarkData?.name === "" ||
       watermarkData?.name?.length === undefined ||
       watermarkData?.name?.length < 1 ? null : (
-        <Text allowFontScaling={false}
+        <Text allowFontScaling={false} minimumFontScale={1} maxFontSizeMultiplier={1}
           style={[
             styles.textName,
             {
@@ -73,7 +81,7 @@ function VWatermarkModel(props) {
       watermarkData?.phone === "" ||
       watermarkData?.phone?.length === undefined ||
       watermarkData?.phone?.length < 1 ? null : (
-        <Text allowFontScaling={false}
+        <Text allowFontScaling={false} minimumFontScale={1} maxFontSizeMultiplier={1}
           style={[
             styles.textPhone,
             {
@@ -108,7 +116,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     color: colors.daclen_black,
     fontFamily: "Poppins-SemiBold",
-    zIndex: 1,
+    zIndex: 20,
   },
   textPhone: {
     position: "absolute",

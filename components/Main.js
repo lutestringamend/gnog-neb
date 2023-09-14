@@ -30,6 +30,10 @@ import {
   updateReduxMediaKitWatermarkData,
   updateReduxMediaKitPhotosUri,
 } from "../axios/mediakit";
+import {
+  getRecruitmentDeadlineinMiliseconds,
+  updateReduxRegDateInMs,
+} from "../axios/profile";
 import { getObjectAsync, getTokenAsync } from "./asyncstorage";
 import {
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
@@ -46,7 +50,6 @@ import Top from "./Top";
 import { colors } from "../styles/base";
 import {
   personalwebsiteurlshort,
-  temprecruitmentdeadline,
 } from "../axios/constants";
 import { fetchRajaOngkir } from "../axios/address";
 import { requestLocationForegroundPermission } from "./address";
@@ -62,6 +65,7 @@ function Main(props) {
     profileLock,
     profileLockTimeout,
     profilePIN,
+    regDateInMs,
     watermarkData,
     addressId,
     addresses,
@@ -113,7 +117,23 @@ function Main(props) {
         return;
       }
 
-      checkProfileLockTimeout();
+      if (
+        !(
+          currentUser?.inv === undefined ||
+          currentUser?.inv === null ||
+          currentUser?.inv?.length === undefined ||
+          currentUser?.inv[0] === undefined ||
+          currentUser?.inv[0] === null
+        )
+      ) {
+        let newRegDateInMs = currentUser?.inv[0]?.created_at
+          ? getRecruitmentDeadlineinMiliseconds(currentUser?.inv[0]?.created_at)
+          : currentUser?.inv[0]?.updated_at
+          ? getRecruitmentDeadlineinMiliseconds(currentUser?.inv[0]?.updated_at)
+          : null;
+        props.updateReduxRegDateInMs(newRegDateInMs);
+      }
+
       console.log("redux currentUser", currentUser);
       if (watermarkData === null) {
         checkWatermarkData();
@@ -131,6 +151,14 @@ function Main(props) {
         console.error(e);
       }
     }, [currentUser, profileLock]);
+
+    useEffect(() => {
+      if (regDateInMs === null || regDateInMs <= 0) {
+        return;
+      }
+      //console.log("redux regDateInMs", regDateInMs);
+      checkProfileLockTimeout();
+    }, [regDateInMs]);
 
     useEffect(() => {
       if (locationPermission === null) {
@@ -268,8 +296,11 @@ function Main(props) {
           props.updateReduxProfileLockStatus(true);
         }
 
-        if (temprecruitmentdeadline - time > 0) {
-          setRecruitmentTimer(temprecruitmentdeadline - time);
+        if (regDateInMs === null || regDateInMs <= 0) {
+          return;
+        }
+        if (regDateInMs - time > 0) {
+          setRecruitmentTimer(regDateInMs - time);
           setTimeout(checkProfileLockTimeout, 1000);
         } else {
           setRecruitmentTimer(0);
@@ -402,6 +433,7 @@ const mapStateToProps = (store) => ({
   profileLock: store.userState.profileLock,
   addressId: store.userState.addressId,
   addresses: store.userState.addresses,
+  regDateInMs: store.userState.regDateInMs,
   profileLockTimeout: store.userState.profileLockTimeout,
   profilePIN: store.userState.profilePIN,
   products: store.productState.products,
@@ -418,6 +450,7 @@ const mapDispatchProps = (dispatch) =>
       clearData,
       getCurrentUser,
       clearUserData,
+      updateReduxRegDateInMs,
       login,
       setNewToken,
       disableForceLogout,

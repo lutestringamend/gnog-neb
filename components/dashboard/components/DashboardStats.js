@@ -197,23 +197,23 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingHorizontal: 12,
     paddingVertical: 6,
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: "Poppins-SemiBold",
     color: colors.daclen_light,
   },
   textYellow: {
-    fontSize: 10,
+    fontSize: 12,
     color: colors.daclen_yellow,
     fontFamily: "Poppins-SemiBold",
   },
   text: {
-    fontFamily: "Poppins", fontSize: 10,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_light,
   },
   textBottom: {
     backgroundColor: "transparent",
     textAlign: "center",
-    fontFamily: "Poppins-SemiBold", fontSize: 10,
+    fontFamily: "Poppins-SemiBold", fontSize: 12,
     color: colors.daclen_light,
   },
   image: {

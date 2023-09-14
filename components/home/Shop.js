@@ -66,10 +66,7 @@ function Shop(props) {
   }, [props.products, storageProducts]);
 
   useEffect(() => {
-    if (cart === null) {
-      return;
-    } else if (cartLoading) {
-      setCartLoading(false);
+    if (cart !== null && cartLoading) {
       openCheckout(
         navigation,
         false,
@@ -78,6 +75,9 @@ function Shop(props) {
         tempCartSize > 0 ? tempCartSize : cart?.jumlah_produk,
         null
       );
+    }
+    if (cartLoading) {
+      setCartLoading(false);
     }
     console.log("redux cart", cart);
   }, [cart]);
@@ -104,6 +104,7 @@ function Shop(props) {
         cart?.jumlah_produk < 1
       )
     ) {
+      setCartLoading(true);
       props.clearKeranjang(token);
     }
     console.log("redux tempCart", tempCart);

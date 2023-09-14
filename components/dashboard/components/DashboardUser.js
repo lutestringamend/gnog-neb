@@ -1,13 +1,20 @@
 import React from "react";
-import { StyleSheet, View, TouchableOpacity, Text, Linking } from "react-native";
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Text,
+  Linking,
+} from "react-native";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors } from "../../../styles/base";
 import { capitalizeFirstLetter } from "../../../axios/cart";
+import { convertDateISOStringtoDisplayDate } from "../../../axios/profile";
 
 export default function DashboardUser(props) {
-  const { currentUser } = props;
+  const { currentUser, regDate } = props;
   const navigation = useNavigation();
 
   function openWithdrawal() {
@@ -25,7 +32,10 @@ export default function DashboardUser(props) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.navigate("EditProfile")} style={styles.containerPhoto}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("EditProfile")}
+        style={styles.containerPhoto}
+      >
         <Image
           key="userImage"
           style={styles.image}
@@ -48,7 +58,10 @@ export default function DashboardUser(props) {
             : currentUser?.name}
         </Text>
         {currentUser?.komisi_user ? (
-          <Text allowFontScaling={false} style={[styles.textName, { color: colors.daclen_yellow }]}>
+          <Text
+            allowFontScaling={false}
+            style={[styles.textName, { color: colors.daclen_yellow }]}
+          >
             {`Saldo: Rp ${
               currentUser?.komisi_user?.total_currency
                 ? currentUser?.komisi_user?.total_currency
@@ -57,15 +70,25 @@ export default function DashboardUser(props) {
           </Text>
         ) : null}
 
-        <Text allowFontScaling={false} style={styles.text}>{`${currentUser?.status ? capitalizeFirstLetter(currentUser?.status) : "Reseller"} Daclen`}</Text>
+        <Text allowFontScaling={false} style={styles.text}>{`${
+          currentUser?.status
+            ? capitalizeFirstLetter(currentUser?.status)
+            : "Reseller"
+        } Daclen`}</Text>
+        {regDate === undefined || regDate === null ? null : (
+          <Text allowFontScaling={false} style={styles.text}>
+            {`Bergabung ${convertDateISOStringtoDisplayDate(regDate, true)}`}
+          </Text>
+        )}
+
         <Text allowFontScaling={false} style={styles.textReferral}>
           {`Referral Id: ${currentUser?.name}`}
         </Text>
       </View>
       <TouchableOpacity style={styles.button} onPress={() => openWithdrawal()}>
-            <Text allowFontScaling={false} style={styles.textButton}>
-                {`CAIRKAN\nSALDO`}
-            </Text>
+        <Text allowFontScaling={false} style={styles.textButton}>
+          {`CAIRKAN\nSALDO`}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -115,11 +138,13 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-SemiBold",
   },
   text: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins",
+    fontSize: 12,
     color: colors.daclen_light,
   },
   textReferral: {
-    fontFamily: "Poppins", fontSize: 8,
+    fontFamily: "Poppins",
+    fontSize: 10,
     color: colors.daclen_lightgrey,
     marginTop: 6,
   },

@@ -9,8 +9,8 @@ export const wmarkhorizontalmargin = 24;
 export const vwmarktemplatewidth = 3508;
 export const vwmarktemplateheight = 762;
 
-export const vwmarktextnamefontsize = 240;
-export const vwmarktextnametop = 55;
+export const vwmarktextnamefontsize = 250;
+export const vwmarktextnametop = 0;
 export const vwmarktextnamestart = 1350;
 export const vwmarktextnamecharlimit = 10;
 
@@ -19,8 +19,8 @@ export const vwmarktextphonetop = 300;
 export const vwmarktextphonestart = 510;
 export const vwmarktextphonecharlimit = 13;
 
-export const vwmarkdefaultsourcewidth = 1080;
-export const vwmarkdefaultsourceheight = 720;
+export const vwmarkdefaultsourcewidth = 720;
+export const vwmarkdefaultsourceheight = 1080;
 
 export const vwmarkurlpaddinghorizontal = 4;
 export const vwmarkurlpaddingvertical = 2;

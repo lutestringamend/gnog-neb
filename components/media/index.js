@@ -67,9 +67,9 @@ export function setBasicFFMPEGCommand(
   //${width < height ? `-map_metadata 0 -metadata:s:v:0 rotate=90 -vf 'transpose=1'` : ""} 720 1080
   //-vf scale=${width < height ? "720:1080" : "1080:720"}
   //-vtag avc1 
-  //-profile:v baseline -level 4.0 -preset ultrafast
+  //-profile:v baseline -level 4.0 -preset ${Platform.OS === "android" ? "faster" : "ultrafast"}
   
-  return `-y -i ${sourceVideo} -i ${watermarkFile} ${filter} -preset ${Platform.OS === "android" ? "faster" : "ultrafast"} ${resultVideo}`;
+  return `-y -i ${sourceVideo} -i ${watermarkFile} ${filter} -preset ultrafast ${resultVideo}`;
 }
 
 export function setFilterFFMPEG(flag, paddingX, paddingY) {

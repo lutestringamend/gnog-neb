@@ -309,7 +309,7 @@ function Checkout(props) {
   }, [courierSlug]);
 
   useEffect(() => {
-    console.log(props.couriers);
+    console.log("redux couriers", props.couriers, props.couriers?.cost);
     setCourierService(null);
     setCourierLoading(false);
     setDeliveryFee(0);

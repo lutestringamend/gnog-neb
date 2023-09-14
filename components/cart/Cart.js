@@ -47,7 +47,11 @@ function Cart(props) {
 
   useEffect(() => {
     try {
-      if (tempCart === null || tempCart?.length === undefined || tempCart?.length < 1) {
+      if (
+        tempCart === null ||
+        tempCart?.length === undefined ||
+        tempCart?.length < 1
+      ) {
         if (
           cart === null ||
           cart?.produk === undefined ||
@@ -111,7 +115,15 @@ function Cart(props) {
       if (isAdd) {
         if (itemSize.number <= MAXIMUM_ITEM_PER_PRODUCT) {
           setLoading(true);
-          props.modifyTempCart(produk_id, itemSize.number + 1);
+          if (
+            tempCart === null ||
+            tempCart?.length === undefined ||
+            tempCart?.length < 1
+          ) {
+            props.addToTempCart(produk_id);
+          } else {
+            props.modifyTempCart(produk_id, itemSize.number + 1);
+          }
           //props.postKeranjang(token, produk_id, 1);
         }
       } else {
@@ -178,7 +190,11 @@ function Cart(props) {
       props?.goDashboard();
     } else {
       //modifyCart(true);
-      if (tempCart === null || tempCart?.length === undefined || tempCart?.length < 1) {
+      if (
+        tempCart === null ||
+        tempCart?.length === undefined ||
+        tempCart?.length < 1
+      ) {
         props.addToTempCart(produk_id);
         return;
       }
@@ -209,10 +225,10 @@ function Cart(props) {
         ) : (
           <Text allowFontScaling={false} style={styles.textButton}>
             {token === null
-              ? `Login/Register\nAkun`
+              ? `Login/Register`
               : currentUser?.isActive
-              ? `Tambahkan\nke Keranjang`
-              : `Bergabung\nSekarang`}
+              ? `Masukkan\nKeranjang`
+              : `Bergabung`}
           </Text>
         )}
       </TouchableOpacity>
@@ -261,7 +277,13 @@ function Cart(props) {
           />
         ) : (
           <TextInput
-            style={[styles.textCart, { fontFamily: "Poppins-SemiBold", fontSize: textSize ? textSize : 16 }]}
+            style={[
+              styles.textCart,
+              {
+                fontFamily: "Poppins-SemiBold",
+                fontSize: textSize ? textSize : 16,
+              },
+            ]}
             inputMode="decimal"
             value={itemSize.text}
             maxLength={2}
@@ -328,11 +350,12 @@ const styles = StyleSheet.create({
     width: 30,
   },
   textButton: {
-    fontFamily: "Poppins-SemiBold", 
+    fontFamily: "Poppins-SemiBold",
     fontSize: 12,
     color: colors.daclen_black,
     textAlign: "center",
     textAlignVertical: "center",
+    marginHorizontal: 10,
     alignSelf: "center",
   },
 });
