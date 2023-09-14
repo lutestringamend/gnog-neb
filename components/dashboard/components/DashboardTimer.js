@@ -28,7 +28,7 @@ const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 const modalWidth =
   screenWidth < 320 ? 320 : screenWidth > 400 ? 400 : screenWidth;
-const modalHeight = 214;
+const modalHeight = 224;
 const digitTextWidth = 32;
 const digitTextHeight = 48;
 const defaultDigit = ["0", "0", "0", "0", "0", "0", "0", "0"];

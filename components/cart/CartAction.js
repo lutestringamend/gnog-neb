@@ -21,7 +21,7 @@ export default function CartAction(props) {
         case "ditolak":
           setColor(colors.daclen_red);
           break;
-        case "diverifikasi":
+        case "diterima":
           setColor(colors.daclen_green);
           break;
         default:

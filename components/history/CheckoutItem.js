@@ -24,6 +24,7 @@ import {
   getCheckoutItem,
   postPembayaran,
   clearUserCheckoutData,
+  confirmCheckout,
 } from "../../axios/history";
 import { formatPrice } from "../../axios/cart";
 import { checkoutsubtotalcommissionpercentage } from "../main/constants";
@@ -84,7 +85,9 @@ function CheckoutItem(props) {
 
   const openMidtrans = () => {
     setLoadingSnap(true);
-    if (snapToken !== null) {
+    if (checkout?.status === "diverifikasi") {
+      proceedConfirmCheckout();
+    } else if (snapToken !== null) {
       try {
         console.log("open snap " + snapToken);
         navigation.navigate("OpenMidtrans", {
@@ -95,6 +98,15 @@ function CheckoutItem(props) {
       } catch (e) {
         console.log(e);
       }
+      setLoadingSnap(false);
+    }
+  };
+
+  const proceedConfirmCheckout = async () => {
+    const response = await confirmCheckout(token, checkout?.id);
+    console.log("confirmCheckout response", response);
+    if (response === true) {
+      navigation.goBack();
     }
     setLoadingSnap(false);
   };
@@ -183,8 +195,17 @@ function CheckoutItem(props) {
         isCart={false}
         totalPrice={checkout?.total}
         buttonAction={() => openMidtrans()}
-        buttonText={checkout?.status}
-        buttonDisabled={snapToken === null || loadingSnap}
+        buttonText={
+          checkout?.status === "diverifikasi"
+            ? "Konfirmasi Diterima"
+            : checkout?.status
+        }
+        buttonDisabled={
+          (checkout?.status === null && snapToken === null) ||
+          loadingSnap ||
+          checkout?.status === "ditolak" ||
+          checkout?.status === "diterima"
+        }
       />
     </SafeAreaView>
   );

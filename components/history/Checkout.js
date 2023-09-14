@@ -195,7 +195,7 @@ function Checkout(props) {
               data?.item?.status === null
                 ? colors.daclen_danger
                 : data?.item?.status === "diverifikasi"
-                ? colors.daclen_green_dark
+                ? colors.daclen_orange
                 : colors.daclen_gray,
           },
         ]}
@@ -210,7 +210,7 @@ function Checkout(props) {
           {data?.item?.status === null
             ? "Batalkan"
             : data?.item?.status === "diverifikasi"
-            ? "Konfirmasi"
+            ? `Konfirmasi\nDiterima`
             : "Hapus"}
         </Text>
       </TouchableOpacity>
@@ -259,7 +259,7 @@ function Checkout(props) {
               }
               renderHiddenItem={renderHiddenItem}
               leftOpenValue={75}
-              rightOpenValue={-150}
+              rightOpenValue={-120}
               previewRowKey={"0"}
               previewOpenValue={-40}
               previewOpenDelay={3000}
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     position: "absolute",
     top: 0,
-    width: 75,
+    width: 120,
     backgroundColor: colors.daclen_danger,
     right: 0,
   },
