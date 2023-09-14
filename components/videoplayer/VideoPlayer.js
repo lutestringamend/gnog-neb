@@ -741,7 +741,7 @@ function VideoPlayer(props) {
               source={{
                 uri,
               }}
-              useNativeControls
+              useNativeControls={true}
               resizeMode={ResizeMode.STRETCH}
               videoStyle={{
                 width: videoSize.videoWidth,
@@ -826,7 +826,7 @@ function VideoPlayer(props) {
                   styles.containerPanelVideoPortrait,
                   {
                     top:
-                      videoSize.videoHeight - (Platform.OS === "ios" ? 80 : 40),
+                      videoSize.videoHeight - (Platform.OS === "ios" ? 60 : 40),
                     width: screenWidth,
                     height:
                       Platform.OS === "ios"
