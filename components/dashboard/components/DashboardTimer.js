@@ -7,7 +7,7 @@ import {
   Dimensions,
   ActivityIndicator,
 } from "react-native";
-//import { BlurView } from "expo-blur";
+import { BlurView } from "expo-blur";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../../../styles/base";
@@ -146,7 +146,19 @@ const DashboardTimer = (props) => {
         ]}
         onPress={() => setShowTimerModal((showTimerModal) => !showTimerModal)}
       >
-                  <View
+                <BlurView
+          intensity={10}
+          style={[
+            styles.container,
+            {
+              width: screenWidth,
+              height: screenHeight,
+
+              opacity: 0.95,
+            },
+          ]}
+        >
+        <View
             style={[
               styles.containerTimer,
               {
@@ -256,6 +268,8 @@ const DashboardTimer = (props) => {
               </Text>
             </View>
           </View>
+        </BlurView>
+
       </TouchableOpacity>
     );
   } catch (e) {
@@ -371,20 +385,7 @@ const DashboardTimer = (props) => {
 };
 
 /*
-        <BlurView
-          intensity={10}
-          style={[
-            styles.container,
-            {
-              width: screenWidth,
-              height: screenHeight,
 
-              opacity: 0.95,
-            },
-          ]}
-        >
-
-        </BlurView>
 */
 
 const styles = StyleSheet.create({
