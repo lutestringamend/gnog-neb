@@ -688,14 +688,13 @@ function VideoPlayer(props) {
             ((videoSize.videoOrientation === "portrait"
               ? vwmarkrenderportraitwidthcompressionconstant
               : vwmarkrenderlandscapewidthcompressionconstant) *
-              (Platform.OS === "ios" ? 4 : 1)),
+              (Platform.OS === "ios" ? 2 : 1)),
           height:
             watermarkSize.height /
             ((videoSize.videoOrientation === "portrait"
               ? vwmarkrenderportraitheightcompressionconstant
               : vwmarkrenderlandscapeheightcompressionconstant) *
-              (Platform.OS === "ios" ? 4 : 1)),
-          useRenderInContext: Platform.OS === "ios",
+              (Platform.OS === "ios" ? 2 : 1)),
         }}
         style={[
           styles.containerViewShot,

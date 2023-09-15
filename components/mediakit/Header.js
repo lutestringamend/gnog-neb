@@ -48,7 +48,6 @@ const Header = (props) => {
         style={styles.containerUser}
       >
         <Text allowFontScaling={false} style={styles.textLogin}>SETTING WATERMARK</Text>
-        <Image source={require("../../assets/gear.png")} style={styles.gear} />
       </TouchableOpacity>
     </View>
   );
@@ -93,7 +92,6 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Bold",
     textAlign: "center",
     color: colors.daclen_light,
-    marginEnd: 6,
   },
 });
 

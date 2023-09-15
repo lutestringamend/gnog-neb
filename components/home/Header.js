@@ -80,11 +80,7 @@ const Header = (props) => {
             style={styles.gear}
           />
         </TouchableOpacity>
-        {currentUser === null ||
-        currentUser?.has_checkout === undefined ||
-        currentUser?.has_checkout === null ||
-        !currentUser?.has_checkout ? null : (
-          <TouchableOpacity
+        <TouchableOpacity
             onPress={() => goCheckout()}
             style={[styles.containerUser, { marginTop: 10 }]}
           >
@@ -97,11 +93,19 @@ const Header = (props) => {
               color={colors.daclen_orange}
             />
           </TouchableOpacity>
-        )}
       </View>
     </View>
   );
 };
+
+/*
+        {currentUser === null ||
+        currentUser?.has_checkout === undefined ||
+        currentUser?.has_checkout === null ||
+        !currentUser?.has_checkout ? null : (
+          
+        )}
+*/
 
 const styles = StyleSheet.create({
   container: {
