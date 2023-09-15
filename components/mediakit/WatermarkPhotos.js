@@ -131,12 +131,10 @@ const styles = StyleSheet.create({
     aspectRatio: 1 / 1,
   },
   textUid: {
-    fontFamily: "Poppins", fontSize: 16,
-    marginVertical: 20,
-    textAlign: "center",
-    padding: 10,
+    fontFamily: "Poppins", fontSize: 12,
     color: colors.daclen_gray,
-    marginHorizontal: 10,
+    margin: 20,
+    textAlign: "center",
   },
 });
 

@@ -128,6 +128,7 @@ function VideoPlayer(props) {
   const [rawUri, setRawUri] = useState(null);
   const [resultUri, setResultUri] = useState(null);
   const [output, setOutput] = useState("VIDEO PROCESSING LOGS");
+  const [headerTitle, setHeaderTitle] = useState(title ? title : "Video Promosi");
   const [isTester, setTester] = useState(false);
   const [fullLogs, setFullLogs] = useState(
     userId === vwmarkdebuguserid ? "test" : null
@@ -199,11 +200,21 @@ function VideoPlayer(props) {
   }, [uri]);
 
   useEffect(() => {
-    if (currentUser?.id === 8054 || currentUser?.id === 11193) {
-      setTester(true);
-      return;
+    let newHeader = title;
+    try {
+      const array = title.split(" ");
+      newHeader = array[0];
+    } catch (e) {
+      console.error(e);
     }
-    setTester(false);
+    newHeader = `${newHeader} (${watermarkSize.width}x${watermarkSize.height})`;
+    if (currentUser?.id === 8054 || currentUser?.id === 11193 || currentUser?.id === 11447) {
+      newHeader = `${newHeader} (Tester)`;
+      setTester(true);
+    } else {
+      setTester(false);
+    }
+    setHeaderTitle(newHeader);
   }, [currentUser]);
 
   useEffect(() => {
@@ -781,11 +792,7 @@ function VideoPlayer(props) {
                   : null,
               ]}
             >
-              {title
-                ? isTester
-                  ? title + " (Tester)"
-                  : title
-                : "Video Watermark"}
+              {headerTitle}
             </Text>
             {loading || error === null ? null : (
               <Text allowFontScaling={false} style={styles.textError}>

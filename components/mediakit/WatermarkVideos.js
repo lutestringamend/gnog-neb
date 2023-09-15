@@ -41,16 +41,21 @@ import { mainhttp } from "../../axios/constants";
 const WatermarkVideos = (props) => {
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
+  const [fetching, setFetching] = useState(false);
   const { mediaKitVideos, watermarkVideos, userId, token, products, loading } =
     props;
 
   useEffect(() => {
-    if (mediaKitVideos?.length === undefined || mediaKitVideos?.length < 1) {
-      checkAsyncMediaKitVideos();
-      //props.getMediaKitVideos(token);
+    if (mediaKitVideos?.length === undefined || !fetching) {
+      //checkAsyncMediaKitVideos();
+      setFetching(true);
+      props.getMediaKitVideos(token);
       return;
     }
-    setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, mediaKitVideos);
+    if (fetching) {
+      setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, mediaKitVideos);
+      setFetching(false);
+    }
     if (refreshing) {
       setRefreshing(false);
     }
@@ -140,7 +145,7 @@ const WatermarkVideos = (props) => {
 
   return (
     <View style={styles.container}>
-      {mediaKitVideos?.length < 1 ? null : (
+      {mediaKitVideos?.length === undefined || fetching ? null : (
         <ActivityIndicator
           size="large"
           color={colors.daclen_orange}
@@ -286,6 +291,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     height: 48,
     color: colors.daclen_black,
+  },
+  textUid: {
+    fontFamily: "Poppins", fontSize: 12,
+    color: colors.daclen_gray,
+    margin: 20,
+    textAlign: "center",
   },
 });
 

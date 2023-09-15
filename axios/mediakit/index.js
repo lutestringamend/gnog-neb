@@ -137,7 +137,11 @@ export function getMediaKitVideos(token, products) {
       .then((response) => {
         try {
           const data = response?.data?.data;
-          console.log("getMediaKitVideos", data);
+          console.log("getMediaKitVideos", response?.data);
+          if (data === null || data?.length === undefined || data?.length < 1) {
+            dispatch({ type: MEDIA_KIT_VIDEOS_STATE_CHANGE, data: [] });
+            return;
+          }
           let newData = [];
           for (let i = 0; i < data?.length; i++) {
             if (
