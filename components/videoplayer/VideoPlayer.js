@@ -695,7 +695,7 @@ function VideoPlayer(props) {
         ref={waterRef}
         options={{
           fileName: "wtext",
-          format: "jpg",
+          format: "png",
           quality: 1,
           result: "tmpfile",
           useRenderInContext: Platform.OS === "ios",
