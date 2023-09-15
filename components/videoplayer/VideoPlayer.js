@@ -17,6 +17,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import * as FileSystem from "expo-file-system";
+import * as ImageManipulator from "expo-image-manipulator";
 import { saveToLibraryAsync, usePermissions } from "expo-media-library";
 import { Video, ResizeMode } from "expo-av";
 import { FFmpegKit, ReturnCode } from "ffmpeg-kit-react-native";
@@ -35,8 +36,6 @@ import {
 } from "../media";
 //import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 import {
-  defaultffmpegcodec,
-  sharingOptionsJPEG,
   sharingOptionsMP4,
   sharingOptionsPNG,
 } from "../media/constants";
@@ -684,6 +683,31 @@ function VideoPlayer(props) {
     );
   };
 
+  const sharePNGApple = async () => {
+    const fileName = `dvwmark_${title ? title.toString() : ""}.png`;
+    try {
+      const newUri = await FileSystem.getContentUriAsync(watermarkImage);
+      const imageProc = await ImageManipulator.manipulateAsync(newUri);
+      let uri = `${FileSystem.documentDirectory}/${fileName}`;
+      await FileSystem.copyAsync({
+        from: imageProc?.uri ? imageProc?.uri : newUri,
+        to: uri,
+      });
+      await shareFileAsync(imageProc?.uri, sharingOptionsPNG);
+    } catch (error) {
+      console.error(error);
+      shareFileAsync(watermarkImage, sharingOptionsPNG);
+    }
+  };
+
+  const shareWatermarkImage = () => {
+    if (Platform.OS === "ios") {
+      sharePNGApple();
+    } else {
+      shareFileAsync(watermarkImage, sharingOptionsPNG);
+    }
+  }
+
   /*const handleFilterChange = (e) => {
     e.preventDefault();
     setCustomFilter(e.target.value);
@@ -698,7 +722,6 @@ function VideoPlayer(props) {
           format: "png",
           quality: 1,
           result: "tmpfile",
-          useRenderInContext: Platform.OS === "ios",
           width:
             watermarkSize.width /
             ((videoSize.videoOrientation === "portrait"
@@ -1099,14 +1122,13 @@ function VideoPlayer(props) {
               style={[
                 styles.buttonCircle,
                 {
-                  marginTop: 0,
                   backgroundColor:
                     loading || videoLoading || !sharingAvailability
                       ? colors.daclen_gray
                       : colors.daclen_cyan,
                 },
               ]}
-              onPress={() => shareFileAsync(watermarkImage, sharingOptionsJPEG)}
+              onPress={() => shareWatermarkImage()}
               disabled={loading || videoLoading || !sharingAvailability}
             >
               <MaterialCommunityIcons
@@ -1122,7 +1144,6 @@ function VideoPlayer(props) {
               style={[
                 styles.buttonCircle,
                 {
-                  marginTop: 0,
                   backgroundColor:
                     videoLoading || loading
                       ? colors.daclen_gray
@@ -1370,7 +1391,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    marginStart: 10,
+    marginStart: 20,
     backgroundColor: colors.daclen_blue,
   },
   buttonClose: {
