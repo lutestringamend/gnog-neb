@@ -30,6 +30,12 @@ export const sharingOptionsJPEG = {
   mimeType: "image/jpeg",
 };
 
+export const sharingOptionsPNG = {
+  UTI: "public.image",
+  dialogTitle: "Share Watermark",
+  mimeType: "image/png",
+};
+
 export const sharingOptionsMP4 = {
   UTI: "AVFileTypeMPEG4",
   dialogTitle: "Share Video Daclen",

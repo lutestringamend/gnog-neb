@@ -34,12 +34,13 @@ const WatermarkSettings = (props) => {
   const [tempWatermarkData, setTempWatermarkData] = useState(WatermarkData);
   const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(false);
+  const [editable, setEditable] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (watermarkData === null) {
+    if (watermarkData === null && !disabled) {
       reset();
       return;
     }
@@ -51,6 +52,9 @@ const WatermarkSettings = (props) => {
   }, [watermarkData]);
 
   useEffect(() => {
+    if (tempWatermarkData !== WatermarkData && !editable) {
+      setEditable(true);
+    }
     if (
       tempWatermarkData?.name === null ||
       tempWatermarkData?.name === "" ||
@@ -66,6 +70,7 @@ const WatermarkSettings = (props) => {
   }, [tempWatermarkData]);
 
   function reset() {
+    setEditable(false);
     setTempWatermarkData({
       name:
             currentUser?.detail_user === undefined ||
@@ -156,6 +161,7 @@ const WatermarkSettings = (props) => {
             onChangeText={(name) =>
               setTempWatermarkData({ ...tempWatermarkData, name })
             }
+            editable={editable}
             maxLength={vwmarktextnamecharlimit}
           />
           <Text allowFontScaling={false} style={styles.textCompulsory}>Nomor telepon*</Text>
@@ -166,6 +172,7 @@ const WatermarkSettings = (props) => {
             onChangeText={(phone) =>
               setTempWatermarkData({ ...tempWatermarkData, phone })
             }
+            editable={editable}
             maxLength={vwmarktextphonecharlimit}
           />
           <View style={styles.containerButtons}>
@@ -175,12 +182,12 @@ const WatermarkSettings = (props) => {
                 styles.button,
                 {
                   backgroundColor:
-                    loading || disabled
+                    loading || disabled || !editable
                       ? colors.daclen_gray
                       : colors.daclen_orange,
                 },
               ]}
-              disabled={loading || disabled}
+              disabled={loading || disabled || !editable}
             >
               {loading ? (
                 <ActivityIndicator

@@ -34,7 +34,12 @@ import {
   overwriteWatermarkVideos,
 } from "../media";
 //import { useScreenDimensions } from "../../hooks/useScreenDimensions";
-import { defaultffmpegcodec, sharingOptionsMP4 } from "../media/constants";
+import {
+  defaultffmpegcodec,
+  sharingOptionsJPEG,
+  sharingOptionsMP4,
+  sharingOptionsPNG,
+} from "../media/constants";
 import { sentryLog } from "../../sentry";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY } from "../asyncstorage/constants";
@@ -124,6 +129,7 @@ function VideoPlayer(props) {
   const [rawUri, setRawUri] = useState(null);
   const [resultUri, setResultUri] = useState(null);
   const [output, setOutput] = useState("VIDEO PROCESSING LOGS");
+  const [isTester, setTester] = useState(false);
   const [fullLogs, setFullLogs] = useState(
     userId === vwmarkdebuguserid ? "test" : null
   );
@@ -192,6 +198,14 @@ function VideoPlayer(props) {
       setVideoLoading(false);
     }
   }, [uri]);
+
+  useEffect(() => {
+    if (currentUser?.id === 8054 || currentUser?.id === 11193) {
+      setTester(true);
+      return;
+    }
+    setTester(false);
+  }, [currentUser]);
 
   useEffect(() => {
     setOutput(
@@ -681,8 +695,10 @@ function VideoPlayer(props) {
         ref={waterRef}
         options={{
           fileName: "wtext",
-          format: "png",
+          format: "jpg",
           quality: 1,
+          result: "tmpfile",
+          useRenderInContext: Platform.OS === "ios",
           width:
             watermarkSize.width /
             ((videoSize.videoOrientation === "portrait"
@@ -742,7 +758,11 @@ function VideoPlayer(props) {
                   : null,
               ]}
             >
-              {title ? title : "Video Watermark"}
+              {title
+                ? isTester
+                  ? title + " (Tester)"
+                  : title
+                : "Video Watermark"}
             </Text>
             {loading || error === null ? null : (
               <Text allowFontScaling={false} style={styles.textError}>
@@ -948,7 +968,7 @@ function VideoPlayer(props) {
               : styles.containerPanelPortrait
           }
         >
-                   <TouchableOpacity
+          <TouchableOpacity
             style={[
               styles.buttonCircle,
               {
@@ -974,7 +994,9 @@ function VideoPlayer(props) {
           </TouchableOpacity>
           <TouchableOpacity
             style={[
-              videoSize.isLandscape ? styles.buttonCircle : styles.button,
+              videoSize.isLandscape || isTester
+                ? styles.buttonCircle
+                : styles.button,
               {
                 backgroundColor:
                   loading ||
@@ -985,8 +1007,8 @@ function VideoPlayer(props) {
                     : rawUri === null || resultUri === null
                     ? colors.daclen_blue
                     : colors.daclen_green,
-                flex: 1,
               },
+              isTester ? null : { flex: 1 },
             ]}
             onPress={() => processVideo()}
             disabled={
@@ -1018,7 +1040,7 @@ function VideoPlayer(props) {
                 color={colors.daclen_light}
               />
             )}
-            {videoSize.isLandscape ? null : (
+            {videoSize.isLandscape || isTester ? null : (
               <Text allowFontScaling={false} style={styles.textButton}>
                 {rawUri === null
                   ? "Download"
@@ -1033,7 +1055,9 @@ function VideoPlayer(props) {
 
           <TouchableOpacity
             style={[
-              videoSize.isLandscape ? styles.buttonCircle : styles.button,
+              videoSize.isLandscape || isTester
+                ? styles.buttonCircle
+                : styles.button,
               {
                 backgroundColor:
                   !sharingAvailability ||
@@ -1045,8 +1069,8 @@ function VideoPlayer(props) {
                   resultUri === null
                     ? colors.daclen_gray
                     : colors.daclen_orange,
-                flex: 1,
               },
+              isTester ? null : { flex: 1 },
             ]}
             onPress={() => shareFileAsync(resultUri, sharingOptionsMP4)}
             disabled={
@@ -1064,12 +1088,57 @@ function VideoPlayer(props) {
               size={18}
               color={colors.daclen_light}
             />
-            {videoSize.isLandscape ? null : (
+            {videoSize.isLandscape || isTester ? null : (
               <Text allowFontScaling={false} style={styles.textButton}>
                 Share
               </Text>
             )}
           </TouchableOpacity>
+          {isTester ? (
+            <TouchableOpacity
+              style={[
+                styles.buttonCircle,
+                {
+                  marginTop: 0,
+                  backgroundColor:
+                    loading || videoLoading || !sharingAvailability
+                      ? colors.daclen_gray
+                      : colors.daclen_cyan,
+                },
+              ]}
+              onPress={() => shareFileAsync(watermarkImage, sharingOptionsJPEG)}
+              disabled={loading || videoLoading || !sharingAvailability}
+            >
+              <MaterialCommunityIcons
+                name="picture-in-picture-top-right"
+                size={18}
+                color={colors.daclen_light}
+              />
+            </TouchableOpacity>
+          ) : null}
+
+          {isTester ? (
+            <TouchableOpacity
+              style={[
+                styles.buttonCircle,
+                {
+                  marginTop: 0,
+                  backgroundColor:
+                    videoLoading || loading
+                      ? colors.daclen_gray
+                      : colors.daclen_indigo,
+                },
+              ]}
+              onPress={() => openFullLogs()}
+              disabled={videoLoading || loading}
+            >
+              <MaterialCommunityIcons
+                name="text-box"
+                size={18}
+                color={colors.daclen_light}
+              />
+            </TouchableOpacity>
+          ) : null}
         </View>
       </ScrollView>
       {loading ? (
@@ -1128,54 +1197,7 @@ function VideoPlayer(props) {
           </Text>
         ) : null}
 
-        {userId !== vwmarkdebuguserid ||
-        fullLogs === null ||
-        videoSize.isLandscape ? null : (
-          <TouchableOpacity
-            style={[
-              videoSize.isLandscape ? styles.buttonCircle : styles.button,
-              {
-                backgroundColor:
-                  loading || videoLoading
-                    ? colors.daclen_gray
-                    : colors.daclen_indigo,
-                width: "90%",
-              },
-            ]}
-            onPress={() => openFullLogs()}
-            disabled={videoLoading || loading}
-          >
-            <MaterialCommunityIcons name="text-box" size={18} color="white" />
-            <Text allowFontScaling={false} style={styles.textButton}>Logs</Text>
-          </TouchableOpacity>
-        )}
 
-        {userId === vwmarkdebuguserid &&
-        watermarkImage !== null &&
-        !videoSize.isLandscape ? (
-          <TouchableOpacity
-            style={[
-              videoSize.isLandscape ? styles.buttonCircle : styles.button,
-              {
-                backgroundColor:
-                  loading || videoLoading
-                    ? colors.daclen_gray
-                    : colors.daclen_reddishbrown,
-                width: "90%",
-                marginTop: 10,
-              },
-            ]}
-            onPress={() => shareFileAsync(watermarkImage, sharingOptionsMP4)}
-            disabled={loading || videoLoading}
-          >
-            <MaterialCommunityIcons
-              name="content-save"
-              size={18}
-              color="white"
-            />
-            <Text allowFontScaling={false} style={styles.textButton}>Share Watermark</Text>
-          </TouchableOpacity>
-        ) : null}
 
         {userId === vwmarkdebuguserid &&
         rawUri !== null &&
@@ -1345,10 +1367,10 @@ const styles = StyleSheet.create({
   buttonCircle: {
     alignItems: "center",
     justifyContent: "center",
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginTop: 12,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    marginStart: 10,
     backgroundColor: colors.daclen_blue,
   },
   buttonClose: {

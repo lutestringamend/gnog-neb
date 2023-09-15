@@ -80,31 +80,31 @@ const Header = (props) => {
             style={styles.gear}
           />
         </TouchableOpacity>
-        <TouchableOpacity
-            onPress={() => goCheckout()}
-            style={[styles.containerUser, { marginTop: 10 }]}
-          >
-            <Text allowFontScaling={false} style={[styles.textAlert, { color: colors.daclen_orange }]}>
-              RIWAYAT
-            </Text>
-            <MaterialCommunityIcons
-              name="history"
-              size={24}
-              color={colors.daclen_orange}
-            />
-          </TouchableOpacity>
+        {currentUser === null ||
+        currentUser?.has_checkout === undefined ||
+        currentUser?.has_checkout === null ||
+        !currentUser?.has_checkout ? null : (
+          <TouchableOpacity
+          onPress={() => goCheckout()}
+          style={[styles.containerUser, { marginTop: 10 }]}
+        >
+          <Text allowFontScaling={false} style={[styles.textAlert, { color: colors.daclen_orange }]}>
+            RIWAYAT
+          </Text>
+          <MaterialCommunityIcons
+            name="history"
+            size={24}
+            color={colors.daclen_orange}
+          />
+        </TouchableOpacity>
+        )}
       </View>
     </View>
   );
 };
 
 /*
-        {currentUser === null ||
-        currentUser?.has_checkout === undefined ||
-        currentUser?.has_checkout === null ||
-        !currentUser?.has_checkout ? null : (
-          
-        )}
+
 */
 
 const styles = StyleSheet.create({

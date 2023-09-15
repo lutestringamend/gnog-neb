@@ -69,7 +69,7 @@ export function setBasicFFMPEGCommand(
   //-vtag avc1 
   //-profile:v baseline -level 4.0 -preset ${Platform.OS === "android" ? "faster" : "ultrafast"}
   
-  return `-y -i ${sourceVideo} -i ${watermarkFile} ${filter} -preset ${Platform.OS === "android" ? "veryfast" : "ultrafast"} ${resultVideo}`;
+  return `-y -i ${sourceVideo} -i ${watermarkFile} ${filter} -preset ${Platform.OS === "android" ? "veryfast" : "faster"} ${resultVideo}`;
 }
 
 export function setFilterFFMPEG(flag, paddingX, paddingY) {
