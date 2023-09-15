@@ -1168,7 +1168,7 @@
     node-forge "^1.2.1"
     nullthrows "^1.1.1"
 
-"@expo/config-plugins@4.1.1", "@expo/config-plugins@6.0.2", "@expo/config-plugins@^6.0.0", "@expo/config-plugins@~6.0.0", "@expo/config-plugins@~7.2.0":
+"@expo/config-plugins@4.1.1", "@expo/config-plugins@6.0.2", "@expo/config-plugins@^6.0.0", "@expo/config-plugins@~5.0.0", "@expo/config-plugins@~6.0.0", "@expo/config-plugins@~7.2.0":
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-6.0.2.tgz#cf07319515022ba94d9aa9fa30e0cff43a14256f"
   integrity sha512-Cn01fXMHwjU042EgO9oO3Mna0o/UCrW91MQLMbJa4pXM41CYGjNgVy1EVXiuRRx/upegHhvltBw5D+JaUm8aZQ==
@@ -4628,15 +4628,15 @@ expo-font@~11.1.1:
   dependencies:
     fontfaceobserver "^2.1.0"
 
+expo-image-loader@~3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/expo-image-loader/-/expo-image-loader-3.2.0.tgz#d98b021660edef7243f7c5ec011b8d0545626d41"
+  integrity sha512-LU3Q2prn64/HxdToDmxgMIRXS1ZvD9Q3iCxRVTZn1fPQNNDciIQFE5okaa74Ogx20DFHs90r6WoUd7w9Af1OGQ==
+
 expo-image-loader@~4.1.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/expo-image-loader/-/expo-image-loader-4.1.1.tgz#efadbb17de1861106864820194900f336dd641b6"
   integrity sha512-ciEHVokU0f6w0eTxdRxLCio6tskMsjxWIoV92+/ZD37qePUJYMfEphPhu1sruyvMBNR8/j5iyOvPFVGTfO8oxA==
-
-expo-image-loader@~4.4.0:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/expo-image-loader/-/expo-image-loader-4.4.0.tgz#35909516311aa60fa4bf35aa6eb7624d7f7f788d"
-  integrity sha512-dq88tiRB8aB1U+O/oJI7IY4VU9Nu2iDjEwR8QDfLtD4xWd5lNGoyic5Vh7911E1qNJFqNMSVIVzOD5l1SQ3A6g==
 
 expo-image-manipulator@11.1.1:
   version "11.1.1"
@@ -4645,12 +4645,14 @@ expo-image-manipulator@11.1.1:
   dependencies:
     expo-image-loader "~4.1.0"
 
-expo-image-picker@^14.5.0:
-  version "14.5.0"
-  resolved "https://registry.yarnpkg.com/expo-image-picker/-/expo-image-picker-14.5.0.tgz#fdc14c74ad338a6a630f8fc5c81e642d6bea343c"
-  integrity sha512-9icvfQuWMdNKufFqu+FxenKcfybz9ior+XYQCIl/q5+mpHPo2tKq8I30vu2BjsOJ0Cfo7V4vMeN7a9F/3ooUfQ==
+expo-image-picker@~13.3.1:
+  version "13.3.1"
+  resolved "https://registry.yarnpkg.com/expo-image-picker/-/expo-image-picker-13.3.1.tgz#7e8fe1dd7a58ab9e0fa17569ab6b64256ece0c98"
+  integrity sha512-IY84uDu9uxetAup5yw0CIIujigl/lM3grwyfpeZFMKGmWHzmKamptjd/sG8K65xkb6tF9awmGMW0qglHQ9hakQ==
   dependencies:
-    expo-image-loader "~4.4.0"
+    "@expo/config-plugins" "~5.0.0"
+    expo-image-loader "~3.2.0"
+    uuid "7.0.2"
 
 expo-image@~1.0.1:
   version "1.0.1"
@@ -4684,10 +4686,10 @@ expo-manifests@~0.5.0:
   dependencies:
     expo-json-utils "~0.5.0"
 
-expo-media-library@^15.6.0:
-  version "15.6.0"
-  resolved "https://registry.yarnpkg.com/expo-media-library/-/expo-media-library-15.6.0.tgz#32d0b3d1baf2d16ab98c8f3b929a50152df055d6"
-  integrity sha512-SsV+sdPcV9nSmvlCqTfF9rt/3KoWutKvAxk1EFke2BEklcdn9FhupdOFvodW6m3wYkBNdhJaqTRniZHvjYNs8A==
+expo-media-library@~15.0.0:
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/expo-media-library/-/expo-media-library-15.0.0.tgz#12b05bb2c3cc209a08acbd2d3e35ba0a6a141003"
+  integrity sha512-BO17VEElQHf2kK45Vuqm4QtutWsT5X4clO8DjTp2BUNvmY+JgOTKsjPs1LIQcNaaum64u/Gfp3V4HV2a6JnHJg==
 
 expo-modules-autolinking@1.2.0:
   version "1.2.0"
@@ -9885,6 +9887,11 @@ utils-merge@1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/utils-merge/-/utils-merge-1.0.1.tgz"
   integrity sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==
+
+uuid@7.0.2:
+  version "7.0.2"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-7.0.2.tgz#7ff5c203467e91f5e0d85cfcbaaf7d2ebbca9be6"
+  integrity sha512-vy9V/+pKG+5ZTYKf+VcphF5Oc6EFiu3W8Nv3P3zIh0EqVI80ZxOzuPfe9EHjkFNvf8+xuTHVeei4Drydlx4zjw==
 
 uuid@^3.3.2, uuid@^3.4.0:
   version "3.4.0"
