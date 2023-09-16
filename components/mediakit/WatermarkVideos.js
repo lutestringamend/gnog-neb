@@ -188,15 +188,28 @@ const WatermarkVideos = (props) => {
                   <View style={styles.containerThumbnail}>
                     <Image
                       style={styles.imageList}
-                      source={`${mainhttp}${item?.foto}`}
+                      source={
+                        item?.thumbnail
+                          ? item?.thumbnail
+                          : item?.produk
+                          ? item?.produk?.thumbnail_url
+                            ? item?.produk?.thumbnail_url
+                            : null
+                          : null
+                      }
                       contentFit="cover"
                       placeholder={blurhash}
                       transition={100}
                     />
-
                   </View>
 
-                  <Text allowFontScaling={false} style={styles.textHeader}>{item?.nama}</Text>
+                  <Text allowFontScaling={false} style={styles.textHeader}>
+                    {item?.produk
+                      ? item?.produk?.nama
+                        ? item?.produk?.nama
+                        : item?.nama
+                      : item?.nama}
+                  </Text>
                 </TouchableOpacity>
               )}
             />
@@ -286,14 +299,17 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     fontSize: 10,
     fontFamily: "Poppins-SemiBold",
+    alignSelf: "center",
     textAlign: "center",
     textAlignVertical: "center",
+    marginVertical: 6,
     marginHorizontal: 10,
     height: 48,
     color: colors.daclen_black,
   },
   textUid: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins",
+    fontSize: 12,
     color: colors.daclen_gray,
     margin: 20,
     textAlign: "center",

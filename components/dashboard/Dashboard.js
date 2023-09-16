@@ -8,7 +8,9 @@ import {
   ActivityIndicator,
   ImageBackground,
   RefreshControl,
+  TouchableOpacity,
 } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 //import * as Sharing from "expo-sharing";
 
 import { connect } from "react-redux";
@@ -20,6 +22,7 @@ import {
   clearUserData,
   getCurrentUser,
   getHPV,
+  updateReduxHPV,
   updateReduxProfileLockStatus,
   getRegisterSnapToken,
   updateReduxRegisterSnapToken,
@@ -50,6 +53,7 @@ const Dashboard = (props) => {
   const [fetchingToken, setFetchingToken] = useState(false);
   const [showTimerModal, setShowTimerModal] = useState(true);
   const [regDate, setRegDate] = useState(null);
+  const [hpvError, setHpvError] = useState(null);
 
   const {
     currentUser,
@@ -89,7 +93,13 @@ const Dashboard = (props) => {
       ) {
         setRegDate(null);
       } else {
-        setRegDate(currentUser?.inv[0]?.created_at ? currentUser?.inv[0]?.created_at : currentUser?.inv[0]?.updated_at ? currentUser?.inv[0]?.updated_at : null);
+        setRegDate(
+          currentUser?.inv[0]?.created_at
+            ? currentUser?.inv[0]?.created_at
+            : currentUser?.inv[0]?.updated_at
+            ? currentUser?.inv[0]?.updated_at
+            : null
+        );
       }
       return;
     }
@@ -99,8 +109,6 @@ const Dashboard = (props) => {
     } else if (registerSnapToken === null) {
       checkAsyncSnapToken();
     }
-
-    
   }, [currentUser]);
 
   useEffect(() => {
@@ -170,7 +178,7 @@ const Dashboard = (props) => {
     props.getCurrentUser(token, null);
   };
 
-  function fetchHPV() {
+  const fetchHPV = async () => {
     if (
       token === null ||
       currentUser === null ||
@@ -179,8 +187,22 @@ const Dashboard = (props) => {
     ) {
       return;
     }
-    props.getHPV(currentUser?.id, token);
-  }
+    const result = await getHPV(currentUser?.id, token);
+    if (
+      result === undefined ||
+      result === null ||
+      result?.result === undefined ||
+      result?.result === null
+    ) {
+      if (!(hpv === undefined || hpv === null || hpv?.data === undefined)) {
+        props.updateReduxHPV(null);
+      }
+      setHpvError(result?.error ? result?.error : "");
+    } else {
+      props.updateReduxHPV(result?.result);
+      setHpvError(null);
+    }
+  };
 
   function onLockPress() {
     props.updateReduxProfileLockStatus(!profileLock);
@@ -220,20 +242,35 @@ const Dashboard = (props) => {
         onLockPress={() => onLockPress()}
       />
 
-      {message?.text === null || message?.text === "" ? null : (
-        <Text
-          allowFontScaling={false}
+      {(message?.text === null || message?.text === "") &&
+      hpvError === null ? null : (
+        <TouchableOpacity
+          onPress={() => fetchHPV()}
           style={[
-            styles.textError,
+            styles.containerError,
             {
-              backgroundColor: message?.isError
-                ? colors.daclen_red
-                : colors.daclen_green,
+              backgroundColor:
+                hpvError !== null
+                  ? colors.daclen_blue
+                  : message?.isError
+                  ? colors.daclen_red
+                  : colors.daclen_green,
             },
           ]}
+          disabled={hpvError === null}
         >
-          {message?.text}
-        </Text>
+          {hpvError === null ? null : (
+            <MaterialCommunityIcons
+              name="refresh"
+              size={20}
+              color={colors.daclen_light}
+              style={styles.refresh}
+            />
+          )}
+          <Text allowFontScaling={false} style={styles.textError}>
+            Refresh Catatan Akun
+          </Text>
+        </TouchableOpacity>
       )}
       <ScrollView
         style={styles.scrollView}
@@ -268,10 +305,7 @@ const Dashboard = (props) => {
           <DashboardLock receiveOTP={(e) => receiveOTP(e)} />
         ) : (
           <View style={styles.scrollView}>
-            <DashboardUser
-              currentUser={currentUser}
-              regDate={regDate}
-            />
+            <DashboardUser currentUser={currentUser} regDate={regDate} />
             <DashboardStats
               currentUser={currentUser}
               recruitmentTimer={recruitmentTimer}
@@ -342,6 +376,13 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "transparent",
   },
+  containerError: {
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
   background: {
     position: "absolute",
     zIndex: 0,
@@ -358,16 +399,19 @@ const styles = StyleSheet.create({
   },
   textError: {
     fontSize: 14,
-    fontFamily: "Poppins-Bold",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    fontFamily: "Poppins-SemiBold",
+    backgroundColor: "transparent",
     color: colors.daclen_light,
+    textAlignVertical: "center",
     textAlign: "center",
-    zIndex: 2,
   },
   spinner: {
     alignSelf: "center",
     marginVertical: 20,
+  },
+  refresh: {
+    alignSelf: "center",
+    marginEnd: 10,
   },
 });
 
@@ -386,7 +430,7 @@ const mapDispatchProps = (dispatch) =>
     {
       clearUserData,
       getCurrentUser,
-      getHPV,
+      updateReduxHPV,
       updateReduxProfileLockStatus,
       getRegisterSnapToken,
       updateReduxRegisterSnapToken,

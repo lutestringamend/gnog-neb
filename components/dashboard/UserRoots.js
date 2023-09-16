@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Image } from "expo-image";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -17,7 +18,7 @@ import { bindActionCreators } from "redux";
 import BSUserRoot from "../bottomsheets/BSUserRoot";
 import UserRootItem, { VerticalLine } from "./UserRootItem";
 import { colors, staticDimensions } from "../../styles/base";
-import { getHPV } from "../../axios/user";
+import { getHPV, updateReduxHPV } from "../../axios/user";
 import { devuserroottree } from "./constants";
 /*import UserRootHeaderItem from "./UserRootHeaderItem";
 import { notverified, userverified } from "./constants";*/
@@ -38,6 +39,7 @@ const UserRoots = (props) => {
   const [numRoots, setNumRoots] = useState(0);
   const [tree, setTree] = useState(null);
   //const [numVerified, setNumVerified] = useState(0);
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [popupUser, setPopupUser] = useState({ name: null });
@@ -56,7 +58,6 @@ const UserRoots = (props) => {
       hpv?.data?.children[0] === undefined ||
       hpv?.data?.children[0] === null
     ) {
-      setLoading(true);
       fetchHPV();
       return;
     }
@@ -101,24 +102,46 @@ const UserRoots = (props) => {
     if (popupUser?.name === null || popupUser?.name !== data?.name) {
       setPopupUser({
         ...data,
-        isVerified
+        isVerified,
       });
     } else {
       rbSheet.current.open();
     }
   }
 
-  function fetchHPV() {
+  const fetchHPV = async () => {
     if (
       token === null ||
       currentUser === null ||
       currentUser?.id === undefined ||
-      currentUser?.id === null
+      currentUser?.id === null ||
+      loading
     ) {
       return;
     }
-    props.getHPV(currentUser?.id, token);
-  }
+    setLoading(true);
+    setError(null);
+    const result = await getHPV(currentUser?.id, token);
+    if (
+      result === undefined ||
+      result === null ||
+      result?.result === undefined ||
+      result?.result === null
+    ) {
+      if (!(hpv === undefined || hpv === null || hpv?.data === undefined)) {
+        props.updateReduxHPV(null);
+      }
+      setError(
+        result?.error ? result?.error : "Gagal mendapatkan data Agen & Reseller"
+      );
+    } else {
+      props.updateReduxHPV(result?.result);
+    }
+    setLoading(false);
+    if (refreshing) {
+      setRefreshing(false);
+    }
+  };
 
   function refreshChildren() {
     setRefreshing(true);
@@ -154,25 +177,54 @@ const UserRoots = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity
-        onPress={() => switchTree()}
-        style={styles.containerLeader}
-        disabled={currentUser?.id !== 8054}
-      >
-        <Image
-          source={
-            hpv?.data?.foto ? hpv?.data?.foto : require("../../assets/user.png")
-          }
-          style={styles.parent}
-          alt={hpv?.data?.name ? hpv?.data?.name : ""}
-          contentFit="cover"
-          placeholder={require("../../assets/user.png")}
-          transition={0}
-        />
-        <Text allowFontScaling={false} style={styles.textLeader}>
-          {hpv?.data?.name ? hpv?.data?.name : "DACLEN"}
+      {error ? (
+        <Text allowFontScaling={false} style={styles.textError}>
+          {error}
         </Text>
-      </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          onPress={() => switchTree()}
+          style={styles.containerLeader}
+          disabled={currentUser?.id !== 8054}
+        >
+          <Image
+            source={
+              hpv?.data?.foto
+                ? hpv?.data?.foto
+                : require("../../assets/user.png")
+            }
+            style={styles.parent}
+            alt={hpv?.data?.name ? hpv?.data?.name : ""}
+            contentFit="cover"
+            placeholder={require("../../assets/user.png")}
+            transition={0}
+          />
+          <Text allowFontScaling={false} style={styles.textLeader}>
+            {hpv?.data?.name ? hpv?.data?.name : "DACLEN"}
+          </Text>
+          <TouchableOpacity
+            style={styles.containerRefresh}
+            disabled={loading || refreshing}
+            onPress={() => fetchHPV()}
+          >
+            {loading || refreshing ? (
+              <ActivityIndicator
+                size={28}
+                color={colors.daclen_blue}
+                style={styles.spinner}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name="refresh-circle"
+                size={28}
+                color={colors.daclen_blue}
+                style={{ alignSelf: "center" }}
+              />
+            )}
+          </TouchableOpacity>
+        </TouchableOpacity>
+      )}
+
       <ScrollView
         style={styles.scrollView}
         refreshControl={
@@ -182,57 +234,91 @@ const UserRoots = (props) => {
           />
         }
       >
-        {loading || tree === null ? (
-          <ActivityIndicator
-            size="large"
-            color={colors.daclen_orange}
-            style={styles.spinner}
+        <View style={styles.containerMain}>
+          <VerticalLine style={{ height: 24 }} />
+          <UserRootItem
+            userData={currentUser}
+            onPress={() =>
+              openUserPopup(
+                hpv?.data?.children[0],
+                checkVerification(currentUser)
+              )
+            }
+            isCurrentUser={true}
+            status={currentUser?.status}
+            isFirstItem={false}
+            isLastItem={false}
+            isNextBranch={false}
+            isVerified={checkVerification(currentUser)}
           />
-        ) : (
-          <View style={styles.containerMain}>
-            <VerticalLine
-              style={{height: 24}}
-            />
-            <UserRootItem
-              userData={currentUser}
-              onPress={() => openUserPopup(hpv?.data?.children[0], checkVerification(currentUser))}
-              isCurrentUser={true}
-              status={currentUser?.status}
-              isFirstItem={false}
-              isLastItem={false}
-              isNextBranch={false}
-              isVerified={checkVerification(currentUser)}
-            />
-            {numRoots > 0 ? (
-              <View style={styles.containerFlatlist}>
-                <VerticalLine
-                  style={{
-                    height: 32,
-                    backgroundColor: checkVerification(currentUser)
-                      ? colors.daclen_green
-                      : colors.daclen_red,
-                  }}
-                />
-                {tree.map((item, index) => (
-                  <UserRootItem
-                    key={index}
-                    userData={item}
-                    onPress={() => openUserPopup(item, checkVerification(item))}
-                    isCurrentUser={false}
-                    isFirstItem={index === 0}
-                    isLastItem={index >= tree?.length - 1}
-                    isNextBranch={false}
-                    isCurrentVerified={checkVerification(currentUser)}
-                    isVerified={checkVerification(item)}
-                    openUserPopup={openUserPopup}
+          {loading ? (
+            tree === null ? (
+              <TouchableOpacity
+                onPress={() => fetchHPV()}
+                style={[
+                  styles.button,
+                  {
+                    backgroundColor: loading
+                      ? colors.daclen_gray
+                      : colors.daclen_orange,
+                  },
+                ]}
+              >
+                {loading ? (
+                  <ActivityIndicator
+                    color={colors.daclen_light}
+                    size="small"
+                    style={styles.spinner}
                   />
-                ))}
-              </View>
+                ) : (
+                  <MaterialCommunityIcons
+                    name="refresh"
+                    size={20}
+                    color={colors.daclen_light}
+                  />
+                )}
+                <Text allowFontScaling={false} style={styles.textButton}>
+                  {loading ? "Loading..." : "Refresh Agen & Reseller"}
+                </Text>
+              </TouchableOpacity>
             ) : (
-              <Text allowFontScaling={false} style={styles.textUid}>User Roots kosong.</Text>
-            )}
-          </View>
-        )}
+              <ActivityIndicator
+                color={colors.daclen_orange}
+                size="large"
+                style={[styles.spinner, { marginVertical: 32 }]}
+              />
+            )
+          ) : numRoots > 0 ? (
+            <View style={styles.containerFlatlist}>
+              <VerticalLine
+                style={{
+                  height: 32,
+                  backgroundColor: checkVerification(currentUser)
+                    ? colors.daclen_green
+                    : colors.daclen_red,
+                }}
+              />
+              {tree.map((item, index) => (
+                <UserRootItem
+                  key={index}
+                  userData={item}
+                  onPress={() => openUserPopup(item, checkVerification(item))}
+                  isCurrentUser={false}
+                  isFirstItem={index === 0}
+                  isLastItem={index >= tree?.length - 1}
+                  isNextBranch={false}
+                  isCurrentVerified={checkVerification(currentUser)}
+                  isVerified={checkVerification(item)}
+                  openUserPopup={openUserPopup}
+                />
+              ))}
+            </View>
+          ) : (
+            <Text allowFontScaling={false} style={styles.textUid}>
+              User Roots kosong.
+            </Text>
+          )}
+        </View>
       </ScrollView>
       <RBSheet ref={rbSheet} openDuration={250} height={350}>
         <BSUserRoot
@@ -261,11 +347,17 @@ const styles = StyleSheet.create({
   },
   containerMain: {
     flex: 1,
-    width: "100%",
     backgroundColor: "transparent",
     paddingBottom: staticDimensions.pageBottomPadding,
     marginBottom: 10,
     marginHorizontal: 12,
+  },
+  containerRefresh: {
+    alignSelf: "center",
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
+    marginStart: 6,
   },
   containerLeader: {
     backgroundColor: colors.daclen_black,
@@ -273,6 +365,33 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     flexDirection: "row",
     alignItems: "center",
+  },
+  button: {
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    marginHorizontal: 12,
+    marginTop: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    backgroundColor: colors.daclen_blue,
+  },
+  textButton: {
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
+    color: colors.daclen_light,
+    marginStart: 10,
+  },
+  textError: {
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
+    color: colors.white,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: colors.daclen_danger,
+    textAlign: "center",
   },
   scrollView: {
     flex: 1,
@@ -286,10 +405,12 @@ const styles = StyleSheet.create({
     marginStart: 10,
     fontFamily: "Poppins-SemiBold",
     fontSize: 14,
+    flex: 1,
     color: colors.daclen_light,
   },
   textUid: {
-    fontFamily: "Poppins", fontSize: 16,
+    fontFamily: "Poppins",
+    fontSize: 16,
     marginVertical: 20,
     textAlign: "center",
     padding: 10,
@@ -306,7 +427,6 @@ const styles = StyleSheet.create({
   spinner: {
     backgroundColor: "transparent",
     alignSelf: "center",
-    marginVertical: 20,
   },
 });
 
@@ -319,7 +439,7 @@ const mapStateToProps = (store) => ({
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
-      getHPV,
+      updateReduxHPV,
     },
     dispatch
   );

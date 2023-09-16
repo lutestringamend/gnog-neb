@@ -855,7 +855,7 @@ const styles = StyleSheet.create({
   },
   textError: {
     fontSize: 14,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     color: colors.white,
     paddingHorizontal: 20,
     paddingVertical: 10,

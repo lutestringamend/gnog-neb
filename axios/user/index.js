@@ -135,6 +135,12 @@ export function generateUuid() {
   return UUID;
 }
 
+export const updateReduxHPV = (data) => {
+  return (dispatch) => {
+    dispatch({ type: USER_HPV_STATE_CHANGE, data });
+  };
+};
+
 export const updateReduxCurrentUserData = (data) => {
   return (dispatch) => {
     dispatch({ type: USER_STATE_CHANGE, data });
@@ -229,7 +235,7 @@ export const eliminateSpaceFromString = (text) => {
     console.error(e);
   }
   return text;
-}
+};
 
 export function clearUserData() {
   return (dispatch) => {
@@ -374,44 +380,50 @@ export function getLaporanPoin(id, token) {
   };
 }
 
-export function getHPV(id, token) {
-  return (dispatch) => {
-    if (
-      id === undefined ||
-      id === null ||
-      token === undefined ||
-      token === null
-    ) {
-      return;
-    }
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-      },
+export const getHPV = async (id, token) => {
+  if (
+    id === undefined ||
+    id === null ||
+    token === undefined ||
+    token === null
+  ) {
+    return {
+      result: null,
+      error: "",
     };
-    const url = gethpv + "/" + id.toString();
-    console.log("getHPV with header " + url);
+  }
 
-    Axioss.get(url, config)
-      .then((response) => {
-        const data = response.data;
-        dispatch({ type: USER_HPV_STATE_CHANGE, data });
-      })
-      .catch((error) => {
-        console.log(error);
-        sentryLog(error);
-        dispatch({
-          type: USER_HPV_STATE_CHANGE,
-          data: {
-            data: null,
-          },
-        });
-        //dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: error?.message });
-      });
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
   };
-}
+  const url = gethpv + "/" + id.toString();
+  console.log("getHPV", url);
+
+  try {
+    const response = await Axioss.get(url, config).catch((error) => {
+      console.error(error);
+      sentryLog(error);
+      return {
+        result: null,
+        error: error.toString(),
+      };
+    });
+    return {
+      result: response?.data ? response?.data : null,
+      error: "",
+    };
+  } catch (e) {
+    console.error(e);
+    sentryLog(e);
+    return {
+      result: null,
+      error: e.toString(),
+    };
+  }
+};
 
 export function deleteAccount(email, password) {
   return (dispatch) => {
