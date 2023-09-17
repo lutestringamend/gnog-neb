@@ -42,7 +42,12 @@ import {
   pdfpagewidth,
 } from "./constants";
 import ImageLargeWatermarkModel from "../media/ImageLargeWatermarkModel";
-import { imageviewerportraitheightmargin } from "../mediakit/constants";
+import {
+  imageviewerportraitheightmargin,
+  videoplayerportraitiosheight,
+  videoplayerportraitpanelandroidheight,
+} from "../mediakit/constants";
+import { getFileName } from "../media";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
@@ -378,45 +383,24 @@ const ImageViewer = (props) => {
     setSharing(false);
   };
 
-  /*const startDownload = async (useWatermark) => {
+  const startDownload = async (useWatermark) => {
     if (!loading) {
-      if (downloadUri === null) {
-        setError(null);
-        setLoading(true);
-        if (
-          transformedImage === null ||
-          transformedImage === "" ||
-          !useWatermark
-        ) {
-          try {
-            const fileName = getFileName(props.route.params?.uri);
-            const result = await FileSystem.downloadAsync(
-              transformedImage ? transformedImage : uri,
-              FileSystem.documentDirectory + fileName
-            );
-            console.log(result);
-            setDownloadUri(result.uri, result.headers["Content-Type"]);
-            save(result.uri);
-          } catch (e) {
-            console.error(e);
-            setSuccess(false);
-            setError("downloadAsync catch\n" + e.toString());
-          }
-        } else {
-          try {
-            sharePhotoAsync(transformedImage);
-          } catch (e) {
-            console.error(e);
-            setSuccess(false);
-            setError("transformedImage catch\n" + e?.message);
-          }
-        }
-        setLoading(false);
-      } else {
-        sharePhotoAsync(downloadUri);
+      try {
+        const fileName = getFileName(props.route.params?.uri);
+        const result = await FileSystem.downloadAsync(
+          transformedImage && useWatermark ? transformedImage : uri,
+          FileSystem.documentDirectory + fileName
+        );
+        console.log(result);
+        setDownloadUri(result.uri, result.headers["Content-Type"]);
+        save(result.uri);
+      } catch (e) {
+        console.error(e);
+        setSuccess(false);
+        setError(e.toString());
       }
     }
-  };*/
+  };
 
   const sharePDF = async () => {
     setSharing(true);
@@ -478,7 +462,8 @@ const ImageViewer = (props) => {
         </ViewShot>
       )}
       {error ? (
-        <Text allowFontScaling={false}
+        <Text
+          allowFontScaling={false}
           style={[
             styles.textError,
             success && { backgroundColor: colors.daclen_green },
@@ -487,88 +472,6 @@ const ImageViewer = (props) => {
           {error}
         </Text>
       ) : null}
-
-      {watermarkData === null ||
-      watermarkData === undefined ||
-      disableWatermark ||
-      !sharingAvailability ||
-      Platform.OS === "web" ? null : (
-        <View style={styles.containerHorizontal}>
-          <View style={styles.containerButton}>
-            <TouchableOpacity
-              onPress={() =>
-                Platform.OS === "ios" ? shareJPGApple() : shareJPGAndroid()
-              }
-              style={[
-                styles.button,
-                {
-                  backgroundColor:
-                    loading || sharing || transformedImage === null
-                      ? colors.daclen_gray
-                      : colors.daclen_orange,
-                },
-              ]}
-              disabled={loading || sharing || transformedImage === null}
-            >
-              {loading || transformedImage === null ? (
-                <ActivityIndicator
-                  size="small"
-                  color={colors.daclen_light}
-                  style={{ alignSelf: "center" }}
-                />
-              ) : (
-                <MaterialCommunityIcons
-                  name="share-variant"
-                  size={18}
-                  color={colors.daclen_light}
-                />
-              )}
-
-              <Text allowFontScaling={false} style={styles.textButton}>Share Foto</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.containerButton}>
-            <TouchableOpacity
-              onPress={() => sharePDF()}
-              style={[
-                styles.button,
-                {
-                  backgroundColor:
-                    loading ||
-                    sharing ||
-                    pdfUri === null ||
-                    transformedImage === null
-                      ? colors.daclen_gray
-                      : colors.daclen_blue,
-                },
-              ]}
-              disabled={
-                loading ||
-                sharing ||
-                pdfUri === null ||
-                transformedImage === null
-              }
-            >
-              {loading || transformedImage === null || pdfUri === null ? (
-                <ActivityIndicator
-                  size="small"
-                  color={colors.daclen_light}
-                  style={{ alignSelf: "center" }}
-                />
-              ) : (
-                <MaterialCommunityIcons
-                  name="file-download"
-                  size={18}
-                  color={colors.daclen_light}
-                />
-              )}
-
-              <Text allowFontScaling={false} style={styles.textButton}>Share PDF</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
 
       <ScrollView
         contentContainerStyle={styles.scrollView}
@@ -626,10 +529,141 @@ const ImageViewer = (props) => {
             </View>
           )}
         </View>
+        {id === undefined ||
+        id === null ||
+        watermarkData === undefined ||
+        watermarkData === null ||
+        disableWatermark ? null : (
+          <View
+            style={[
+              styles.containerHorizontal,
+              {
+                width: screenWidth,
+                height:
+                  Platform.OS === "ios"
+                    ? videoplayerportraitiosheight
+                    : videoplayerportraitpanelandroidheight,
+                backgroundColor: "transparent",
+              },
+            ]}
+          >
+            <TouchableOpacity
+              onPress={() => startDownload()}
+              style={[
+                styles.button,
+                {
+                  backgroundColor:
+                    loading || transformedImage === null
+                      ? colors.daclen_gray
+                      : downloadUri === null
+                      ? colors.daclen_blue
+                      : colors.daclen_green,
+                },
+              ]}
+              disabled={
+                loading || transformedImage === null || downloadUri !== null
+              }
+            >
+              {loading || transformedImage === null ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.daclen_light}
+                  style={{ alignSelf: "center" }}
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name={downloadUri === null ? "file-download" : "check-bold"}
+                  size={18}
+                  color={colors.daclen_light}
+                />
+              )}
+
+              <Text allowFontScaling={false} style={styles.textButton}>
+                {downloadUri === null ? "Download" : "Tersimpan"}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() =>
+                Platform.OS === "ios" ? shareJPGApple() : shareJPGAndroid()
+              }
+              style={[
+                styles.button,
+                {
+                  backgroundColor:
+                    loading || sharing || transformedImage === null
+                      ? colors.daclen_gray
+                      : colors.daclen_orange,
+                },
+              ]}
+              disabled={loading || sharing || transformedImage === null}
+            >
+              {loading || sharing ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.daclen_light}
+                  style={{ alignSelf: "center" }}
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="share-variant"
+                  size={18}
+                  color={colors.daclen_light}
+                />
+              )}
+
+              <Text allowFontScaling={false} style={styles.textButton}>
+                Share
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
 };
+
+/*
+            <TouchableOpacity
+              onPress={() => sharePDF()}
+              style={[
+                styles.button,
+                {
+                  backgroundColor:
+                    loading ||
+                    sharing ||
+                    pdfUri === null ||
+                    transformedImage === null
+                      ? colors.daclen_gray
+                      : colors.daclen_blue,
+                },
+              ]}
+              disabled={
+                loading ||
+                sharing ||
+                pdfUri === null ||
+                transformedImage === null
+              }
+            >
+              {loading || transformedImage === null || pdfUri === null ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.daclen_light}
+                  style={{ alignSelf: "center" }}
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="file-download"
+                  size={18}
+                  color={colors.daclen_light}
+                />
+              )}
+
+              <Text allowFontScaling={false} style={styles.textButton}>
+                Share PDF
+              </Text>
+            </TouchableOpacity>
+*/
 
 const styles = StyleSheet.create({
   container: {
@@ -689,23 +723,26 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   containerHorizontal: {
-    width: "100%",
     flexDirection: "row",
     backgroundColor: "transparent",
-  },
-  containerButton: {
-    flex: 1,
-    backgroundColor: colors.daclen_light,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+    marginBottom: staticDimensions.pageBottomPadding / 2,
+    zIndex: 20,
   },
   button: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    width: "100%",
-    height: 48,
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    backgroundColor: colors.daclen_orange,
+    alignSelf: "center",
+    width: 60,
+    height: 40,
+    paddingVertical: 10,
+    borderRadius: 4,
+    marginHorizontal: 10,
+    backgroundColor: colors.daclen_blue,
   },
   textButton: {
     fontSize: 14,
