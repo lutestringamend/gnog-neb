@@ -95,6 +95,7 @@ import {
 import { MAXIMUM_FILE_SIZE_IN_BYTES } from "../../components/media/constants";
 import { sentryLog } from "../../sentry";
 import { aes } from "./aes";
+import { processDbAlamatLainToRedux } from "../address";
 
 export const resetPassword = () => {
   Linking.openURL(resetpassword);
@@ -1055,6 +1056,10 @@ export function getCurrentUser(token, storageCurrentUser) {
           dispatch({ type: USER_STATE_CHANGE, data });
           dispatch({ type: USER_ADDRESS_STATE_CHANGE, data });
           setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, data);
+          if (!(data?.alamat_lain === undefined || data?.alamat_lain?.length === undefined || data?.alamat_lain?.length < 1)) {
+            let addresses = processDbAlamatLainToRedux(data?.alamat_lain);
+            dispatch({ type: USER_ADDRESSES_STATE_CHANGE, data: addresses });
+          }
         }
         dispatch({ type: HISTORY_CLEAR_DATA });
         dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });

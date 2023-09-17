@@ -14,6 +14,7 @@ import {
   ASYNC_RAJAONGKIR_KOTA_KEY,
   ASYNC_RAJAONGKIR_PROVINSI_KEY,
 } from "../../components/asyncstorage/constants";
+import { Platform, ToastAndroid } from "react-native";
 
 export function clearAddressData() {
   return (dispatch) => {
@@ -49,6 +50,39 @@ export function changeAddress(addresses, id, newAddress) {
     }
   }
   return newAddresses;
+}
+
+export function processDbAlamatLainToRedux (alamat_lain) {
+  if (alamat_lain === undefined || alamat_lain?.length === undefined || alamat_lain?.length < 1) {
+    return [];
+  }
+  try {
+    let newArray = [];
+    for (let alamat of alamat_lain) {
+      let provinsi = alamat?.provinsi ? JSON.parse(alamat?.provinsi) : null;
+      let kota = alamat?.kota ? JSON.parse(alamat?.kota) : null;
+      let kecamatan = alamat?.kecamatan ? JSON.parse(alamat?.kecamatan) : null;
+      let newAlamat = {
+        ...alamat,
+        nama_belakang: alamat?.nama_belakang ? alamat?.nama_belakang : "",
+        kode_pos: alamat?.kode_pos ? alamat?.kode_pos : "",
+        provinsi,
+        kota,
+        kecamatan,
+        provinsi_id: provinsi?.id ? provinsi?.id : null,
+        kota_id: kota?.id ? kota?.id : null,
+        kecamatan_id: kecamatan?.id ? kecamatan?.id : null,
+        provinsi_name: provinsi?.name ? provinsi?.name : "",
+        kota_name: kota?.name ? kota?.name : "",
+        kecamatan_name: kecamatan?.name ? kecamatan?.name : "",
+      };
+      newArray.push(newAlamat);
+    }
+    return newArray;
+  } catch (e) {
+    console.error(e);
+    return alamat_lain;
+  }
 }
 
 export function clearRajaOngkir(clearKota, clearKecamatan) {
@@ -100,10 +134,19 @@ export const updateUserAlamat = async (token, userId, address) => {
         error: error.toString(),
       };
     });
-    console.log("updateUserAlamat response", response);
+    const data = response?.data;
+    let error = null;
+    console.log("updateUserAlamat response", data);
+    if (data?.session !== "success") {
+      error = data?.message ? data?.message : null;
+    }
+    if (Platform.OS === "android" && data?.message) {
+      ToastAndroid.show(data?.message, ToastAndroid.LONG);
+    }
+
     return {
-      response,
-      error,
+      response: data,
+      error: null,
     };
   } catch (e) {
     console.log(e);

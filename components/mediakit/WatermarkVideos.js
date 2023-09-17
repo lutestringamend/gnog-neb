@@ -119,6 +119,21 @@ const WatermarkVideos = (props) => {
   };
 
   function openVideo(item, index) {
+    navigation.navigate("VideoPlayerScreen", {
+      userId,
+      videoId: item?.id ? item?.id : item?.video,
+      uri: item?.video ? item?.video : null,
+      thumbnail: getTempThumbnail(item),
+      title: getTitle(item),
+      width: item?.width ? item?.width : vwmarkdefaultsourcewidth,
+      height: item?.height ? item?.height : vwmarkdefaultsourceheight,
+    });
+  }
+
+  function getTitle(item) {
+    if (!(item?.produk === undefined || item?.produk?.nama === undefined || item?.produk?.nama === null || item?.produk?.nama === "")) {
+      return item?.produk?.nama;
+    }
     let title = item?.nama ? item?.nama : "Video Promosi";
     try {
       if (title.includes("/")) {
@@ -128,18 +143,16 @@ const WatermarkVideos = (props) => {
     } catch (e) {
       console.error(e);
     }
-    navigation.navigate("VideoPlayerScreen", {
-      userId,
-      videoId: item?.id ? item?.id : item?.video,
-      uri: item?.video ? item?.video : null,
-      thumbnail: item?.foto ? `${mainhttp}${item?.foto}` : getTempThumbnail(),
-      title,
-      width: item?.width ? item?.width : vwmarkdefaultsourcewidth,
-      height: item?.height ? item?.height : vwmarkdefaultsourceheight,
-    });
+    return title;
   }
 
-  function getTempThumbnail() {
+  function getTempThumbnail(item) {
+    if (!(item?.thumbnail === undefined || item?.thumbnail === null || item?.thumbnail === "")) {
+      return item?.thumbnail;
+    }
+    if (!(item?.produk === undefined || item?.produk?.thumbnail_url === undefined || item?.produk?.thumbnail_url === null)) {
+      return item?.produk?.thumbnail_url;
+    }
     return require("../../assets/favicon.png");
   }
 
@@ -188,15 +201,7 @@ const WatermarkVideos = (props) => {
                   <View style={styles.containerThumbnail}>
                     <Image
                       style={styles.imageList}
-                      source={
-                        item?.thumbnail
-                          ? item?.thumbnail
-                          : item?.produk
-                          ? item?.produk?.thumbnail_url
-                            ? item?.produk?.thumbnail_url
-                            : null
-                          : null
-                      }
+                      source={getTempThumbnail(item)}
                       contentFit="cover"
                       placeholder={blurhash}
                       transition={100}
@@ -204,11 +209,7 @@ const WatermarkVideos = (props) => {
                   </View>
 
                   <Text allowFontScaling={false} style={styles.textHeader}>
-                    {item?.produk
-                      ? item?.produk?.nama
-                        ? item?.produk?.nama
-                        : item?.nama
-                      : item?.nama}
+                    {getTitle(item)}
                   </Text>
                 </TouchableOpacity>
               )}
