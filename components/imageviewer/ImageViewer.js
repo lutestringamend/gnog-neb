@@ -18,7 +18,7 @@ import ViewShot from "react-native-view-shot";
 import * as FileSystem from "expo-file-system";
 import * as Print from "expo-print";
 import * as ImageManipulator from "expo-image-manipulator";
-//import * as MediaLibrary from "expo-media-library";
+import * as MediaLibrary from "expo-media-library";
 import { shareAsync } from "expo-sharing";
 
 import {
@@ -354,6 +354,21 @@ const ImageViewer = (props) => {
     }
   };
 
+  const saveIos = async (uri) => {
+    try {
+      const result = await MediaLibrary.saveToLibraryAsync(uri);
+      console.log("savetoLibraryAsync result", result);
+      setError("Foto tersimpan di Camera Roll");
+      setDownloadUri(JSON.stringify(result));
+      setSuccess(true);
+    } catch (e) {
+      console.error(e);
+      setError(e.toString());
+      setDownloadUri(null);
+      setSuccess(false);
+    }
+  }
+
   const shareJPGApple = async () => {
     const fileName = `daclen_foto_${id ? id.toString() : ""}.jpg`;
     try {
@@ -389,7 +404,11 @@ const ImageViewer = (props) => {
           FileSystem.documentDirectory + fileName
         );
         console.log(result);
-        save(result.uri, result.headers["Content-Type"]);
+        if (Platform.OS === "ios") {
+          saveIos(result?.uri);
+        } else {
+          save(result?.uri, result?.headers["Content-Type"]);
+        }
       } catch (e) {
         console.error(e);
         setSuccess(false);
