@@ -76,7 +76,7 @@ function ImageLargeWatermarkModel(props) {
           styles.containerUrl,
           {
             width: displayWidth,
-            top: Math.ceil(ratio * (link_y + 1)),
+            top: Math.round(ratio * (link_y - 5)),
             start: 0,
           },
         ]}

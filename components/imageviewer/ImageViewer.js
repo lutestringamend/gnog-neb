@@ -301,61 +301,58 @@ const ImageViewer = (props) => {
     }
   }, []);*/
 
-  /*const save = async (uri, mimeType) => {
-    if (Platform.OS === "android") {
-      const permissions =
-        await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
-      if (permissions.granted) {
-        const fileName = getFileName(props.route.params?.uri);
-        const base64 = await FileSystem.readAsStringAsync(uri, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
-        await FileSystem.StorageAccessFramework.createFileAsync(
-          permissions.directoryUri,
-          fileName,
-          mimeType ? mimeType : "image/jpeg"
-        )
-          .then(async (safUri) => {
-            //setError(safUri);
-            try {
-              await FileSystem.writeAsStringAsync(safUri, base64, {
-                encoding: FileSystem.EncodingType.Base64,
-              });
-              setError("Foto berhasil disimpan dan siap dibagikan");
-              setSuccess(true);
-              sharePhotoAsync(safUri);
-            } catch (e) {
-              console.error(e);
-              setError(
-                (error) => error + "\nwriteAsStringAsync catch\n" + e.toString()
-              );
-              setSuccess(false);
-            }
-          })
-          .catch((e) => {
-            sentryLog(e);
+  const save = async (uri, mimeType) => {
+    const permissions =
+      await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+    if (permissions.granted) {
+      const fileName = getFileName(props.route.params?.uri);
+      const base64 = await FileSystem.readAsStringAsync(uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      await FileSystem.StorageAccessFramework.createFileAsync(
+        permissions.directoryUri,
+        fileName,
+        mimeType ? mimeType : "image/jpeg"
+      )
+        .then(async (safUri) => {
+          //setError(safUri);
+          try {
+            await FileSystem.writeAsStringAsync(safUri, base64, {
+              encoding: FileSystem.EncodingType.Base64,
+            });
+            setError("Foto berhasil disimpan");
+            setDownloadUri(safUri);
+            setSuccess(true);
+          } catch (e) {
+            console.error(e);
+            setError(
+              (error) => error + "\nwriteAsStringAsync catch\n" + e.toString()
+            );
+            setDownloadUri(null);
             setSuccess(false);
-            if (e?.code === "ERR_FILESYSTEM_CANNOT_CREATE_FILE") {
-              setError(
-                "Tidak bisa menyimpan foto di folder sistem. Mohon pilih folder lain."
-              );
-            } else {
-              setError(
-                base64.substring(0, 64) +
-                  "\ncreateFileAsync catch\n" +
-                  e.toString()
-              );
-            }
-          });
-      } else {
-        setSuccess(false);
-        setError("Anda tidak memberikan izin untuk mengakses penyimpanan");
-      }
-    } else if (Platform.OS === "ios") {
-      //sharePhotoAsync()
-      renderPDF(uri);
+          }
+        })
+        .catch((e) => {
+          sentryLog(e);
+          setDownloadUri(null);
+          setSuccess(false);
+          if (e?.code === "ERR_FILESYSTEM_CANNOT_CREATE_FILE") {
+            setError(
+              "Tidak bisa menyimpan foto di folder sistem. Mohon pilih folder lain."
+            );
+          } else {
+            setError(
+              base64.substring(0, 64) +
+                "\ncreateFileAsync catch\n" +
+                e.toString()
+            );
+          }
+        });
+    } else {
+      setSuccess(false);
+      setError("Anda tidak memberikan izin untuk mengakses penyimpanan");
     }
-  };*/
+  };
 
   const shareJPGApple = async () => {
     const fileName = `daclen_foto_${id ? id.toString() : ""}.jpg`;
@@ -392,8 +389,7 @@ const ImageViewer = (props) => {
           FileSystem.documentDirectory + fileName
         );
         console.log(result);
-        setDownloadUri(result.uri, result.headers["Content-Type"]);
-        save(result.uri);
+        save(result.uri, result.headers["Content-Type"]);
       } catch (e) {
         console.error(e);
         setSuccess(false);
@@ -473,10 +469,7 @@ const ImageViewer = (props) => {
         </Text>
       ) : null}
 
-      <ScrollView
-        contentContainerStyle={styles.scrollView}
-        scrollEnabled={screenWidth > screenHeight}
-      >
+      <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.containerInside}>
           <ActivityIndicator
             size={24}
@@ -680,6 +673,7 @@ const styles = StyleSheet.create({
   containerInside: {
     flex: 1,
     zIndex: 3,
+    marginTop: 32,
     width: "100%",
     backgroundColor: colors.white,
     justifyContent: "center",
@@ -727,7 +721,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 10,
     marginBottom: staticDimensions.pageBottomPadding / 2,
     zIndex: 20,
   },
@@ -753,13 +746,16 @@ const styles = StyleSheet.create({
   textError: {
     width: "100%",
     fontSize: 14,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     color: colors.white,
     paddingHorizontal: 20,
     paddingVertical: 10,
     backgroundColor: colors.daclen_danger,
     textAlign: "center",
-    zIndex: 1,
+    position: "absolute",
+    start: 0,
+    top: 0,
+    zIndex: 4,
   },
   textWatermark: {
     position: "absolute",
