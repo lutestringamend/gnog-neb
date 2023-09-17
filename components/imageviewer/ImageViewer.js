@@ -301,7 +301,7 @@ const ImageViewer = (props) => {
     }
   }, []);*/
 
-  const save = async (uri, mimeType) => {
+  /*const save = async (uri, mimeType) => {
     const permissions =
       await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
     if (permissions.granted) {
@@ -352,13 +352,13 @@ const ImageViewer = (props) => {
       setSuccess(false);
       setError("Anda tidak memberikan izin untuk mengakses penyimpanan");
     }
-  };
+  };*/
 
   const saveIos = async (uri) => {
     try {
       const result = await MediaLibrary.saveToLibraryAsync(uri);
       console.log("savetoLibraryAsync result", result);
-      setError("Foto tersimpan di Camera Roll");
+      setError(`Foto tersimpan di ${Platform.OS === "ios" ? "Camera Roll" : "Gallery"}`);
       setDownloadUri(JSON.stringify(result));
       setSuccess(true);
     } catch (e) {
@@ -367,7 +367,7 @@ const ImageViewer = (props) => {
       setDownloadUri(null);
       setSuccess(false);
     }
-  }
+  };
 
   const shareJPGApple = async () => {
     const fileName = `daclen_foto_${id ? id.toString() : ""}.jpg`;
@@ -396,7 +396,11 @@ const ImageViewer = (props) => {
   };
 
   const startDownload = async (useWatermark) => {
-    if (!loading) {
+    if (!loading && transformImage !== null) {
+      saveIos(transformedImage);
+      /*if (Platform.OS === "ios") {
+        return;
+      }
       try {
         const fileName = getFileName(props.route.params?.uri);
         const result = await FileSystem.downloadAsync(
@@ -404,16 +408,13 @@ const ImageViewer = (props) => {
           FileSystem.documentDirectory + fileName
         );
         console.log(result);
-        if (Platform.OS === "ios") {
-          saveIos(result?.uri);
-        } else {
-          save(result?.uri, result?.headers["Content-Type"]);
-        }
+
+        save(result?.uri, result?.headers["Content-Type"]);
       } catch (e) {
         console.error(e);
         setSuccess(false);
         setError(e.toString());
-      }
+      }*/
     }
   };
 
