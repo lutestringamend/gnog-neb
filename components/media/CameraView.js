@@ -11,6 +11,7 @@ import {
   ToastAndroid,
 } from "react-native";
 import { Camera, CameraType } from "expo-camera";
+import { manipulateAsync } from "expo-image-manipulator";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -105,8 +106,18 @@ function CameraView(props) {
   const snap = async () => {
     setCapturing(true);
     try {
-      const uri = await takePicture(ref.current);
-      console.log("CameraView snap", { uri, key });
+      const rawResult = await takePicture(ref.current);
+      const rotate = await manipulateAsync(rawResult?.uri, [
+        {
+          rotate: rawResult?.exif
+            ? rawResult?.exif?.orientation
+              ? rawResult?.exif?.orientation
+              : 0
+            : 0,
+        },
+      ]);
+      const uri = rotate?.uri;
+      console.log("CameraView snap", { rawResult, uri, key });
 
       if (key === "profilePicture") {
         if (uri === null || uri === undefined) {
@@ -174,7 +185,9 @@ function CameraView(props) {
               style={styles.button}
               onPress={() => startRecheckingPermissions()}
             >
-              <Text allowFontScaling={false} style={styles.textButton}>Minta Izin</Text>
+              <Text allowFontScaling={false} style={styles.textButton}>
+                Minta Izin
+              </Text>
             </TouchableOpacity>
           ) : null}
         </View>
@@ -198,7 +211,11 @@ function CameraView(props) {
         />
       )}
 
-      {loadingText ? <Text allowFontScaling={false} style={styles.textDebug}>{loadingText}</Text> : null}
+      {loadingText ? (
+        <Text allowFontScaling={false} style={styles.textDebug}>
+          {loadingText}
+        </Text>
+      ) : null}
 
       {capturing || !ready ? (
         <ActivityIndicator

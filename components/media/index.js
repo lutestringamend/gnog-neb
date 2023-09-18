@@ -191,10 +191,10 @@ export const takePicture = async (ref) => {
         exif: true,
         skipProcessing: false,
       };
-      console.log("takePicture", options);
+      //console.log("takePicture", options);
       const picture = await ref.takePictureAsync(options);
-      //console.log(picture);
-      return picture?.uri;
+      //console.log("takePictureAsync result", picture);
+      return picture;
     } else {
       console.error("ref error", ref);
     }
