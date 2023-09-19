@@ -97,7 +97,19 @@ function MediaKitFiles(props) {
 
     useEffect(() => {
       if (mediaKitPhotos === undefined || mediaKitPhotos === null) {
-        checkStorageMediaKitPhotos();
+        if (photoLoading) {
+          setPhotoLoading(false);
+        } else {
+          checkStorageMediaKitPhotos();
+        }
+      } else if (mediaKitPhotos?.length < 1) {
+        if (photoKeys?.length > 0) {
+          setPhotoKeys([]);
+        }
+        if (photoLoading) {
+          setPhotoLoading(false);
+        }
+        return;
       } else if (photoKeys?.length === undefined || photoKeys?.length < 1) {
         setPhotoKeys(Object.keys(mediaKitPhotos).sort().reverse());
       } else {
@@ -105,13 +117,8 @@ function MediaKitFiles(props) {
           setPhotoLoading(false);
         }
         setObjectAsync(ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, mediaKitPhotos);
-        console.log(
-          "redux mediakitphotos",
-          mediaKitPhotos,
-          "photoKeys",
-          photoKeys
-        );
       }
+      console.log("photoKeys", photoKeys);
     }, [mediaKitPhotos, photoKeys]);
 
     useEffect(() => {
@@ -149,18 +156,18 @@ function MediaKitFiles(props) {
       return {
         ...WatermarkData,
         name:
-            currentUser?.detail_user === undefined ||
-            currentUser?.detail_user?.nama_depan === undefined ||
-            currentUser?.detail_user?.nama_depan === null ||
-            currentUser?.detail_user?.nama_depan === ""
+          currentUser?.detail_user === undefined ||
+          currentUser?.detail_user?.nama_depan === undefined ||
+          currentUser?.detail_user?.nama_depan === null ||
+          currentUser?.detail_user?.nama_depan === ""
+            ? currentUser?.name
               ? currentUser?.name
-                ? currentUser?.name
-                : ""
-              : currentUser?.detail_user?.nama_depan,
-          phone: currentUser?.nomor_telp ? currentUser?.nomor_telp : "",
-          url: currentUser?.name
-            ? `${personalwebsiteurlshort}${currentUser?.name}`
-            : "",
+              : ""
+            : currentUser?.detail_user?.nama_depan,
+        phone: currentUser?.nomor_telp ? currentUser?.nomor_telp : "",
+        url: currentUser?.name
+          ? `${personalwebsiteurlshort}${currentUser?.name}`
+          : "",
       };
     }
 
@@ -171,8 +178,10 @@ function MediaKitFiles(props) {
       if (storagePhotos === undefined || storagePhotos === null) {
         props.clearMediaKitPhotosError();
         props.clearMediaKitData();
+        props.updateReduxMediaKitPhotos([]);
         if (!photoLoading) {
-          refreshPhotos();
+          setPhotoLoading(false);
+          //refreshPhotos();
         }
       } else {
         props.updateReduxMediaKitPhotos(storagePhotos);

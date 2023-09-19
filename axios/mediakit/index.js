@@ -198,29 +198,32 @@ export function getMediaKitPhotos(token) {
         //console.log(config);
         try {
           const responseData = response.data?.data;
-          let data = {};
-          let othersArray = [];
-          for (let photo of responseData) {
-            if (
-              photo?.kategori === undefined ||
-              photo?.kategori?.length === undefined ||
-              photo?.kategori?.length === undefined ||
-              photo?.kategori?.length < 1 ||
-              photo?.kategori[0] === undefined ||
-              photo?.kategori[0]?.nama === undefined
-            ) {
-              othersArray.unshift(photo);
-            } else {
-              let category = photo?.kategori[0]?.nama;
-              let theArray = data[category] ? data[category] : [];
-              theArray.unshift(photo);
-              data[category] = theArray;
-            }
+          console.log("getMediaKitPhotos response", responseData);
+          if (responseData === undefined || responseData === null || responseData?.length === undefined || responseData?.length < 1) {
+            dispatch({ type: MEDIA_KIT_PHOTOS_STATE_CHANGE, data: [] });
+          } else {
+            let data = {};
+            let othersArray = [];
+            for (let photo of responseData) {
+              if (
+                photo?.kategori === undefined ||
+                photo?.kategori?.length === undefined ||
+                photo?.kategori?.length === undefined ||
+                photo?.kategori?.length < 1 ||
+                photo?.kategori[0] === undefined ||
+                photo?.kategori[0]?.nama === undefined
+              ) {
+                othersArray.unshift(photo);
+              } else {
+                let category = photo?.kategori[0]?.nama;
+                let theArray = data[category] ? data[category] : [];
+                theArray.unshift(photo);
+                data[category] = theArray;
+              }
+            } 
+            dispatch({ type: MEDIA_KIT_PHOTOS_STATE_CHANGE, data });
           }
-          //data["Lain-lain"] = othersArray;
-          console.log("getMediaKitPhotos", data);
           dispatch({ type: MEDIA_KIT_PHOTOS_ERROR_STATE_CHANGE, data: null });
-          dispatch({ type: MEDIA_KIT_PHOTOS_STATE_CHANGE, data });
         } catch (e) {
           sentryLog(e);
           dispatch({
