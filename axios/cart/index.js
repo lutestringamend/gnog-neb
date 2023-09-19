@@ -76,6 +76,7 @@ export function storeCheckout(token, checkoutJson) {
       .catch((error) => {
         console.error(error);
         sentryLog(error);
+        console.log("debug", error?.response?.data?.message);
       });
   };
 }
