@@ -70,7 +70,7 @@
       ],
       "softwareKeyboardLayoutMode": "resize",
       "userInterfaceStyle": "light",
-      "versionCode": 71
+      "versionCode": 72
     },
     "web": {
       "favicon": "./assets/favicon.png"
