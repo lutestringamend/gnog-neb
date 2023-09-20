@@ -60,27 +60,30 @@ export function processDbAlamatLainToRedux (alamat_lain) {
   try {
     let newArray = [];
     for (let alamat of alamat_lain) {
-      let provinsi = alamat?.provinsi ? JSON.parse(alamat?.provinsi) : null;
-      let kota = alamat?.kota ? JSON.parse(alamat?.kota) : null;
-      let kecamatan = alamat?.kecamatan ? JSON.parse(alamat?.kecamatan) : null;
-      let newAlamat = {
-        nama_depan: alamat?.nama_depan ? alamat?.nama_depan : "",
-        nama_belakang: alamat?.nama_belakang ? alamat?.nama_belakang : "",
-        nama_penerima: checkoutdefaultsendername,
-        nomor_telp: alamat?.nomor_telp ? alamat?.nomor_telp : "",
-        alamat: alamat?.alamat ? alamat?.alamat: "",
-        kode_pos: alamat?.kode_pos ? alamat?.kode_pos : "",
-        provinsi,
-        kota,
-        kecamatan,
-        provinsi_id: provinsi?.id ? provinsi?.id : null,
-        kota_id: kota?.id ? kota?.id : null,
-        kecamatan_id: kecamatan?.id ? kecamatan?.id : null,
-        provinsi_name: provinsi?.name ? provinsi?.name : "",
-        kota_name: kota?.name ? kota?.name : "",
-        kecamatan_name: kecamatan?.name ? kecamatan?.name : "",
-      };
-      newArray.push(newAlamat);
+      if (!(alamat?.id === undefined || alamat?.id === null || alamat?.id === "")) {
+        let provinsi = alamat?.provinsi ? JSON.parse(alamat?.provinsi) : null;
+        let kota = alamat?.kota ? JSON.parse(alamat?.kota) : null;
+        let kecamatan = alamat?.kecamatan ? JSON.parse(alamat?.kecamatan) : null;
+        let newAlamat = {
+          id: alamat?.id,
+          nama_depan: alamat?.nama_depan ? alamat?.nama_depan : "",
+          nama_belakang: alamat?.nama_belakang ? alamat?.nama_belakang : "",
+          nama_penerima: checkoutdefaultsendername,
+          nomor_telp: alamat?.nomor_telp ? alamat?.nomor_telp : "",
+          alamat: alamat?.alamat ? alamat?.alamat: "",
+          kode_pos: alamat?.kode_pos ? alamat?.kode_pos : "",
+          provinsi,
+          kota,
+          kecamatan,
+          provinsi_id: provinsi?.id ? provinsi?.id : null,
+          kota_id: kota?.id ? kota?.id : null,
+          kecamatan_id: kecamatan?.id ? kecamatan?.id : null,
+          provinsi_name: provinsi?.name ? provinsi?.name : "",
+          kota_name: kota?.name ? kota?.name : "",
+          kecamatan_name: kecamatan?.name ? kecamatan?.name : "",
+        };
+        newArray.push(newAlamat);
+      }
     }
     return newArray;
   } catch (e) {
