@@ -86,15 +86,6 @@ const WatermarkPhotos = ({
   }
 };
 
-/*
-          Object.keys(photos)
-            .sort()
-            .reverse()
-            .map((keyName, i) => (
-              
-            ))
-*/
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -268,7 +268,11 @@ const Dashboard = (props) => {
             />
           )}
           <Text allowFontScaling={false} style={styles.textError}>
-            Refresh Catatan Akun
+            {hpvError === null
+              ? message?.text === null || message?.text === ""
+                ? ""
+                : message?.text
+              : "Refresh Catatan Akun"}
           </Text>
         </TouchableOpacity>
       )}

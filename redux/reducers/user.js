@@ -37,6 +37,7 @@ import {
   USER_TEMP_CART_NEW_ITEM_CHANGE,
   USER_RECRUITMENT_DEADLINE_STATE_CHANGE,
   USER_REG_DATE_IN_MS_STATE_CHANGE,
+  USER_CHECKOUT_ERROR_STATE_CHANGE,
 } from "../constants";
 
 import { mainhttp } from "../../axios/constants";
@@ -68,6 +69,7 @@ export const initialState = {
     kecamatan: null,
   },
   checkout: null,
+  checkoutError: null,
   authData: {
     email: null,
     password: null,
@@ -322,6 +324,11 @@ export const user = (state = initialState, action) => {
         ...state,
         checkout: action.data,
         cart: action.clearCart ? null : state.cart,
+      };
+    case USER_CHECKOUT_ERROR_STATE_CHANGE:
+      return {
+        ...state,
+        checkoutError: action.data,
       };
     case USER_AUTH_DATA_STATE_CHANGE:
       return {

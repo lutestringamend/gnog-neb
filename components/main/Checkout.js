@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Platform,
+  ToastAndroid,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -91,6 +93,7 @@ function Checkout(props) {
     currentAddress,
     masterkurir,
     checkout,
+    checkoutError,
     addresses,
     addressId,
   } = props;
@@ -110,13 +113,18 @@ function Checkout(props) {
       return;
     }
 
-    if (currentUser?.komisi_user === undefined || currentUser?.komisi_user === null || currentUser?.komisi_user?.total === undefined || currentUser?.komisi_user?.total === null) {
+    if (
+      currentUser?.komisi_user === undefined ||
+      currentUser?.komisi_user === null ||
+      currentUser?.komisi_user?.total === undefined ||
+      currentUser?.komisi_user?.total === null
+    ) {
       setSaldo(defaultSaldo);
     } else {
       setSaldo({
         available: parseInt(currentUser?.komisi_user?.total),
         used: 0,
-      })
+      });
     }
 
     props.callMasterkurir(token);
@@ -385,12 +393,40 @@ function Checkout(props) {
         if (checkout?.snap_token) {
           proceedMidtrans(checkout?.snap_token, checkout?.snap_url);
         } else {
+          setError("Gagal membuka Midtrans. Mohon hubungi Daclen Care.");
           setAllowCheckout(true);
         }
         setAfterCheckout(false);
       }
     }
   }, [checkout]);
+
+  useEffect(() => {
+    if (checkoutError === null) {
+      return;
+    }
+    if (afterCheckout) {
+      setError("Checkout tidak berhasil. Mohon menghubungi Daclen Care.");
+      setAfterCheckout(false);
+      setAllowCheckout(true);
+    }
+    try {
+      if (Platform.OS === "android") {
+        ToastAndroid.show(
+          checkoutError?.response?.data?.message,
+          ToastAndroid.LONG
+        );
+      } else {
+        console.log(
+          "redux checkoutError",
+          checkoutError,
+          checkoutError?.response?.data?.message
+        );
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [checkoutError]);
 
   useEffect(() => {
     console.log("saldo", saldo);
@@ -402,7 +438,7 @@ function Checkout(props) {
       user: {
         saldo: (saldo.available - saldo.used).toString(),
       },
-    })
+    });
   }, [saldo]);
 
   useEffect(() => {
@@ -411,6 +447,16 @@ function Checkout(props) {
     }
     console.log("checkoutJson", checkoutJson);
   }, [checkoutJson]);
+
+  const openCheckoutErrorDetails = () => {
+    try {
+      if (checkoutError !== null) {
+        setError(checkoutError?.response?.data?.message);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const proceedMidtrans = async (snapToken, snap_url) => {
     props.overhaulReduxTempCart([]);
@@ -561,9 +607,11 @@ function Checkout(props) {
           ? currentAddress
           : customAddress;
       detail_checkout["nama_penerima"] = senderName.final
-      ? senderName.final
-      : "Daclen Official";
-      delete detail_checkout["user_id"];
+        ? senderName.final
+        : "Daclen Official";
+      if (detail_checkout?.user_id !== undefined) {
+        delete detail_checkout["user_id"];
+      }
 
       //console.log("createCheckoutJson courier", courier);
       const newCheckout = {
@@ -668,7 +716,13 @@ function Checkout(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {error ? <Text allowFontScaling={false} style={styles.textError}>{error}</Text> : null}
+      {error ? (
+        <TouchableOpacity onPress={() => openCheckoutErrorDetails}>
+          <Text allowFontScaling={false} style={styles.textError}>
+            {error}
+          </Text>
+        </TouchableOpacity>
+      ) : null}
       <ScrollView style={styles.scrollView}>
         <TouchableOpacity
           onPress={() => openAddress()}
@@ -683,7 +737,8 @@ function Checkout(props) {
             <Text allowFontScaling={false} style={styles.textAddressHeader}>
               Pilih Alamat Pengiriman
             </Text>
-            <Text allowFontScaling={false}
+            <Text
+              allowFontScaling={false}
               style={[
                 styles.textAddressDetail,
                 !addressComplete && { color: colors.daclen_danger },
@@ -721,7 +776,9 @@ function Checkout(props) {
               cart === null ||
               cart?.length === undefined ||
               cart?.length < 1 ? (
-                <Text allowFontScaling={false} style={styles.textUid}>Tidak ada Checkout</Text>
+                <Text allowFontScaling={false} style={styles.textUid}>
+                  Tidak ada Checkout
+                </Text>
               ) : (
                 <FlashList
                   estimatedItemSize={10}
@@ -824,7 +881,9 @@ function Checkout(props) {
         <BSPopup
           title="Konfirmasi Checkout"
           content={
-            <Text allowFontScaling={false} style={styles.textDisclaimer}>{checkoutdisclaimer}</Text>
+            <Text allowFontScaling={false} style={styles.textDisclaimer}>
+              {checkoutdisclaimer}
+            </Text>
           }
           buttonPositive="Setuju"
           buttonPositiveColor={colors.daclen_orange}
@@ -883,11 +942,13 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   textAddressDetail: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins",
+    fontSize: 12,
     color: colors.daclen_gray,
   },
   textUid: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins",
+    fontSize: 12,
     marginVertical: 20,
     color: colors.daclen_gray,
     marginHorizontal: 20,
@@ -895,7 +956,7 @@ const styles = StyleSheet.create({
   },
   textError: {
     fontSize: 14,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     color: colors.white,
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -908,7 +969,8 @@ const styles = StyleSheet.create({
     textAlignVertical: "center",
     marginTop: 20,
     marginHorizontal: 24,
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins",
+    fontSize: 12,
   },
   arrowAddress: {
     marginStart: 10,
@@ -925,6 +987,7 @@ const mapStateToProps = (store) => ({
   masterkurir: store.userState.masterkurir,
   couriers: store.userState.couriers,
   checkout: store.userState.checkout,
+  checkoutError: store.userState.checkoutError,
   addresses: store.userState.addresses,
   addressId: store.userState.addressId,
 });

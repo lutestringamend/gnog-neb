@@ -18,12 +18,20 @@ import {
   USER_TEMP_CART_STATE_CHANGE,
   USER_TEMP_CART_ITEM_STATE_CHANGE,
   USER_TEMP_CART_NEW_ITEM_CHANGE,
+  USER_CHECKOUT_ERROR_STATE_CHANGE,
 } from "../../redux/constants";
 
 export function clearCartError() {
   return (dispatch) => {
     console.log("clearCartError");
     dispatch({ type: USER_CART_STATE_ERROR, data: null });
+  };
+}
+
+export function updateReduxCheckoutError(data) {
+  return (dispatch) => {
+    console.log("updateReduxCheckoutError", data);
+    dispatch({ type: USER_CHECKOUT_ERROR_STATE_CHANGE, data });
   };
 }
 
@@ -71,12 +79,14 @@ export function storeCheckout(token, checkoutJson) {
           clearCart = false;
         console.log("storeCheckout response", data);
         dispatch({ type: USER_CHECKOUT_STATE_CHANGE, data, clearCart });
+        dispatch({ type: USER_CHECKOUT_ERROR_STATE_CHANGE, data: null });
         dispatch({ type: HISTORY_CHECKOUTS_STATE_CHANGE, data: null });
       })
       .catch((error) => {
         console.error(error);
         sentryLog(error);
-        console.log("debug", error?.response?.data?.message);
+        dispatch({ type: USER_CHECKOUT_ERROR_STATE_CHANGE, data: error });
+        //console.log("storeCheckout error", error?.response?.data?.message);
       });
   };
 }

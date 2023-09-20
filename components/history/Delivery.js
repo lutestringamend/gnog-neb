@@ -313,6 +313,7 @@ const mapDispatchProps = (dispatch) =>
       clearDeliveryStatus,
       clearHistoryData,
       updateReduxHistoryDeliveries,
+      updateReduxHistoryDeliveriesPageNumber,
     },
     dispatch
   );
