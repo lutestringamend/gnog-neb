@@ -33,6 +33,13 @@ export function clearMediaKitVideosError() {
   };
 }
 
+export function updateReduxMediaKitPhotosError(data) {
+  return (dispatch) => {
+    console.log("updateReduxMediaKitPhotosError", data);
+    dispatch({ type: MEDIA_KIT_PHOTOS_ERROR_STATE_CHANGE, data });
+  };
+}
+
 export function updateReduxMediaKitWatermarkData(data) {
   return (dispatch) => {
     console.log("updateReduxMediaKitWatermarkData", data);
@@ -182,63 +189,69 @@ export function getMediaKitVideos(token, products) {
   /* ;*/
 }
 
-export function getMediaKitPhotos(token) {
+export const getMediaKitPhotos = async (token) => {
   if (token === undefined || token === null) {
-    return;
-  }
-  return (dispatch) => {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-      },
+    return {
+      result: null,
+      error: "Anda perlu login sebelum bisa melihat foto promosi",
     };
-    Axios.get(mediakitphoto, config)
-      .then((response) => {
-        //console.log(config);
-        try {
-          const responseData = response.data?.data;
-          console.log("getMediaKitPhotos response", responseData);
-          if (responseData === undefined || responseData === null || responseData?.length === undefined || responseData?.length < 1) {
-            dispatch({ type: MEDIA_KIT_PHOTOS_STATE_CHANGE, data: [] });
-          } else {
-            let data = {};
-            let othersArray = [];
-            for (let photo of responseData) {
-              if (
-                photo?.kategori === undefined ||
-                photo?.kategori?.length === undefined ||
-                photo?.kategori?.length === undefined ||
-                photo?.kategori?.length < 1 ||
-                photo?.kategori[0] === undefined ||
-                photo?.kategori[0]?.nama === undefined
-              ) {
-                othersArray.unshift(photo);
-              } else {
-                let category = photo?.kategori[0]?.nama;
-                let theArray = data[category] ? data[category] : [];
-                theArray.unshift(photo);
-                data[category] = theArray;
-              }
-            } 
-            dispatch({ type: MEDIA_KIT_PHOTOS_STATE_CHANGE, data });
-          }
-          dispatch({ type: MEDIA_KIT_PHOTOS_ERROR_STATE_CHANGE, data: null });
-        } catch (e) {
-          sentryLog(e);
-          dispatch({
-            type: MEDIA_KIT_PHOTOS_ERROR_STATE_CHANGE,
-            data: e.toString(),
-          });
-          dispatch({ type: MEDIA_KIT_PHOTOS_STATE_CHANGE, data: [] });
-        }
-      })
-      .catch((error) => {
-        sentryLog(error);
-        dispatch({
-          type: MEDIA_KIT_PHOTOS_ERROR_STATE_CHANGE,
-          data: error.toString(),
-        });
-      });
+  }
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
   };
+
+    try {
+      const response = await Axios.get(mediakitphoto, config)
+      .catch((error) => {
+        console.error(error);
+        sentryLog(error);
+        return {
+          result: null,
+          error: error.toString(),
+        }
+      });
+
+      const responseData = response.data?.data;
+      console.log("getMediaKitPhotos response", responseData);
+      if (responseData === undefined || responseData === null || responseData?.length === undefined || responseData?.length < 1) {
+        return {
+        result: {},
+        error: null,
+      }
+      } else {
+        let data = {};
+        let othersArray = [];
+        for (let photo of responseData) {
+          if (
+            photo?.kategori === undefined ||
+            photo?.kategori?.length === undefined ||
+            photo?.kategori?.length === undefined ||
+            photo?.kategori?.length < 1 ||
+            photo?.kategori[0] === undefined ||
+            photo?.kategori[0]?.nama === undefined
+          ) {
+            othersArray.unshift(photo);
+          } else {
+            let category = photo?.kategori[0]?.nama;
+            let theArray = data[category] ? data[category] : [];
+            theArray.unshift(photo);
+            data[category] = theArray;
+          }
+        } 
+        return {
+          result: data,
+          error: e.toString(),
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      sentryLog(e);
+      return {
+        result: null,
+        error: e.toString(),
+      }
+    }
 }

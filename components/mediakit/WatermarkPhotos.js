@@ -28,7 +28,7 @@ const WatermarkPhotos = ({
   try {
     return (
       <View style={styles.container}>
-        {error || photoKeys?.length === undefined || photoKeys?.length < 1 ? null : (
+        {error ? null : (
           <ActivityIndicator
             size="large"
             color={colors.daclen_orange}
@@ -44,7 +44,7 @@ const WatermarkPhotos = ({
             />
           ) : loading ||
             photos === undefined ||
-            photos === null ? null : photos?.length < 1 || photoKeys?.length === undefined || photoKeys?.length < 1 ? (
+            photos === null ? null : photoKeys?.length === undefined || photoKeys?.length < 1 ? (
             <Text allowFontScaling={false} style={styles.textUid}>Tidak ada Foto Promosi tersedia.</Text>
           ) : (
             <FlashList
@@ -134,6 +134,9 @@ const styles = StyleSheet.create({
     color: colors.daclen_gray,
     margin: 20,
     textAlign: "center",
+    zIndex: 20,
+    height: "100%",
+    backgroundColor: colors.white,
   },
 });
 

@@ -22,6 +22,7 @@ import {
   updateReduxMediaKitPhotos,
   updateReduxMediaKitWatermarkData,
   updateReduxMediaKitPhotosUri,
+  updateReduxMediaKitPhotosError,
 } from "../../axios/mediakit";
 import { overwriteWatermarkVideos } from "../media";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
@@ -46,24 +47,24 @@ import Header from "./Header";
 import { WatermarkData } from "./constants";
 
 function MediaKitFiles(props) {
+  const [activeTab, setActiveTab] = useState(WATERMARK_PHOTO);
+  const [photoLoading, setPhotoLoading] = useState(false);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [sharingAvailability, setSharingAvailability] = useState(null);
+  const [photoKeys, setPhotoKeys] = useState([]);
+
+  const {
+    token,
+    currentUser,
+    photoError,
+    watermarkData,
+    mediaKitPhotos,
+    mediaKitVideos,
+    products,
+  } = props;
+  const navigation = useNavigation();
+
   try {
-    const [activeTab, setActiveTab] = useState(WATERMARK_PHOTO);
-    const [photoLoading, setPhotoLoading] = useState(false);
-    const [videoLoading, setVideoLoading] = useState(false);
-    const [sharingAvailability, setSharingAvailability] = useState(null);
-    const [photoKeys, setPhotoKeys] = useState([]);
-
-    const {
-      token,
-      currentUser,
-      photoError,
-      watermarkData,
-      mediaKitPhotos,
-      mediaKitVideos,
-      products,
-    } = props;
-    const navigation = useNavigation();
-
     useEffect(() => {
       const checkSharing = async () => {
         const result = await isAvailableAsync();
@@ -97,29 +98,15 @@ function MediaKitFiles(props) {
 
     useEffect(() => {
       if (mediaKitPhotos === undefined || mediaKitPhotos === null) {
-        if (photoLoading) {
-          setPhotoLoading(false);
-        } else {
-          checkStorageMediaKitPhotos();
-        }
-      } else if (mediaKitPhotos?.length < 1) {
-        if (photoKeys?.length > 0) {
-          setPhotoKeys([]);
-        }
-        if (photoLoading) {
-          setPhotoLoading(false);
-        }
-        return;
-      } else if (photoKeys?.length === undefined || photoKeys?.length < 1) {
-        setPhotoKeys(Object.keys(mediaKitPhotos).sort().reverse());
+        fetchWatermarkPhotos();
       } else {
+        setPhotoKeys(Object.keys(mediaKitPhotos).sort().reverse());
         if (photoLoading) {
           setPhotoLoading(false);
         }
         setObjectAsync(ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, mediaKitPhotos);
       }
-      console.log("photoKeys", photoKeys);
-    }, [mediaKitPhotos, photoKeys]);
+    }, [mediaKitPhotos]);
 
     useEffect(() => {
       if (mediaKitVideos === null || mediaKitVideos?.length === undefined) {
@@ -171,17 +158,30 @@ function MediaKitFiles(props) {
       };
     }
 
+    const fetchWatermarkPhotos = async () => {
+      const result = await getMediaKitPhotos(token);
+      if (result === undefined || result === null || result?.result === undefined || result?.result === null) {
+        props.updateReduxMediaKitPhotos(null);
+        setPhotoKeys([]);
+        if (!(result?.error === undefined || result?.error === null)) {
+          props.updateReduxMediaKitPhotosError(result?.error);
+        }
+        checkStorageMediaKitPhotos();
+      } else {
+        props.updateReduxMediaKitPhotos(result?.result);
+        props.updateReduxMediaKitPhotosError(null);
+      }
+    }
+
     const checkStorageMediaKitPhotos = async () => {
       const storagePhotos = await getObjectAsync(
         ASYNC_MEDIA_WATERMARK_PHOTOS_KEY
       );
       if (storagePhotos === undefined || storagePhotos === null) {
-        props.clearMediaKitPhotosError();
-        props.clearMediaKitData();
-        props.updateReduxMediaKitPhotos([]);
-        if (!photoLoading) {
+        //props.clearMediaKitPhotosError();
+        props.updateReduxMediaKitPhotos(null);
+        if (photoLoading) {
           setPhotoLoading(false);
-          //refreshPhotos();
         }
       } else {
         props.updateReduxMediaKitPhotos(storagePhotos);
@@ -190,7 +190,7 @@ function MediaKitFiles(props) {
 
     const refreshPhotos = () => {
       setPhotoLoading(true);
-      props.getMediaKitPhotos(token);
+      fetchWatermarkPhotos();
     };
 
     const refreshVideos = () => {
@@ -373,11 +373,11 @@ const mapStateToProps = (store) => ({
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
-      getMediaKitPhotos,
       getMediaKitVideos,
       updateReduxMediaKitPhotos,
       updateReduxMediaKitWatermarkData,
       updateReduxMediaKitPhotosUri,
+      updateReduxMediaKitPhotosError,
       clearMediaKitPhotosError,
       clearMediaKitData,
       overwriteWatermarkVideos,
