@@ -406,26 +406,29 @@ function Checkout(props) {
       return;
     }
     if (afterCheckout) {
+      try {
+        setError(checkoutError?.response?.data?.message);
+        if (Platform.OS === "android") {
+          ToastAndroid.show(
+            checkoutError?.response?.data?.message,
+            ToastAndroid.LONG
+          );
+        } else {
+          console.log(
+            "redux checkoutError",
+            checkoutError,
+            checkoutError?.response?.data?.message
+          );
+        }
+      } catch (e) {
+        console.error(e);
+        setError(checkoutError.toString());
+      }
       setError("Checkout tidak berhasil. Mohon menghubungi Daclen Care.");
       setAfterCheckout(false);
       setAllowCheckout(true);
     }
-    try {
-      if (Platform.OS === "android") {
-        ToastAndroid.show(
-          checkoutError?.response?.data?.message,
-          ToastAndroid.LONG
-        );
-      } else {
-        console.log(
-          "redux checkoutError",
-          checkoutError,
-          checkoutError?.response?.data?.message
-        );
-      }
-    } catch (e) {
-      console.error(e);
-    }
+    
   }, [checkoutError]);
 
   useEffect(() => {
