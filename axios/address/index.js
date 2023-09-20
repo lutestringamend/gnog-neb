@@ -15,6 +15,7 @@ import {
   ASYNC_RAJAONGKIR_PROVINSI_KEY,
 } from "../../components/asyncstorage/constants";
 import { Platform, ToastAndroid } from "react-native";
+import { checkoutdefaultsendername } from "../../components/main/constants";
 
 export function clearAddressData() {
   return (dispatch) => {
@@ -63,8 +64,11 @@ export function processDbAlamatLainToRedux (alamat_lain) {
       let kota = alamat?.kota ? JSON.parse(alamat?.kota) : null;
       let kecamatan = alamat?.kecamatan ? JSON.parse(alamat?.kecamatan) : null;
       let newAlamat = {
-        ...alamat,
+        nama_depan: alamat?.nama_depan ? alamat?.nama_depan : "",
         nama_belakang: alamat?.nama_belakang ? alamat?.nama_belakang : "",
+        nama_penerima: checkoutdefaultsendername,
+        nomor_telp: alamat?.nomor_telp ? alamat?.nomor_telp : "",
+        alamat: alamat?.alamat ? alamat?.alamat: "",
         kode_pos: alamat?.kode_pos ? alamat?.kode_pos : "",
         provinsi,
         kota,

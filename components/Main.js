@@ -90,7 +90,7 @@ function Main(props) {
         readStorageProducts();
       } else {
         props.clearCartError();
-        console.log("redux products", props.products);
+        //console.log("redux products", props.products);
       }
     }, [props.products]);
 

@@ -78,9 +78,13 @@ export function storeCheckout(token, checkoutJson) {
         if (data?.snap_token === undefined || data?.snap_token === null)
           clearCart = false;
         console.log("storeCheckout response", data);
-        dispatch({ type: USER_CHECKOUT_STATE_CHANGE, data, clearCart });
-        dispatch({ type: USER_CHECKOUT_ERROR_STATE_CHANGE, data: null });
-        dispatch({ type: HISTORY_CHECKOUTS_STATE_CHANGE, data: null });
+        if (data?.errors === undefined) {
+          dispatch({ type: USER_CHECKOUT_STATE_CHANGE, data, clearCart });
+          dispatch({ type: USER_CHECKOUT_ERROR_STATE_CHANGE, data: null });
+          dispatch({ type: HISTORY_CHECKOUTS_STATE_CHANGE, data: null });
+        } else {
+          dispatch({ type: USER_CHECKOUT_ERROR_STATE_CHANGE, data: data?.errors });
+        }
       })
       .catch((error) => {
         console.error(error);

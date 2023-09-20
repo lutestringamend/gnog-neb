@@ -1032,7 +1032,7 @@ export function login(email, password, resetPIN) {
   };
 }
 
-export function getCurrentUser(token, storageCurrentUser) {
+export const getCurrentUser = (token, storageCurrentUser) => {
   return (dispatch) => {
     if (token === undefined || token === null || token === "") {
       return;
@@ -1058,6 +1058,7 @@ export function getCurrentUser(token, storageCurrentUser) {
           setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, data);
           if (!(data?.alamat_lain === undefined || data?.alamat_lain?.length === undefined || data?.alamat_lain?.length < 1)) {
             let addresses = processDbAlamatLainToRedux(data?.alamat_lain);
+            console.log("processDbAlamatLainToRedux", addresses);
             dispatch({ type: USER_ADDRESSES_STATE_CHANGE, data: addresses });
           }
         }
