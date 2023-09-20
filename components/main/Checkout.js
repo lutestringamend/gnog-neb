@@ -424,7 +424,7 @@ function Checkout(props) {
         console.error(e);
         setError(checkoutError.toString());
       }
-      setError("Checkout tidak berhasil. Mohon menghubungi Daclen Care.");
+      //setError("Checkout tidak berhasil. Mohon menghubungi Daclen Care.");
       setAfterCheckout(false);
       setAllowCheckout(true);
     }
