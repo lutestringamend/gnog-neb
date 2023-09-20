@@ -428,7 +428,6 @@ function Checkout(props) {
       setAfterCheckout(false);
       setAllowCheckout(true);
     }
-    
   }, [checkoutError]);
 
   useEffect(() => {
@@ -609,9 +608,6 @@ function Checkout(props) {
         addressId === "" || addressId === "default" || customAddress === null
           ? currentAddress
           : customAddress;
-      detail_checkout["nama_penerima"] = senderName.final
-        ? senderName.final
-        : "Daclen Official";
       if (detail_checkout?.user_id !== undefined) {
         delete detail_checkout["user_id"];
       }
@@ -630,7 +626,12 @@ function Checkout(props) {
           metode_pembayaran: "transfer_bank",
           tipe_kemasan: packaging,
         },
-        detail_checkout,
+        detail_checkout: {
+          ...detail_checkout,
+          nama_penerima: senderName.final
+            ? senderName.final
+            : "Daclen Official",
+        },
         user: {
           saldo: (saldo.available - saldo.used).toString(),
         },
