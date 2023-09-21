@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, TextInput, TouchableOpacity } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { View, StyleSheet, TextInput } from "react-native";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -60,18 +59,20 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.daclen_light,
-    height: 32,
-    borderRadius: 2,
+    backgroundColor: "transparent",
     alignItems: "center",
     flex: 1,
   },
   textInput: {
     flex: 1,
     alignSelf: "center",
-    marginHorizontal: 10,
+    backgroundColor: colors.daclen_light,
+    borderRadius: 2,
+    paddingHorizontal: 10,
     fontFamily: "Poppins", 
-    fontSize: 12,
+    height: 28,
+    textAlignVertical: "center",
+    fontSize: 10,
     color: colors.black,
     backgroundColor: "white",
   },

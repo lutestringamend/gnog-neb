@@ -211,20 +211,7 @@ function Shop(props) {
 
   return (
     <View
-      style={[
-        styles.container,
-        {
-          paddingBottom:
-            token === null ||
-            currentUser === null ||
-            currentUser?.id === undefined ||
-            currentUser?.isActive === undefined ||
-            currentUser?.isActive === null ||
-            !currentUser?.isActive
-              ? 24
-              : 96,
-        },
-      ]}
+      style={styles.container}
     >
       {token === null ||
       currentUser === null ||
@@ -232,32 +219,30 @@ function Shop(props) {
         <View
           style={[
             styles.containerHeader,
-            {
-              backgroundColor:
-                cart === null ||
-                cart?.produk === undefined ||
-                cart?.produk === null ||
-                cart?.produk?.length === undefined ||
-                cart?.produk?.length < 1 ||
-                cart?.jumlah_produk === undefined ||
-                cart?.jumlah_produk === null ||
-                cart?.jumlah_produk < 1
-                  ? tempCartSize < 1
-                    ? colors.daclen_black
-                    : tempCartSize === parseInt(cart?.jumlah_produk)
-                    ? colors.daclen_gray
-                    : colors.daclen_blue
-                  : colors.daclen_blue,
-            },
             isSearch
               ? {
-                  width: screenWidth - 88,
                   backgroundColor: colors.daclen_black,
                 }
-              : null,
+              : {
+                backgroundColor:
+                  cart === null ||
+                  cart?.produk === undefined ||
+                  cart?.produk === null ||
+                  cart?.produk?.length === undefined ||
+                  cart?.produk?.length < 1 ||
+                  cart?.jumlah_produk === undefined ||
+                  cart?.jumlah_produk === null ||
+                  cart?.jumlah_produk < 1
+                    ? tempCartSize < 1
+                      ? colors.daclen_black
+                      : tempCartSize === parseInt(cart?.jumlah_produk)
+                      ? colors.daclen_gray
+                      : colors.daclen_blue
+                    : colors.daclen_blue,
+              },
           ]}
         >
-          <View style={styles.containerLogo}>
+          <View style={[styles.containerLogo, isSearch ? { flex: 1 } : null]}>
             {isSearch ? (
               <Search />
             ) : (
@@ -265,15 +250,14 @@ function Shop(props) {
                 onPress={() => loadCart()}
                 style={styles.containerCart}
                 disabled={
-                  token === null ||
-                  ((cart?.produk === undefined ||
+                  (cart?.produk === undefined ||
                     cart?.produk === null ||
                     cart?.produk?.length === undefined ||
                     cart?.produk?.length < 1 ||
                     cart?.jumlah_produk === undefined ||
                     cart?.jumlah_produk === null ||
                     cart?.jumlah_produk < 1) &&
-                    tempCartSize < 1)
+                  tempCartSize < 1
                 }
               >
                 {cartLoading ? (
@@ -323,15 +307,14 @@ function Shop(props) {
                   Keranjang Belanja
                 </Text>
 
-                {token === null ||
-                ((cart?.produk === undefined ||
+                {(cart?.produk === undefined ||
                   cart?.produk === null ||
                   cart?.produk?.length === undefined ||
                   cart?.produk?.length < 1 ||
                   cart?.jumlah_produk === undefined ||
                   cart?.jumlah_produk === null ||
                   cart?.jumlah_produk < 1) &&
-                  tempCartSize < 1) ? null : (
+                tempCartSize < 1 ? null : (
                   <View style={styles.containerNumber}>
                     <Text
                       allowFontScaling={false}
@@ -427,21 +410,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     backgroundColor: "transparent",
+    paddingBottom: 20,
   },
   containerHeader: {
     marginTop: 20,
-    marginBottom: 32,
+    marginBottom: 24,
     alignSelf: "flex-end",
     backgroundColor: "transparent",
+    alignItems: "center",
     flexDirection: "row",
-    height: 32,
+    maxWidth: screenWidth - 60,
+    height: 36,
     borderWidth: 1,
     borderColor: colors.daclen_light,
     borderTopStartRadius: 6,
     borderBottomStartRadius: 6,
   },
   containerLogo: {
-    flex: 1,
     marginHorizontal: 12,
     marginVertical: 10,
     alignSelf: "center",
@@ -513,6 +498,8 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     fontSize: 12,
     fontFamily: "Poppins",
+    height: "100%",
+    textAlignVertical: "center",
     color: colors.daclen_light,
     alignSelf: "center",
     marginHorizontal: 6,

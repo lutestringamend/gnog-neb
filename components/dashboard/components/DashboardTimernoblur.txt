@@ -7,7 +7,7 @@ import {
   Dimensions,
   ActivityIndicator,
 } from "react-native";
-import { BlurView } from "expo-blur";
+//import { BlurView } from "expo-blur";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../../../styles/base";
@@ -146,130 +146,116 @@ const DashboardTimer = (props) => {
         ]}
         onPress={() => setShowTimerModal((showTimerModal) => !showTimerModal)}
       >
-                <BlurView
-          intensity={10}
+        <View
           style={[
-            styles.container,
+            styles.containerTimer,
             {
-              width: screenWidth,
-              height: screenHeight,
-
-              opacity: 0.95,
+              width: modalWidth,
+              height: modalHeight,
+              start: (screenWidth - modalWidth) / 2,
+              end: (screenWidth - modalWidth) / 2,
+              top: (screenHeight - modalHeight) / 2 - 40,
+              bottom: (screenHeight - modalHeight) / 2 + 40,
             },
           ]}
         >
-        <View
+          <LinearGradient
+            colors={[colors.timer_green_light, colors.timer_green_dark]}
             style={[
-              styles.containerTimer,
+              styles.background,
               {
                 width: modalWidth,
                 height: modalHeight,
-                start: (screenWidth - modalWidth) / 2,
-                end: (screenWidth - modalWidth) / 2,
-                top: (screenHeight - modalHeight) / 2 - 40,
-                bottom: (screenHeight - modalHeight) / 2 + 40,
+                borderRadius: 12,
+              },
+            ]}
+          />
+          <TouchableOpacity
+            style={styles.containerModalTitle}
+            onPress={() =>
+              navigation.navigate("TimerExplanation", {
+                regDateInMs,
+                recruitmentTimer,
+                target_rekrutmen,
+              })
+            }
+          >
+            <Text allowFontScaling={false} style={styles.textHeader}>
+              {countdowntitle}
+            </Text>
+            <MaterialCommunityIcons
+              name="help-circle"
+              size={20}
+              color={colors.daclen_light}
+              style={styles.help}
+            />
+          </TouchableOpacity>
+
+          {digits === defaultDigit ? (
+            <ActivityIndicator
+              size="large"
+              color={colors.daclen_light}
+              style={{ alignSelf: "center", marginVertical: 32 }}
+            />
+          ) : (
+            <View style={[styles.containerCountdown, { width: modalWidth }]}>
+              <ContainerDigit
+                digit1={digits[0]}
+                digit2={digits[1]}
+                label={countdowndays}
+              />
+              <Text allowFontScaling={false} style={styles.textWall}>
+                :
+              </Text>
+              <ContainerDigit
+                digit1={digits[2]}
+                digit2={digits[3]}
+                label={countdownhours}
+              />
+              <Text allowFontScaling={false} style={styles.textWall}>
+                :
+              </Text>
+              <ContainerDigit
+                digit1={digits[4]}
+                digit2={digits[5]}
+                label={countdownminutes}
+              />
+              <Text allowFontScaling={false} style={styles.textWall}>
+                :
+              </Text>
+              <ContainerDigit
+                digit1={digits[6]}
+                digit2={digits[7]}
+                label={countdownseconds}
+              />
+            </View>
+          )}
+
+          <Text
+            allowFontScaling={false}
+            style={[
+              styles.textBottom,
+              {
+                start: 0,
+                end: 0,
+                width: modalWidth,
+                bottom: 28,
               },
             ]}
           >
-            <LinearGradient
-              colors={[colors.timer_green_light, colors.timer_green_dark]}
-              style={[
-                styles.background,
-                {
-                  width: modalWidth,
-                  height: modalHeight,
-                  borderRadius: 12,
-                },
-              ]}
-            />
-            <TouchableOpacity
-              style={styles.containerModalTitle}
-              onPress={() =>
-                navigation.navigate("TimerExplanation", {
-                  regDateInMs,
-                  recruitmentTimer,
-                  target_rekrutmen,
-                })
-              }
-            >
-              <Text allowFontScaling={false} style={styles.textHeader}>
-                {countdowntitle}
-              </Text>
-              <MaterialCommunityIcons
-                name="help-circle"
-                size={20}
-                color={colors.daclen_light}
-                style={styles.help}
-              />
-            </TouchableOpacity>
+            {`${countdownbottom}${
+              target_rekrutmen > 1
+                ? `${target_rekrutmen} Sellers`
+                : `${target_rekrutmen} Seller`
+            }`}
+          </Text>
 
-            {digits === defaultDigit ? (
-              <ActivityIndicator
-                size="large"
-                color={colors.daclen_light}
-                style={{ alignSelf: "center", marginVertical: 32 }}
-              />
-            ) : (
-              <View style={[styles.containerCountdown, { width: modalWidth }]}>
-                <ContainerDigit
-                  digit1={digits[0]}
-                  digit2={digits[1]}
-                  label={countdowndays}
-                />
-                <Text allowFontScaling={false} style={styles.textWall}>
-                  :
-                </Text>
-                <ContainerDigit
-                  digit1={digits[2]}
-                  digit2={digits[3]}
-                  label={countdownhours}
-                />
-                <Text allowFontScaling={false} style={styles.textWall}>
-                  :
-                </Text>
-                <ContainerDigit
-                  digit1={digits[4]}
-                  digit2={digits[5]}
-                  label={countdownminutes}
-                />
-                <Text allowFontScaling={false} style={styles.textWall}>
-                  :
-                </Text>
-                <ContainerDigit
-                  digit1={digits[6]}
-                  digit2={digits[7]}
-                  label={countdownseconds}
-                />
-              </View>
-            )}
-
-            <Text
-              allowFontScaling={false}
-              style={[
-                styles.textBottom,
-                {
-                  start: 0,
-                  end: 0,
-                  width: modalWidth,
-                  bottom: 28,
-                },
-              ]}
-            >
-              {`${countdownbottom}${
-                target_rekrutmen > 1
-                  ? `${target_rekrutmen} Sellers`
-                  : `${target_rekrutmen} Seller`
-              }`}
+          <View style={[styles.containerOK, { start: modalWidth / 2 - 60 }]}>
+            <Text allowFontScaling={false} style={styles.textOK}>
+              OK
             </Text>
-
-            <View style={[styles.containerOK, { start: modalWidth / 2 - 60 }]}>
-              <Text allowFontScaling={false} style={styles.textOK}>
-                OK
-              </Text>
-            </View>
           </View>
-        </BlurView>
-
+        </View>
       </TouchableOpacity>
     );
   } catch (e) {

@@ -36,11 +36,11 @@ const Header = (props) => {
       >
         <TouchableOpacity
           onPress={() => navigation.navigate("About")}
-          style={[styles.containerLogo, {marginVertical: 12}]}
+          style={styles.containerLogoSmall}
         >
           <Image
             source={require("../assets/splashsmall.png")}
-            style={styles.imageLogo}
+            style={styles.imageLogoSmall}
             contentFit="contain"
           />
         </TouchableOpacity>
@@ -49,9 +49,8 @@ const Header = (props) => {
   }
 
   return (
-    <View style={[styles.container, {height: 72}]} >
-      <View style={styles.containerLogo}>
-        <Image
+    <View style={[styles.container, {height: 72, justifyContent: "flex-end"}]} >
+              <Image
           key="userImage"
           style={styles.image}
           source={
@@ -64,7 +63,7 @@ const Header = (props) => {
           placeholder={require("../assets/user.png")}
           transition={100}
         />
-        <View style={styles.containerText}>
+      <View style={styles.containerText}>
           <Text allowFontScaling={false} style={styles.text}>
             Welcome!
           </Text>
@@ -79,7 +78,6 @@ const Header = (props) => {
               : "Reseller"
           } Daclen`}</Text>
         </View>
-      </View>
 
       <View style={styles.containerUser}>
         <TouchableOpacity onPress={() => navigation.navigate("About")}>
@@ -103,17 +101,18 @@ const styles = StyleSheet.create({
     zIndex: 10,
     backgroundColor: colors.daclen_black,
   },
-  containerLogo: {
+  containerLogoSmall: {
+    marginHorizontal: 12,
+    marginVertical: 12,
     flex: 1,
+    alignSelf: "center",
     backgroundColor: "transparent",
-    marginHorizontal: 14,
-    alignSelf: "flex-start",
   },
   containerText: {
     backgroundColor: "transparent",
     position: "absolute",
-    start: 82,
-    top: 24,
+    start: 94,
+    top: 20,
     zIndex: 20,
   },
   containerUser: {
@@ -122,6 +121,11 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     marginTop: 12,
     marginEnd: 10,
+  },
+  imageLogoSmall: {
+    width: 75,
+    height: 20,
+    backgroundColor: "transparent",
   },
   imageLogo: {
     width: 80,
@@ -137,7 +141,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.daclen_light,
     position: "absolute",
-    start: 0,
+    start: 12,
     bottom: -12,
     zIndex: 20,
   },

@@ -4,13 +4,11 @@ import { connect } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 
 import DashboardHeader from "../DashboardHeader";
-import Header from "./Header";
 //import Slider from "./Slider";
 //import Banner from "./Banner";
 //import Alert from "./Alert";
 import Shop from "./Shop";
 //import CheckoutBox from "./CheckoutBox";
-import DashboardBottom from "../dashboard/components/DashboardBottom";
 
 //import { colors } from "../../styles/base";
 //import Youtube from "../home/Youtube";
@@ -51,11 +49,6 @@ function Home(props) {
         />
 
       <Shop goDashboard={() => openDashboard()} />
-
-      <DashboardBottom
-        isSharingAvailable={Platform.OS !== "web"}
-        setMessage={null}
-      />
     </View>
   );
 }

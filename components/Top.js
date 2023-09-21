@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import {
   StyleSheet,
-  TouchableHighlight,
+  TouchableOpacity,
   Text,
   View,
+  ImageBackground,
   Platform,
+  Dimensions,
 } from "react-native";
-import { colors, dimensions, staticDimensions } from "../styles/base";
+import { colors, dimensions } from "../styles/base";
 import MediaKitFiles from "./mediakit/MediaKitFiles";
 import Dashboard from "./dashboard/Dashboard";
 import Home from "./home/Home";
+
+const screenWidth = Dimensions.get("window").width;
 
 const TabButton = (props) => {
   function onPress() {
@@ -19,23 +23,29 @@ const TabButton = (props) => {
     props?.setTab();
   }
   return (
-    <TouchableHighlight
+    <TouchableOpacity
       onPress={() => onPress()}
-      style={[
-        styles.button,
-        {
-          backgroundColor: props?.isActive
-            ? colors.daclen_bg_highlighted
-            : colors.daclen_bg,
-        },
-      ]}
-      underlayColor={colors.daclen_blue}
+      style={styles.button}
       disabled={props?.isActive}
     >
-      <Text allowFontScaling={false} style={[styles.text, props?.isActive ? styles.textFocused : null]}>
-        {props?.title}
-      </Text>
-    </TouchableHighlight>
+      <View style={styles.containerButton}>
+        {props?.isActive ? (
+          <ImageBackground
+            source={require("../assets/buttonfocused.png")}
+            resizeMode="stretch"
+            style={styles.backgroundFocused}
+          >
+            <Text allowFontScaling={false} style={styles.textFocused}>
+              {props?.title}
+            </Text>
+          </ImageBackground>
+        ) : (
+          <Text allowFontScaling={false} style={styles.text}>
+            {props?.title}
+          </Text>
+        )}
+      </View>
+    </TouchableOpacity>
   );
 };
 
@@ -49,7 +59,7 @@ const Top = ({ token, currentUser, recruitmentTimer }) => {
         {
           backgroundColor:
             Platform.OS === "web" ? colors.daclen_bg : "transparent",
-        }
+        },
       ]}
     >
       {tab === "mediakit" ? (
@@ -59,14 +69,18 @@ const Top = ({ token, currentUser, recruitmentTimer }) => {
       ) : (
         <Home goDashboard={() => setTab("profile")} />
       )}
-      <View style={[styles.containerNav, ,
-        Platform.OS === "web" && 
-        {
-          position: "absolute",
-          zIndex: 12,
-          start: 0,
-          top: dimensions.fullHeight - 60,
-        }]}>
+      <View
+        style={[
+          styles.containerNav,
+          ,
+          Platform.OS === "web" && {
+            position: "absolute",
+            zIndex: 12,
+            start: 0,
+            top: dimensions.fullHeight - 60,
+          },
+        ]}
+      >
         <TabButton
           tab={tab}
           key="home"
@@ -104,31 +118,50 @@ const Top = ({ token, currentUser, recruitmentTimer }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: "100%",
+    width: screenWidth,
     backgroundColor: "transparent",
   },
   containerNav: {
-    width: "100%",
+    width: screenWidth,
     backgroundColor: colors.daclen_bg,
     flexDirection: "row",
     elevation: 4,
   },
   button: {
     flex: 1,
-    paddingHorizontal: 12,
+    backgroundColor: "transparent",
+    width: screenWidth / 3,
     height: 60,
     justifyContent: "center",
     alignItems: "center",
   },
+  backgroundFocused: {
+    width: screenWidth / 3,
+    height: 60,
+    paddingHorizontal: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 0,
+  },
   text: {
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins",
+    fontSize: 14,
     textAlign: "center",
-    backgroundColor: "transparent",
+    textAlignVertical: "center",
+    backgroundColor: colors.daclen_bg,
     color: colors.daclen_light,
+    paddingHorizontal: 12,
+    flex: 1,
+    width: screenWidth / 3,
+    height: 60,
+    zIndex: 2,
   },
   textFocused: {
     fontFamily: "Poppins-SemiBold",
+    backgroundColor: "transparent",
     color: colors.white,
+    zIndex: 2,
+    elevation: 2,
   },
 });
 

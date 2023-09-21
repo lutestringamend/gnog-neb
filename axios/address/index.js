@@ -61,9 +61,9 @@ export function processDbAlamatLainToRedux (alamat_lain) {
     let newArray = [];
     for (let alamat of alamat_lain) {
       if (!(alamat?.id === undefined || alamat?.id === null || alamat?.id === "")) {
-        let provinsi = alamat?.provinsi ? JSON.parse(alamat?.provinsi) : null;
-        let kota = alamat?.kota ? JSON.parse(alamat?.kota) : null;
-        let kecamatan = alamat?.kecamatan ? JSON.parse(alamat?.kecamatan) : null;
+        let provinsi = alamat?.provinsi ? typeof alamat?.provinsi === "string" || alamat?.provinsi instanceof String ? JSON.parse(alamat?.provinsi) : alamat?.provinsi : null;
+        let kota = alamat?.kota ? typeof alamat?.kota === "string" || alamat?.kota instanceof String ? JSON.parse(alamat?.kota) : alamat?.kota : null;
+        let kecamatan = alamat?.kecamatan ? typeof alamat?.kecamatan === "string" || alamat?.kecamatan instanceof String ? JSON.parse(alamat?.kecamatan) : alamat?.kecamatan : null;
         let newAlamat = {
           id: alamat?.id,
           nama_depan: alamat?.nama_depan ? alamat?.nama_depan : "",
