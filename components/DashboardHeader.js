@@ -29,7 +29,9 @@ const Header = (props) => {
           {
             backgroundColor:
               Platform.OS === "web" ? colors.daclen_bg : "transparent",
-            alignItems: "center",
+            alignItems: "flex-start",
+            zIndex: 0,
+            height: 36,
           },
         ]}
       >
@@ -87,7 +89,7 @@ const Header = (props) => {
           />
           <Text
             allowFontScaling={false}
-            style={[styles.text, { marginTop: 4, alignSelf: "flex-end" }]}
+            style={[styles.text, { marginTop: 4, alignSelf: "flex-end", textAlign: "right" }]}
           >
             {`id referral anda:\n${currentUser?.name}`}
           </Text>
@@ -106,7 +108,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
     marginVertical: 12,
     flex: 1,
-    alignSelf: "center",
+    alignSelf: "flex-start",
     backgroundColor: "transparent",
   },
   containerText: {
@@ -156,6 +158,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins",
     fontSize: 8,
     color: colors.daclen_light,
+    textAlignVertical: "center",
   },
 });
 

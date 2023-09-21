@@ -35,7 +35,7 @@ import {
   ASYNC_USER_REGISTER_SNAP_TOKEN_KEY,
 } from "../asyncstorage/constants";
 import DashboardButtons from "./components/DashboardButtons";
-import DashboardBottom from "./components/DashboardBottom";
+//import DashboardBottom from "./components/DashboardBottom";
 import DashboardLock from "./components/DashboardLock";
 import DashboardLogout from "./components/DashboardLogout";
 import DashboardVerification from "./components/DashboardVerification";
@@ -336,20 +336,6 @@ const Dashboard = (props) => {
         ) : null}
       </ScrollView>
 
-      {profileLock === undefined ||
-      profileLock === null ||
-      profileLock ? null : (
-        <DashboardBottom
-          isSharingAvailable={Platform.OS !== "web"}
-          setMessage={(text, isError) =>
-            setMessage({
-              text,
-              isError,
-            })
-          }
-        />
-      )}
-
       {currentUser === null ||
       currentUser?.status_member === undefined ||
       currentUser?.status_member === null ||
@@ -373,6 +359,23 @@ const Dashboard = (props) => {
     </View>
   );
 };
+
+/*
+
+      {profileLock === undefined ||
+      profileLock === null ||
+      profileLock ? null : (
+        <DashboardBottom
+          isSharingAvailable={Platform.OS !== "web"}
+          setMessage={(text, isError) =>
+            setMessage({
+              text,
+              isError,
+            })
+          }
+        />
+      )}
+*/
 
 const styles = StyleSheet.create({
   container: {

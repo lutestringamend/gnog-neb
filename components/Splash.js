@@ -3,10 +3,9 @@ import {
   StyleSheet,
   View,
   Text,
-  Image,
   SafeAreaView,
   ActivityIndicator,
-  Dimensions,
+  ImageBackground,
 } from "react-native";
 
 import packageJson from "../package.json";
@@ -17,42 +16,42 @@ function SplashScreen(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image
-        source={require("../assets/splash.png")}
+      <ImageBackground
+        source={require("../assets/splashmaster.png")}
         style={styles.logo}
         resizeMode="contain"
-      />
-
-      <View
-        style={[
-          styles.logo,
-          {
-            top: 90,
-            zIndex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          },
-        ]}
       >
-        {props?.loading ? (
-          <ActivityIndicator
-            size="large"
-            color={colors.daclen_light}
-            style={styles.spinner}
-          />
-        ) : null}
-      </View>
+        <View
+          style={[
+            styles.logo,
+            {
+              top: 100,
+              zIndex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            },
+          ]}
+        >
+          {props?.loading ? (
+            <ActivityIndicator
+              size="large"
+              color={colors.daclen_light}
+              style={styles.spinner}
+            />
+          ) : null}
+        </View>
 
-      <View style={styles.containerText}>
-        {props?.errorText ? (
-          <Text allowFontScaling={false} style={styles.textError}>
-            {props?.errorText}
+        <View style={styles.containerText}>
+          {props?.errorText ? (
+            <Text allowFontScaling={false} style={styles.textError}>
+              {props?.errorText}
+            </Text>
+          ) : null}
+          <Text allowFontScaling={false} style={styles.textVersion}>
+            {versionText}
           </Text>
-        ) : null}
-        <Text allowFontScaling={false} style={styles.textVersion}>
-          {versionText}
-        </Text>
-      </View>
+        </View>
+      </ImageBackground>
     </SafeAreaView>
   );
 }

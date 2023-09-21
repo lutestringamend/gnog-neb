@@ -17,7 +17,7 @@ import {
   vwmarkurlpaddingvertical,
 } from "../mediakit/constants";
 import VWatermarkModel from "./VWatermarkModel";
-import { personalwebsiteurlshort } from "../../axios/constants";
+import { tokoonlineurlshort } from "../../axios/constants";
 
 function VideoLargeWatermarkModel(props) {
   const {
@@ -134,7 +134,7 @@ function VideoLargeWatermarkModel(props) {
               },
             ]}
           >
-             {`${watermarkData?.url ? watermarkData?.url : username ? `${personalwebsiteurlshort}${
+             {`${watermarkData?.url ? watermarkData?.url : username ? `${tokoonlineurlshort}${
             username
           }` : ""}`}
           </Text>

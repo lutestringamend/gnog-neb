@@ -4,7 +4,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Image,
   ActivityIndicator,
   Platform,
   ToastAndroid,
@@ -349,11 +348,11 @@ function Shop(props) {
         </Text>
       ) : null}
 
-      <View style={styles.containerFlatlist}>
+      <View style={[styles.containerFlatlist, {justifyContent: loading ? "center" : "flex-start"}]}>
         {loading ? (
           <ActivityIndicator
             size="large"
-            color={colors.daclen_orange}
+            color={colors.daclen_light}
             style={{ alignSelf: "center", marginVertical: 20 }}
           />
         ) : category === "" && props.products.length < 1 ? (
@@ -381,7 +380,10 @@ function Shop(props) {
                 ? props.products
                 : products
             }
-            contentContainerStyle={styles.containerFlatlistBottom}
+            contentContainerStyle={[styles.containerFlatlistBottom, screenWidth > staticDimensions.shopMaxWidth ? {
+              borderEndWidth: 1,
+              borderEndColor: colors.daclen_gray,
+            } : null]}
             renderItem={({ item, index }) => (
               <ShopItem
                 id={item?.id}
@@ -411,7 +413,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     backgroundColor: "transparent",
-    paddingBottom: 0,
   },
   containerHeader: {
     marginTop: 20,
@@ -487,6 +488,7 @@ const styles = StyleSheet.create({
   },
   containerFlatlist: {
     flex: 1,
+    zIndex: 2,
     backgroundColor: "transparent",
     alignSelf: "center",
     width:
@@ -494,6 +496,7 @@ const styles = StyleSheet.create({
         ? screenWidth
         : staticDimensions.shopMaxWidth,
   },
+
   containerCounter: {
     marginTop: 10,
     marginEnd: 10,

@@ -4,6 +4,36 @@ export const WatermarkData = {
   url: "",
 }
 
+export const STARTER_KIT_HOME = "STARTER_KIT_HOME";
+export const STARTER_KIT_DEFAULT_FONT_SIZE = 14;
+export const STARTER_KIT_DEFAULT_ICON_WIDTH = 80;
+export const STARTER_KIT_DEFAULT_ICON_HEIGHT = 120;
+
+export const STARTER_KIT_FLYER_PRODUK = "STARTER_KIT_FLYER_PRODUK";
+export const STARTER_KIT_FLYER_PRODUK_TEXT = "FLYER PRODUK";
+export const STARTER_KIT_FLYER_PRODUK_ICON = require("../../assets/starterkit/flyerproduk.png");
+
+export const STARTER_KIT_VIDEO_PRODUK = "STARTER_KIT_VIDEO_PRODUK";
+export const STARTER_KIT_VIDEO_PRODUK_TEXT = "VIDEO PRODUK";
+export const STARTER_KIT_VIDEO_PRODUK_ICON = require("../../assets/starterkit/videoproduk.png");
+
+export const STARTER_KIT_FLYER_MENGAJAK = "STARTER_KIT_FLYER_MENGAJAK";
+export const STARTER_KIT_FLYER_MENGAJAK_TEXT = "FLYER MENGAJAK";
+export const STARTER_KIT_FLYER_MENGAJAK_ICON = require("../../assets/starterkit/flyermengajak.png");
+
+export const STARTER_KIT_VIDEO_MENGAJAK = "STARTER_KIT_VIDEO_MENGAJAK";
+export const STARTER_KIT_VIDEO_MENGAJAK_TEXT = "VIDEO MENGAJAK";
+export const STARTER_KIT_VIDEO_MENGAJAK_ICON = require("../../assets/starterkit/videomengajak.png");
+
+export const STARTER_KIT_TOKO_ONLINE_TEXT = `TOKO ONLINE\nSAYA`;
+export const STARTER_KIT_TOKO_ONLINE_ICON = require("../../assets/starterkit/tokoonline.png");
+
+export const STARTER_KIT_PERSONAL_WEBSITE = `PERSONAL\nWEBSITE`;
+export const STARTER_KIT_PERSONAL_WEBSITE_ICON = require("../../assets/starterkit/personalweb.png");
+
+export const STARTER_KIT_REFERRAL = `AJAK TEMAN\nBERGABUNG`;
+export const STARTER_KIT_REFERRAL_ICON = require("../../assets/starterkit/referral.png");
+
 export const wmarkhorizontalmargin = 24;
 
 export const vwmarktemplatewidth = 3508;

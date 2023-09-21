@@ -28,10 +28,10 @@ const WatermarkPhotos = ({
   try {
     return (
       <View style={styles.container}>
-        {error ? null : (
+        {error || photoKeys?.length === undefined || photoKeys?.length < 1 ? null : (
           <ActivityIndicator
             size="large"
-            color={colors.daclen_orange}
+            color={colors.daclen_light}
             style={{ alignSelf: "center", marginVertical: 20, zIndex: 1 }}
           />
         )}
@@ -121,13 +121,13 @@ const styles = StyleSheet.create({
     aspectRatio: 1 / 1,
   },
   textUid: {
-    fontFamily: "Poppins", fontSize: 12,
-    color: colors.daclen_gray,
-    margin: 20,
+    fontFamily: "Poppins-SemiBold", fontSize: 12,
+    color: colors.daclen_light,
+    padding: 20,
     textAlign: "center",
     zIndex: 20,
     height: "100%",
-    backgroundColor: colors.white,
+    backgroundColor: "transparent",
   },
 });
 

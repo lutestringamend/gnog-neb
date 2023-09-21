@@ -9,7 +9,7 @@ import {
   wmarkhorizontalmargin,
 } from "../mediakit/constants";
 import VWatermarkModel from "./VWatermarkModel";
-import { personalwebsiteurlshort } from "../../axios/constants";
+import { tokoonlineurlshort } from "../../axios/constants";
 
 function ImageLargeWatermarkModel(props) {
   const {
@@ -90,7 +90,7 @@ function ImageLargeWatermarkModel(props) {
             },
           ]}
         >
-          {`${watermarkData?.url ? watermarkData?.url : username ? `${personalwebsiteurlshort}${
+          {`${watermarkData?.url ? watermarkData?.url : username ? `${tokoonlineurlshort}${
             username
           }` : ""}`}
         </Text>

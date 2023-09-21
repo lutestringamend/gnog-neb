@@ -20,7 +20,7 @@ import {
 import { overwriteWatermarkVideos } from "../media";
 import { WatermarkData, vwmarktextnamecharlimit, vwmarktextphonecharlimit } from "./constants";
 import { useNavigation } from "@react-navigation/native";
-import { personalwebsiteurlshort } from "../../axios/constants";
+import { tokoonlineurlshort } from "../../axios/constants";
 import { setObjectAsync } from "../asyncstorage";
 import {
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
@@ -83,7 +83,7 @@ const WatermarkSettings = (props) => {
               : currentUser?.detail_user?.nama_depan,
           phone: currentUser?.nomor_telp ? currentUser?.nomor_telp : "",
           url: currentUser?.name
-            ? `${personalwebsiteurlshort}${currentUser?.name}`
+            ? `${tokoonlineurlshort}${currentUser?.name}`
             : "",
     });
   }

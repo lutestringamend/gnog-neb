@@ -120,7 +120,7 @@ export const deleteAlamat = async (token, userId, id) => {
   console.log("deleteAlamat", url, params, config);
 
   try {
-    const response = await Axios.delete(url, params, config).catch((error) => {
+    const response = await Axios.post(url, params, config).catch((error) => {
       console.log(error);
       sentryLog(error);
       return {

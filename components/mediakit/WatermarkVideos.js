@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Image } from "expo-image";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -158,10 +157,10 @@ const WatermarkVideos = (props) => {
 
   return (
     <View style={styles.container}>
-      {mediaKitVideos?.length === undefined || fetching ? null : (
+      {mediaKitVideos?.length === undefined || fetching || mediaKitVideos?.length > 0 ? null : (
         <ActivityIndicator
           size="large"
-          color={colors.daclen_orange}
+          color={colors.daclen_light}
           style={{ alignSelf: "center", marginVertical: 20, zIndex: 1 }}
         />
       )}
@@ -175,7 +174,7 @@ const WatermarkVideos = (props) => {
             <FlashList
               estimatedItemSize={6}
               horizontal={false}
-              numColumns={3}
+              numColumns={2}
               data={mediaKitVideos}
               contentContainerStyle={styles.containerFlatlist}
               refreshControl={
@@ -192,7 +191,7 @@ const WatermarkVideos = (props) => {
                     styles.containerImage,
                     {
                       marginBottom:
-                        mediaKitVideos?.length - index < 2
+                        mediaKitVideos?.length - index < 1
                           ? staticDimensions.pageBottomPadding / 2
                           : 0,
                     },
@@ -257,7 +256,7 @@ const styles = StyleSheet.create({
   containerInside: {
     width: "100%",
     height: "100%",
-    backgroundColor: colors.white,
+    backgroundColor: "transparent",
     position: "absolute",
     top: 0,
     start: 0,
@@ -267,16 +266,16 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: "transparent",
+    marginHorizontal: 10,
   },
   containerImage: {
     flex: 1,
-    backgroundColor: colors.white,
-    borderWidth: 0.5,
-    borderColor: colors.daclen_lightgrey,
+    backgroundColor: "transparent",
+    marginHorizontal: 10,
   },
   containerThumbnail: {
     flex: 1,
-    aspectRatio: 1 / 1,
+    aspectRatio: 3 / 4,
     backgroundColor: colors.daclen_lightgrey,
   },
   containerOrientation: {
@@ -293,25 +292,27 @@ const styles = StyleSheet.create({
   },
   imageList: {
     flex: 1,
-    aspectRatio: 1 / 1,
-    backgroundColor: colors.white,
+    aspectRatio: 3 / 4,
+    backgroundColor: colors.daclen_light,
   },
   textHeader: {
     backgroundColor: "transparent",
-    fontSize: 10,
-    fontFamily: "Poppins-SemiBold",
+    fontSize: 12,
+    fontFamily: "Poppins",
     alignSelf: "center",
     textAlign: "center",
     textAlignVertical: "center",
-    marginVertical: 6,
+    marginTop: 6,
+    marginBottom: 12,
     marginHorizontal: 10,
     height: 48,
-    color: colors.daclen_black,
+    color: colors.daclen_light,
   },
   textUid: {
-    fontFamily: "Poppins",
+    backgroundColor: "transparent",
+    fontFamily: "Poppins-SemiBold",
     fontSize: 12,
-    color: colors.daclen_gray,
+    color: colors.daclen_light,
     margin: 20,
     textAlign: "center",
   },

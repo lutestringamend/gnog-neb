@@ -5,8 +5,10 @@ import {
   View,
   Platform,
   ToastAndroid,
-  ActivityIndicator,
+  Text,
   TouchableOpacity,
+  ActivityIndicator,
+  ImageBackground,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
@@ -44,10 +46,16 @@ import {
   ASYNC_MEDIA_WATERMARK_PHOTOS_KEY,
 } from "../asyncstorage/constants";
 import Header from "../DashboardHeader";
-import { WatermarkData } from "./constants";
+import {
+  STARTER_KIT_FLYER_PRODUK,
+  STARTER_KIT_HOME,
+  STARTER_KIT_VIDEO_PRODUK,
+  WatermarkData,
+} from "./constants";
+import StarterKitHome from "./home/StarterKitHome";
 
 function MediaKitFiles(props) {
-  const [activeTab, setActiveTab] = useState(WATERMARK_PHOTO);
+  const [activeTab, setActiveTab] = useState(STARTER_KIT_HOME);
   const [photoLoading, setPhotoLoading] = useState(false);
   const [videoLoading, setVideoLoading] = useState(false);
   const [sharingAvailability, setSharingAvailability] = useState(null);
@@ -160,7 +168,12 @@ function MediaKitFiles(props) {
 
     const fetchWatermarkPhotos = async () => {
       const result = await getMediaKitPhotos(token);
-      if (result === undefined || result === null || result?.result === undefined || result?.result === null) {
+      if (
+        result === undefined ||
+        result === null ||
+        result?.result === undefined ||
+        result?.result === null
+      ) {
         props.updateReduxMediaKitPhotos(null);
         setPhotoKeys([]);
         if (!(result?.error === undefined || result?.error === null)) {
@@ -171,7 +184,7 @@ function MediaKitFiles(props) {
         props.updateReduxMediaKitPhotos(result?.result);
         props.updateReduxMediaKitPhotosError(null);
       }
-    }
+    };
 
     const checkStorageMediaKitPhotos = async () => {
       const storagePhotos = await getObjectAsync(
@@ -208,43 +221,72 @@ function MediaKitFiles(props) {
 
     return (
       <View style={styles.container}>
-        <Header
-          onSettingPress={() => navigation.navigate("WatermarkSettings")}
-        />
-        <View style={styles.tabView}>
-          <HistoryTabItem
-            activeTab={activeTab}
-            name={WATERMARK_PHOTO}
-            icon={watermarkphotoicon}
-            onPress={() => setActiveTab(WATERMARK_PHOTO)}
+        {Platform.OS === "web" ? (
+          <ImageBackground
+            source={require("../../assets/profilbg.png")}
+            style={styles.background}
+            resizeMode="cover"
           />
-          <HistoryTabItem
-            activeTab={activeTab}
-            name={WATERMARK_VIDEO}
-            icon={watermarkvideoicon}
-            onPress={() => setActiveTab(WATERMARK_VIDEO)}
-          />
-          <TouchableOpacity
-            style={styles.containerRefresh}
-            disabled={photoLoading || videoLoading}
-            onPress={() => refreshContent()}
-          >
-            {photoLoading || videoLoading ? (
-              <ActivityIndicator
-                size={28}
-                color={colors.daclen_blue}
-                style={{ alignSelf: "center" }}
-              />
-            ) : (
-              <MaterialCommunityIcons
-                name="refresh-circle"
-                size={28}
-                color={colors.daclen_blue}
-                style={{ alignSelf: "center" }}
-              />
-            )}
-          </TouchableOpacity>
-        </View>
+        ) : null}
+
+        <Header />
+
+        {activeTab === STARTER_KIT_HOME ? null : (
+          <View style={styles.containerNav}>
+            <TouchableOpacity
+              style={[
+                styles.containerRefresh,
+                {
+                  backgroundColor:
+                    photoLoading || videoLoading
+                      ? colors.daclen_gray
+                      : colors.daclen_bg_highlighted,
+                  borderTopStartRadius: 6,
+                  borderBottomStartRadius: 6,
+                },
+              ]}
+              disabled={photoLoading || videoLoading}
+              onPress={() => setActiveTab(STARTER_KIT_HOME)}
+            >
+              <Text style={styles.textRefresh}>BACK</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.containerRefresh,
+                {
+                  backgroundColor:
+                    photoLoading || videoLoading
+                      ? colors.daclen_gray
+                      : colors.daclen_green_button,
+                },
+              ]}
+              disabled={photoLoading || videoLoading}
+              onPress={() => navigation.navigate("WatermarkSettings")}
+            >
+              <Text style={styles.textRefresh}>SETTING</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.containerRefresh}
+              disabled={photoLoading || videoLoading}
+              onPress={() => refreshContent()}
+            >
+              {photoLoading || videoLoading ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.daclen_light}
+                  style={{
+                    alignSelf: "center",
+                    marginVertical: 10,
+                    marginHorizontal: 12,
+                  }}
+                />
+              ) : (
+                <Text style={styles.textRefresh}>REFRESH</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        )}
+
         <View style={styles.scrollView}>
           {token === null ||
           currentUser === null ||
@@ -257,7 +299,7 @@ function MediaKitFiles(props) {
               color={colors.daclen_orange}
               style={styles.spinner}
             />
-          ) : activeTab === WATERMARK_VIDEO ? (
+          ) : activeTab === STARTER_KIT_VIDEO_PRODUK ? (
             <WatermarkVideos
               watermarkData={watermarkData}
               userId={currentUser?.id}
@@ -265,7 +307,7 @@ function MediaKitFiles(props) {
               loading={videoLoading}
               refreshPage={() => refreshVideos()}
             />
-          ) : (
+          ) : activeTab === STARTER_KIT_FLYER_PRODUK ? (
             <WatermarkPhotos
               userId={currentUser?.id}
               loading={photoLoading}
@@ -275,6 +317,11 @@ function MediaKitFiles(props) {
               photos={mediaKitPhotos}
               photoKeys={photoKeys}
               refreshPage={() => refreshPhotos()}
+            />
+          ) : (
+            <StarterKitHome
+              currentUser={currentUser}
+              setActiveTab={(e) => setActiveTab(e)}
             />
           )}
         </View>
@@ -294,6 +341,10 @@ function MediaKitFiles(props) {
   }
 }
 
+/*
+
+*/
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -303,19 +354,41 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     width: "100%",
-    backgroundColor: colors.white,
+    backgroundColor: "transparent",
+    alignItems: "center",
+  },
+  background: {
+    position: "absolute",
+    zIndex: 0,
+    top: 0,
+    start: 0,
+    width: "100%",
+    height: "100%",
   },
   containerHeader: {
     flexDirection: "row",
     padding: 10,
     backgroundColor: colors.daclen_graydark,
   },
+  containerNav: {
+    flexDirection: "row",
+    alignSelf: "flex-end",
+    marginVertical: 12,
+    zIndex: 10,
+    elevation: 4,
+    backgroundColor: colors.daclen_bg,
+    borderColor: colors.daclen_light,
+    borderTopStartRadius: 6,
+    borderBottomStartRadius: 6,
+    borderTopWidth: 1,
+    borderStartWidth: 1,
+    borderBottomWidth: 1,
+    paddingEnd: 20,
+  },
   containerRefresh: {
-    alignSelf: "center",
     backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
-    marginStart: 6,
   },
   containerBox: {
     backgroundColor: colors.white,
@@ -343,6 +416,14 @@ const styles = StyleSheet.create({
   spinner: {
     alignSelf: "center",
     marginVertical: 20,
+  },
+  textRefresh: {
+    backgroundColor: "transparent",
+    marginVertical: 10,
+    marginHorizontal: 12,
+    fontSize: 14,
+    fontFamily: "Poppins",
+    color: colors.daclen_light,
   },
   text: {
     color: colors.daclen_gray,
