@@ -34,7 +34,7 @@ import {
 import Header from "../profile/Header";
 import { privacypolicy } from "../profile/constants";
 import Separator from "../profile/Separator";
-import { changeAddress } from "../../axios/address";
+import { changeAddress, deleteAlamat } from "../../axios/address";
 
 function PickAddress(props) {
   const navigation = useNavigation();
@@ -42,7 +42,7 @@ function PickAddress(props) {
   const [changeText, setChangeText] = useState(null);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const { currentUser, currentAddress, addressId, addresses } = props;
+  const { token, currentUser, currentAddress, addressId, addresses } = props;
 
   try {
     useEffect(() => {
@@ -162,10 +162,13 @@ function PickAddress(props) {
     };
 
     const deleteAddressData = async (item) => {
-      let newAddresses = changeAddress(addresses, item?.id, null);
       console.log("deleteAddressData", item?.id);
-      await setObjectAsync(ASYNC_USER_ADDRESSES_KEY, newAddresses);
-      props.updateReduxUserAddresses(newAddresses);
+      const result = await deleteAlamat(token, currentUser?.id, item?.id);
+      if (!(result === undefined || result === null || result?.response !== "success" || result?.error !== null)) {
+        let newAddresses = changeAddress(addresses, item?.id, null);
+        await setObjectAsync(ASYNC_USER_ADDRESSES_KEY, newAddresses);
+        props.updateReduxUserAddresses(newAddresses);
+      }
     };
 
     const onRowDidOpen = (rowKey) => {
@@ -458,6 +461,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (store) => ({
+  token: store.userState.token,
   currentUser: store.userState.currentUser,
   currentAddress: store.userState.currentAddress,
   addresses: store.userState.addresses,

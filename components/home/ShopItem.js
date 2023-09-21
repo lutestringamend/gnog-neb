@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Text,
   ActivityIndicator,
+  ImageBackground,
 } from "react-native";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
@@ -13,7 +14,7 @@ import Cart from "../cart/Cart";
 import { colors, blurhash } from "../../styles/base";
 
 const ShopItem = (props) => {
-  const { id, nama, harga_currency, foto_url, isPremium } = props;
+  const { id, index, nama, harga_currency, foto_url, isPremium } = props;
   const navigation = useNavigation();
 
   const openProduct = () => {
@@ -28,76 +29,86 @@ const ShopItem = (props) => {
   }
 
   return (
-    <View style={styles.containerItem} key={id}>
-      {nama === "" || nama === null || nama === undefined ? (
+    <ImageBackground
+      source={require("../../assets/shopitembg.png")}
+      style={[styles.containerItem, { marginTop: index === 0 ? 24 : 10 }]}
+      key={id}
+    >
+      {foto_url ? (
+        <TouchableOpacity
+          onPress={() => openProduct()}
+          style={styles.containerImage}
+        >
+          <Image
+            key={id}
+            style={styles.image}
+            source={foto_url}
+            onClick={() => openProduct()}
+            contentFit="cover"
+            placeholder={blurhash}
+            transition={50}
+          />
+        </TouchableOpacity>
+      ) : (
         <ActivityIndicator
           size="small"
           color={colors.daclen_gray}
-          style={{ flex: 2, alignSelf: "center" }}
+          style={{ alignSelf: "center" }}
         />
-      ) : (
-        <View style={styles.containerLeft}>
-          <TouchableOpacity onPress={() => openProduct()}>
-            <Image
-              key={id}
-              style={styles.image}
-              source={foto_url}
-              onClick={() => openProduct()}
-              contentFit="cover"
-              placeholder={blurhash}
-              transition={50}
-            />
-          </TouchableOpacity>
-          <View style={styles.containerInfo}>
-            <Text allowFontScaling={false} style={styles.textName}>{nama}</Text>
-            <Text allowFontScaling={false} style={styles.textPrice}>Rp {harga_currency}</Text>
-          </View>
-        </View>
       )}
 
-      <View style={styles.containerRight}>
-        <TouchableOpacity
-          style={[
-            styles.containerRightButton,
-            {
-              borderBottomWidth: 0.5,
-              borderBottomColor: colors.daclen_black,
-              borderTopEndRadius: 10,
-            },
-          ]}
-          onPress={() => openProduct()}
-        >
-          <Text allowFontScaling={false} style={styles.textButton}>DETAIL</Text>
-        </TouchableOpacity>
-        <View
-          style={[
-            styles.containerRightButton,
-            {
-              borderTopWidth: 0.5,
-              borderTopColor: colors.daclen_black,
-              borderBottomEndRadius: 10,
-            },
-          ]}
-        >
-          <Cart
-            isShop={true}
-            isPremium={isPremium}
-            produk_id={id}
-            navigation={navigation}
-            goDashboard={() => openDashboard()}
+      <TouchableOpacity
+        style={styles.containerRightTop}
+        onPress={() => openProduct()}
+      >
+        {nama === "" || nama === null || nama === undefined ? (
+          <ActivityIndicator
+            size="small"
+            color={colors.daclen_gray}
+            style={{ flex: 2, alignSelf: "center" }}
           />
-        </View>
+        ) : (
+          <View style={styles.containerInfo}>
+            <Text allowFontScaling={false} style={styles.textName}>
+              {nama}
+            </Text>
+            <Text allowFontScaling={false} style={styles.textPrice}>
+              Rp {harga_currency}
+            </Text>
+          </View>
+        )}
+      </TouchableOpacity>
+
+      <View style={styles.containerRightBottom}>
+        <Cart
+          isShop={true}
+          isPremium={isPremium}
+          produk_id={id}
+          navigation={navigation}
+          goDashboard={() => openDashboard()}
+        />
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   containerItem: {
     flexDirection: "row",
-    backgroundColor: colors.daclen_light,
-    marginTop: 10,
-    elevation: 2,
+    backgroundColor: colors.daclen_bg,
+    opacity: 0.9,
+    width: "100%",
+    height: 120,
+  },
+  containerImage: {
+    position: "absolute",
+    height: "100%",
+    top: 0,
+    bottom: 0,
+    start: 0,
+    backgroundColor: "transparent",
+    zIndex: 3,
+    justifyContent: "center",
   },
   containerLeft: {
     flex: 2,
@@ -107,56 +118,47 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   containerInfo: {
-    flex: 1,
-    backgroundColor: "center",
-    marginStart: 10,
-    alignSelf: "flex-start",
-    height: 100,
-  },
-  containerRight: {
-    flex: 1,
-    borderStartWidth: 1,
-    borderStartColor: colors.daclen_black,
     backgroundColor: "transparent",
+    alignItems: "flex-end",
   },
-  containerRightButton: {
-    flex: 1,
+  containerRightTop: {
+    position: "absolute",
+    top: 12,
+    end: 10,
+    zIndex: 2,
     backgroundColor: "transparent",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 12,
-    height: 50,
+    alignItems: "flex-end",
+  },
+  containerRightBottom: {
+    position: "absolute",
+    bottom: 4,
+    end: 10,
+    zIndex: 2,
+    backgroundColor: "transparent",
+    alignItems: "flex-end",
   },
   textName: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 14,
-    color: colors.daclen_black,
-    marginEnd: 10,
-    alignSelf: "flex-start",
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 12,
+    color: colors.daclen_light,
+    alignSelf: "flex-end",
+    textAlign: "right",
+    backgroundColor: "transparent",
   },
   image: {
-    width: 94,
-    height: 94,
+    width: 72,
+    height: 80,
+    marginVertical: 10,
     alignSelf: "center",
     backgroundColor: "transparent",
-    marginStart: 12,
   },
   textPrice: {
-    fontFamily: "Poppins", fontSize: 12,
-    color: colors.daclen_orange,
-    position: "absolute",
-    zIndex: 2,
-    end: 10,
-    bottom: 0,
-  },
-  textButton: {
-    fontFamily: "Poppins-SemiBold", 
-    fontSize: 12,
-    color: colors.daclen_black,
-    textAlign: "center",
-    textAlignVertical: "center",
-    marginHorizontal: 10,
-    alignSelf: "center",
+    textAlign: "right",
+    fontFamily: "Poppins",
+    fontSize: 10,
+    color: colors.daclen_light,
+    marginTop: 4,
+    backgroundColor: "transparent",
   },
 });
 

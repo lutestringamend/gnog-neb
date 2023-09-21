@@ -16,7 +16,7 @@ import { bindActionCreators } from "redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 import ShopItem from "./ShopItem";
 import Search from "./Search";
 import { getObjectAsync } from "../asyncstorage";
@@ -210,9 +210,7 @@ function Shop(props) {
   };
 
   return (
-    <View
-      style={styles.container}
-    >
+    <View style={styles.container}>
       {token === null ||
       currentUser === null ||
       currentUser?.id === undefined ? null : (
@@ -222,24 +220,25 @@ function Shop(props) {
             isSearch
               ? {
                   backgroundColor: colors.daclen_black,
+                  width: screenWidth - 60,
                 }
               : {
-                backgroundColor:
-                  cart === null ||
-                  cart?.produk === undefined ||
-                  cart?.produk === null ||
-                  cart?.produk?.length === undefined ||
-                  cart?.produk?.length < 1 ||
-                  cart?.jumlah_produk === undefined ||
-                  cart?.jumlah_produk === null ||
-                  cart?.jumlah_produk < 1
-                    ? tempCartSize < 1
-                      ? colors.daclen_black
-                      : tempCartSize === parseInt(cart?.jumlah_produk)
-                      ? colors.daclen_gray
-                      : colors.daclen_blue
-                    : colors.daclen_blue,
-              },
+                  backgroundColor:
+                    cart === null ||
+                    cart?.produk === undefined ||
+                    cart?.produk === null ||
+                    cart?.produk?.length === undefined ||
+                    cart?.produk?.length < 1 ||
+                    cart?.jumlah_produk === undefined ||
+                    cart?.jumlah_produk === null ||
+                    cart?.jumlah_produk < 1
+                      ? tempCartSize < 1
+                        ? colors.daclen_black
+                        : tempCartSize === parseInt(cart?.jumlah_produk)
+                        ? colors.daclen_gray
+                        : colors.daclen_blue
+                      : colors.daclen_blue,
+                },
           ]}
         >
           <View style={[styles.containerLogo, isSearch ? { flex: 1 } : null]}>
@@ -382,9 +381,11 @@ function Shop(props) {
                 ? props.products
                 : products
             }
-            renderItem={({ item }) => (
+            contentContainerStyle={styles.containerFlatlistBottom}
+            renderItem={({ item, index }) => (
               <ShopItem
                 id={item?.id}
+                index={index}
                 nama={item?.nama}
                 harga_currency={item?.harga_currency}
                 foto_url={
@@ -410,11 +411,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     backgroundColor: "transparent",
-    paddingBottom: 20,
+    paddingBottom: 0,
   },
   containerHeader: {
     marginTop: 20,
-    marginBottom: 24,
+    marginBottom: 12,
     alignSelf: "flex-end",
     backgroundColor: "transparent",
     alignItems: "center",
@@ -457,6 +458,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  containerFlatlistBottom: {
+    flex: 1,
+    backgroundColor: "transparent",
+    alignSelf: "center",
+    width:
+      screenWidth < staticDimensions.shopMaxWidth
+        ? screenWidth
+        : staticDimensions.shopMaxWidth,
+    paddingBottom: staticDimensions.pageBottomPadding / 2,
+  },
   containerHorizontal: {
     flexDirection: "row",
     alignItems: "center",
@@ -477,6 +488,11 @@ const styles = StyleSheet.create({
   containerFlatlist: {
     flex: 1,
     backgroundColor: "transparent",
+    alignSelf: "center",
+    width:
+      screenWidth < staticDimensions.shopMaxWidth
+        ? screenWidth
+        : staticDimensions.shopMaxWidth,
   },
   containerCounter: {
     marginTop: 10,

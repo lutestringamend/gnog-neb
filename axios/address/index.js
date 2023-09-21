@@ -5,7 +5,7 @@ import {
   USER_ADDRESS_UPDATE_STATE_CHANGE,
   USER_RAJAONGKIR_STATE_CHANGE,
 } from "../../redux/constants";
-import { updateuserdata, rajaongkirAPI, updatealamat } from "../constants";
+import { updateuserdata, rajaongkirAPI, updatealamat, deletealamat } from "../constants";
 import { getCurrentUser } from "../user";
 import { sentryLog } from "../../sentry";
 import { getObjectAsync, setObjectAsync } from "../../components/asyncstorage";
@@ -107,6 +107,50 @@ export function clearRajaOngkir(clearKota, clearKecamatan) {
   };
 }
 
+export const deleteAlamat = async (token, userId, id) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  };
+
+  const params = { id };
+  const url = deletealamat + "/" + userId.toString();
+  console.log("deleteAlamat", url, params, config);
+
+  try {
+    const response = await Axios.delete(url, params, config).catch((error) => {
+      console.log(error);
+      sentryLog(error);
+      return {
+        response: null,
+        error: error.toString(),
+      };
+    });
+    const data = response?.data;
+    let error = null;
+    console.log("deleteAlamat response", data);
+    if (data?.session !== "success") {
+      error = data?.message ? data?.message : null;
+    }
+    if (Platform.OS === "android" && data?.message) {
+      ToastAndroid.show(data?.message, ToastAndroid.LONG);
+    }
+    return {
+      response: data?.session ? data?.session : "",
+      error,
+    };
+  } catch (e) {
+    console.error(e);
+    sentryLog(e);
+    return {
+      response: null,
+      error: e.toString(),
+    };
+  }
+};
+
 export const updateUserAlamat = async (token, userId, address) => {
   const config = {
     headers: {
@@ -116,7 +160,7 @@ export const updateUserAlamat = async (token, userId, address) => {
   };
 
   const params = {
-    uuid: address?.id ? address?.id : "",
+    id: address?.id ? address?.id : "",
     nama_depan: address?.nama_depan ? address?.nama_depan : "",
     nama_belakang: address?.nama_belakang ? address?.nama_belakang : "",
     nomor_telp: address?.nomor_telp ? address?.nomor_telp : "",
@@ -133,7 +177,7 @@ export const updateUserAlamat = async (token, userId, address) => {
   console.log("updateUserAlamat", url, params);
 
   try {
-    const response = await Axios.post(url, address, config).catch((error) => {
+    const response = await Axios.post(url, params, config).catch((error) => {
       console.log(error);
       sentryLog(error);
       return {
@@ -153,7 +197,7 @@ export const updateUserAlamat = async (token, userId, address) => {
 
     return {
       response: data,
-      error: null,
+      error,
     };
   } catch (e) {
     console.log(e);

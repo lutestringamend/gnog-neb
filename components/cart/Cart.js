@@ -227,7 +227,7 @@ function Cart(props) {
             {token === null
               ? `Login/Register`
               : currentUser?.isActive
-              ? `Masukkan\nKeranjang`
+              ? `Masukkan Keranjang`
               : `Bergabung`}
           </Text>
         )}
@@ -245,7 +245,7 @@ function Cart(props) {
         style={[
           styles.cartIcon,
           {
-            height: textSize ? textSize + 20 : 36,
+            height: textSize ? textSize + 20 : 32,
             borderTopStartRadius: 4,
             borderBottomStartRadius: 4,
           },
@@ -265,7 +265,7 @@ function Cart(props) {
           styles.containerNumber,
           {
             width: textSize ? textSize + 24 : 40,
-            height: textSize ? textSize + 20 : 36,
+            height: textSize ? textSize + 20 : 32,
           },
         ]}
       >
@@ -281,7 +281,7 @@ function Cart(props) {
               styles.textCart,
               {
                 fontFamily: "Poppins-SemiBold",
-                fontSize: textSize ? textSize : 16,
+                fontSize: textSize ? textSize : 14,
               },
             ]}
             inputMode="decimal"
@@ -299,7 +299,7 @@ function Cart(props) {
         style={[
           styles.cartIcon,
           {
-            height: textSize ? textSize + 20 : 36,
+            height: textSize ? textSize + 20 : 32,
             borderTopEndRadius: 4,
             borderBottomEndRadius: 4,
           },
@@ -322,10 +322,9 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     flexDirection: "row",
     alignItems: "center",
-    elevation: 6,
   },
   cartIcon: {
-    backgroundColor: "transparent",
+    backgroundColor: colors.daclen_light,
     justifyContent: "center",
     alignItems: "center",
     padding: 2,
@@ -333,7 +332,7 @@ const styles = StyleSheet.create({
     borderColor: colors.daclen_gray,
   },
   containerNumber: {
-    backgroundColor: "transparent",
+    backgroundColor: colors.daclen_light,
     justifyContent: "center",
     alignItems: "center",
     borderColor: colors.daclen_gray,
@@ -350,13 +349,14 @@ const styles = StyleSheet.create({
     width: 30,
   },
   textButton: {
-    fontFamily: "Poppins-SemiBold",
+    fontFamily: "Poppins",
     fontSize: 12,
-    color: colors.daclen_black,
-    textAlign: "center",
+    color: colors.daclen_light,
+    textAlign: "right",
     textAlignVertical: "center",
-    marginHorizontal: 10,
     alignSelf: "center",
+    marginHorizontal: 10,
+    marginBottom: 6,
   },
 });
 

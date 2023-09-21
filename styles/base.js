@@ -11,6 +11,7 @@ export const staticDimensions = {
   webviewWidthMargin: 24,
   productPhotoWidthMargin: 12,
   youtubeEmbedAspectRatio: 560 / 340,
+  shopMaxWidth: 390,
 }
 
 export const dimensions = {

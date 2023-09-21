@@ -7,7 +7,6 @@ import {
   Platform,
 } from "react-native";
 import { Image } from "expo-image";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
 
@@ -15,7 +14,7 @@ import { colors } from "../styles/base";
 import { capitalizeFirstLetter } from "../axios/cart";
 
 const Header = (props) => {
-  const { username, currentUser, profileLock } = props;
+  const { currentUser } = props;
   const navigation = useNavigation();
 
   if (
@@ -49,35 +48,35 @@ const Header = (props) => {
   }
 
   return (
-    <View style={[styles.container, {height: 72, justifyContent: "flex-end"}]} >
-              <Image
-          key="userImage"
-          style={styles.image}
-          source={
-            currentUser?.detail_user?.foto
-              ? currentUser?.detail_user?.foto
-              : require("../assets/user.png")
-          }
-          alt={currentUser?.name}
-          contentFit="cover"
-          placeholder={require("../assets/user.png")}
-          transition={100}
-        />
+    <View style={[styles.container, { height: 72 }]}>
+      <Image
+        key="userImage"
+        style={styles.image}
+        source={
+          currentUser?.detail_user?.foto
+            ? currentUser?.detail_user?.foto
+            : require("../assets/user.png")
+        }
+        alt={currentUser?.name}
+        contentFit="cover"
+        placeholder={require("../assets/user.png")}
+        transition={100}
+      />
       <View style={styles.containerText}>
-          <Text allowFontScaling={false} style={styles.text}>
-            Welcome!
-          </Text>
-          <Text allowFontScaling={false} style={styles.textName}>
-            {currentUser?.detail_user?.nama_lengkap
-              ? currentUser?.detail_user?.nama_lengkap
-              : currentUser?.name}
-          </Text>
-          <Text allowFontScaling={false} style={styles.text}>{`${
-            currentUser?.status
-              ? capitalizeFirstLetter(currentUser?.status)
-              : "Reseller"
-          } Daclen`}</Text>
-        </View>
+        <Text allowFontScaling={false} style={styles.text}>
+          Welcome!
+        </Text>
+        <Text allowFontScaling={false} style={styles.textName}>
+          {currentUser?.detail_user?.nama_lengkap
+            ? currentUser?.detail_user?.nama_lengkap
+            : currentUser?.name}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text}>{`${
+          currentUser?.status
+            ? capitalizeFirstLetter(currentUser?.status)
+            : "Reseller"
+        } Daclen`}</Text>
+      </View>
 
       <View style={styles.containerUser}>
         <TouchableOpacity onPress={() => navigation.navigate("About")}>
@@ -86,7 +85,10 @@ const Header = (props) => {
             style={styles.imageLogo}
             contentFit="contain"
           />
-          <Text allowFontScaling={false} style={[styles.text, {marginTop: 4, alignSelf: "flex-end"}]}>
+          <Text
+            allowFontScaling={false}
+            style={[styles.text, { marginTop: 4, alignSelf: "flex-end" }]}
+          >
             {`id referral anda:\n${currentUser?.name}`}
           </Text>
         </TouchableOpacity>
@@ -97,7 +99,6 @@ const Header = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
     zIndex: 10,
     backgroundColor: colors.daclen_black,
   },
@@ -117,10 +118,10 @@ const styles = StyleSheet.create({
   },
   containerUser: {
     alignItems: "flex-end",
-    alignSelf: "flex-start",
+    position: "absolute",
     backgroundColor: "transparent",
-    marginTop: 12,
-    marginEnd: 10,
+    top: 12,
+    end: 10,
   },
   imageLogoSmall: {
     width: 75,
@@ -160,7 +161,6 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (store) => ({
   currentUser: store.userState.currentUser,
-  profileLock: store.userState.profileLock,
 });
 
 export default connect(mapStateToProps, null)(Header);
