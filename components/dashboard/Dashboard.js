@@ -17,7 +17,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { colors } from "../../styles/base";
-import Header from "../DashboardHeader";
+import Header from "./Header";
 import {
   clearUserData,
   getCurrentUser,

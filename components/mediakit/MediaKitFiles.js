@@ -43,7 +43,7 @@ import {
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
   ASYNC_MEDIA_WATERMARK_PHOTOS_KEY,
 } from "../asyncstorage/constants";
-import Header from "./Header";
+import Header from "../DashboardHeader";
 import { WatermarkData } from "./constants";
 
 function MediaKitFiles(props) {

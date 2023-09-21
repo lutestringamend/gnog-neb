@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Platform,
   ToastAndroid,
+  Dimensions,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { connect } from "react-redux";
@@ -28,6 +29,8 @@ import {
   alterKeranjang,
   clearKeranjang,
 } from "../../axios/cart";
+
+const screenWidth = Dimensions.get("window").width;
 
 function Shop(props) {
   const [storageProducts, setStorageProducts] = useState(null);
@@ -226,16 +229,122 @@ function Shop(props) {
       {token === null ||
       currentUser === null ||
       currentUser?.id === undefined ? null : (
-        <View style={styles.containerHeader}>
+        <View
+          style={[
+            styles.containerHeader,
+            {
+              backgroundColor:
+                cart === null ||
+                cart?.produk === undefined ||
+                cart?.produk === null ||
+                cart?.produk?.length === undefined ||
+                cart?.produk?.length < 1 ||
+                cart?.jumlah_produk === undefined ||
+                cart?.jumlah_produk === null ||
+                cart?.jumlah_produk < 1
+                  ? tempCartSize < 1
+                    ? colors.daclen_black
+                    : tempCartSize === parseInt(cart?.jumlah_produk)
+                    ? colors.daclen_gray
+                    : colors.daclen_blue
+                  : colors.daclen_blue,
+            },
+            isSearch
+              ? {
+                  width: screenWidth - 88,
+                  backgroundColor: colors.daclen_black,
+                }
+              : null,
+          ]}
+        >
           <View style={styles.containerLogo}>
             {isSearch ? (
               <Search />
             ) : (
-              <TouchableOpacity onPress={() => openLogo()}>
-                <Image
-                  source={require("../../assets/splashsmall.png")}
-                  style={styles.imageLogo}
-                />
+              <TouchableOpacity
+                onPress={() => loadCart()}
+                style={styles.containerCart}
+                disabled={
+                  token === null ||
+                  ((cart?.produk === undefined ||
+                    cart?.produk === null ||
+                    cart?.produk?.length === undefined ||
+                    cart?.produk?.length < 1 ||
+                    cart?.jumlah_produk === undefined ||
+                    cart?.jumlah_produk === null ||
+                    cart?.jumlah_produk < 1) &&
+                    tempCartSize < 1)
+                }
+              >
+                {cartLoading ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={colors.daclen_light}
+                    style={styles.spinner}
+                  />
+                ) : (
+                  <MaterialCommunityIcons
+                    name={
+                      (cart?.produk === undefined ||
+                        cart?.produk === null ||
+                        cart?.produk?.length === undefined ||
+                        cart?.produk?.length < 1 ||
+                        cart?.jumlah_produk === undefined ||
+                        cart?.jumlah_produk === null ||
+                        cart?.jumlah_produk < 1) &&
+                      tempCartSize < 1
+                        ? "cart-outline"
+                        : "cart"
+                    }
+                    size={18}
+                    color={colors.daclen_light}
+                  />
+                )}
+
+                <Text
+                  allowFontScaling={false}
+                  style={[
+                    styles.textCart,
+                    {
+                      fontFamily:
+                        (cart?.produk === undefined ||
+                          cart?.produk === null ||
+                          cart?.produk?.length === undefined ||
+                          cart?.produk?.length < 1 ||
+                          cart?.jumlah_produk === undefined ||
+                          cart?.jumlah_produk === null ||
+                          cart?.jumlah_produk < 1) &&
+                        tempCartSize < 1
+                          ? "Poppins"
+                          : "Poppins-SemiBold",
+                    },
+                  ]}
+                >
+                  Keranjang Belanja
+                </Text>
+
+                {token === null ||
+                ((cart?.produk === undefined ||
+                  cart?.produk === null ||
+                  cart?.produk?.length === undefined ||
+                  cart?.produk?.length < 1 ||
+                  cart?.jumlah_produk === undefined ||
+                  cart?.jumlah_produk === null ||
+                  cart?.jumlah_produk < 1) &&
+                  tempCartSize < 1) ? null : (
+                  <View style={styles.containerNumber}>
+                    <Text
+                      allowFontScaling={false}
+                      style={styles.textCartNumber}
+                    >
+                      {tempCartSize > 0
+                        ? tempCartSize
+                        : cart?.jumlah_produk
+                        ? cart?.jumlah_produk
+                        : 0}
+                    </Text>
+                  </View>
+                )}
               </TouchableOpacity>
             )}
           </View>
@@ -245,79 +354,18 @@ function Shop(props) {
           >
             <MaterialCommunityIcons
               name={isSearch ? "close" : "magnify"}
-              size={20}
+              size={24}
               color={colors.daclen_light}
             />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => loadCart()}
-            style={[
-              styles.containerCart,
-              {
-                backgroundColor:
-                  tempCartSize < 1 ||
-                  cart === null ||
-                  cart?.produk === undefined ||
-                  cart?.produk === null ||
-                  cart?.produk?.length === undefined ||
-                  cart?.produk?.length < 1 ||
-                  cart?.jumlah_produk === undefined ||
-                  cart?.jumlah_produk === null ||
-                  tempCartSize === parseInt(cart?.jumlah_produk)
-                    ? colors.daclen_gray
-                    : colors.daclen_blue,
-              },
-            ]}
-            disabled={
-              token === null ||
-              ((cart?.produk === undefined ||
-                cart?.produk === null ||
-                cart?.produk?.length === undefined ||
-                cart?.produk?.length < 1 ||
-                cart?.jumlah_produk === undefined ||
-                cart?.jumlah_produk === null ||
-                cart?.jumlah_produk < 1) &&
-                tempCartSize < 1)
-            }
-          >
-            {cartLoading ? (
-              <ActivityIndicator
-                size="small"
-                color={colors.daclen_light}
-                style={styles.spinner}
-              />
-            ) : (
-              <MaterialCommunityIcons
-                name="cart"
-                size={28}
-                color={colors.daclen_light}
-              />
-            )}
-
-            {token === null ||
-            ((cart?.produk === undefined ||
-              cart?.produk === null ||
-              cart?.produk?.length === undefined ||
-              cart?.produk?.length < 1 ||
-              cart?.jumlah_produk === undefined ||
-              cart?.jumlah_produk === null ||
-              cart?.jumlah_produk < 1) &&
-              tempCartSize < 1) ? null : (
-              <View style={styles.containerNumber}>
-                <Text allowFontScaling={false} style={styles.textCartNumber}>
-                  {tempCartSize > 0
-                    ? tempCartSize
-                    : cart?.jumlah_produk
-                    ? cart?.jumlah_produk
-                    : 0}
-                </Text>
-              </View>
-            )}
           </TouchableOpacity>
         </View>
       )}
 
-      {cartError ? <Text allowFontScaling={false} style={styles.textError}>{cartError}</Text> : null}
+      {cartError ? (
+        <Text allowFontScaling={false} style={styles.textError}>
+          {cartError}
+        </Text>
+      ) : null}
 
       <View style={styles.containerFlatlist}>
         {loading ? (
@@ -327,7 +375,9 @@ function Shop(props) {
             style={{ alignSelf: "center", marginVertical: 20 }}
           />
         ) : category === "" && props.products.length < 1 ? (
-          <Text allowFontScaling={false} style={styles.textUid}>Tidak ada produk tersedia</Text>
+          <Text allowFontScaling={false} style={styles.textUid}>
+            Tidak ada produk tersedia
+          </Text>
         ) : props.searchFilter !== null && products.length < 1 ? (
           <Text allowFontScaling={false} style={styles.textUid}>
             Tidak menemukan produk dari kata pencarian "{props.searchFilter}"
@@ -379,10 +429,16 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   containerHeader: {
-    width: "100%",
-    backgroundColor: colors.black,
+    marginTop: 20,
+    marginBottom: 32,
+    alignSelf: "flex-end",
+    backgroundColor: "transparent",
     flexDirection: "row",
-    height: 54,
+    height: 32,
+    borderWidth: 1,
+    borderColor: colors.daclen_light,
+    borderTopStartRadius: 6,
+    borderBottomStartRadius: 6,
   },
   containerLogo: {
     flex: 1,
@@ -392,31 +448,26 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   containerSearchIcon: {
-    backgroundColor: "transparent",
+    backgroundColor: colors.daclen_search_grey,
     alignSelf: "center",
     justifyContent: "center",
     alignItems: "center",
-    height: 54,
-    marginEnd: 10,
+    width: 40,
+    height: "100%",
   },
   containerCart: {
-    width: 60,
-    backgroundColor: colors.daclen_gray,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    justifyContent: "center",
-    borderTopStartRadius: 6,
-    borderBottomStartRadius: 6,
+    backgroundColor: "transparent",
+    flexDirection: "row",
+    alignItems: "center",
+    minWidth: 120,
+    paddingHorizontal: 4,
+    paddingVertical: 4,
   },
   containerNumber: {
     backgroundColor: colors.daclen_orange,
     width: 20,
     height: 20,
     borderRadius: 10,
-    position: "absolute",
-    top: 2,
-    end: 2,
-    zIndex: 4,
     elevation: 4,
     justifyContent: "center",
     alignItems: "center",
@@ -440,7 +491,7 @@ const styles = StyleSheet.create({
   },
   containerFlatlist: {
     flex: 1,
-    marginHorizontal: 5,
+    backgroundColor: "transparent",
   },
   containerCounter: {
     marginTop: 10,
@@ -458,9 +509,17 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Bold",
     textAlign: "left",
   },
+  textCart: {
+    backgroundColor: "transparent",
+    fontSize: 12,
+    fontFamily: "Poppins",
+    color: colors.daclen_light,
+    alignSelf: "center",
+    marginHorizontal: 6,
+  },
   textCartNumber: {
     backgroundColor: "transparent",
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: "Poppins-Bold",
     color: colors.daclen_light,
   },

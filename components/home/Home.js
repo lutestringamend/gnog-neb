@@ -46,15 +46,9 @@ function Home(props) {
           resizeMode="cover"
         />
       ) : null}
-      {token === null ||
-      currentUser === null ||
-      currentUser?.id === undefined ? (
-        <DashboardHeader
+      <DashboardHeader
           onSettingPress={() => navigation.navigate("Profile")}
         />
-      ) : (
-        <Header goDashboard={() => openDashboard()} isHome={true} navigation={navigation} />
-      )}
 
       <Shop goDashboard={() => openDashboard()} />
 

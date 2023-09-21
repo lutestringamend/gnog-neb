@@ -95,11 +95,9 @@ const ShopItem = (props) => {
 const styles = StyleSheet.create({
   containerItem: {
     flexDirection: "row",
-    borderRadius: 10,
     backgroundColor: colors.daclen_light,
-    marginHorizontal: 10,
     marginTop: 10,
-    elevation: 4,
+    elevation: 2,
   },
   containerLeft: {
     flex: 2,

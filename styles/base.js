@@ -19,9 +19,9 @@ export const dimensions = {
 }
 
 export const colors = {
-  daclen_black: "#001731",
+  daclen_black: "#0a0a0a",
   daclen_black_old: "#212529",
-  daclen_bg: "#001731",
+  daclen_bg: "#0a0a0a",
   daclen_bg_highlighted: "#303c54",
   black: "#000000",
   white: "#FFFFFF",
@@ -58,6 +58,7 @@ export const colors = {
   daclen_danger: "#dc3545",
   daclen_light: "#f8f9fa",
   daclen_dark: "#212529",
+  daclen_search_grey: "#353535",
   daclen_lightgrey: "#e8f5e6",
   daclen_offgreen: "#eaffe7",
   daclen_palepink: "#ffdbcb",
@@ -88,7 +89,7 @@ export const bottomNav = {
   inactiveColor: colors.daclen_light,
   barBackground: "white",
   iconSize: 24,
-  fontFamily: "Poppins", fontSize: 16,
+  fontFamily: "Poppins", fontSize: 14,
 };
 
 export const blurhash = null;

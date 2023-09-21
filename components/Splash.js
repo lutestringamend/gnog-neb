@@ -6,6 +6,7 @@ import {
   Image,
   SafeAreaView,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 
 import packageJson from "../package.json";
@@ -22,13 +23,35 @@ function SplashScreen(props) {
         resizeMode="contain"
       />
 
+      <View
+        style={[
+          styles.logo,
+          {
+            top: 90,
+            zIndex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          },
+        ]}
+      >
+        {props?.loading ? (
+          <ActivityIndicator
+            size="large"
+            color={colors.daclen_light}
+            style={styles.spinner}
+          />
+        ) : null}
+      </View>
+
       <View style={styles.containerText}>
         {props?.errorText ? (
-          <Text allowFontScaling={false} style={styles.textError}>{props?.errorText}</Text>
-        ) : props?.loading ? (
-          <ActivityIndicator size="small" color={colors.daclen_orange} />
+          <Text allowFontScaling={false} style={styles.textError}>
+            {props?.errorText}
+          </Text>
         ) : null}
-        <Text allowFontScaling={false} style={styles.textVersion}>{versionText}</Text>
+        <Text allowFontScaling={false} style={styles.textVersion}>
+          {versionText}
+        </Text>
       </View>
     </SafeAreaView>
   );
@@ -69,11 +92,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   textVersion: {
-    fontFamily: "Poppins-SemiBold", fontSize: 10,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 10,
     color: colors.daclen_yellow,
     textAlign: "center",
     marginVertical: 32,
     backgroundColor: "transparent",
+  },
+  spinner: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
   },
 });
 

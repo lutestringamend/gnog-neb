@@ -68,11 +68,11 @@ export default function TabNavigator(props) {
           navigation={props.navigation}
           options={{
             headerShown: false,
-            title: "MATERI PROMOSI",
+            title: "STARTER KIT",
             tabBarColor: bottomNav.activeColor,
             tabBarIcon: ({ focused }) => (
               <TabBarIcon
-                title="MATERI PROMOSI"
+                title="STARTER KIT"
                 iconName="file-image"
                 focused={focused}
               />

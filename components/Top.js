@@ -84,7 +84,7 @@ const Top = ({ token, currentUser, recruitmentTimer }) => {
           <TabButton
             tab={tab}
             key="mediakit"
-            title={`MATERI\nPROMOSI`}
+            title={`STARTER KIT`}
             isActive={tab === "mediakit"}
             setTab={() => setTab("mediakit")}
           />
