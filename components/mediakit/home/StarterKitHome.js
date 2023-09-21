@@ -17,6 +17,7 @@ import {
   STARTER_KIT_PERSONAL_WEBSITE_ICON,
   STARTER_KIT_REFERRAL,
   STARTER_KIT_REFERRAL_ICON,
+  STARTER_KIT_TOKO_ONLINE_DESC,
   STARTER_KIT_TOKO_ONLINE_ICON,
   STARTER_KIT_TOKO_ONLINE_TEXT,
   STARTER_KIT_VIDEO_MENGAJAK,
@@ -30,8 +31,11 @@ import StarterKitHomeButton from "./StarterKitHomeButton";
 import { staticDimensions } from "../../../styles/base";
 import {
   personalwebsiteurl,
+  personalwebsiteurlshort,
   tokoonlineurl,
+  tokoonlineurlshort,
   webreferral,
+  webreferralshort,
 } from "../../../axios/constants";
 
 const screenWidth = Dimensions.get("window").width;
@@ -39,16 +43,41 @@ const screenWidth = Dimensions.get("window").width;
 const StarterKitHome = (props) => {
   const { currentUser } = props;
 
+  function setModal(e) {
+    if (props?.setModal === undefined || props?.setModal === null) {
+      return;
+    }
+    props?.setModal(e);
+  }
+
   function openTokoOnline() {
-    Linking.openURL(`${tokoonlineurl}${currentUser?.name}`);
+    setModal({
+      visible: true,
+      title: STARTER_KIT_TOKO_ONLINE_TEXT,
+      url: `${tokoonlineurl}${currentUser?.name}`,
+      urlShort: `${tokoonlineurlshort}${currentUser?.name}`,
+      desc: STARTER_KIT_TOKO_ONLINE_DESC,
+    });
   }
 
   function openPersonalWeb() {
-    Linking.openURL(`${personalwebsiteurl}${currentUser?.name}`);
+    setModal({
+      visible: true,
+      title: STARTER_KIT_PERSONAL_WEBSITE,
+      url: `${personalwebsiteurl}${currentUser?.name}`,
+      urlShort: `${personalwebsiteurlshort}${currentUser?.name}`,
+      desc: null,
+    });
   }
 
   function openReferral() {
-    Linking.openURL(`${webreferral}${currentUser?.name}`);
+    setModal({
+      visible: true,
+      title: STARTER_KIT_REFERRAL,
+      url: `${webreferral}${currentUser?.name}`,
+      urlShort: `${webreferralshort}${currentUser?.name}`,
+      desc: null,
+    });
   }
 
   function setActiveTab(e) {
@@ -134,6 +163,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginVertical: 20,
     flexDirection: "row",
+    alignSelf: "center",
     backgroundColor: "transparent",
   },
   containerBottom: {

@@ -84,6 +84,7 @@ export const tokoonlineurlshort = "daclen.com/toko/"
 export const resetpassword = "https://daclen.com/password/reset"
 export const websyaratketentuan = "https://daclen.com/home/syarat-ketentuan";
 export const webreferral = "https://daclen.com/register/"
+export const webreferralshort = "daclen.com/register/"
 export const webregister = "https://daclen.com/register"
 export const webshop = "https://daclen.com/shop"
 export const webcatalog = "https://daclen.com/home/katalog"

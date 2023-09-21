@@ -27,6 +27,7 @@ export const STARTER_KIT_VIDEO_MENGAJAK_ICON = require("../../assets/starterkit/
 
 export const STARTER_KIT_TOKO_ONLINE_TEXT = `TOKO ONLINE\nSAYA`;
 export const STARTER_KIT_TOKO_ONLINE_ICON = require("../../assets/starterkit/tokoonline.png");
+export const STARTER_KIT_TOKO_ONLINE_DESC = "Anda dapat membagikan link toko online kepada pelanggan Anda agar mereka dapat langsung berbelanja melalui perangkat mereka. Seluruh komisi penjualan melalui link toko online Anda akan otomatis masuk ke saldo Anda.";
 
 export const STARTER_KIT_PERSONAL_WEBSITE = `PERSONAL\nWEBSITE`;
 export const STARTER_KIT_PERSONAL_WEBSITE_ICON = require("../../assets/starterkit/personalweb.png");

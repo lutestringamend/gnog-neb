@@ -759,9 +759,9 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 14,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     marginStart: 10,
-    color: colors.white,
+    color: colors.daclen_light,
   },
   textError: {
     width: "100%",

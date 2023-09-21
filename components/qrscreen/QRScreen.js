@@ -4,12 +4,10 @@ import {
   View,
   StyleSheet,
   Text,
-  TouchableOpacity,
   SafeAreaView,
   ScrollView,
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors, staticDimensions } from "../../styles/base";

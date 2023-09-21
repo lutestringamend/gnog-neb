@@ -28,7 +28,7 @@ const TabButton = (props) => {
       style={styles.button}
       disabled={props?.isActive}
     >
-      <View style={styles.containerButton}>
+      <View style={styles.button}>
         {props?.isActive ? (
           <ImageBackground
             source={require("../assets/buttonfocused.png")}
@@ -40,9 +40,10 @@ const TabButton = (props) => {
             </Text>
           </ImageBackground>
         ) : (
-          <Text allowFontScaling={false} style={styles.text}>
-            {props?.title}
-          </Text>
+          <View style={styles.containerTextNormal}><Text allowFontScaling={false} style={styles.text}>
+          {props?.title}
+        </Text></View>
+          
         )}
       </View>
     </TouchableOpacity>
@@ -135,6 +136,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  containerTextNormal: {
+    backgroundColor: "transparent",
+    height: 60,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   backgroundFocused: {
     width: screenWidth / 3,
     height: 60,
@@ -146,14 +153,10 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: "Poppins",
     fontSize: 14,
-    textAlign: "center",
-    textAlignVertical: "center",
     backgroundColor: colors.daclen_bg,
     color: colors.daclen_light,
     paddingHorizontal: 12,
-    flex: 1,
-    width: screenWidth / 3,
-    height: 60,
+    elevation: 2,
     zIndex: 2,
   },
   textFocused: {

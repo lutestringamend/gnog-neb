@@ -11,7 +11,7 @@ export const staticDimensions = {
   webviewWidthMargin: 24,
   productPhotoWidthMargin: 12,
   youtubeEmbedAspectRatio: 560 / 340,
-  shopMaxWidth: 390,
+  shopMaxWidth: 420,
 }
 
 export const dimensions = {
@@ -90,7 +90,8 @@ export const bottomNav = {
   inactiveColor: colors.daclen_light,
   barBackground: "white",
   iconSize: 24,
-  fontFamily: "Poppins", fontSize: 14,
+  fontFamily: "Poppins", 
+  fontSize: 12,
 };
 
 export const blurhash = null;

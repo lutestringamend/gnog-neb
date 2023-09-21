@@ -14,7 +14,6 @@ import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { isAvailableAsync } from "expo-sharing";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import {
   getMediaKitPhotos,
@@ -30,14 +29,7 @@ import { overwriteWatermarkVideos } from "../media";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { colors } from "../../styles/base";
 import { ErrorView } from "../webview/WebviewChild";
-import HistoryTabItem from "../history/HistoryTabItem";
 import { personalwebsiteurlshort } from "../../axios/constants";
-import {
-  watermarkphotoicon,
-  watermarkvideoicon,
-  WATERMARK_PHOTO,
-  WATERMARK_VIDEO,
-} from "../dashboard/constants";
 import WatermarkPhotos from "./WatermarkPhotos";
 import WatermarkVideos from "./WatermarkVideos";
 import { sentryLog } from "../../sentry";
@@ -53,6 +45,15 @@ import {
   WatermarkData,
 } from "./constants";
 import StarterKitHome from "./home/StarterKitHome";
+import StarterKitModal from "./home/StarterKitModal";
+
+const defaultModal = {
+  visible: false,
+  title: null,
+  url: null,
+  urlShort: null,
+  desc: null,
+};
 
 function MediaKitFiles(props) {
   const [activeTab, setActiveTab] = useState(STARTER_KIT_HOME);
@@ -60,6 +61,7 @@ function MediaKitFiles(props) {
   const [videoLoading, setVideoLoading] = useState(false);
   const [sharingAvailability, setSharingAvailability] = useState(null);
   const [photoKeys, setPhotoKeys] = useState([]);
+  const [modal, setModal] = useState(defaultModal);
 
   const {
     token,
@@ -212,7 +214,7 @@ function MediaKitFiles(props) {
     };
 
     const refreshContent = () => {
-      if (activeTab === WATERMARK_VIDEO) {
+      if (activeTab === STARTER_KIT_VIDEO_PRODUK) {
         refreshVideos();
       } else {
         refreshPhotos();
@@ -321,10 +323,20 @@ function MediaKitFiles(props) {
           ) : (
             <StarterKitHome
               currentUser={currentUser}
+              setModal={(e) => setModal(e)}
               setActiveTab={(e) => setActiveTab(e)}
             />
           )}
         </View>
+
+        {modal?.visible ? (
+          <StarterKitModal
+            modal={modal}
+            toggleModal={() =>
+              setModal((modal) => ({ ...modal, visible: !modal?.visible }))
+            }
+          />
+        ) : null}
       </View>
     );
   } catch (error) {
