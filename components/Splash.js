@@ -19,7 +19,7 @@ function SplashScreen(props) {
       <ImageBackground
         source={require("../assets/splashmaster.png")}
         style={styles.logo}
-        resizeMode="contain"
+        resizeMode="center"
       >
         <View
           style={[

@@ -78,22 +78,7 @@ const UserRootItem = ({
   */
 
   return (
-    <ScrollView
-      style={styles.containerScroll}
-      contentContainerStyle={styles.container}
-      horizontal={true}
-      scrollEnabled={
-        !(
-          isCurrentUser ||
-          isParent ||
-          userData?.children === undefined ||
-          userData?.children === null ||
-          userData?.children?.length === undefined ||
-          userData?.children?.length < 1 ||
-          !expand
-        )
-      }
-    >
+    <View style={styles.container}>
       {isCurrentUser || isParent ? null : (
         <VerticalLine
           style={{
@@ -108,45 +93,43 @@ const UserRootItem = ({
           }}
         />
       )}
-      {isCurrentUser || isParent ? null : (
-        <View style={styles.horizontalLine} />
-      )}
-
-      <TouchableOpacity
-        onPress={() => userPress()}
-        style={[
-          styles.containerTouchable,
-          {
-            marginVertical: isCurrentUser || isParent ? 0 : 12,
-          },
-          isCurrentUser
-            ? { borderTopEndRadius: 6, borderBottomEndRadius: 6 }
-            : {
-                borderRadius: 6,
-                overflow: "hidden",
-              },
-        ]}
+      <ScrollView
+        style={styles.containerScroll}
+        contentContainerStyle={styles.container}
+        horizontal={true}
+        scrollEnabled={
+          !(
+            isCurrentUser ||
+            isParent ||
+            userData?.children === undefined ||
+            userData?.children === null ||
+            userData?.children?.length === undefined ||
+            userData?.children?.length < 1 ||
+            !expand
+          )
+        }
       >
-        <View
+        {isCurrentUser || isParent ? null : (
+          <View style={styles.horizontalLine} />
+        )}
+        <TouchableOpacity
+          onPress={() => userPress()}
           style={[
-            styles.containerPhoto,
+            styles.containerTouchable,
+            {
+              marginVertical: isCurrentUser || isParent ? 0 : 12,
+            },
             isCurrentUser
-              ? null
+              ? { borderTopEndRadius: 6, borderBottomEndRadius: 6 }
               : {
-                  borderTopStartRadius: 6,
-                  borderBottomStartRadius: 6,
+                  borderRadius: 6,
                   overflow: "hidden",
                 },
           ]}
         >
-          <Image
-            source={
-              userData?.foto
-                ? userData?.foto
-                : require("../../../assets/user.png")
-            }
+          <View
             style={[
-              styles.photo,
+              styles.containerPhoto,
               isCurrentUser
                 ? null
                 : {
@@ -155,88 +138,106 @@ const UserRootItem = ({
                     overflow: "hidden",
                   },
             ]}
-            alt={userData?.name ? userData?.name : ""}
-            contentFit="cover"
-            placeholder={blurhash}
-            transition={0}
-          />
-        </View>
-
-        <View style={styles.containerMain}>
-          <View style={styles.containerHeader}>
-            <Text
-              allowFontScaling={false}
+          >
+            <Image
+              source={
+                userData?.foto
+                  ? userData?.foto
+                  : require("../../../assets/user.png")
+              }
               style={[
-                styles.textHeader,
-                {
-                  fontSize: userData?.name?.length > 16 ? 10 : 12,
-                },
+                styles.photo,
+                isCurrentUser
+                  ? null
+                  : {
+                      borderTopStartRadius: 6,
+                      borderBottomStartRadius: 6,
+                      overflow: "hidden",
+                    },
               ]}
-            >
-              {userData?.name}
-            </Text>
-          </View>
-          <View style={styles.containerValue}>
-            <Text allowFontScaling={false} style={styles.text}>
-              {`${isCurrentUser ? "Saya - " : ""}${
-                status ? capitalizeFirstLetter(status) : "Reseller"
-              }`}
-            </Text>
-          </View>
-          <View style={styles.containerInfo}>
-            <Text style={styles.textInfo}>Info</Text>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={12}
-              color={colors.daclen_gray}
+              alt={userData?.name ? userData?.name : ""}
+              contentFit="cover"
+              placeholder={blurhash}
+              transition={0}
             />
           </View>
-        </View>
-      </TouchableOpacity>
 
-      {isCurrentUser ||
-      isParent ||
-      userData?.children === undefined ||
-      userData?.children === null ||
-      userData?.children?.length === undefined ||
-      userData?.children?.length < 1 ||
-      !expand ? null : (
-        <View
-          style={[
-            styles.horizontalLine,
-            {
-              width: 20,
-              alignSelf: "center",
-            },
-          ]}
-        />
-      )}
+          <View style={styles.containerMain}>
+            <View style={styles.containerHeader}>
+              <Text
+                allowFontScaling={false}
+                style={[
+                  styles.textHeader,
+                  {
+                    fontSize: userData?.name?.length > 16 ? 10 : 12,
+                  },
+                ]}
+              >
+                {userData?.name}
+              </Text>
+            </View>
+            <View style={styles.containerValue}>
+              <Text allowFontScaling={false} style={styles.text}>
+                {`${isCurrentUser ? "Saya - " : ""}${
+                  status ? capitalizeFirstLetter(status) : "Reseller"
+                }`}
+              </Text>
+            </View>
+            <View style={styles.containerInfo}>
+              <Text style={styles.textInfo}>Info</Text>
+              <MaterialCommunityIcons
+                name="chevron-right"
+                size={12}
+                color={colors.daclen_gray}
+              />
+            </View>
+          </View>
+        </TouchableOpacity>
 
-      {isCurrentUser ||
-      isParent ||
-      userData?.children === undefined ||
-      userData?.children === null ||
-      userData?.children?.length === undefined ||
-      userData?.children?.length < 1 ||
-      !expand ? null : (
-        <View style={styles.containerFlatlist}>
-          {userData?.children.map((item, index) => (
-            <UserRootItem
-              key={index}
-              userData={item}
-              onPress={() => openUserPopup(item, checkVerification(item))}
-              isCurrentUser={false}
-              isParent={false}
-              isFirstItem={index === 0}
-              isLastItem={index >= userData?.children?.length - 1}
-              isNextBranch={true}
-              isCurrentVerified={isVerified}
-              isVerified={checkVerification(item)}
-            />
-          ))}
-        </View>
-      )}
-    </ScrollView>
+        {isCurrentUser ||
+        isParent ||
+        userData?.children === undefined ||
+        userData?.children === null ||
+        userData?.children?.length === undefined ||
+        userData?.children?.length < 1 ||
+        !expand ? null : (
+          <View
+            style={[
+              styles.horizontalLine,
+              {
+                width: 20,
+                alignSelf: "center",
+              },
+            ]}
+          />
+        )}
+
+        {isCurrentUser ||
+        isParent ||
+        userData?.children === undefined ||
+        userData?.children === null ||
+        userData?.children?.length === undefined ||
+        userData?.children?.length < 1 ||
+        !expand ? null : (
+          <View style={styles.containerFlatlist}>
+            {userData?.children.map((item, index) => (
+              <UserRootItem
+                key={index}
+                userData={item}
+                onPress={() => openUserPopup(item, checkVerification(item))}
+                isCurrentUser={false}
+                isParent={false}
+                isFirstItem={index === 0}
+                isLastItem={index >= userData?.children?.length - 1}
+                isNextBranch={true}
+                isCurrentVerified={isVerified}
+                isVerified={checkVerification(item)}
+              />
+            ))}
+          </View>
+        )}
+      </ScrollView>
+    </View>
   );
 };
 
@@ -259,6 +260,8 @@ const styles = StyleSheet.create({
   },
   containerScroll: {
     backgroundColor: "transparent",
+    flex: 1,
+    alignSelf: "center",
   },
   containerTouchable: {
     backgroundColor: colors.daclen_light,

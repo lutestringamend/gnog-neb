@@ -30,6 +30,7 @@ export const tempdeadlineintervalinmiliseconds = 7776000000;
 export const finalblognumber = 9999
 export const productpaginationnumber = 100
 export const PROFILE_LOCK_TIMEOUT_IN_MILISECONDS = 6000000
+export const SALDO_WITHDRAWAL_MINIMUM = 50000
 
 export const registergetsnaptoken = "api/mobile/auth/member/bayar"
 export const productfetchlink = "api/mobile/produk"

@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
   container: {
     zIndex: 10,
     backgroundColor: colors.daclen_black,
+    opacity: 0.9,
   },
   containerLogoSmall: {
     marginHorizontal: 12,

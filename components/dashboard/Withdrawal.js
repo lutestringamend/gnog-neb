@@ -16,7 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import { colors, staticDimensions } from "../../styles/base";
 import { checkNumberEmpty } from "../../axios";
 import { withdrawalexplanation } from "./constants";
-import { websaldo } from "../../axios/constants";
+import { SALDO_WITHDRAWAL_MINIMUM, websaldo } from "../../axios/constants";
 import { storePenarikanSaldo } from "../../axios/user";
 import { openWhatsapp } from "../whatsapp/Whatsapp";
 import {
@@ -24,6 +24,7 @@ import {
   adminWAbankdetailstemplate,
   contactadminicon,
 } from "../profile/constants";
+import { formatPrice } from "../../axios/cart";
 
 const Withdrawal = (props) => {
   const [amount, setAmount] = useState("");
@@ -76,7 +77,7 @@ const Withdrawal = (props) => {
     setLoading(true);
     const result = await storePenarikanSaldo(token, amount);
     console.log("storePenarikanSaldo result", result);
-    if (result === undefined || result === null || result?.data === undefined) {
+    if (result === undefined || result === null || result?.data === undefined || result?.data === null) {
       setSuccess(false);
       setError(
         result?.error
@@ -86,7 +87,7 @@ const Withdrawal = (props) => {
     } else {
       setSuccess(true);
       setError(
-        "Berhasil mengajukan penarikan penarikan saldo. Mohon menunggu konfirmasi dari Admin."
+        "Permintaan penarikan saldo telah diterima dan masuk ke Laporan Saldo."
       );
     }
     setLoading(false);
@@ -134,13 +135,13 @@ const Withdrawal = (props) => {
               color: error && !success ? colors.daclen_red : colors.daclen_blue,
             },
           ]}
-        >{`Rp ${
+        >{`${
           currentUser?.komisi_user
-            ? currentUser?.komisi_user?.total_currency
-              ? currentUser?.komisi_user?.total_currency
-              : "0"
-            : "0"
-        } tersedia`}</Text>
+            ? currentUser?.komisi_user?.total
+              ? formatPrice(currentUser?.komisi_user?.total)
+              : "Rp 0"
+            : "Rp 0"
+        } tersedia\nMinimal penarikan ${formatPrice(SALDO_WITHDRAWAL_MINIMUM)}`}</Text>
 
         <Text allowFontScaling={false} style={styles.text}>Catatan (opsional)</Text>
         <TextInput
@@ -209,7 +210,7 @@ const Withdrawal = (props) => {
                 loading ||
                 amount === "" ||
                 error !== null ||
-                parseInt(amount) <= 0 ||
+                parseInt(amount) < SALDO_WITHDRAWAL_MINIMUM ||
                 checkNumberEmpty(amount) >
                   checkNumberEmpty(currentUser?.komisi_user?.total)
                   ? colors.daclen_gray
@@ -222,7 +223,7 @@ const Withdrawal = (props) => {
             loading ||
             amount === "" ||
             error !== null ||
-            parseInt(amount) <= 0 ||
+            parseInt(amount) < SALDO_WITHDRAWAL_MINIMUM ||
             checkNumberEmpty(amount) >
               checkNumberEmpty(currentUser?.komisi_user?.total)
           }
