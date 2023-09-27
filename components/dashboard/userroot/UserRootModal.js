@@ -206,7 +206,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "Poppins-SemiBold",
     width: "100%",
-    textAlign: "flex-start",
     textAlignVertical: "center",
     color: colors.daclen_light,
   },

@@ -170,7 +170,7 @@ const UserRootItem = ({
           style={[
             styles.horizontalLine,
             {
-              width: 48,
+              width: 24,
               alignSelf: "center",
             },
           ]}
@@ -228,7 +228,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderTopStartRadius: 6,
     borderBottomStartRadius: 6,
-    minWidth: 240,
     height: 80,
   },
   containerPhoto: {
@@ -280,6 +279,7 @@ const styles = StyleSheet.create({
   },
   containerFlatlist: {
     justifyContent: "flex-start",
+    backgroundColor: "transparent",
   },
   containerValue: {
     backgroundColor: colors.daclen_light,
@@ -291,7 +291,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "Poppins-SemiBold",
     width: "100%",
-    textAlign: "flex-start",
     textAlignVertical: "center",
     color: colors.daclen_light,
   },
