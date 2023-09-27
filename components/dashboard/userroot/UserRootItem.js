@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -72,7 +78,22 @@ const UserRootItem = ({
   */
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.containerScroll}
+      contentContainerStyle={styles.container}
+      horizontal={true}
+      scrollEnabled={
+        !(
+          isCurrentUser ||
+          isParent ||
+          userData?.children === undefined ||
+          userData?.children === null ||
+          userData?.children?.length === undefined ||
+          userData?.children?.length < 1 ||
+          !expand
+        )
+      }
+    >
       {isCurrentUser || isParent ? null : (
         <VerticalLine
           style={{
@@ -96,8 +117,14 @@ const UserRootItem = ({
         style={[
           styles.containerTouchable,
           {
-            marginVertical: isCurrentUser ? 0 : 12,
+            marginVertical: isCurrentUser || isParent ? 0 : 12,
           },
+          isCurrentUser
+            ? { borderTopEndRadius: 6, borderBottomEndRadius: 6 }
+            : {
+                borderRadius: 6,
+                overflow: "hidden",
+              },
         ]}
       >
         <View
@@ -137,7 +164,15 @@ const UserRootItem = ({
 
         <View style={styles.containerMain}>
           <View style={styles.containerHeader}>
-            <Text allowFontScaling={false} style={styles.textHeader}>
+            <Text
+              allowFontScaling={false}
+              style={[
+                styles.textHeader,
+                {
+                  fontSize: userData?.name?.length > 16 ? 10 : 12,
+                },
+              ]}
+            >
               {userData?.name}
             </Text>
           </View>
@@ -170,7 +205,7 @@ const UserRootItem = ({
           style={[
             styles.horizontalLine,
             {
-              width: 24,
+              width: 20,
               alignSelf: "center",
             },
           ]}
@@ -201,7 +236,7 @@ const UserRootItem = ({
           ))}
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 };
 
@@ -222,18 +257,19 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     alignItems: "center",
   },
-  containerTouchable: {
+  containerScroll: {
     backgroundColor: "transparent",
+  },
+  containerTouchable: {
+    backgroundColor: colors.daclen_light,
     flexDirection: "row",
     alignItems: "center",
-    borderTopStartRadius: 6,
-    borderBottomStartRadius: 6,
     height: 80,
   },
   containerPhoto: {
     height: 80,
     alignSelf: "center",
-    backgroundColor: colors.daclen_light,
+    backgroundColor: "transparent",
   },
   containerMain: {
     backgroundColor: "transparent",
@@ -264,9 +300,8 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     backgroundColor: colors.daclen_black,
     paddingStart: 6,
-    paddingEnd: 32,
+    paddingEnd: 48,
     height: 24,
-    borderTopEndRadius: 6,
   },
   containerInfo: {
     position: "absolute",
@@ -280,18 +315,19 @@ const styles = StyleSheet.create({
   containerFlatlist: {
     justifyContent: "flex-start",
     backgroundColor: "transparent",
+    paddingEnd: 60,
   },
   containerValue: {
-    backgroundColor: colors.daclen_light,
+    backgroundColor: "transparent",
     paddingHorizontal: 6,
     height: 56,
-    borderBottomEndRadius: 6,
   },
   textHeader: {
     fontSize: 12,
     fontFamily: "Poppins-SemiBold",
     width: "100%",
     textAlignVertical: "center",
+    marginVertical: 4,
     color: colors.daclen_light,
   },
   text: {
@@ -310,8 +346,6 @@ const styles = StyleSheet.create({
   photo: {
     width: 60,
     height: 80,
-    borderTopStartRadius: 6,
-    borderBottomStartRadius: 6,
     backgroundColor: "transparent",
     overflow: "hidden",
   },

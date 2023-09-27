@@ -10,7 +10,7 @@ import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
 
-import { colors } from "../styles/base";
+import { blurhash, colors } from "../styles/base";
 import { capitalizeFirstLetter } from "../axios/cart";
 
 const Header = (props) => {
@@ -61,7 +61,7 @@ const Header = (props) => {
         }
         alt={currentUser?.name}
         contentFit="cover"
-        placeholder={require("../assets/user.png")}
+        placeholder={blurhash}
         transition={100}
       />
       <View style={styles.containerText}>

@@ -215,6 +215,8 @@ const UserRoots = (props) => {
 
       <ScrollView
         style={styles.scrollView}
+        showsHorizontalScrollIndicator={true}
+        alwaysBounceVertical={true}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
