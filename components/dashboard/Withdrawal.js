@@ -201,7 +201,9 @@ const Withdrawal = (props) => {
           Syarat dan Ketentuan Penarikan Saldo
         </Text>
         <Text allowFontScaling={false} style={styles.textExplanation}>{withdrawalexplanation}</Text>
-        <TouchableOpacity
+        <View style={styles.containerBottom} />
+      </ScrollView>
+      <TouchableOpacity
           onPress={() => submit()}
           style={[
             styles.button,
@@ -238,7 +240,6 @@ const Withdrawal = (props) => {
             <Text allowFontScaling={false} style={styles.textButton}>Kirim Permintaan</Text>
           )}
         </TouchableOpacity>
-      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -246,8 +247,9 @@ const Withdrawal = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: colors.white,
     width: "100%",
+    height: "100%",
   },
   containerItem: {
     alignItems: "flex-start",
@@ -269,15 +271,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
   },
+  containerBottom: {
+    backgroundColor: "transparent",
+    height: staticDimensions.pageBottomPadding / 2,
+  },
   button: {
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 12,
     paddingHorizontal: 32,
-    marginHorizontal: 20,
     borderRadius: 4,
-    elevation: 3,
+    elevation: 4,
     backgroundColor: colors.daclen_orange,
+    position: "absolute",
+    bottom: 12,
+    start: 20,
+    end: 20,
+    zIndex: 4,
   },
   textButton: {
     fontSize: 16,

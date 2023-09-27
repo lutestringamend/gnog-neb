@@ -260,7 +260,6 @@ const styles = StyleSheet.create({
   },
   containerScroll: {
     backgroundColor: "transparent",
-    flex: 1,
     alignSelf: "center",
   },
   containerTouchable: {
