@@ -1,17 +1,12 @@
 import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  TouchableOpacity,
-} from "react-native";
-import { colors } from "../../styles/base";
-
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { phonenotverified } from "./constants";
-import { capitalizeFirstLetter } from "../../axios/cart";
-import { checkVerification } from "./UserRoots";
+
+import { blurhash, colors } from "../../../styles/base";
+import { phonenotverified } from "../constants";
+import { capitalizeFirstLetter } from "../../../axios/cart";
+import { checkVerification } from "../UserRoots";
 
 export function VerticalLine({ style }) {
   return <View style={[styles.verticalLine, style]} />;
@@ -20,6 +15,7 @@ export function VerticalLine({ style }) {
 const UserRootItem = ({
   userData,
   isCurrentUser,
+  isParent,
   isFirstItem,
   isLastItem,
   isNextBranch,
@@ -57,8 +53,8 @@ const UserRootItem = ({
               styles.containerExpand,
               {
                 backgroundColor: isVerified
-                  ? colors.daclen_green
-                  : colors.daclen_red,
+                  ? colors.daclen_light
+                  : colors.daclen_light,
               },
             ]}
             onPress={() => setExpand((expand) => !expand)}
@@ -77,89 +73,94 @@ const UserRootItem = ({
 
   return (
     <View style={styles.container}>
-      {isCurrentUser ? null : (
+      {isCurrentUser || isParent ? null : (
         <VerticalLine
           style={{
-            height: isLastItem || (isFirstItem && isNextBranch) ? "51%" : "100%",
-            backgroundColor: isCurrentVerified
-              ? colors.daclen_green
-              : colors.daclen_red,
-            alignSelf: isFirstItem && isNextBranch ? "flex-end" : isLastItem ? "flex-start" : "auto",
+            height:
+              isLastItem || (isFirstItem && isNextBranch) ? "51%" : "100%",
+            alignSelf:
+              isFirstItem && isNextBranch
+                ? "flex-end"
+                : isLastItem
+                ? "flex-start"
+                : "auto",
           }}
         />
       )}
-      {isCurrentUser ? null : (
-        <View
-          style={[
-            styles.horizontalLine,
-            {
-              backgroundColor: isVerified
-                ? colors.daclen_green
-                : colors.daclen_red,
-            },
-          ]}
-        />
+      {isCurrentUser || isParent ? null : (
+        <View style={styles.horizontalLine} />
       )}
 
-
-      <TouchableHighlight
-          onPress={() => userPress()}
-          underlayColor={colors.daclen_orange}
+      <TouchableOpacity
+        onPress={() => userPress()}
+        style={[
+          styles.containerTouchable,
+          {
+            marginVertical: isCurrentUser ? 0 : 12,
+          },
+        ]}
+      >
+        <View
           style={[
-            styles.containerTouchable,
-            {
-              marginVertical: isCurrentUser ? 0 : 12,
-            },
+            styles.containerPhoto,
+            isCurrentUser
+              ? null
+              : {
+                  borderTopStartRadius: 6,
+                  borderBottomStartRadius: 6,
+                  overflow: "hidden",
+                },
           ]}
         >
-          <View
+          <Image
+            source={
+              userData?.foto
+                ? userData?.foto
+                : require("../../../assets/user.png")
+            }
             style={[
-              styles.containerMain,
-              {
-                borderColor: isVerified
-                  ? colors.daclen_green
-                  : colors.daclen_red,
-                borderWidth: isCurrentUser ? 2 : 1,
-                borderTopWidth: 0,
-              },
+              styles.photo,
+              isCurrentUser
+                ? null
+                : {
+                    borderTopStartRadius: 6,
+                    borderBottomStartRadius: 6,
+                    overflow: "hidden",
+                  },
             ]}
-          >
-            <View
-              style={[
-                styles.containerHeader,
-                {
-                  backgroundColor: isVerified
-                    ? colors.daclen_green
-                    : colors.daclen_red,
-                },
-              ]}
-            >
-              <MaterialCommunityIcons
-                name={isVerified ? "account-check" : "account-remove"}
-                size={14}
-                color={colors.daclen_light}
-              />
-              <Text allowFontScaling={false} style={styles.textHeader}>{userData?.name}</Text>
-            </View>
-            <View style={styles.containerValue}>
-              <Text allowFontScaling={false} style={styles.text}>
-                {`${isCurrentUser ? "Saya - " : ""}${
-                  status ? capitalizeFirstLetter(status) : "Reseller"
-                }${
-                  isCurrentUser ||
-                  userData?.children === undefined ||
-                  userData?.children === null ||
-                  userData?.children?.length === undefined ||
-                  userData?.children?.length < 1
-                    ? ""
-                    : `\n${userData?.children?.length} anggota`
-                }`}
-              </Text>
-            </View>
+            alt={userData?.name ? userData?.name : ""}
+            contentFit="cover"
+            placeholder={blurhash}
+            transition={0}
+          />
+        </View>
+
+        <View style={styles.containerMain}>
+          <View style={styles.containerHeader}>
+            <Text allowFontScaling={false} style={styles.textHeader}>
+              {userData?.name}
+            </Text>
           </View>
-        </TouchableHighlight>
+          <View style={styles.containerValue}>
+            <Text allowFontScaling={false} style={styles.text}>
+              {`${isCurrentUser ? "Saya - " : ""}${
+                status ? capitalizeFirstLetter(status) : "Reseller"
+              }`}
+            </Text>
+          </View>
+          <View style={styles.containerInfo}>
+            <Text style={styles.textInfo}>Info</Text>
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={12}
+              color={colors.daclen_gray}
+            />
+          </View>
+        </View>
+      </TouchableOpacity>
 
       {isCurrentUser ||
+      isParent ||
       userData?.children === undefined ||
       userData?.children === null ||
       userData?.children?.length === undefined ||
@@ -169,9 +170,7 @@ const UserRootItem = ({
           style={[
             styles.horizontalLine,
             {
-              backgroundColor: isVerified
-                ? colors.daclen_green
-                : colors.daclen_red,
+              width: 48,
               alignSelf: "center",
             },
           ]}
@@ -179,6 +178,7 @@ const UserRootItem = ({
       )}
 
       {isCurrentUser ||
+      isParent ||
       userData?.children === undefined ||
       userData?.children === null ||
       userData?.children?.length === undefined ||
@@ -191,6 +191,7 @@ const UserRootItem = ({
               userData={item}
               onPress={() => openUserPopup(item, checkVerification(item))}
               isCurrentUser={false}
+              isParent={false}
               isFirstItem={index === 0}
               isLastItem={index >= userData?.children?.length - 1}
               isNextBranch={true}
@@ -209,8 +210,8 @@ const UserRootItem = ({
               style={{
                 height: "100%",
                 backgroundColor: isVerified
-                  ? colors.daclen_green
-                  : colors.daclen_red,
+                  ? colors.daclen_light
+                  : colors.daclen_light,
               }}
             />
 */
@@ -223,9 +224,21 @@ const styles = StyleSheet.create({
   },
   containerTouchable: {
     backgroundColor: "transparent",
+    flexDirection: "row",
+    alignItems: "center",
+    borderTopStartRadius: 6,
+    borderBottomStartRadius: 6,
+    minWidth: 240,
+    height: 80,
+  },
+  containerPhoto: {
+    height: 80,
+    alignSelf: "center",
+    backgroundColor: colors.daclen_light,
   },
   containerMain: {
     backgroundColor: "transparent",
+    height: 80,
   },
   containerHorizontal: {
     backgroundColor: "transparent",
@@ -240,40 +253,68 @@ const styles = StyleSheet.create({
     height: "100%",
     width: 2,
     alignSelf: "flex-start",
-    backgroundColor: colors.daclen_green,
+    backgroundColor: colors.daclen_light,
   },
   horizontalLine: {
     width: 24,
     height: 2,
+    backgroundColor: colors.daclen_light,
   },
   containerHeader: {
+    alignItems: "center",
+    justifyContent: "flex-start",
+    backgroundColor: colors.daclen_black,
+    paddingStart: 6,
+    paddingEnd: 32,
+    height: 24,
+    borderTopEndRadius: 6,
+  },
+  containerInfo: {
+    position: "absolute",
+    bottom: 2,
+    end: 2,
+    backgroundColor: "transparent",
+    zIndex: 2,
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 6,
-    paddingHorizontal: 20,
   },
   containerFlatlist: {
     justifyContent: "flex-start",
   },
   containerValue: {
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "transparent",
-    padding: 8,
+    backgroundColor: colors.daclen_light,
+    paddingHorizontal: 6,
+    height: 56,
+    borderBottomEndRadius: 6,
   },
   textHeader: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "Poppins-SemiBold",
+    width: "100%",
+    textAlign: "flex-start",
+    textAlignVertical: "center",
     color: colors.daclen_light,
-    marginStart: 6,
-    overflow: "hidden",
   },
   text: {
-    fontSize: 12,
+    fontSize: 10,
     color: colors.daclen_black,
-    fontFamily: "Poppins-SemiBold",
-    textAlign: "center",
+    fontFamily: "Poppins",
     backgroundColor: "transparent",
+  },
+  textInfo: {
+    fontSize: 10,
+    color: colors.daclen_gray,
+    fontFamily: "Poppins",
+    backgroundColor: "transparent",
+    marginEnd: 1,
+  },
+  photo: {
+    width: 60,
+    height: 80,
+    borderTopStartRadius: 6,
+    borderBottomStartRadius: 6,
+    backgroundColor: "transparent",
+    overflow: "hidden",
   },
 });
 

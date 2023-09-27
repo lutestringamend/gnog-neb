@@ -16,11 +16,11 @@ import { privacypolicy } from "../profile/constants";
 import {
   updateReduxMediaKitWatermarkData,
   updateReduxMediaKitPhotosUri,
+  setWatermarkDatafromCurrentUser,
 } from "../../axios/mediakit";
 import { overwriteWatermarkVideos } from "../media";
 import { WatermarkData, vwmarktextnamecharlimit, vwmarktextphonecharlimit } from "./constants";
 import { useNavigation } from "@react-navigation/native";
-import { tokoonlineurlshort } from "../../axios/constants";
 import { setObjectAsync } from "../asyncstorage";
 import {
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
@@ -71,21 +71,7 @@ const WatermarkSettings = (props) => {
 
   function reset() {
     setEditable(false);
-    setTempWatermarkData({
-      name:
-            currentUser?.detail_user === undefined ||
-            currentUser?.detail_user?.nama_depan === undefined ||
-            currentUser?.detail_user?.nama_depan === null ||
-            currentUser?.detail_user?.nama_depan === ""
-              ? currentUser?.name
-                ? currentUser?.name
-                : ""
-              : currentUser?.detail_user?.nama_depan,
-          phone: currentUser?.nomor_telp ? currentUser?.nomor_telp : "",
-          url: currentUser?.name
-            ? `${tokoonlineurlshort}${currentUser?.name}`
-            : "",
-    });
+    setTempWatermarkData(setWatermarkDatafromCurrentUser(currentUser));
   }
 
   const changingWatermarkData = async () => {

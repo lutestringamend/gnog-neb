@@ -24,12 +24,12 @@ import {
   updateReduxMediaKitWatermarkData,
   updateReduxMediaKitPhotosUri,
   updateReduxMediaKitPhotosError,
+  setWatermarkDatafromCurrentUser,
 } from "../../axios/mediakit";
 import { overwriteWatermarkVideos } from "../media";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { colors } from "../../styles/base";
 import { ErrorView } from "../webview/WebviewChild";
-import { personalwebsiteurlshort } from "../../axios/constants";
 import WatermarkPhotos from "./WatermarkPhotos";
 import WatermarkVideos from "./WatermarkVideos";
 import { sentryLog } from "../../sentry";
@@ -42,7 +42,6 @@ import {
   STARTER_KIT_FLYER_PRODUK,
   STARTER_KIT_HOME,
   STARTER_KIT_VIDEO_PRODUK,
-  WatermarkData,
 } from "./constants";
 import StarterKitHome from "./home/StarterKitHome";
 import StarterKitModal from "./home/StarterKitModal";
@@ -144,29 +143,10 @@ function MediaKitFiles(props) {
       if (!(newData === undefined || newData === null)) {
         props.updateReduxMediaKitWatermarkData(newData);
       } else {
-        newData = getWatermarkDataFromCurrentUser();
+        newData = setWatermarkDatafromCurrentUser(currentUser);
         props.updateReduxMediaKitWatermarkData(newData);
       }
     };
-
-    function getWatermarkDataFromCurrentUser() {
-      return {
-        ...WatermarkData,
-        name:
-          currentUser?.detail_user === undefined ||
-          currentUser?.detail_user?.nama_depan === undefined ||
-          currentUser?.detail_user?.nama_depan === null ||
-          currentUser?.detail_user?.nama_depan === ""
-            ? currentUser?.name
-              ? currentUser?.name
-              : ""
-            : currentUser?.detail_user?.nama_depan,
-        phone: currentUser?.nomor_telp ? currentUser?.nomor_telp : "",
-        url: currentUser?.name
-          ? `${personalwebsiteurlshort}${currentUser?.name}`
-          : "",
-      };
-    }
 
     const fetchWatermarkPhotos = async () => {
       const result = await getMediaKitPhotos(token);

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   View,
@@ -6,22 +6,27 @@ import {
   RefreshControl,
   Text,
   ActivityIndicator,
+  ImageBackground,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import RBSheet from "react-native-raw-bottom-sheet";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import BSUserRoot from "../bottomsheets/BSUserRoot";
-import UserRootItem, { VerticalLine } from "./UserRootItem";
+import UserRootItem, { VerticalLine } from "./userroot/UserRootItem";
+import UserRootModal from "./userroot/UserRootModal";
 import { colors, staticDimensions } from "../../styles/base";
 import { getHPV, updateReduxHPV } from "../../axios/user";
 import { devuserroottree } from "./constants";
 /*import UserRootHeaderItem from "./UserRootHeaderItem";
 import { notverified, userverified } from "./constants";*/
+
+const defaultModal = {
+  visible: false,
+  data: null,
+  isVerified: true,
+};
 
 export function checkVerification(userData) {
   if (
@@ -42,9 +47,8 @@ const UserRoots = (props) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [popupUser, setPopupUser] = useState({ name: null });
+  const [modal, setModal] = useState(defaultModal);
   const { token, currentUser, hpv } = props;
-  const rbSheet = useRef();
 
   useEffect(() => {
     if (
@@ -88,25 +92,16 @@ const UserRoots = (props) => {
     }
   }, [hpv]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     console.log("tree", tree);
-  }, [tree]);
-
-  useEffect(() => {
-    if (popupUser?.name !== null) {
-      rbSheet.current.open();
-    }
-  }, [popupUser]);
+  }, [tree]);*/
 
   function openUserPopup(data, isVerified) {
-    if (popupUser?.name === null || popupUser?.name !== data?.name) {
-      setPopupUser({
-        ...data,
-        isVerified,
-      });
-    } else {
-      rbSheet.current.open();
-    }
+    setModal({
+      visible: true,
+      data,
+      isVerified,
+    })
   }
 
   const fetchHPV = async () => {
@@ -177,6 +172,11 @@ const UserRoots = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <ImageBackground
+        source={require("../../assets/profilbg.png")}
+        style={styles.background}
+        resizeMode="cover"
+      />
       {error ? (
         <Text allowFontScaling={false} style={styles.textError}>
           {error}
@@ -187,20 +187,8 @@ const UserRoots = (props) => {
           style={styles.containerLeader}
           disabled={currentUser?.id !== 8054}
         >
-          <Image
-            source={
-              hpv?.data?.foto
-                ? hpv?.data?.foto
-                : require("../../assets/user.png")
-            }
-            style={styles.parent}
-            alt={hpv?.data?.name ? hpv?.data?.name : ""}
-            contentFit="cover"
-            placeholder={require("../../assets/user.png")}
-            transition={0}
-          />
           <Text allowFontScaling={false} style={styles.textLeader}>
-            {hpv?.data?.name ? hpv?.data?.name : "DACLEN"}
+            {`Total: ${numRoots} Reseller`}
           </Text>
           <TouchableOpacity
             style={styles.containerRefresh}
@@ -210,14 +198,14 @@ const UserRoots = (props) => {
             {loading || refreshing ? (
               <ActivityIndicator
                 size={28}
-                color={colors.daclen_blue}
+                color={colors.daclen_light}
                 style={styles.spinner}
               />
             ) : (
               <MaterialCommunityIcons
                 name="refresh-circle"
                 size={28}
-                color={colors.daclen_blue}
+                color={colors.daclen_light}
                 style={{ alignSelf: "center" }}
               />
             )}
@@ -235,9 +223,31 @@ const UserRoots = (props) => {
         }
       >
         <View style={styles.containerMain}>
-          <VerticalLine style={{ height: 24 }} />
           <UserRootItem
-            userData={currentUser}
+            userData={{
+              foto: hpv?.data?.foto,
+              name: hpv?.data?.name,
+              title: hpv?.data?.title,
+            }}
+            onPress={() => openUserPopup(hpv?.data, true)}
+            isCurrentUser={false}
+            isParent={true}
+            status={hpv?.data?.status ? hpv?.data?.status : "Distributor"}
+            isFirstItem={false}
+            isLastItem={false}
+            isNextBranch={false}
+            isVerified={true}
+          />
+          <VerticalLine style={{ height: 32, marginStart: 80 }} />
+          <UserRootItem
+            userData={{
+              ...currentUser,
+              foto: currentUser?.detail_user
+                ? currentUser?.detail_user?.foto
+                  ? currentUser?.detail_user?.foto
+                  : null
+                : null,
+            }}
             onPress={() =>
               openUserPopup(
                 hpv?.data?.children[0],
@@ -245,6 +255,7 @@ const UserRoots = (props) => {
               )
             }
             isCurrentUser={true}
+            isParent={false}
             status={currentUser?.status}
             isFirstItem={false}
             isLastItem={false}
@@ -293,9 +304,7 @@ const UserRoots = (props) => {
               <VerticalLine
                 style={{
                   height: 32,
-                  backgroundColor: checkVerification(currentUser)
-                    ? colors.daclen_green
-                    : colors.daclen_red,
+                  backgroundColor: colors.daclen_light,
                 }}
               />
               {tree.map((item, index) => (
@@ -304,6 +313,7 @@ const UserRoots = (props) => {
                   userData={item}
                   onPress={() => openUserPopup(item, checkVerification(item))}
                   isCurrentUser={false}
+                  isParent={false}
                   isFirstItem={index === 0}
                   isLastItem={index >= tree?.length - 1}
                   isNextBranch={false}
@@ -320,13 +330,16 @@ const UserRoots = (props) => {
           )}
         </View>
       </ScrollView>
-      <RBSheet ref={rbSheet} openDuration={250} height={350}>
-        <BSUserRoot
-          title="Detail User"
-          data={popupUser}
-          closeThis={() => rbSheet.current.close()}
+
+      {modal?.visible ? (
+        <UserRootModal
+          modal={modal}
+          toggleModal={() =>
+            setModal((modal) => ({ ...modal, visible: !modal?.visible }))
+          }
         />
-      </RBSheet>
+      ) : null}
+
     </SafeAreaView>
   );
 };
@@ -335,7 +348,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: colors.white,
+    backgroundColor: colors.daclen_bg,
+  },
+  background: {
+    position: "absolute",
+    zIndex: 0,
+    top: 0,
+    start: 0,
+    width: "100%",
+    height: "100%",
   },
   containerHorizontal: {
     width: "100%",
@@ -349,6 +370,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "transparent",
     paddingBottom: staticDimensions.pageBottomPadding,
+    paddingTop: 24,
     marginBottom: 10,
     marginHorizontal: 12,
   },
@@ -363,6 +385,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_black,
     paddingVertical: 10,
     paddingHorizontal: 12,
+    zIndex: 2,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -396,9 +419,10 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     width: "100%",
-    backgroundColor: "white",
+    backgroundColor: "transparent",
   },
   containerFlatlist: {
+    backgroundColor: "transparent",
     justifyContent: "flex-start",
   },
   textLeader: {

@@ -302,10 +302,11 @@ const Dashboard = (props) => {
         ) : currentUser?.nomor_telp_verified_at === null ||
           currentUser?.nomor_telp_verified_at === "" ? (
           <DashboardVerification />
-        ) : profileLock === undefined ||
-          profileLock === null ||
-          profileLock ||
-          pinLoading ? (
+        ) : (profileLock === undefined ||
+            profileLock === null ||
+            profileLock ||
+            pinLoading) &&
+          Platform.OS !== "web" ? (
           <DashboardLock receiveOTP={(e) => receiveOTP(e)} />
         ) : (
           <View style={styles.scrollView}>
@@ -347,7 +348,8 @@ const Dashboard = (props) => {
       recruitmentTimer === undefined ||
       recruitmentTimer === null ||
       recruitmentTimer < 0 ||
-      !showTimerModal ? null : (
+      !showTimerModal ||
+      Platform.OS === "web" ? null : (
         <DashboardTimer
           recruitmentTimer={recruitmentTimer}
           showTimerModal={showTimerModal}

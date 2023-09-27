@@ -1,6 +1,6 @@
 import Axios from "../index";
 
-import { mediakitphoto, mediakitvideo } from "../constants";
+import { mediakitphoto, mediakitvideo, tokoonlineurlshort } from "../constants";
 import {
   MEDIA_KIT_CLEAR_DATA,
   MEDIA_KIT_PHOTOS_STATE_CHANGE,
@@ -72,6 +72,25 @@ export function updateReduxMediaKitVideos(data) {
   return (dispatch) => {
     console.log("updateReduxMediaKitVideos", data);
     dispatch({ type: MEDIA_KIT_VIDEOS_STATE_CHANGE, data });
+  };
+}
+
+export function setWatermarkDatafromCurrentUser(currentUser) {
+  let name = currentUser?.name ? currentUser?.name : "";
+  let phone = currentUser?.nomor_telp ? currentUser?.nomor_telp : "";
+  let url = currentUser?.name
+    ? `${tokoonlineurlshort}${currentUser?.name}`
+    : "";
+  
+  if (!(currentUser?.detail_user === undefined || currentUser?.detail_user === null)) {
+    name = currentUser?.detail_user?.wm_nama ? currentUser?.detail_user?.wm_nama : currentUser?.detail_user?.nama_depan ? currentUser?.detail_user?.nama_depan : name;
+    phone = currentUser?.detail_user?.wm_nomor_telepon ? currentUser?.detail_user?.wm_nomor_telepon : phone;
+  }
+
+  return {
+    name,
+    phone,
+    url
   };
 }
 

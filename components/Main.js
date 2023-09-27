@@ -29,12 +29,13 @@ import {
   clearMediaKitData,
   updateReduxMediaKitWatermarkData,
   updateReduxMediaKitPhotosUri,
+  setWatermarkDatafromCurrentUser,
 } from "../axios/mediakit";
 import {
   getRecruitmentDeadlineinMiliseconds,
   updateReduxRegDateInMs,
 } from "../axios/profile";
-import { getObjectAsync, getTokenAsync } from "./asyncstorage";
+import { getObjectAsync, getTokenAsync, setObjectAsync } from "./asyncstorage";
 import {
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
   ASYNC_PRODUCTS_ARRAY_KEY,
@@ -49,7 +50,7 @@ import { sentryLog } from "../sentry";
 import Top from "./Top";
 import { colors } from "../styles/base";
 import {
-  personalwebsiteurlshort,
+  tokoonlineurlshort,
 } from "../axios/constants";
 import { fetchRajaOngkir } from "../axios/address";
 import { requestLocationForegroundPermission } from "./address";
@@ -349,25 +350,15 @@ function Main(props) {
     };
 
     const checkWatermarkData = async () => {
-      let newData = await getObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY);
-      if (!(newData === undefined || newData === null)) {
+      if (currentUser === undefined || currentUser === null) {
+        let newData = await getObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY);
+        if (!(newData === undefined || newData === null)) {
+          props.updateReduxMediaKitWatermarkData(newData);
+        }
+      } else {
+        let newData = setWatermarkDatafromCurrentUser(currentUser);
         props.updateReduxMediaKitWatermarkData(newData);
-      } else if (currentUser !== null) {
-        props.updateReduxMediaKitWatermarkData({
-          name:
-            currentUser?.detail_user === undefined ||
-            currentUser?.detail_user?.nama_depan === undefined ||
-            currentUser?.detail_user?.nama_depan === null ||
-            currentUser?.detail_user?.nama_depan === ""
-              ? currentUser?.name
-                ? currentUser?.name
-                : ""
-              : currentUser?.detail_user?.nama_depan,
-          phone: currentUser?.nomor_telp ? currentUser?.nomor_telp : "",
-          url: currentUser?.name
-            ? `${personalwebsiteurlshort}${currentUser?.name}`
-            : "",
-        });
+        setObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY, newData);
       }
     };
 
