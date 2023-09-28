@@ -312,7 +312,7 @@ const UserRoots = (props) => {
               </TouchableOpacity>
             ) : (
               <ActivityIndicator
-                color={colors.daclen_orange}
+                color={colors.daclen_light}
                 size="large"
                 style={[styles.spinner, { marginVertical: 32 }]}
               />

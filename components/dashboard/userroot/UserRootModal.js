@@ -89,7 +89,7 @@ const UserRootModal = (props) => {
                   style={[
                     styles.textHeader,
                     {
-                      fontSize: modal?.data?.name?.length > 16 ? 14 : 24,
+                      fontSize: modal?.data?.name?.length > 12 ? 14 : 20,
                     },
                   ]}
                 >
@@ -100,18 +100,18 @@ const UserRootModal = (props) => {
               <Text allowFontScaling={false} style={styles.text}>
                 {`${
                   modal?.data?.join_date
-                    ? `Join Date : ${convertDateISOStringtoDisplayDate(
+                    ? `Join Date: ${convertDateISOStringtoDisplayDate(
                         modal?.data?.join_date,
                         true
                       )}\n`
                     : ""
                 }${
                   modal?.data?.email
-                    ? `Email    : ${modal?.data?.email}\n`
+                    ? `Email: ${modal?.data?.email}\n`
                     : ""
                 }${
                   modal?.data?.nomor_telp
-                    ? `WA        : ${modal?.data?.nomor_telp}`
+                    ? `WA: ${modal?.data?.nomor_telp}`
                     : ""
                 }\n${modal?.data?.pv ? `PV: ${modal?.data?.pv}  ` : ""}${
                   modal?.data?.rpv ? `RPV: ${modal?.data?.rpv}  ` : ""
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   },
   containerModal: {
     position: "absolute",
-    backgroundColor: colors.daclen_light,
+    backgroundColor: "transparent",
     alignItems: "center",
     flexDirection: "row",
     borderRadius: 6,
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     borderBottomStartRadius: 6,
     alignSelf: "center",
     overflow: "hidden",
-    backgroundColor: colors.daclen_light,
+    backgroundColor: "transparent",
   },
   containerHeader: {
     alignItems: "center",
@@ -210,14 +210,14 @@ const styles = StyleSheet.create({
     height: 180,
     borderTopStartRadius: 6,
     borderBottomStartRadius: 6,
-    backgroundColor: "transparent",
+    backgroundColor: colors.daclen_light,
     overflow: "hidden",
   },
   containerInfo: {
     flex: 1,
     height: 180,
-    backgroundColor: "transparent",
-    borderTopEndRadius: 6,
+    backgroundColor: colors.daclen_light,
+    borderTopEndRadius: 8,
     borderBottomEndRadius: 6,
   },
   textHeader: {

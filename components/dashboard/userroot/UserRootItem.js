@@ -170,7 +170,7 @@ const UserRootItem = ({
                 style={[
                   styles.textHeader,
                   {
-                    fontSize: userData?.name?.length > 16 ? 10 : 12,
+                    fontSize: userData?.name?.length > 12 ? 10 : 12,
                   },
                 ]}
               >
@@ -265,10 +265,11 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   containerTouchable: {
-    backgroundColor: colors.daclen_light,
+    backgroundColor: "transaprent",
     flexDirection: "row",
     alignItems: "center",
     height: 80,
+    elevation: 4,
   },
   containerPhoto: {
     height: 80,
@@ -303,6 +304,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     backgroundColor: colors.daclen_black,
+    borderTopEndRadius: 6,
     paddingStart: 6,
     paddingEnd: 48,
     height: 24,
@@ -322,8 +324,9 @@ const styles = StyleSheet.create({
     paddingEnd: 60,
   },
   containerValue: {
-    backgroundColor: "transparent",
+    backgroundColor: colors.daclen_light,
     paddingHorizontal: 6,
+    borderBottomEndRadius: 6,
     height: 56,
   },
   textHeader: {
@@ -350,7 +353,7 @@ const styles = StyleSheet.create({
   photo: {
     width: 60,
     height: 80,
-    backgroundColor: "transparent",
+    backgroundColor: colors.daclen_light,
     overflow: "hidden",
   },
 });
