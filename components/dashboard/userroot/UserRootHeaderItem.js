@@ -1,8 +1,8 @@
 import React from "react";
-import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../../styles/base";
 
 export default function UserRootHeaderItem({
   title,

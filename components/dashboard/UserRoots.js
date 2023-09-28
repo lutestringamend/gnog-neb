@@ -43,12 +43,36 @@ export function checkVerification(userData) {
 const UserRoots = (props) => {
   const [numRoots, setNumRoots] = useState(0);
   const [tree, setTree] = useState(null);
+  const [selfData, setSelfData] = useState(null);
   //const [numVerified, setNumVerified] = useState(0);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [modal, setModal] = useState(defaultModal);
   const { token, currentUser, hpv } = props;
+
+  useEffect(() => {
+    if (currentUser === null) {
+      setError("Anda harus login ke akun Daclen.");
+    } else {
+      setSelfData({
+        name: currentUser?.name,
+        status: currentUser?.status,
+        foto: currentUser?.detail_user
+          ? currentUser?.detail_user?.foto
+            ? currentUser?.detail_user?.foto
+            : null
+          : null,
+        email: currentUser?.email,
+        nomor_telp: currentUser?.nomor_telp,
+        join_date: currentUser?.inv[0]?.created_at,
+        pv: currentUser?.poin_user?.poin,
+        hpv: currentUser?.poin_user?.hpv,
+        poin_user_this_month: currentUser?.poin_user_this_month,
+        total_nominal_penjualan: currentUser?.total_nominal_penjualan,
+      });
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     if (
@@ -101,7 +125,7 @@ const UserRoots = (props) => {
       visible: true,
       data,
       isVerified,
-    })
+    });
   }
 
   const fetchHPV = async () => {
@@ -238,23 +262,14 @@ const UserRoots = (props) => {
             isFirstItem={false}
             isLastItem={false}
             isNextBranch={false}
+            isSingleChild={true}
             isVerified={true}
           />
           <VerticalLine style={{ height: 32, marginStart: 80 }} />
           <UserRootItem
-            userData={{
-              ...currentUser,
-              foto: currentUser?.detail_user
-                ? currentUser?.detail_user?.foto
-                  ? currentUser?.detail_user?.foto
-                  : null
-                : null,
-            }}
+            userData={selfData}
             onPress={() =>
-              openUserPopup(
-                hpv?.data?.children[0],
-                checkVerification(currentUser)
-              )
+              openUserPopup(selfData, checkVerification(currentUser))
             }
             isCurrentUser={true}
             isParent={false}
@@ -262,6 +277,7 @@ const UserRoots = (props) => {
             isFirstItem={false}
             isLastItem={false}
             isNextBranch={false}
+            isSingleChild={true}
             isVerified={checkVerification(currentUser)}
           />
           {loading ? (
@@ -319,6 +335,7 @@ const UserRoots = (props) => {
                   isFirstItem={index === 0}
                   isLastItem={index >= tree?.length - 1}
                   isNextBranch={false}
+                  isSingleChild={tree?.length < 2}
                   isCurrentVerified={checkVerification(currentUser)}
                   isVerified={checkVerification(item)}
                   openUserPopup={openUserPopup}
@@ -341,7 +358,6 @@ const UserRoots = (props) => {
           }
         />
       ) : null}
-
     </SafeAreaView>
   );
 };

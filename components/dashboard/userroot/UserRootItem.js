@@ -25,6 +25,7 @@ const UserRootItem = ({
   isFirstItem,
   isLastItem,
   isNextBranch,
+  isSingleChild,
   isVerified,
   isCurrentVerified,
   status,
@@ -41,7 +42,7 @@ const UserRootItem = ({
     if (userData?.nomor_telp_verified_at === null) {
       message += `\n${phonenotverified}`;
     }
-    console.log(userData?.id, message, userData?.children);
+    console.log("userRootItem", userData);
     onPress();
     /*if (Platform.OS === "android") {
       ToastAndroid.show(message, ToastAndroid.SHORT);
@@ -79,7 +80,7 @@ const UserRootItem = ({
 
   return (
     <View style={styles.container}>
-      {isCurrentUser || isParent ? null : (
+      {isCurrentUser || isParent || (isNextBranch && isSingleChild) ? null : (
         <VerticalLine
           style={{
             height:
@@ -230,6 +231,7 @@ const UserRootItem = ({
                 isFirstItem={index === 0}
                 isLastItem={index >= userData?.children?.length - 1}
                 isNextBranch={true}
+                isSingleChild={userData?.children?.length < 2}
                 isCurrentVerified={isVerified}
                 isVerified={checkVerification(item)}
               />

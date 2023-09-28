@@ -304,7 +304,7 @@ export const storePenarikanSaldo = async (token, saldo) => {
     );
     const data = response?.data;
     console.log("storePenarikanSaldo response", data);
-    if (!(data?.errors === null)) {
+    if (!(data === undefined || data === null || data?.errors === null)) {
       let newArray = Object.values(data?.errors);
       let error = "";
       for (let a of newArray) {

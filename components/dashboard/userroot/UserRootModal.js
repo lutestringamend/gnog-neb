@@ -12,6 +12,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { blurhash, colors } from "../../../styles/base";
 import { useNavigation } from "@react-navigation/native";
 import { phonenotverified, userverified } from "../constants";
+import { convertDateISOStringtoDisplayDate } from "../../../axios/profile";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
@@ -97,15 +98,32 @@ const UserRootModal = (props) => {
               </View>
 
               <Text allowFontScaling={false} style={styles.text}>
-                {`Join Date : \nEmail     : \nWA        : \nPV: ${
-                  modal?.data?.pv ? modal?.data?.pv : "0"
-                }   RPV: ${modal?.data?.rpv ? modal?.data?.rpv : "0"}  HPV: ${
-                  modal?.data?.hpv ? modal?.data?.hpv : "0"
-                }\nPoin Bulan Ini:  ${
-                  modal?.data?.user?.poin_user_this_month
-                    ? modal?.data?.user?.poin_user_this_month
-                    : "0"
-                }\nPenjualan Bulan Ini:
+                {`${
+                  modal?.data?.join_date
+                    ? `Join Date : ${convertDateISOStringtoDisplayDate(
+                        modal?.data?.join_date,
+                        true
+                      )}\n`
+                    : ""
+                }${
+                  modal?.data?.email
+                    ? `Email    : ${modal?.data?.email}\n`
+                    : ""
+                }${
+                  modal?.data?.nomor_telp
+                    ? `WA        : ${modal?.data?.nomor_telp}`
+                    : ""
+                }\n${modal?.data?.pv ? `PV: ${modal?.data?.pv}  ` : ""}${
+                  modal?.data?.rpv ? `RPV: ${modal?.data?.rpv}  ` : ""
+                }${modal?.data?.hpv ? `HPV: ${modal?.data?.hpv}` : ""}${
+                  modal?.data?.poin_user_this_month
+                    ? `\nPoin Bulan Ini:  ${modal?.data?.poin_user_this_month}`
+                    : ""
+                }${
+                  modal?.data?.total_nominal_penjualan
+                    ? `\nPenjualan Bulan Ini:  ${modal?.data?.total_nominal_penjualan}`
+                    : ""
+                }
                 `}
               </Text>
             </View>
