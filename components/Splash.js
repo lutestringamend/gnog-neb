@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   ActivityIndicator,
   ImageBackground,
+  Platform,
 } from "react-native";
 
 import packageJson from "../package.json";
@@ -19,7 +20,7 @@ function SplashScreen(props) {
       <ImageBackground
         source={require("../assets/splashmaster.png")}
         style={styles.logo}
-        resizeMode="center"
+        resizeMode={Platform.OS === "android" ? "center" : "contain"}
       >
         <View
           style={[
