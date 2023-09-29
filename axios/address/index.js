@@ -377,6 +377,8 @@ export function updateUserAddressData(currentUser, address, token) {
       nomor_rekening: currentUser?.detail_user?.nomor_rekening,
       bank_id: currentUser?.detail_user?.bank?.id,
       cabang_bank: currentUser?.detail_user?.cabang_bank,
+      wm_nama: currentUser?.detail_user?.wm_nama,
+      wm_nomor_telepon: currentUser?.detail_user?.wm_nomor_telepon,
     };
 
     const url = updateuserdata + "/" + currentUser?.id.toString();

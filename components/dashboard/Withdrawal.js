@@ -77,12 +77,17 @@ const Withdrawal = (props) => {
     setLoading(true);
     const result = await storePenarikanSaldo(token, amount);
     console.log("storePenarikanSaldo result", result);
-    if (result === undefined || result === null || result?.data === undefined || result?.data === null) {
+    if (
+      result === undefined ||
+      result === null ||
+      result?.data === undefined ||
+      result?.data === null
+    ) {
       setSuccess(false);
       setError(
-        result?.error
-          ? result?.error
-          : "Gagal mengajukan permintaan menarik saldo."
+        `Gagal mengajukan permintaan menarik saldo.${
+          result?.error ? `\n${result?.error}` : ""
+        }`
       );
     } else {
       setSuccess(true);
@@ -96,7 +101,8 @@ const Withdrawal = (props) => {
   return (
     <SafeAreaView style={styles.container}>
       {error ? (
-        <Text allowFontScaling={false}
+        <Text
+          allowFontScaling={false}
           style={[
             styles.textError,
             success && { backgroundColor: colors.daclen_green },
@@ -106,11 +112,15 @@ const Withdrawal = (props) => {
         </Text>
       ) : null}
       <ScrollView style={styles.container}>
-        <Text allowFontScaling={false} style={styles.textCompulsory}>
-          Masukkan jumlah untuk ditarik*
+        <Text allowFontScaling={false} style={styles.text}>
+          {`Masukkan jumlah untuk ditarik\n(minimal ${formatPrice(
+          SALDO_WITHDRAWAL_MINIMUM
+        )})`}
         </Text>
         <View style={styles.containerTextHorizontal}>
-          <Text allowFontScaling={false} style={styles.textCurrency}>Rp</Text>
+          <Text allowFontScaling={false} style={styles.textCurrency}>
+            Rp
+          </Text>
           <TextInput
             value={amount}
             placeholder="0"
@@ -128,7 +138,8 @@ const Withdrawal = (props) => {
           />
         </View>
 
-        <Text allowFontScaling={false}
+        <Text
+          allowFontScaling={false}
           style={[
             styles.textRemaining,
             {
@@ -141,9 +152,11 @@ const Withdrawal = (props) => {
               ? formatPrice(currentUser?.komisi_user?.total)
               : "Rp 0"
             : "Rp 0"
-        } tersedia\nMinimal penarikan ${formatPrice(SALDO_WITHDRAWAL_MINIMUM)}`}</Text>
+        } tersedia`}</Text>
 
-        <Text allowFontScaling={false} style={styles.text}>Catatan (opsional)</Text>
+        <Text allowFontScaling={false} style={styles.text}>
+          Catatan (opsional)
+        </Text>
         <TextInput
           value={misc}
           style={[styles.textInput, { height: 60, textAlignVertical: "top" }]}
@@ -151,7 +164,9 @@ const Withdrawal = (props) => {
           onChangeText={(misc) => setMisc(misc)}
         />
 
-        <Text allowFontScaling={false} style={styles.textCompulsory}>Penarikan ke</Text>
+        <Text allowFontScaling={false} style={styles.textCompulsory}>
+          Penarikan ke
+        </Text>
 
         {currentUser?.detail_user === undefined ||
         currentUser?.detail_user?.nomor_rekening === undefined ||
@@ -168,14 +183,19 @@ const Withdrawal = (props) => {
               { backgroundColor: colors.daclen_blue, marginTop: 4 },
             ]}
           >
-            <Text allowFontScaling={false} style={styles.textButton}>Lengkapi Keterangan Rekening</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>
+              Lengkapi Keterangan Rekening
+            </Text>
           </TouchableOpacity>
         ) : (
           <View style={styles.containerItem}>
             <Text allowFontScaling={false} style={styles.textBankName}>
               {currentUser?.detail_user?.bank?.nama}
             </Text>
-            <Text allowFontScaling={false} style={[styles.textEntry, { fontFamily: "Poppins-Bold" }]}>
+            <Text
+              allowFontScaling={false}
+              style={[styles.textEntry, { fontFamily: "Poppins-Bold" }]}
+            >
               {currentUser?.detail_user?.nomor_rekening}
             </Text>
             <Text allowFontScaling={false} style={styles.textEntry}>
@@ -200,10 +220,20 @@ const Withdrawal = (props) => {
         <Text allowFontScaling={false} style={styles.textCompulsory}>
           Syarat dan Ketentuan Penarikan Saldo
         </Text>
-        <Text allowFontScaling={false} style={styles.textExplanation}>{withdrawalexplanation}</Text>
+        <Text allowFontScaling={false} style={styles.textExplanation}>
+          {withdrawalexplanation}
+        </Text>
         <View style={styles.containerBottom} />
       </ScrollView>
-      <TouchableOpacity
+      {currentUser?.detail_user === undefined ||
+      currentUser?.detail_user?.nomor_rekening === undefined ||
+      currentUser?.detail_user?.nomor_rekening === null ||
+      currentUser?.detail_user?.nomor_rekening === "" ||
+      currentUser?.detail_user?.bank === undefined ||
+      currentUser?.detail_user?.bank?.nama === undefined ||
+      currentUser?.detail_user?.bank?.nama === null ||
+      currentUser?.detail_user?.bank?.nama === "" ? null : (
+        <TouchableOpacity
           onPress={() => submit()}
           style={[
             styles.button,
@@ -211,7 +241,6 @@ const Withdrawal = (props) => {
               backgroundColor:
                 loading ||
                 amount === "" ||
-                error !== null ||
                 parseInt(amount) < SALDO_WITHDRAWAL_MINIMUM ||
                 checkNumberEmpty(amount) >
                   checkNumberEmpty(currentUser?.komisi_user?.total)
@@ -224,7 +253,6 @@ const Withdrawal = (props) => {
           disabled={
             loading ||
             amount === "" ||
-            error !== null ||
             parseInt(amount) < SALDO_WITHDRAWAL_MINIMUM ||
             checkNumberEmpty(amount) >
               checkNumberEmpty(currentUser?.komisi_user?.total)
@@ -237,9 +265,12 @@ const Withdrawal = (props) => {
               style={{ alignSelf: "center" }}
             />
           ) : (
-            <Text allowFontScaling={false} style={styles.textButton}>Kirim Permintaan</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>
+              Kirim Permintaan
+            </Text>
           )}
         </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 };
@@ -284,7 +315,7 @@ const styles = StyleSheet.create({
     elevation: 4,
     backgroundColor: colors.daclen_orange,
     position: "absolute",
-    bottom: 12,
+    bottom: 0,
     start: 20,
     end: 20,
     zIndex: 4,
@@ -322,7 +353,8 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 2,
     marginHorizontal: 20,
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins",
+    fontSize: 14,
   },
   textError: {
     fontSize: 14,
@@ -346,7 +378,8 @@ const styles = StyleSheet.create({
     marginStart: 4,
   },
   textEntry: {
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins",
+    fontSize: 14,
     color: colors.daclen_black,
     marginBottom: 2,
   },
@@ -359,7 +392,8 @@ const styles = StyleSheet.create({
   },
   textExplanation: {
     color: colors.daclen_gray,
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins",
+    fontSize: 12,
     marginHorizontal: 20,
   },
 });

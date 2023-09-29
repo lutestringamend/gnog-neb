@@ -75,14 +75,14 @@ export function updateReduxMediaKitVideos(data) {
   };
 }
 
-export function setWatermarkDatafromCurrentUser(currentUser) {
+export function setWatermarkDatafromCurrentUser(currentUser, isOriginal) {
   let name = currentUser?.name ? currentUser?.name : "";
   let phone = currentUser?.nomor_telp ? currentUser?.nomor_telp : "";
   let url = currentUser?.name
     ? `${tokoonlineurlshort}${currentUser?.name}`
     : "";
   
-  if (!(currentUser?.detail_user === undefined || currentUser?.detail_user === null)) {
+  if (!(currentUser?.detail_user === undefined || currentUser?.detail_user === null || isOriginal)) {
     name = currentUser?.detail_user?.wm_nama ? currentUser?.detail_user?.wm_nama : currentUser?.detail_user?.nama_depan ? currentUser?.detail_user?.nama_depan : name;
     phone = currentUser?.detail_user?.wm_nomor_telepon ? currentUser?.detail_user?.wm_nomor_telepon : phone;
   }

@@ -356,7 +356,7 @@ function Main(props) {
           props.updateReduxMediaKitWatermarkData(newData);
         }
       } else {
-        let newData = setWatermarkDatafromCurrentUser(currentUser);
+        let newData = setWatermarkDatafromCurrentUser(currentUser, false);
         props.updateReduxMediaKitWatermarkData(newData);
         setObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY, newData);
       }

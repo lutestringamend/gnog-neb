@@ -303,19 +303,27 @@ export const storePenarikanSaldo = async (token, saldo) => {
       }
     );
     const data = response?.data;
-    console.log("storePenarikanSaldo response", data);
-    if (!(data === undefined || data === null || data?.errors === null)) {
-      let newArray = Object.values(data?.errors);
-      let error = "";
-      for (let a of newArray) {
-        for (let b of a) {
-          error = `${error === "" ? "" : "\n"}${b.toString()}`;
+    console.log("storePenarikanSaldo response", response);
+    
+    if (!(data === undefined || data === null)) {
+      if (typeof data === "string") {
+        return {
+          data: null,
+          error: data,
+        };
+      } else if (!(data?.errors === undefined || data?.errors === null)){
+        let newArray = Object.values(data?.errors);
+        let error = "";
+        for (let a of newArray) {
+          for (let b of a) {
+            error = `${error === "" ? "" : "\n"}${b.toString()}`;
+          }
         }
+        return {
+          data: null,
+          error,
+        };
       }
-      return {
-        data: null,
-        error,
-      };
     }
     return {
       data,
@@ -690,8 +698,12 @@ export function updateUserData(
         kota_id: address.kota?.id,
         kecamatan_id: address.kecamatan?.id,
         ...userData,
+        bank_id: userData?.bank_id ? userData?.bank_id : currentUser?.detail_user?.bank?.id,
+        bank_name: userData?.bank_name ? userData?.bank_name : currentUser?.detail_user?.bank?.nama,
         foto: null,
         nama_lengkap: userData?.nama_depan + " " + userData?.nama_belakang,
+        wm_nama: userData?.wm_nama ? userData?.wm_nama : currentUser?.detail_user?.wm_nama,
+        wm_nomor_telepon: userData?.wm_nomor_telepon ? userData?.wm_nomor_telepon : currentUser?.detail_user?.wm_nomor_telepon,
       };
 
       const url = updateuserdata + "/" + id.toString();

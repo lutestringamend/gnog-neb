@@ -20,7 +20,7 @@ function SplashScreen(props) {
       <ImageBackground
         source={require("../assets/splashmaster.png")}
         style={styles.logo}
-        resizeMode={Platform.OS === "android" ? "center" : "contain"}
+        resizeMode="cover"
       >
         <View
           style={[
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   textVersion: {
     fontFamily: "Poppins-SemiBold",
     fontSize: 10,
-    color: colors.daclen_yellow,
+    color: colors.daclen_light,
     textAlign: "center",
     marginVertical: 32,
     backgroundColor: "transparent",

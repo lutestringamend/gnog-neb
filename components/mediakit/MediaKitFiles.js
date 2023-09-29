@@ -143,7 +143,7 @@ function MediaKitFiles(props) {
       if (!(newData === undefined || newData === null)) {
         props.updateReduxMediaKitWatermarkData(newData);
       } else {
-        newData = setWatermarkDatafromCurrentUser(currentUser);
+        newData = setWatermarkDatafromCurrentUser(currentUser, false);
         props.updateReduxMediaKitWatermarkData(newData);
       }
     };

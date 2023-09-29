@@ -18,8 +18,13 @@ import {
   updateReduxMediaKitPhotosUri,
   setWatermarkDatafromCurrentUser,
 } from "../../axios/mediakit";
+import { updateUserData } from "../../axios/user";
 import { overwriteWatermarkVideos } from "../media";
-import { WatermarkData, vwmarktextnamecharlimit, vwmarktextphonecharlimit } from "./constants";
+import {
+  WatermarkData,
+  vwmarktextnamecharlimit,
+  vwmarktextphonecharlimit,
+} from "./constants";
 import { useNavigation } from "@react-navigation/native";
 import { setObjectAsync } from "../asyncstorage";
 import {
@@ -30,7 +35,8 @@ import {
 import { sentryLog } from "../../sentry";
 
 const WatermarkSettings = (props) => {
-  const { token, currentUser, watermarkData } = props;
+  const { token, currentUser, currentAddress, watermarkData, userUpdate } =
+    props;
   const [tempWatermarkData, setTempWatermarkData] = useState(WatermarkData);
   const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(false);
@@ -69,15 +75,50 @@ const WatermarkSettings = (props) => {
     }
   }, [tempWatermarkData]);
 
+  useEffect(() => {
+    if (loading) {
+      if (userUpdate?.session === "success") {
+        //props.getCurrentUser(token);
+        setSuccess(true);
+        setError("Setting Watermark telah diganti");
+      } else {
+        setSuccess(false);
+        setError(
+          `Gagal update Setting Watermark.${
+            userUpdate?.message ? `\n${userUpdate?.message}` : ""
+          }`
+        );
+      }
+      setLoading(false);
+    }
+  }, [userUpdate]);
+
   function reset() {
     setEditable(false);
-    setTempWatermarkData(setWatermarkDatafromCurrentUser(currentUser));
+    setTempWatermarkData(setWatermarkDatafromCurrentUser(currentUser, true));
   }
 
   const changingWatermarkData = async () => {
-    setSuccess(true);
-    setError("Setting Watermark telah diganti");
-    setLoading(false);
+    props.updateUserData(
+      currentUser?.id,
+      {
+        ...currentUser?.detail_user,
+        wm_nama: watermarkData?.name
+          ? watermarkData?.name
+          : currentUser?.detail_user?.nama_depan
+          ? currentUser?.detail_user?.nama_depan
+          : null,
+        wm_nomor_telepon: watermarkData?.phone
+          ? watermarkData?.phone
+          : currentUser?.nomor_telp
+          ? currentUser?.nomor_telp
+          : null,
+      },
+      currentAddress,
+      token,
+      currentUser,
+      currentUser?.detail_user?.foto
+    );
     try {
       await setObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY, watermarkData);
       await setObjectAsync(ASYNC_WATERMARK_PHOTOS_PDF_KEY, null);
@@ -99,7 +140,8 @@ const WatermarkSettings = (props) => {
   return (
     <View style={styles.container}>
       {error ? (
-        <Text allowFontScaling={false}
+        <Text
+          allowFontScaling={false}
           style={[
             styles.textError,
             success && { backgroundColor: colors.daclen_green },
@@ -136,11 +178,15 @@ const WatermarkSettings = (props) => {
               }
               disabled={loading}
             >
-              <Text allowFontScaling={false} style={styles.textChange}>Baca {privacypolicy}</Text>
+              <Text allowFontScaling={false} style={styles.textChange}>
+                Baca {privacypolicy}
+              </Text>
             </TouchableOpacity>
           </View>
 
-          <Text allowFontScaling={false} style={styles.textCompulsory}>Nama*</Text>
+          <Text allowFontScaling={false} style={styles.textCompulsory}>
+            Nama*
+          </Text>
           <TextInput
             value={tempWatermarkData?.name}
             style={styles.textInput}
@@ -150,7 +196,9 @@ const WatermarkSettings = (props) => {
             editable={editable}
             maxLength={vwmarktextnamecharlimit}
           />
-          <Text allowFontScaling={false} style={styles.textCompulsory}>Nomor telepon*</Text>
+          <Text allowFontScaling={false} style={styles.textCompulsory}>
+            Nomor telepon*
+          </Text>
           <TextInput
             value={tempWatermarkData?.phone}
             style={[styles.textInput, { marginBottom: 0 }]}
@@ -182,12 +230,16 @@ const WatermarkSettings = (props) => {
                   style={styles.spinner}
                 />
               ) : (
-                <Text allowFontScaling={false} style={styles.textButton}>Ganti</Text>
+                <Text allowFontScaling={false} style={styles.textButton}>
+                  Ganti
+                </Text>
               )}
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => reset()} style={styles.button}>
-              <Text allowFontScaling={false} style={styles.textButton}>Reset</Text>
+              <Text allowFontScaling={false} style={styles.textButton}>
+                Reset
+              </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -238,7 +290,8 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   textUid: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins",
+    fontSize: 12,
     color: colors.daclen_gray,
     textAlign: "center",
   },
@@ -272,7 +325,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
     marginHorizontal: 20,
     marginBottom: 20,
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins",
+    fontSize: 14,
   },
   spinner: {
     alignSelf: "center",
@@ -282,7 +336,9 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
+  currentAddress: store.userState.currentAddress,
   watermarkData: store.mediaKitState.watermarkData,
+  userUpdate: store.userState.userUpdate,
 });
 
 const mapDispatchProps = (dispatch) =>
@@ -291,6 +347,7 @@ const mapDispatchProps = (dispatch) =>
       updateReduxMediaKitWatermarkData,
       overwriteWatermarkVideos,
       updateReduxMediaKitPhotosUri,
+      updateUserData,
     },
     dispatch
   );
