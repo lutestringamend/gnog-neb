@@ -31,6 +31,7 @@ export const finalblognumber = 9999
 export const productpaginationnumber = 100
 export const PROFILE_LOCK_TIMEOUT_IN_MILISECONDS = 6000000
 export const SALDO_WITHDRAWAL_MINIMUM = 50000
+export const SALDO_ADMIN_FEE = 10000
 
 export const registergetsnaptoken = "api/mobile/auth/member/bayar"
 export const productfetchlink = "api/mobile/produk"
@@ -45,6 +46,7 @@ export const updateuserphoto = "api/mobile/user/upload-img"
 export const updatealamat = "api/mobile/user/update-alamat"
 export const deletealamat = "api/mobile/user/delete-alamat"
 export const gethpv = "api/mobile/user-root/hpv"
+export const showhpv = "api/mobile/user-root/hpv/show"
 export const laporanpoinuser = "api/mobile/laporan-poin-user"
 export const laporansaldo = "api/mobile/laporan-saldo"
 export const riwayatpenarikansaldo = "api/mobile/penarikan/komisi/show"

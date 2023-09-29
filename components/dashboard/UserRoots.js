@@ -17,7 +17,7 @@ import { bindActionCreators } from "redux";
 import UserRootItem, { VerticalLine } from "./userroot/UserRootItem";
 import UserRootModal from "./userroot/UserRootModal";
 import { colors, staticDimensions } from "../../styles/base";
-import { getHPV, updateReduxHPV } from "../../axios/user";
+import { getHPV, updateReduxHPV, overhaulReduxUserHpvArray, incrementReduxUserHpvArray } from "../../axios/user";
 import { devuserroottree } from "./constants";
 /*import UserRootHeaderItem from "./UserRootHeaderItem";
 import { notverified, userverified } from "./constants";*/
@@ -49,13 +49,14 @@ const UserRoots = (props) => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [modal, setModal] = useState(defaultModal);
-  const { token, currentUser, hpv } = props;
+  const { token, currentUser, hpv, hpvArray } = props;
 
   useEffect(() => {
     if (currentUser === null) {
       setError("Anda harus login ke akun Daclen.");
     } else {
       setSelfData({
+        id: currentUser?.id,
         name: currentUser?.name,
         status: currentUser?.status,
         foto: currentUser?.detail_user
@@ -116,9 +117,9 @@ const UserRoots = (props) => {
     }
   }, [hpv]);
 
-  /*useEffect(() => {
-    console.log("tree", tree);
-  }, [tree]);*/
+  useEffect(() => {
+    console.log("redux hpvArray", hpvArray);
+  }, [hpvArray]);
 
   function openUserPopup(data, isVerified) {
     setModal({
@@ -172,6 +173,22 @@ const UserRoots = (props) => {
       setTree(devuserroottree.data.children);
     } else {
       setTree(hpv?.data?.children[0]?.children);
+    }
+  }
+
+  function concatHPVArray(id, data) {
+    if (hpvArray?.length === undefined || hpvArray?.length < 1) {
+      props.overhaulReduxUserHpvArray([data]);
+    } else {
+      let isFound = false;
+      for (let h of hpvArray) {
+        if (h?.id === id) {
+          isFound = true;
+        }
+      }
+      if (!isFound) {
+        props.incrementReduxUserHpvArray(data);
+      }
     }
   }
 
@@ -353,9 +370,13 @@ const UserRoots = (props) => {
       {modal?.visible ? (
         <UserRootModal
           modal={modal}
+          hpvArray={hpvArray}
+          token={token}
+          isSelf={modal?.data?.id === currentUser?.id}
           toggleModal={() =>
             setModal((modal) => ({ ...modal, visible: !modal?.visible }))
           }
+          concatHPVArray={(id, data) => concatHPVArray(id, data)}
         />
       ) : null}
     </SafeAreaView>
@@ -476,12 +497,15 @@ const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
   hpv: store.userState.hpv,
+  hpvArray: store.userState.hpvArray,
 });
 
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
       updateReduxHPV,
+      overhaulReduxUserHpvArray, 
+      incrementReduxUserHpvArray,
     },
     dispatch
   );

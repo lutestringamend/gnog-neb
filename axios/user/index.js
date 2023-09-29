@@ -25,6 +25,7 @@ import {
   mainhttp,
   penarikansaldo,
   riwayatpenarikansaldo,
+  showhpv,
 } from "../constants";
 import { getKeranjang } from "../cart";
 import { initialState } from "../../redux/reducers/user";
@@ -62,6 +63,8 @@ import {
   USER_CART_STATE_CHANGE,
   USER_TEMP_CART_STATE_CHANGE,
   USER_RIWAYAT_SALDO_STATE_CHANGE,
+  USER_HPV_ARRAY_STATE_CHANGE,
+  USER_HPV_ARRAY_INCREMENT_STATE_CHANGE,
 } from "../../redux/constants";
 import {
   calculateBase64SizeInBytes,
@@ -232,6 +235,20 @@ export function updateReduxUserRiwayatSaldo(data) {
   };
 }
 
+export function overhaulReduxUserHpvArray(data) {
+  return (dispatch) => {
+    console.log("overhaulReduxUserHpvArray", data);
+    dispatch({ type: USER_HPV_ARRAY_STATE_CHANGE, data });
+  };
+}
+
+export function incrementReduxUserHpvArray(data) {
+  return (dispatch) => {
+    console.log("incrementReduxUserHpvArray", data);
+    dispatch({ type: USER_HPV_ARRAY_INCREMENT_STATE_CHANGE, data });
+  };
+}
+
 export function disableForceLogout() {
   return (dispatch) => {
     console.log("disableForceLogout");
@@ -393,11 +410,11 @@ export function getRiwayatPenarikanSaldo(id, token) {
       },
     };
     const url = riwayatpenarikansaldo + "/" + id.toString();
-    //console.log("getRiwayatPenarikanSaldo", url);
+    console.log("getRiwayatPenarikanSaldo", url);
 
     Axioss.get(url, config)
       .then((response) => {
-        const data = response.data;
+        const data = response?.data?.data;
         console.log("getRiwayatPenarikanSaldo response", response);
         dispatch({ type: USER_RIWAYAT_SALDO_STATE_CHANGE, data });
       })
@@ -461,6 +478,48 @@ export function getLaporanPoin(id, token) {
         });
       });
   };
+}
+
+export const showHPV = async (id, token) => {
+  if (id === undefined || id === null || token === undefined || token === null) {
+    return {
+      result: null,
+      error: null,
+    };
+  }
+
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  };
+  const url = showhpv + "/" + id.toString();
+  console.log("showHPV", url);
+
+  try {
+    const response = await Axioss.get(url, config)
+      .catch((error) => {
+        console.error(error);
+        sentryLog(error);
+        return {
+          result: null,
+          error: error.toString(),
+        }
+      });
+    //console.log("showHPV response", response);
+    return {
+      result: response?.data?.data,
+      error: null,
+    }
+  } catch (e) {
+    console.error(e);
+    sentryLog(e);
+    return {
+      result: null,
+      error: e.toString(),
+    }
+  }
 }
 
 export const getHPV = async (id, token) => {

@@ -8,23 +8,29 @@ import {
   ActivityIndicator,
   ScrollView,
   TextInput,
-  Linking,
 } from "react-native";
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
-import { colors, staticDimensions } from "../../styles/base";
-import { checkNumberEmpty } from "../../axios";
-import { withdrawalexplanation } from "./constants";
-import { SALDO_WITHDRAWAL_MINIMUM, websaldo } from "../../axios/constants";
-import { storePenarikanSaldo } from "../../axios/user";
-import { openWhatsapp } from "../whatsapp/Whatsapp";
+
+import { colors, staticDimensions } from "../../../styles/base";
+import { checkNumberEmpty } from "../../../axios";
+import { withdrawalexplanation } from "../constants";
+import {
+  SALDO_ADMIN_FEE,
+  SALDO_WITHDRAWAL_MINIMUM,
+} from "../../../axios/constants";
+import { storePenarikanSaldo, updateReduxUserRiwayatSaldo } from "../../../axios/user";
+import { openWhatsapp } from "../../whatsapp/Whatsapp";
 import {
   adminWA,
   adminWAbankdetailstemplate,
   contactadminicon,
-} from "../profile/constants";
-import { formatPrice } from "../../axios/cart";
+} from "../../profile/constants";
+import { formatPrice } from "../../../axios/cart";
+import { setObjectAsync } from "../../asyncstorage";
+import { ASYNC_USER_RIWAYAT_PENARIKAN } from "../../asyncstorage/constants";
 
 const Withdrawal = (props) => {
   const [amount, setAmount] = useState("");
@@ -33,7 +39,7 @@ const Withdrawal = (props) => {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { token, currentUser } = props;
+  const { token, currentUser, riwayatSaldo } = props;
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -61,6 +67,16 @@ const Withdrawal = (props) => {
       setError(null);
     }
   }, [amount]);
+
+  useEffect(() => {
+    if (loading && riwayatSaldo === null) {
+      setLoading(true);
+      setSuccess(true);
+      setError(
+        "Permintaan penarikan sudah tercatat di Riwayat Penarikan."
+      );
+    }
+  }, [riwayatSaldo]);
 
   function editBankDetails() {
     /*navigation.navigate("EditProfile", {
@@ -90,9 +106,11 @@ const Withdrawal = (props) => {
         }`
       );
     } else {
+      setObjectAsync(ASYNC_USER_RIWAYAT_PENARIKAN, null);
+      props.updateReduxUserRiwayatSaldo(null);
       setSuccess(true);
       setError(
-        "Permintaan penarikan saldo telah diterima dan masuk ke Laporan Saldo."
+        "Permintaan penarikan saldo telah diterima."
       );
     }
     setLoading(false);
@@ -112,10 +130,13 @@ const Withdrawal = (props) => {
         </Text>
       ) : null}
       <ScrollView style={styles.container}>
-        <Text allowFontScaling={false} style={styles.text}>
-          {`Masukkan jumlah untuk ditarik\n(minimal ${formatPrice(
-          SALDO_WITHDRAWAL_MINIMUM
-        )})`}
+        <Text allowFontScaling={false} style={styles.textCompulsory}>
+          Masukkan Jumlah Penarikan yang Diinginkan
+        </Text>
+        <Text allowFontScaling={false} style={[styles.text, { marginTop: 2 }]}>
+          {`(Minimal Penarikan ${formatPrice(
+            SALDO_WITHDRAWAL_MINIMUM
+          )}, Biaya Admin ${formatPrice(SALDO_ADMIN_FEE)})`}
         </Text>
         <View style={styles.containerTextHorizontal}>
           <Text allowFontScaling={false} style={styles.textCurrency}>
@@ -152,7 +173,14 @@ const Withdrawal = (props) => {
               ? formatPrice(currentUser?.komisi_user?.total)
               : "Rp 0"
             : "Rp 0"
-        } tersedia`}</Text>
+        } tersedia${
+          parseInt(amount) >= SALDO_WITHDRAWAL_MINIMUM &&
+          parseInt(amount) <= checkNumberEmpty(currentUser?.komisi_user?.total)
+            ? `\nJumlah yang Akan Diterima: ${formatPrice(
+                parseInt(amount) - SALDO_ADMIN_FEE
+              )}`
+            : ""
+        }`}</Text>
 
         <Text allowFontScaling={false} style={styles.text}>
           Catatan (opsional)
@@ -401,6 +429,15 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
+  riwayatSaldo: store.userState.riwayatSaldo,
 });
 
-export default connect(mapStateToProps, null)(Withdrawal);
+const mapDispatchProps = (dispatch) =>
+  bindActionCreators(
+    {
+      updateReduxUserRiwayatSaldo,
+    },
+    dispatch
+  );
+
+export default connect(mapStateToProps, mapDispatchProps)(Withdrawal);

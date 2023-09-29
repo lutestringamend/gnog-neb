@@ -50,7 +50,7 @@ import VerifyPhone from "./components/auth/VerifyPhone";
 import OTPScreen from "./components/auth/OTPScreen";
 
 import OpenMidtrans from "./components/checkout/OpenMidtrans";
-import Withdrawal from "./components/dashboard/Withdrawal";
+import Withdrawal from "./components/dashboard/saldo/Withdrawal";
 import WebviewScreen from "./components/webview/Webview";
 import FAQScreen from "./components/profile/FAQ";
 import AboutScreen from "./components/profile/About";
@@ -78,7 +78,7 @@ import PointReportScreen from "./components/dashboard/PointReport";
 import CreatePIN from "./components/profile/CreatePIN";
 import UserRoots from "./components/dashboard/UserRoots";
 import BonusRoot from "./components/dashboard/BonusRoot";
-import SaldoReport from "./components/dashboard/SaldoReport";
+import SaldoReport from "./components/dashboard/saldo/SaldoReport";
 import TimerExplanation from "./components/dashboard/components/TimerExplanation";
 import WmarkTestScreen from "./components/media/WmarkTestScreen";
 

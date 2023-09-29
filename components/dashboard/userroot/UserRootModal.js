@@ -1,18 +1,20 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   TouchableOpacity,
   View,
   Text,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { blurhash, colors } from "../../../styles/base";
-import { useNavigation } from "@react-navigation/native";
-import { phonenotverified, userverified } from "../constants";
+//import { useNavigation } from "@react-navigation/native";
+//import { phonenotverified, userverified } from "../constants";
 import { convertDateISOStringtoDisplayDate } from "../../../axios/profile";
+import { showHPV } from "../../../axios/user";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
@@ -21,8 +23,63 @@ const modalWidth =
 const modalHeight = 180;
 
 const UserRootModal = (props) => {
-  const { modal, toggleModal } = props;
-  const navigation = useNavigation();
+  const { modal, toggleModal, hpvArray, token, isSelf } = props;
+  const [hpvData, setHpvData] = useState(null);
+
+  useEffect(() => {
+    setHpvData(null);
+    checkHPVData();
+  }, [modal?.id]);
+
+  useEffect(() => {
+    console.log("hpvData", hpvData);
+  }, [hpvData]);
+
+  const checkHPVData = () => {
+    try {
+      if (!(hpvArray?.length === undefined || hpvArray?.length < 1)) {
+        for (let h of hpvArray) {
+          if (h?.id === modal?.data?.id) {
+            setHpvData(h);
+            return;
+          }
+        }
+      }
+      fetchHPVData();
+    } catch (e) {
+      console.error(e);
+      setHpvData(false);
+    }
+  };
+
+  const fetchHPVData = async () => {
+    if (
+      modal?.data === null ||
+      modal?.data?.id === undefined ||
+      modal?.data?.id === null
+    ) {
+      return;
+    }
+    const result = await showHPV(modal?.data?.id, token);
+    if (
+      result === undefined ||
+      result === null ||
+      result?.result === undefined ||
+      result?.result === null
+    ) {
+      setHpvData(false);
+    } else {
+      let newHpvData = result?.result;
+      if (isSelf) {
+        let modalData = modal?.data;
+        newHpvData = { ...newHpvData, ...modalData };
+      }
+      setHpvData(newHpvData);
+      if (!(props?.concatHPVArray === undefined || props?.concatHPVArray === null)) {
+        props?.concatHPVArray(modal?.data?.id, newHpvData);
+      }
+    }
+  };
 
   function displayError(e) {
     console.error(e);
@@ -97,35 +154,57 @@ const UserRootModal = (props) => {
                 </Text>
               </View>
 
-              <Text allowFontScaling={false} style={styles.text}>
-                {`${
-                  modal?.data?.join_date
-                    ? `Join Date: ${convertDateISOStringtoDisplayDate(
-                        modal?.data?.join_date,
-                        true
-                      )}\n`
-                    : ""
-                }${
-                  modal?.data?.email
-                    ? `Email: ${modal?.data?.email}\n`
-                    : ""
-                }${
-                  modal?.data?.nomor_telp
-                    ? `WA: ${modal?.data?.nomor_telp}`
-                    : ""
-                }\n${modal?.data?.pv ? `PV: ${modal?.data?.pv}  ` : ""}${
-                  modal?.data?.rpv ? `RPV: ${modal?.data?.rpv}  ` : ""
-                }${modal?.data?.hpv ? `HPV: ${modal?.data?.hpv}` : ""}${
-                  modal?.data?.poin_user_this_month
-                    ? `\nPoin Bulan Ini:  ${modal?.data?.poin_user_this_month}`
-                    : ""
-                }${
-                  modal?.data?.total_nominal_penjualan
-                    ? `\nPenjualan Bulan Ini:  ${modal?.data?.total_nominal_penjualan}`
-                    : ""
-                }
+              {hpvData === null ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.daclen_black}
+                  style={styles.spinner}
+                />
+              ) : hpvData === false ? (
+                <Text style={styles.text}>
+                  HPV user ini tidak bisa ditampilkan
+                </Text>
+              ) : (
+                <View style={styles.containerVertical}>
+                  <Text allowFontScaling={false} style={styles.text}>
+                    {`${
+                      hpvData?.join_date
+                        ? `Join Date: ${convertDateISOStringtoDisplayDate(
+                            hpvData?.join_date,
+                            true
+                          )}\n`
+                        : ""
+                    }${hpvData?.email ? `Email: ${hpvData?.email}\n` : ""}${
+                      hpvData?.nomor_telp ? `WA: ${hpvData?.nomor_telp}` : ""
+                    }\nPV: ${
+                      hpvData?.pv ? hpvData?.pv.toString() : "0"
+                    }  RPV: ${
+                      hpvData?.rpv ? hpvData?.rpv.toString() : "0"
+                    } HPV: ${hpvData?.hpv ? hpvData?.hpv : "0"}${
+                      hpvData?.distributor_count
+                        ? `\nJumlah Distributor Aktif:  ${hpvData?.distributor_count}`
+                        : ""
+                    }${
+                      hpvData?.agen_count
+                        ? `\nJumlah Agen Aktif:  ${hpvData?.agen_count}`
+                        : ""
+                    }${
+                      hpvData?.reseller_count
+                        ? `\nJumlah Reseller Aktif:  ${hpvData?.reseller_count}`
+                        : ""
+                    }${
+                      hpvData?.poin_user_this_month
+                        ? `\nPoin Bulan Ini:  ${hpvData?.poin_user_this_month}`
+                        : ""
+                    }${
+                      hpvData?.total_nominal_penjualan
+                        ? `\nPenjualan Bulan Ini:  ${hpvData?.total_nominal_penjualan}`
+                        : ""
+                    }
                 `}
-              </Text>
+                  </Text>
+                </View>
+              )}
             </View>
 
             <View style={styles.containerClose}>
@@ -205,6 +284,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderTopEndRadius: 6,
   },
+  containerVertical: {
+    backgroundColor: "transparent",
+  },
   photo: {
     width: 135,
     height: 180,
@@ -233,6 +315,11 @@ const styles = StyleSheet.create({
     marginVertical: 4,
     marginHorizontal: 10,
     color: colors.daclen_black,
+  },
+  spinner: {
+    alignSelf: "center",
+    marginVertical: 20,
+    backgroundColor: "transparent",
   },
 });
 

@@ -39,6 +39,8 @@ import {
   USER_REG_DATE_IN_MS_STATE_CHANGE,
   USER_CHECKOUT_ERROR_STATE_CHANGE,
   USER_RIWAYAT_SALDO_STATE_CHANGE,
+  USER_HPV_ARRAY_STATE_CHANGE,
+  USER_HPV_ARRAY_INCREMENT_STATE_CHANGE,
 } from "../constants";
 
 import { mainhttp } from "../../axios/constants";
@@ -55,6 +57,7 @@ export const initialState = {
   addresses: null,
   addressId: null,
   hpv: null,
+  hpvArray: [],
   points: null,
   syaratRoot: [],
   saldo: null,
@@ -181,6 +184,16 @@ export const user = (state = initialState, action) => {
       return {
         ...state,
         hpv: action.data,
+      };
+    case USER_HPV_ARRAY_STATE_CHANGE:
+      return {
+        ...state,
+        hpvArray: action.data,
+      };
+    case USER_HPV_ARRAY_INCREMENT_STATE_CHANGE:
+      return {
+        ...state,
+        hpvArray: [...state.hpvArray].concat(action.data),
       };
     case USER_POINTS_STATE_CHANGE:
       return {
