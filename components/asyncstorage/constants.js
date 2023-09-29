@@ -11,6 +11,9 @@ export const ASYNC_USER_HPV_KEY = "@user_HPV"
 export const ASYNC_USER_PROFILE_PIN_KEY = "@user_PIN"
 export const ASYNC_USER_PREVIOUS_USERNAME = "@user_previousUsername"
 
+export const ASYNC_USER_RIWAYAT_SALDO = "@user_saldo"
+export const ASYNC_USER_RIWAYAT_PENARIKAN = "@user_penarikanSaldo"
+
 export const ASYNC_HISTORY_CHECKOUT_KEY = "@history_checkout"
 export const ASYNC_HISTORY_DELIVERY_KEY = "@history_delivery"
 

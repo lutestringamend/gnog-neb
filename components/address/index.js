@@ -1,7 +1,7 @@
 import * as Location from "expo-location";
 import { sentryLog } from "../../sentry";
 
-import { googleAPIdevkey } from "../../axios/constants";
+import { googleAPIkey } from "../../axios/constants";
 import {
   locationnull,
   locationpermissionnotgranted,
@@ -324,7 +324,7 @@ export const initializeLocation = async (accuracy) => {
   }
 
   try {
-    Location.setGoogleApiKey(googleAPIdevkey);
+    Location.setGoogleApiKey(googleAPIkey);
     let location = await Location.getCurrentPositionAsync({
       accuracy: accuracy ? accuracy : Location.Accuracy.BestForNavigation,
       distanceInterval: 20,
@@ -369,7 +369,7 @@ export const getAddressText = (locales) => {
 
 export const getLocales = async (location) => {
   try {
-    Location.setGoogleApiKey(googleAPIdevkey);
+    Location.setGoogleApiKey(googleAPIkey);
     let result = await Location.reverseGeocodeAsync(location, {
       useGoogleMaps: true,
     });

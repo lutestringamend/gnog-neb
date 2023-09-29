@@ -24,6 +24,7 @@ import {
   devhttp,
   mainhttp,
   penarikansaldo,
+  riwayatpenarikansaldo,
 } from "../constants";
 import { getKeranjang } from "../cart";
 import { initialState } from "../../redux/reducers/user";
@@ -60,6 +61,7 @@ import {
   USER_RECRUITMENT_DEADLINE_STATE_CHANGE,
   USER_CART_STATE_CHANGE,
   USER_TEMP_CART_STATE_CHANGE,
+  USER_RIWAYAT_SALDO_STATE_CHANGE,
 } from "../../redux/constants";
 import {
   calculateBase64SizeInBytes,
@@ -216,6 +218,20 @@ export function updateReduxUserAddressId(data) {
   };
 }
 
+export function updateReduxUserSaldo(data) {
+  return (dispatch) => {
+    console.log("updateReduxUserSaldo", data);
+    dispatch({ type: USER_SALDO_STATE_CHANGE, data });
+  };
+}
+
+export function updateReduxUserRiwayatSaldo(data) {
+  return (dispatch) => {
+    console.log("updateReduxUserRiwayatSaldo", data);
+    dispatch({ type: USER_RIWAYAT_SALDO_STATE_CHANGE, data });
+  };
+}
+
 export function disableForceLogout() {
   return (dispatch) => {
     console.log("disableForceLogout");
@@ -279,7 +295,21 @@ export function getSyaratRoot(token) {
   };
 }
 
-export const storePenarikanSaldo = async (token, saldo) => {
+export const storePenarikanSaldo = async (token, saldo, userId) => {
+  if (
+    token === undefined ||
+    token === null ||
+    saldo === undefined ||
+    saldo === null ||
+    userId === undefined ||
+    userId === null
+  ) {
+    return {
+      data: null,
+      error: null,
+    };
+  }
+
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -288,6 +318,7 @@ export const storePenarikanSaldo = async (token, saldo) => {
   };
   const params = {
     saldo,
+    user_id: userId.toString(),
   };
   console.log("storePenarikanSaldo", params);
 
@@ -304,14 +335,28 @@ export const storePenarikanSaldo = async (token, saldo) => {
     );
     const data = response?.data;
     console.log("storePenarikanSaldo response", response);
-    
+
     if (!(data === undefined || data === null)) {
       if (typeof data === "string") {
         return {
           data: null,
           error: data,
         };
-      } else if (!(data?.errors === undefined || data?.errors === null)){
+      } else if (
+        data?.session === undefined ||
+        data?.session === null ||
+        data?.session !== "success"
+      ) {
+        return {
+          data: null,
+          error: data?.message ? data?.message : null,
+        };
+      } else if (data?.session === "successs") {
+        return {
+          data,
+          error: null,
+        };
+      } else if (!(data?.errors === undefined || data?.errors === null)) {
         let newArray = Object.values(data?.errors);
         let error = "";
         for (let a of newArray) {
@@ -339,6 +384,33 @@ export const storePenarikanSaldo = async (token, saldo) => {
   }
 };
 
+export function getRiwayatPenarikanSaldo(id, token) {
+  return (dispatch) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    };
+    const url = riwayatpenarikansaldo + "/" + id.toString();
+    //console.log("getRiwayatPenarikanSaldo", url);
+
+    Axioss.get(url, config)
+      .then((response) => {
+        const data = response.data;
+        console.log("getRiwayatPenarikanSaldo response", response);
+        dispatch({ type: USER_RIWAYAT_SALDO_STATE_CHANGE, data });
+      })
+      .catch((error) => {
+        console.log(error);
+        dispatch({
+          type: USER_AUTH_ERROR_STATE_CHANGE,
+          data: error.toString(),
+        });
+      });
+  };
+}
+
 export function getLaporanSaldo(id, token) {
   return (dispatch) => {
     const config = {
@@ -352,7 +424,7 @@ export function getLaporanSaldo(id, token) {
 
     Axioss.get(url, config)
       .then((response) => {
-        const data = response.data;
+        const data = response?.data?.data.reverse();
         dispatch({ type: USER_SALDO_STATE_CHANGE, data });
       })
       .catch((error) => {
@@ -698,12 +770,20 @@ export function updateUserData(
         kota_id: address.kota?.id,
         kecamatan_id: address.kecamatan?.id,
         ...userData,
-        bank_id: userData?.bank_id ? userData?.bank_id : currentUser?.detail_user?.bank?.id,
-        bank_name: userData?.bank_name ? userData?.bank_name : currentUser?.detail_user?.bank?.nama,
+        bank_id: userData?.bank_id
+          ? userData?.bank_id
+          : currentUser?.detail_user?.bank?.id,
+        bank_name: userData?.bank_name
+          ? userData?.bank_name
+          : currentUser?.detail_user?.bank?.nama,
         foto: null,
         nama_lengkap: userData?.nama_depan + " " + userData?.nama_belakang,
-        wm_nama: userData?.wm_nama ? userData?.wm_nama : currentUser?.detail_user?.wm_nama,
-        wm_nomor_telepon: userData?.wm_nomor_telepon ? userData?.wm_nomor_telepon : currentUser?.detail_user?.wm_nomor_telepon,
+        wm_nama: userData?.wm_nama
+          ? userData?.wm_nama
+          : currentUser?.detail_user?.wm_nama,
+        wm_nomor_telepon: userData?.wm_nomor_telepon
+          ? userData?.wm_nomor_telepon
+          : currentUser?.detail_user?.wm_nomor_telepon,
       };
 
       const url = updateuserdata + "/" + id.toString();
@@ -1070,7 +1150,13 @@ export const getCurrentUser = (token, storageCurrentUser) => {
           dispatch({ type: USER_STATE_CHANGE, data });
           dispatch({ type: USER_ADDRESS_STATE_CHANGE, data });
           setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, data);
-          if (!(data?.alamat_lain === undefined || data?.alamat_lain?.length === undefined || data?.alamat_lain?.length < 1)) {
+          if (
+            !(
+              data?.alamat_lain === undefined ||
+              data?.alamat_lain?.length === undefined ||
+              data?.alamat_lain?.length < 1
+            )
+          ) {
             let addresses = processDbAlamatLainToRedux(data?.alamat_lain);
             console.log("processDbAlamatLainToRedux", addresses);
             dispatch({ type: USER_ADDRESSES_STATE_CHANGE, data: addresses });
@@ -1095,7 +1181,7 @@ export const getCurrentUser = (token, storageCurrentUser) => {
         readStorageCurrentUser(dispatch, storageCurrentUser, status);
       });
   };
-}
+};
 
 function readStorageCurrentUser(dispatch, storageCurrentUser, status) {
   if (storageCurrentUser === undefined || storageCurrentUser === null) {

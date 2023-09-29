@@ -305,8 +305,7 @@ const Dashboard = (props) => {
         ) : (profileLock === undefined ||
             profileLock === null ||
             profileLock ||
-            pinLoading) &&
-          Platform.OS !== "web" ? (
+            pinLoading) && Platform.OS !== "web" ? (
           <DashboardLock receiveOTP={(e) => receiveOTP(e)} />
         ) : (
           <View style={styles.scrollView}>
@@ -348,8 +347,7 @@ const Dashboard = (props) => {
       recruitmentTimer === undefined ||
       recruitmentTimer === null ||
       recruitmentTimer < 0 ||
-      !showTimerModal ||
-      Platform.OS === "web" ? null : (
+      !showTimerModal || Platform.OS === "web" ? null : (
         <DashboardTimer
           recruitmentTimer={recruitmentTimer}
           showTimerModal={showTimerModal}

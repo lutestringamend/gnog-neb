@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
   View,
 } from "react-native";
 
-import MainHeader from "../main/MainHeader";
 import HistoryTabItem from "./HistoryTabItem";
 import Checkout from "./Checkout";
 import Delivery from "./Delivery";
@@ -20,9 +19,9 @@ import { colors } from "../../styles/base";
 export default function History() {
   const [activeTab, setActiveTab] = useState(checkoutItem);
 
-  useEffect(() => {
+  /*useEffect(() => {
     console.log(activeTab);
-  }, [activeTab]);
+  }, [activeTab]);*/
 
   return (
     <SafeAreaView style={styles.container}>

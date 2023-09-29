@@ -75,7 +75,7 @@ const Withdrawal = (props) => {
     /*Linking.openURL(websaldo);
     navigation.goBack();*/
     setLoading(true);
-    const result = await storePenarikanSaldo(token, amount);
+    const result = await storePenarikanSaldo(token, amount, currentUser?.id);
     console.log("storePenarikanSaldo result", result);
     if (
       result === undefined ||

@@ -6,13 +6,13 @@ export const localisationID = "id-ID";
 export const defaultcurrency = "IDR";
 export const defaultcountry = "Indonesia";
 
-export const googleAPIkey = "AIzaSyAyCj--fS9hSK7h8YmQljxhTlqUdOEZSUU"
+export const googleAPIkey = "AIzaSyAyT3F_f80zLWHNHSiG2oZMjW5G_Z9jhy4"
+//export const placesAPIkey = "AIzaSyAyT3F_f80zLWHNHSiG2oZMjW5G_Z9jhy4";
+//export const googleAPIdevkey = "AIzaSyDK1LZOoEtLWkcunXe40MKc-VO7oZjXQ7A";
+
 export const MIDTRANS_CLIENT_KEY = "Mid-client-BqXWNDpvPhUU7fB1"
 export const SB_MIDTRANS_CLIENT_KEY = "SB-Mid-client-xamInlBsiMBuJSWC"
 
-//export const googleAPIkey = "AIzaSyCrc_hstzOAPJiAwHa1sHMZbDN0vKFnOwM";
-export const placesAPIkey = "AIzaSyAyCj--fS9hSK7h8YmQljxhTlqUdOEZSUU";
-export const googleAPIdevkey = "AIzaSyDK1LZOoEtLWkcunXe40MKc-VO7oZjXQ7A";
 export const defaultlatitude = -6.921697335392908;
 export const defaultlongitude = 107.60708919873582;
 export const defaultlatitudedelta = 0.01214273;
@@ -47,6 +47,7 @@ export const deletealamat = "api/mobile/user/delete-alamat"
 export const gethpv = "api/mobile/user-root/hpv"
 export const laporanpoinuser = "api/mobile/laporan-poin-user"
 export const laporansaldo = "api/mobile/laporan-saldo"
+export const riwayatpenarikansaldo = "api/mobile/penarikan/komisi/show"
 export const penarikansaldo = "api/mobile/penarikan/komisi/store"
 export const getsyaratroot = "api/mobile/user-root/syarat"
 export const rajaongkirAPI = "api/mobile/rajaongkir"

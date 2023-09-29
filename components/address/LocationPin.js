@@ -28,7 +28,7 @@ import {
 import { updateReduxRajaOngkirWithKey } from "../../axios/address";
 import { defaultRegion, mapplacesplaceholder } from "./constants";
 import { sentryLog } from "../../sentry";
-import { defaultcountry, placesAPIkey } from "../../axios/constants";
+import { defaultcountry, googleAPIkey } from "../../axios/constants";
 import AddressData from "./AddressData";
 
 const LocationPin = (props) => {
@@ -419,7 +419,7 @@ const LocationPin = (props) => {
                   }}
                   placeholder={mapplacesplaceholder}
                   query={{
-                    key: placesAPIkey,
+                    key: googleAPIkey,
                     language: "id",
                     components: "country:ID",
                   }}

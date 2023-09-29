@@ -60,6 +60,11 @@ export const dashboardbuttonsmaxratio = 1.25;
 
 export const userroottitle = "USER ROOTS";
 
+export const withdrawalhistorytab = "Riwayat Penarikan"
+export const withdrawalhistoryicon = "cash-refund"
+export const saldohistorytab = "Riwayat Saldo"
+export const saldohistoryicon = "account-cash"
+
 export const dashboardbrowser = "Buka Dashboard Web";
 export const userverified = "Terverifikasi";
 export const notverified = "Belum Terverifikasi";

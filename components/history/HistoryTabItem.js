@@ -29,6 +29,7 @@ export default function HistoryTabItem(props) {
           ? null
           : props?.style,
       ]}
+      disabled={props?.disabled ? props?.disabled : false}
     >
       <MaterialCommunityIcons
         name={props?.icon}

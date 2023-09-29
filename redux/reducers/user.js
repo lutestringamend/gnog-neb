@@ -38,6 +38,7 @@ import {
   USER_RECRUITMENT_DEADLINE_STATE_CHANGE,
   USER_REG_DATE_IN_MS_STATE_CHANGE,
   USER_CHECKOUT_ERROR_STATE_CHANGE,
+  USER_RIWAYAT_SALDO_STATE_CHANGE,
 } from "../constants";
 
 import { mainhttp } from "../../axios/constants";
@@ -57,6 +58,7 @@ export const initialState = {
   points: null,
   syaratRoot: [],
   saldo: null,
+  riwayatSaldo: null,
   cart: null,
   cartError: null,
   tempCart: [],
@@ -194,6 +196,11 @@ export const user = (state = initialState, action) => {
       return {
         ...state,
         saldo: action.data,
+      };
+    case USER_RIWAYAT_SALDO_STATE_CHANGE:
+      return {
+        ...state,
+        riwayatSaldo: action.data,
       };
     case USER_CART_STATE_CHANGE:
       return {

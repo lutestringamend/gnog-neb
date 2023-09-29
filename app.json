@@ -26,7 +26,7 @@
       "requireFullScreen": true,
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyCZXq-7qHXWeARzKXgajCshS8EgZfJlKyg"
+          "apiKey": "AIzaSyDyou-mzQZLl0ufczHOTWCy0_yHEUnAB34"
         }
       },
       "infoPlist": {
@@ -49,7 +49,7 @@
       ],
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyAyCj--fS9hSK7h8YmQljxhTlqUdOEZSUU"
+          "apiKey": "AIzaSyAyT3F_f80zLWHNHSiG2oZMjW5G_Z9jhy4"
         }
       },
       "icon": "./assets/favicon.png",

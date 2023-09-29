@@ -25,7 +25,9 @@ const TabButton = (props) => {
   return (
     <TouchableOpacity
       onPress={() => onPress()}
-      style={styles.button}
+      style={[styles.button, {
+        width: props?.isLogin ? screenWidth / 3 : screenWidth / 2,
+      }]}
       disabled={props?.isActive}
     >
       <View style={styles.button}>
@@ -33,7 +35,9 @@ const TabButton = (props) => {
           <ImageBackground
             source={require("../assets/buttonfocused.png")}
             resizeMode="stretch"
-            style={styles.backgroundFocused}
+            style={[styles.backgroundFocused, {
+              width: props?.isLogin ? screenWidth / 3 : screenWidth / 2,
+            }]}
           >
             <Text allowFontScaling={false} style={styles.textFocused}>
               {props?.title}
@@ -88,6 +92,7 @@ const Top = ({ token, currentUser, recruitmentTimer }) => {
           title="BELANJA"
           isActive={tab === "home"}
           setTab={() => setTab("home")}
+          isLogin={!(token === null || currentUser === null)}
         />
 
         {token === null ||
@@ -102,6 +107,7 @@ const Top = ({ token, currentUser, recruitmentTimer }) => {
             title={`STARTER KIT`}
             isActive={tab === "mediakit"}
             setTab={() => setTab("mediakit")}
+            isLogin={!(token === null || currentUser === null)}
           />
         )}
         <TabButton
@@ -110,6 +116,7 @@ const Top = ({ token, currentUser, recruitmentTimer }) => {
           title="PROFIL"
           isActive={tab === "profile"}
           setTab={() => setTab("profile")}
+          isLogin={!(token === null || currentUser === null)}
         />
       </View>
     </View>
@@ -131,7 +138,6 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     backgroundColor: "transparent",
-    width: screenWidth / 3,
     height: 60,
     justifyContent: "center",
     alignItems: "center",
@@ -143,7 +149,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   backgroundFocused: {
-    width: screenWidth / 3,
     height: 60,
     paddingHorizontal: 12,
     justifyContent: "center",
