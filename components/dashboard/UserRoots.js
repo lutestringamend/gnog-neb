@@ -17,7 +17,13 @@ import { bindActionCreators } from "redux";
 import UserRootItem, { VerticalLine } from "./userroot/UserRootItem";
 import UserRootModal from "./userroot/UserRootModal";
 import { colors, staticDimensions } from "../../styles/base";
-import { getHPV, updateReduxHPV, overhaulReduxUserHpvArray, incrementReduxUserHpvArray } from "../../axios/user";
+import {
+  getHPV,
+  showHPV,
+  updateReduxHPV,
+  overhaulReduxUserHpvArray,
+  incrementReduxUserHpvArray,
+} from "../../axios/user";
 import { devuserroottree } from "./constants";
 /*import UserRootHeaderItem from "./UserRootHeaderItem";
 import { notverified, userverified } from "./constants";*/
@@ -55,23 +61,7 @@ const UserRoots = (props) => {
     if (currentUser === null) {
       setError("Anda harus login ke akun Daclen.");
     } else {
-      setSelfData({
-        id: currentUser?.id,
-        name: currentUser?.name,
-        status: currentUser?.status,
-        foto: currentUser?.detail_user
-          ? currentUser?.detail_user?.foto
-            ? currentUser?.detail_user?.foto
-            : null
-          : null,
-        email: currentUser?.email,
-        nomor_telp: currentUser?.nomor_telp,
-        join_date: currentUser?.inv[0]?.created_at,
-        pv: currentUser?.poin_user?.poin,
-        hpv: currentUser?.poin_user?.hpv,
-        poin_user_this_month: currentUser?.poin_user_this_month,
-        total_nominal_penjualan: currentUser?.total_nominal_penjualan,
-      });
+      showSelfHPV();
     }
   }, [currentUser]);
 
@@ -157,10 +147,45 @@ const UserRoots = (props) => {
     } else {
       props.updateReduxHPV(result?.result);
     }
+    await showSelfHPV();
     setLoading(false);
     if (refreshing) {
       setRefreshing(false);
     }
+  };
+
+  const showSelfHPV = async () => {
+    let newSelfData = {
+      id: currentUser?.id,
+      name: currentUser?.name,
+      status: currentUser?.status,
+      foto: currentUser?.detail_user
+        ? currentUser?.detail_user?.foto
+          ? currentUser?.detail_user?.foto
+          : null
+        : null,
+      email: currentUser?.email,
+      nomor_telp: currentUser?.nomor_telp,
+      join_date: currentUser?.inv[0]?.created_at,
+      pv: currentUser?.poin_user?.poin,
+      hpv: currentUser?.poin_user?.hpv,
+      poin_user_this_month: currentUser?.poin_user_this_month,
+      total_nominal_penjualan: currentUser?.total_nominal_penjualan,
+    };
+    const result = await showHPV(currentUser?.id, token);
+    if (
+      !(
+        result === undefined ||
+        result === null ||
+        result?.result === undefined ||
+        result?.result === null
+      )
+    ) {
+      let newHpvData = result?.result;
+      newSelfData = { ...newSelfData, ...newHpvData };
+    }
+    setSelfData(newSelfData);
+    concatHPVArray(currentUser?.id, newSelfData);
   };
 
   function refreshChildren() {
@@ -228,15 +253,26 @@ const UserRoots = (props) => {
           style={styles.containerLeader}
           disabled={currentUser?.id !== 8054}
         >
-          <Text allowFontScaling={false} style={styles.textLeader}>
-            {`Total: ${numRoots} Reseller`}
-          </Text>
+          {selfData === null ? null : (
+            <Text allowFontScaling={false} style={styles.textLeader}>
+              {`Total: ${
+                selfData?.distributor_count
+                  ? `${selfData?.distributor_count} Distributor `
+                  : ""
+              }${selfData?.agen_count ? `${selfData?.agen_count} Agen ` : ""}${
+                selfData?.reseller_count
+                  ? `${selfData?.reseller_count} Reseller`
+                  : ""
+              }`}
+            </Text>
+          )}
+
           <TouchableOpacity
             style={styles.containerRefresh}
             disabled={loading || refreshing}
             onPress={() => fetchHPV()}
           >
-            {loading || refreshing ? (
+            {loading || refreshing || selfData === null ? (
               <ActivityIndicator
                 size={28}
                 color={colors.daclen_light}
@@ -504,7 +540,7 @@ const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
       updateReduxHPV,
-      overhaulReduxUserHpvArray, 
+      overhaulReduxUserHpvArray,
       incrementReduxUserHpvArray,
     },
     dispatch
