@@ -176,7 +176,7 @@ const UserRootModal = (props) => {
                         : ""
                     }${hpvData?.email ? `Email: ${hpvData?.email}\n` : ""}${
                       hpvData?.nomor_telp ? `WA: ${hpvData?.nomor_telp}` : ""
-                    }\nPV: ${
+                    }\nPoin Bulan Ini (PV): ${
                       hpvData?.pv ? hpvData?.pv.toString() : "0"
                     }  RPV: ${
                       hpvData?.rpv ? hpvData?.rpv.toString() : "0"
@@ -192,14 +192,10 @@ const UserRootModal = (props) => {
                       hpvData?.reseller_count
                         ? `\nJumlah Reseller Aktif:  ${hpvData?.reseller_count}`
                         : ""
-                    }${
-                      hpvData?.poin_user_this_month
-                        ? `\nPoin Bulan Ini:  ${hpvData?.poin_user_this_month}`
-                        : ""
-                    }${
+                    }\nPenjualan Bulan Ini: ${
                       hpvData?.total_nominal_penjualan
-                        ? `\nPenjualan Bulan Ini:  ${hpvData?.total_nominal_penjualan}`
-                        : ""
+                        ? hpvData?.total_nominal_penjualan.toString()
+                        : "Rp 0"
                     }
                 `}
                   </Text>
