@@ -71,7 +71,7 @@ const WatermarkPhotosSegment = (props) => {
           <MaterialCommunityIcons
             name="chevron-right"
             size={20}
-            color={colors.daclen_black}
+            color={colors.daclen_light}
             style={styles.icon}
           />
         </TouchableOpacity>
@@ -92,7 +92,7 @@ const WatermarkPhotosSegment = (props) => {
                   style={[
                     styles.image,
                     {
-                      borderRadius: 2,
+                      borderRadius: 4,
                       borderWidth: 1,
                       borderColor: colors.daclen_lightgrey,
                       marginStart: 0,
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
   containerItem: {
     flexDirection: "row",
     borderRadius: 10,
-    backgroundColor: colors.white,
+    backgroundColor: "transparent",
     marginHorizontal: 10,
     paddingTop: 10,
     elevation: 2,
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     borderColor: colors.daclen_gray,
   },
   containerScroll: {
-    backgroundColor: colors.white,
+    backgroundColor: "transparent",
     marginHorizontal: 10,
     paddingTop: 10,
   },
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
   textName: {
     fontFamily: "Poppins-SemiBold",
     fontSize: 16,
-    color: colors.daclen_black,
+    color: colors.daclen_light,
     alignSelf: "flex-start",
   },
   image: {

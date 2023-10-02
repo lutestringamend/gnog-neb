@@ -262,7 +262,7 @@ export const getMediaKitPhotos = async (token) => {
         } 
         return {
           result: data,
-          error: e.toString(),
+          error: null,
         }
       }
     } catch (e) {

@@ -28,7 +28,7 @@ const WatermarkPhotos = ({
   try {
     return (
       <View style={styles.container}>
-        {error || photoKeys?.length === undefined || photoKeys?.length < 1 ? null : (
+        {error || photoKeys?.length === undefined || photoKeys?.length > 0 ? null : (
           <ActivityIndicator
             size="large"
             color={colors.daclen_light}

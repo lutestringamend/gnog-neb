@@ -174,7 +174,7 @@ const WatermarkVideos = (props) => {
             <FlashList
               estimatedItemSize={6}
               horizontal={false}
-              numColumns={2}
+              numColumns={3}
               data={mediaKitVideos}
               contentContainerStyle={styles.containerFlatlist}
               refreshControl={
@@ -297,15 +297,15 @@ const styles = StyleSheet.create({
   },
   textHeader: {
     backgroundColor: "transparent",
-    fontSize: 12,
-    fontFamily: "Poppins",
+    fontSize: 10,
+    fontFamily: "Poppins-SemiBold",
     alignSelf: "center",
     textAlign: "center",
     textAlignVertical: "center",
     marginTop: 6,
     marginBottom: 12,
     marginHorizontal: 10,
-    height: 48,
+    height: 52,
     color: colors.daclen_light,
   },
   textUid: {

@@ -32,6 +32,7 @@ import {
   setWatermarkDatafromCurrentUser,
 } from "../axios/mediakit";
 import {
+  convertDateISOStringtoMiliseconds,
   getRecruitmentDeadlineinMiliseconds,
   updateReduxRegDateInMs,
 } from "../axios/profile";
@@ -120,17 +121,14 @@ function Main(props) {
 
       if (
         !(
-          currentUser?.inv === undefined ||
-          currentUser?.inv === null ||
-          currentUser?.inv?.length === undefined ||
-          currentUser?.inv[0] === undefined ||
-          currentUser?.inv[0] === null
+          currentUser?.batas_rekrut === undefined ||
+          currentUser?.batas_rekrut === null ||
+          currentUser?.target_rekrutmen === undefined ||
+          currentUser?.target_rekrutmen === null
         )
       ) {
-        let newRegDateInMs = currentUser?.inv[0]?.created_at
-          ? getRecruitmentDeadlineinMiliseconds(currentUser?.inv[0]?.created_at)
-          : currentUser?.inv[0]?.updated_at
-          ? getRecruitmentDeadlineinMiliseconds(currentUser?.inv[0]?.updated_at)
+        let newRegDateInMs = currentUser?.batas_rekrut
+          ? convertDateISOStringtoMiliseconds(currentUser?.batas_rekrut)
           : null;
         props.updateReduxRegDateInMs(newRegDateInMs);
       }
