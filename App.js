@@ -67,7 +67,7 @@ import ImageViewer from "./components/imageviewer/ImageViewer";
 import MultipleImageView from "./components/imageviewer/MultipleImageView";
 import MediaKitFiles from "./components/mediakit/MediaKitFiles";
 import WatermarkSettings from "./components/mediakit/WatermarkSettings";
-import PhotosSegment from "./components/mediakit/PhotosSegment";
+import PhotosSegment from "./components/mediakit/photos/PhotosSegment";
 import QRScreen from "./components/qrscreen/QRScreen";
 import VideoPlayer from "./components/videoplayer/VideoPlayer";
 import VideoLogs from "./components/videoplayer/VideoLogs";

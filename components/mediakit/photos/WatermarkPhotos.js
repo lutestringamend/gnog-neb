@@ -9,12 +9,11 @@ import {
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 
-import { colors } from "../../styles/base";
-import { webfotowatermark } from "../../axios/constants";
-import { ErrorView } from "../webview/WebviewChild";
+import { colors } from "../../../styles/base";
+import { webfotowatermark } from "../../../axios/constants";
+import { ErrorView } from "../../webview/WebviewChild";
 import WatermarkPhotosSegment from "./WatermarkPhotosSegment";
-import { sentryLog } from "../../sentry";
-
+import { sentryLog } from "../../../sentry";
 
 const WatermarkPhotos = ({
   photos,
@@ -23,18 +22,19 @@ const WatermarkPhotos = ({
   error,
   watermarkData,
   sharingAvailability,
-  refreshPage,
+  refreshPage, 
+  jenis_foto,
 }) => {
   try {
     return (
       <View style={styles.container}>
-        {error || photoKeys?.length === undefined || photoKeys?.length > 0 ? null : (
+        {loading ? (
           <ActivityIndicator
             size="large"
             color={colors.daclen_light}
             style={{ alignSelf: "center", marginVertical: 20, zIndex: 1 }}
           />
-        )}
+        ) : null}
 
         <View style={styles.containerInside}>
           {error ? (
@@ -44,8 +44,11 @@ const WatermarkPhotos = ({
             />
           ) : loading ||
             photos === undefined ||
-            photos === null ? null : photoKeys?.length === undefined || photoKeys?.length < 1 ? (
-            <Text allowFontScaling={false} style={styles.textUid}>Tidak ada Foto Promosi tersedia.</Text>
+            photos === null ? null : photoKeys?.length === undefined ||
+            photoKeys?.length < 1 ? (
+            <Text allowFontScaling={false} style={styles.textUid}>
+              Tidak ada Foto Promosi tersedia.
+            </Text>
           ) : (
             <FlashList
               estimatedItemSize={10}
@@ -65,6 +68,7 @@ const WatermarkPhotos = ({
                   isLast={index === photoKeys?.length - 1}
                   key={item}
                   title={item}
+                  jenis_foto={jenis_foto}
                   photos={photos[item]}
                   watermarkData={watermarkData}
                   sharingAvailability={sharingAvailability}
@@ -121,7 +125,8 @@ const styles = StyleSheet.create({
     aspectRatio: 1 / 1,
   },
   textUid: {
-    fontFamily: "Poppins-SemiBold", fontSize: 12,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 12,
     color: colors.daclen_light,
     padding: 20,
     textAlign: "center",

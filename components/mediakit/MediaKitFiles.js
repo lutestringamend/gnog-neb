@@ -30,8 +30,8 @@ import { overwriteWatermarkVideos } from "../media";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { colors } from "../../styles/base";
 import { ErrorView } from "../webview/WebviewChild";
-import WatermarkPhotos from "./WatermarkPhotos";
-import WatermarkVideos from "./WatermarkVideos";
+import WatermarkPhotos from "./photos/WatermarkPhotos";
+import WatermarkVideos from "./videos/WatermarkVideos";
 import { sentryLog } from "../../sentry";
 import {
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
@@ -40,6 +40,9 @@ import {
 import Header from "../DashboardHeader";
 import {
   STARTER_KIT_FLYER_PRODUK,
+  STARTER_KIT_FLYER_MENGAJAK,
+  STARTER_KIT_FLYER_PRODUK_TAG,
+  STARTER_KIT_FLYER_MENGAJAK_TAG,
   STARTER_KIT_HOME,
   STARTER_KIT_VIDEO_PRODUK,
 } from "./constants";
@@ -109,7 +112,7 @@ function MediaKitFiles(props) {
       if (mediaKitPhotos === undefined || mediaKitPhotos === null) {
         fetchWatermarkPhotos();
       } else {
-        setPhotoKeys(Object.keys(mediaKitPhotos).sort().reverse());
+        setPhotoKeys(Object.keys(mediaKitPhotos).sort());
         if (photoLoading) {
           setPhotoLoading(false);
         }
@@ -289,7 +292,8 @@ function MediaKitFiles(props) {
               loading={videoLoading}
               refreshPage={() => refreshVideos()}
             />
-          ) : activeTab === STARTER_KIT_FLYER_PRODUK ? (
+          ) : activeTab === STARTER_KIT_FLYER_PRODUK ||
+            activeTab === STARTER_KIT_FLYER_MENGAJAK ? (
             <WatermarkPhotos
               userId={currentUser?.id}
               loading={photoLoading}
@@ -298,6 +302,11 @@ function MediaKitFiles(props) {
               sharingAvailability={sharingAvailability}
               photos={mediaKitPhotos}
               photoKeys={photoKeys}
+              jenis_foto={
+                activeTab === STARTER_KIT_FLYER_MENGAJAK
+                  ? STARTER_KIT_FLYER_MENGAJAK_TAG
+                  : STARTER_KIT_FLYER_PRODUK_TAG
+              }
               refreshPage={() => refreshPhotos()}
             />
           ) : (

@@ -19,15 +19,16 @@ import { Image } from "expo-image";
 import { shareAsync } from "expo-sharing";
 import { useNavigation } from "@react-navigation/native";
 
-import { blurhash, colors } from "../../styles/base";
-import { sentryLog } from "../../sentry";
-import { getObjectAsync } from "../asyncstorage";
-import { ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../asyncstorage/constants";
-import { ErrorView } from "../webview/WebviewChild";
-import { webfotowatermark } from "../../axios/constants";
+import { blurhash, colors } from "../../../styles/base";
+import { sentryLog } from "../../../sentry";
+import { getObjectAsync } from "../../asyncstorage";
+import { ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../../asyncstorage/constants";
+import { ErrorView } from "../../webview/WebviewChild";
+import { webfotowatermark } from "../../../axios/constants";
+import { STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE, STARTER_KIT_FLYER_MENGAJAK_TAG, STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE } from "../constants";
 
 const PhotosSegment = (props) => {
-  const { title, photos, sharingAvailability } = props.route.params;
+  const { title, photos, sharingAvailability, jenis_foto } = props.route.params;
   const { photosUri, watermarkData, currentUser } = props;
   const userId = currentUser?.id ? currentUser?.id : null;
 
@@ -37,10 +38,10 @@ const PhotosSegment = (props) => {
 
   useEffect(() => {
     props.navigation.setOptions({
-      title,
+      title: jenis_foto === STARTER_KIT_FLYER_MENGAJAK_TAG ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE : STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE,
       headerShown: true,
     });
-    console.log("PhotosSegment params", props.route.params);
+    //console.log("PhotosSegment params", props.route.params);
   }, [props.route.params]);
 
   useEffect(() => {
@@ -136,11 +137,13 @@ const PhotosSegment = (props) => {
     navigation.navigate("MultipleImageView", params);
   };
 
+  //{savedUri === null || savedUri === "" ?  "" : ""}
+
   try {
     return (
       <SafeAreaView style={styles.containerFlatlist}>
         <View style={styles.containerHeader}>
-          <Text allowFontScaling={false} style={styles.textHeader}>{savedUri === null || savedUri === "" ?  "Download dan Share Foto" : "Share"}</Text>
+          <Text allowFontScaling={false} style={styles.textHeader}>{title}</Text>
           {savedUri === null || savedUri === "" ? null : (
             <TouchableOpacity
               onPress={() => shareFileAsync()}
@@ -199,7 +202,7 @@ const PhotosSegment = (props) => {
             horizontal={false}
             numColumns={3}
             data={photos}
-            renderItem={({ item, index }) => (
+            renderItem={({ item, index }) => item?.jenis_foto === jenis_foto ? (
               <TouchableHighlight
                 key={index}
                 onPress={() => openPhoto(item)}
@@ -214,7 +217,7 @@ const PhotosSegment = (props) => {
                   transition={100}
                 />
               </TouchableHighlight>
-            )}
+            ) : null}
           />
         </Suspense>
       </SafeAreaView>

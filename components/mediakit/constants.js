@@ -11,19 +11,25 @@ export const STARTER_KIT_DEFAULT_ICON_HEIGHT = 120;
 
 export const STARTER_KIT_FLYER_PRODUK = "STARTER_KIT_FLYER_PRODUK";
 export const STARTER_KIT_FLYER_PRODUK_TEXT = "FLYER PRODUK";
+export const STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE = "Flyer Produk";
 export const STARTER_KIT_FLYER_PRODUK_ICON = require("../../assets/starterkit/flyerproduk.png");
+export const STARTER_KIT_FLYER_PRODUK_TAG = "produk";
 
 export const STARTER_KIT_VIDEO_PRODUK = "STARTER_KIT_VIDEO_PRODUK";
 export const STARTER_KIT_VIDEO_PRODUK_TEXT = "VIDEO PRODUK";
 export const STARTER_KIT_VIDEO_PRODUK_ICON = require("../../assets/starterkit/videoproduk.png");
+export const STARTER_KIT_VIDEO_PRODUK_TAG = "produk";
 
 export const STARTER_KIT_FLYER_MENGAJAK = "STARTER_KIT_FLYER_MENGAJAK";
 export const STARTER_KIT_FLYER_MENGAJAK_TEXT = "FLYER MENGAJAK";
+export const STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE = "Flyer Mengajak";
 export const STARTER_KIT_FLYER_MENGAJAK_ICON = require("../../assets/starterkit/flyermengajak.png");
+export const STARTER_KIT_FLYER_MENGAJAK_TAG = "mengajak";
 
 export const STARTER_KIT_VIDEO_MENGAJAK = "STARTER_KIT_VIDEO_MENGAJAK";
 export const STARTER_KIT_VIDEO_MENGAJAK_TEXT = "VIDEO MENGAJAK";
 export const STARTER_KIT_VIDEO_MENGAJAK_ICON = require("../../assets/starterkit/videomengajak.png");
+export const STARTER_KIT_VIDEO_MENGAJAK_TAG = "mengajak";
 
 export const STARTER_KIT_TOKO_ONLINE_TEXT = `TOKO ONLINE\nSAYA`;
 export const STARTER_KIT_TOKO_ONLINE_ICON = require("../../assets/starterkit/tokoonline.png");

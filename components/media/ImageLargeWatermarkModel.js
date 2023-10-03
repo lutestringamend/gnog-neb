@@ -30,7 +30,7 @@ function ImageLargeWatermarkModel(props) {
 
   const ratio = displayWidth / width;
   const displayFontSize = Math.round(
-    ratio * (fontSize >= 48 ? fontSize / 1.5 : fontSize)
+    ratio * (fontSize >= 48 ? fontSize / 1.25 : fontSize)
   );
 
   if (

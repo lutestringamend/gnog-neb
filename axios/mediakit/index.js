@@ -119,6 +119,7 @@ export const getVideoProductData = (item, products) => {
       return {
         ...item,
         nama,
+        product_name: data?.nama,
         produk_id: data?.id,
         produk: data?.slug,
         foto: data?.thumbnail ? data?.thumbnail : data?.foto ? data?.foto : null,
@@ -137,6 +138,7 @@ export const getVideoProductData = (item, products) => {
       return {
         ...item,
         nama,
+        product_name: item?.produk?.nama,
         produk_id: item?.produk?.id,
         produk: item?.produk?.slug,
         foto: item?.produk?.foto,

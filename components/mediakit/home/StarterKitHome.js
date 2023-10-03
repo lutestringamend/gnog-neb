@@ -110,7 +110,6 @@ const StarterKitHome = (props) => {
             icon={STARTER_KIT_FLYER_MENGAJAK_ICON}
             text={STARTER_KIT_FLYER_MENGAJAK_TEXT}
             style={{ marginEnd: 10 }}
-            disabled={true}
           />
           <StarterKitHomeButton
             onPress={() => setActiveTab(STARTER_KIT_VIDEO_MENGAJAK)}

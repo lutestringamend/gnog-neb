@@ -3,44 +3,33 @@ import {
   View,
   StyleSheet,
   ActivityIndicator,
-  RefreshControl,
   Text,
-  TouchableOpacity,
+  RefreshControl,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
-import { Image } from "expo-image";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { useNavigation } from "@react-navigation/native";
 
-import {
-  colors,
-  blurhash,
-  staticDimensions,
-  dimensions,
-} from "../../styles/base";
+import { colors } from "../../../styles/base";
 import {
   getMediaKitVideos,
   updateReduxMediaKitVideos,
   clearMediaKitVideosError,
-} from "../../axios/mediakit";
-import { overwriteWatermarkVideos } from "../media";
-import { getObjectAsync, setObjectAsync } from "../asyncstorage";
+} from "../../../axios/mediakit";
+import { overwriteWatermarkVideos } from "../../media";
+import { getObjectAsync, setObjectAsync } from "../../asyncstorage";
 import {
   ASYNC_MEDIA_WATERMARK_VIDEOS_KEY,
   ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY,
-} from "../asyncstorage/constants";
-import {
-  tempmediakitvideothumbnail,
-  vwmarkdefaultsourceheight,
-  vwmarkdefaultsourcewidth,
-} from "./constants";
-import { mainhttp } from "../../axios/constants";
+} from "../../asyncstorage/constants";
+import WatermarkVideosSegment from "./WatermarkVideosSegment";
+import VideosFlatlist from "./VideosFlatlist";
 
 const WatermarkVideos = (props) => {
-  const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const [fetching, setFetching] = useState(false);
+  const [videos, setVideos] = useState(null);
+  const [videoKeys, setVideoKeys] = useState(null);
   const { mediaKitVideos, watermarkVideos, userId, token, products, loading } =
     props;
 
@@ -58,8 +47,13 @@ const WatermarkVideos = (props) => {
     if (refreshing) {
       setRefreshing(false);
     }
+    reorganizeVideos();
     console.log("redux media kit videos", mediaKitVideos);
   }, [mediaKitVideos]);
+
+  useEffect(() => {
+    console.log("videos", videos);
+  }, [videos]);
 
   useEffect(() => {
     if (watermarkVideos?.length === undefined || watermarkVideos?.length < 1) {
@@ -68,6 +62,41 @@ const WatermarkVideos = (props) => {
     }
     console.log("redux media savedWatermarkVideos", watermarkVideos);
   }, [watermarkVideos]);
+
+  const reorganizeVideos = () => {
+    let newVideos = {
+      Lainnya: [],
+    };
+    try {
+      for (let vid of mediaKitVideos) {
+        if (
+          vid?.produk === undefined ||
+          vid?.produk?.nama === undefined ||
+          vid?.produk?.nama === null
+        ) {
+          newVideos["Lainnya"].unshift(vid);
+        } else {
+          if (newVideos[vid?.produk?.nama] === undefined) {
+            newVideos[vid?.produk?.nama] = [vid];
+          } else {
+            newVideos[vid?.produk?.nama].unshift(vid);
+          }
+        }
+      }
+      if (
+        newVideos["Lainnya"]?.length === undefined ||
+        newVideos["Lainnya"]?.length < 1
+      ) {
+        delete newVideos.Lainnya;
+      }
+      setVideos(newVideos);
+      setVideoKeys(Object.keys(newVideos).sort());
+    } catch (e) {
+      console.error(e);
+      setVideos(null);
+      setVideoKeys([]);
+    }
+  };
 
   const checkAsyncMediaKitVideos = async () => {
     const storageVideos = await getObjectAsync(
@@ -117,66 +146,36 @@ const WatermarkVideos = (props) => {
     //props.getMediaKitVideos(token, products);
   };
 
-  function openVideo(item, index) {
-    navigation.navigate("VideoPlayerScreen", {
-      userId,
-      videoId: item?.id ? item?.id : item?.video,
-      uri: item?.video ? item?.video : null,
-      thumbnail: getTempThumbnail(item),
-      title: getTitle(item),
-      width: item?.width ? item?.width : vwmarkdefaultsourcewidth,
-      height: item?.height ? item?.height : vwmarkdefaultsourceheight,
-    });
-  }
-
-  function getTitle(item) {
-    if (!(item?.produk === undefined || item?.produk?.nama === undefined || item?.produk?.nama === null || item?.produk?.nama === "")) {
-      return item?.produk?.nama;
-    }
-    let title = item?.nama ? item?.nama : "Video Promosi";
-    try {
-      if (title.includes("/")) {
-        let items = title.split("/");
-        title = items[items?.length - 1];
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return title;
-  }
-
-  function getTempThumbnail(item) {
-    if (!(item?.thumbnail === undefined || item?.thumbnail === null || item?.thumbnail === "")) {
-      return item?.thumbnail;
-    }
-    if (!(item?.produk === undefined || item?.produk?.thumbnail_url === undefined || item?.produk?.thumbnail_url === null)) {
-      return item?.produk?.thumbnail_url;
-    }
-    return require("../../assets/favicon.png");
-  }
-
   return (
     <View style={styles.container}>
-      {mediaKitVideos?.length === undefined || fetching || mediaKitVideos?.length > 0 ? null : (
+      {loading || fetching || refreshing || videoKeys === null ? (
         <ActivityIndicator
           size="large"
           color={colors.daclen_light}
           style={{ alignSelf: "center", marginVertical: 20, zIndex: 1 }}
         />
-      )}
+      ) : null}
       {mediaKitVideos?.length === undefined || loading ? null : (
         <View style={styles.containerInside}>
           {mediaKitVideos?.length < 1 ? (
             <Text allowFontScaling={false} style={styles.textUid}>
               Tidak ada Video Promosi tersedia.
             </Text>
+          ) : videos === null && videoKeys !== null ? (
+            <VideosFlatlist
+              videos={mediaKitVideos}
+              refreshing={refreshing}
+              refreshPage={() => refreshPage()}
+              showTitle={true}
+              userId={userId}
+            />
           ) : (
             <FlashList
-              estimatedItemSize={6}
+              estimatedItemSize={10}
               horizontal={false}
-              numColumns={3}
-              data={mediaKitVideos}
-              contentContainerStyle={styles.containerFlatlist}
+              numColumns={1}
+              data={videoKeys}
+              style={styles.containerFlatlist}
               refreshControl={
                 <RefreshControl
                   refreshing={refreshing}
@@ -184,33 +183,15 @@ const WatermarkVideos = (props) => {
                 />
               }
               renderItem={({ item, index }) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => openVideo(item, index)}
-                  style={[
-                    styles.containerImage,
-                    {
-                      marginBottom:
-                        mediaKitVideos?.length - index < 1
-                          ? staticDimensions.pageBottomPadding / 2
-                          : 0,
-                    },
-                  ]}
-                >
-                  <View style={styles.containerThumbnail}>
-                    <Image
-                      style={styles.imageList}
-                      source={getTempThumbnail(item)}
-                      contentFit="cover"
-                      placeholder={blurhash}
-                      transition={100}
-                    />
-                  </View>
-
-                  <Text allowFontScaling={false} style={styles.textHeader}>
-                    {getTitle(item)}
-                  </Text>
-                </TouchableOpacity>
+                <WatermarkVideosSegment
+                  index={index}
+                  isLast={index === videoKeys?.length - 1}
+                  key={item}
+                  title={item}
+                  videos={videos[item]}
+                  refreshing={refreshing}
+                  userId={userId}
+                />
               )}
             />
           )}
@@ -266,17 +247,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: "transparent",
-    marginHorizontal: 10,
-  },
-  containerImage: {
-    flex: 1,
-    backgroundColor: "transparent",
-    marginHorizontal: 10,
-  },
-  containerThumbnail: {
-    flex: 1,
-    aspectRatio: 3 / 4,
-    backgroundColor: colors.daclen_lightgrey,
   },
   containerOrientation: {
     position: "absolute",
@@ -289,24 +259,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     justifyContent: "center",
     alignItems: "center",
-  },
-  imageList: {
-    flex: 1,
-    aspectRatio: 3 / 4,
-    backgroundColor: colors.daclen_light,
-  },
-  textHeader: {
-    backgroundColor: "transparent",
-    fontSize: 10,
-    fontFamily: "Poppins-SemiBold",
-    alignSelf: "center",
-    textAlign: "center",
-    textAlignVertical: "center",
-    marginTop: 6,
-    marginBottom: 12,
-    marginHorizontal: 10,
-    height: 52,
-    color: colors.daclen_light,
   },
   textUid: {
     backgroundColor: "transparent",

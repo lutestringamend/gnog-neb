@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -13,13 +13,35 @@ import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-import { colors, blurhash, staticDimensions } from "../../styles/base";
+import { colors, blurhash, staticDimensions } from "../../../styles/base";
 
 const WatermarkPhotosSegment = (props) => {
-  const { title, photos, index, isLast, sharingAvailability, watermarkData } =
-    props;
+  const {
+    title,
+    photos,
+    index,
+    isLast,
+    sharingAvailability,
+    watermarkData,
+    jenis_foto,
+  } = props;
+  const [arraySize, setArraySize] = useState(null);
   const navigation = useNavigation();
   const { width } = Dimensions.get("window");
+
+  useEffect(() => {
+    if (photos?.length === undefined || photos?.length < 1) {
+      setArraySize(null);
+      return;
+    }
+    let newSize = 0;
+    for (let p of photos) {
+      if (p?.jenis_foto === jenis_foto) {
+        newSize++;
+      }
+    }
+    setArraySize(newSize);
+  }, [photos]);
 
   function openSegmentScreen() {
     navigation.navigate("PhotosSegment", {
@@ -43,10 +65,15 @@ const WatermarkPhotosSegment = (props) => {
       link_x: item?.link_x,
       link_y: item?.link_y,
       font: item?.font,
-      fontFamily: "Poppins", fontSize: item?.font ? item?.font?.ukuran : 48,
+      fontFamily: "Poppins",
+      fontSize: item?.font ? item?.font?.ukuran : 48,
       watermarkData,
       sharingAvailability,
     });
+  }
+
+  if (arraySize === null || arraySize < 1) {
+    return null;
   }
 
   try {
@@ -67,7 +94,9 @@ const WatermarkPhotosSegment = (props) => {
           onPress={() => openSegmentScreen()}
           style={styles.containerScrollHeader}
         >
-          <Text allowFontScaling={false} style={[styles.textName, { flex: 1 }]}>{title}</Text>
+          <Text allowFontScaling={false} style={[styles.textName, { flex: 1 }]}>
+            {title}
+          </Text>
           <MaterialCommunityIcons
             name="chevron-right"
             size={20}
@@ -82,33 +111,35 @@ const WatermarkPhotosSegment = (props) => {
             horizontal={true}
             data={photos}
             contentContainerStyle={styles.containerFlatlist}
-            renderItem={({ item, i }) => (
-              <TouchableOpacity
-                onPress={() => openPhoto(item)}
-                key={i}
-                style={styles.containerImage}
-              >
-                <Image
-                  style={[
-                    styles.image,
-                    {
-                      borderRadius: 4,
-                      borderWidth: 1,
-                      borderColor: colors.daclen_lightgrey,
-                      marginStart: 0,
-                      alignSelf: "flex-start",
-                      elevation: 4,
-                    },
-                  ]}
-                  source={item?.thumbnail ? item?.thumbnail : null}
-                  onClick={() => openSegmentScreen()}
-                  contentFit="cover"
-                  placeholder={blurhash}
-                  transition={0}
-                  cachePolicy="memory-disk"
-                />
-              </TouchableOpacity>
-            )}
+            renderItem={({ item, i }) =>
+              item?.jenis_foto === jenis_foto ? (
+                <TouchableOpacity
+                  onPress={() => openPhoto(item)}
+                  key={i}
+                  style={styles.containerImage}
+                >
+                  <Image
+                    style={[
+                      styles.image,
+                      {
+                        borderRadius: 4,
+                        borderWidth: 1,
+                        borderColor: colors.daclen_lightgrey,
+                        marginStart: 0,
+                        alignSelf: "flex-start",
+                        elevation: 4,
+                      },
+                    ]}
+                    source={item?.thumbnail ? item?.thumbnail : null}
+                    onClick={() => openSegmentScreen()}
+                    contentFit="cover"
+                    placeholder={blurhash}
+                    transition={0}
+                    cachePolicy="memory-disk"
+                  />
+                </TouchableOpacity>
+              ) : null
+            }
           />
         </View>
       </View>
@@ -155,8 +186,11 @@ const WatermarkPhotosSegment = (props) => {
             )}
 
             <View style={styles.containerInfo}>
-              <Text allowFontScaling={false} style={styles.textName}>{title}</Text>
-              <Text allowFontScaling={false}
+              <Text allowFontScaling={false} style={styles.textName}>
+                {title}
+              </Text>
+              <Text
+                allowFontScaling={false}
                 style={styles.textPrice}
               >{`${photos?.length} foto tersedia`}</Text>
             </View>
@@ -286,12 +320,14 @@ const styles = StyleSheet.create({
     marginStart: 12,
   },
   textPrice: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins",
+    fontSize: 12,
     color: colors.daclen_orange,
     marginTop: 6,
   },
   textButton: {
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins",
+    fontSize: 14,
     color: colors.daclen_black,
     textAlign: "center",
     textAlignVertical: "center",
