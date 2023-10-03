@@ -122,7 +122,7 @@ const WatermarkPhotosSegment = (props) => {
                     style={[
                       styles.image,
                       {
-                        borderRadius: 4,
+                        borderRadius: 6,
                         borderWidth: 1,
                         borderColor: colors.daclen_lightgrey,
                         marginStart: 0,
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
     height: 125,
     borderRadius: 6,
     alignSelf: "center",
-    backgroundColor: "transparent",
+    backgroundColor: colors.daclen_light,
     marginStart: 12,
   },
   textPrice: {

@@ -148,6 +148,8 @@ const styles = StyleSheet.create({
     flex: 1,
     aspectRatio: 3 / 4,
     borderRadius: 6,
+    borderWidth: 1,
+    borderColor: colors.daclen_lightgrey,
     backgroundColor: colors.daclen_lightgrey,
   },
   imageList: {

@@ -6,8 +6,9 @@ import {
   ActivityIndicator,
   Linking,
   RefreshControl,
+  FlatList,
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
+//import { FlashList } from "@shopify/flash-list";
 
 import { colors } from "../../../styles/base";
 import { webfotowatermark } from "../../../axios/constants";
@@ -50,7 +51,7 @@ const WatermarkPhotos = ({
               Tidak ada Foto Promosi tersedia.
             </Text>
           ) : (
-            <FlashList
+            <FlatList
               estimatedItemSize={10}
               horizontal={false}
               numColumns={1}

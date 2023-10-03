@@ -184,7 +184,7 @@ const PhotosSegment = (props) => {
                 />
               )}
 
-              <Text allowFontScaling={false} style={styles.textButton}>Download All as PDF</Text>
+              <Text allowFontScaling={false} style={styles.textButton}>Download PDF</Text>
             </TouchableOpacity>
           ) : null}
         </View>
