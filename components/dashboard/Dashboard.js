@@ -26,6 +26,7 @@ import {
   updateReduxProfileLockStatus,
   getRegisterSnapToken,
   updateReduxRegisterSnapToken,
+  convertInvoiceNumbertoRegDate,
 } from "../../axios/user";
 import DashboardUser from "./components/DashboardUser";
 import DashboardStats from "./components/DashboardStats";
@@ -84,23 +85,7 @@ const Dashboard = (props) => {
       currentUser?.status_member === undefined ||
       currentUser?.status_member === "premium"
     ) {
-      if (
-        currentUser?.inv === undefined ||
-        currentUser?.inv === null ||
-        currentUser?.inv?.length === undefined ||
-        currentUser?.inv[0] === undefined ||
-        currentUser?.inv[0] === null
-      ) {
-        setRegDate(null);
-      } else {
-        setRegDate(
-          currentUser?.inv[0]?.created_at
-            ? currentUser?.inv[0]?.created_at
-            : currentUser?.inv[0]?.updated_at
-            ? currentUser?.inv[0]?.updated_at
-            : null
-        );
-      }
+      setRegDate(currentUser?.join_date ? convertInvoiceNumbertoRegDate(currentUser?.join_date) : null);
       return;
     }
 

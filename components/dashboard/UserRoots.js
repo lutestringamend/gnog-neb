@@ -23,6 +23,7 @@ import {
   updateReduxHPV,
   overhaulReduxUserHpvArray,
   incrementReduxUserHpvArray,
+  convertInvoiceNumbertoRegDate,
 } from "../../axios/user";
 import { devuserroottree } from "./constants";
 /*import UserRootHeaderItem from "./UserRootHeaderItem";
@@ -166,7 +167,7 @@ const UserRoots = (props) => {
         : null,
       email: currentUser?.email,
       nomor_telp: currentUser?.nomor_telp,
-      join_date: currentUser?.inv[0]?.created_at,
+      join_date: currentUser?.join_date ? convertInvoiceNumbertoRegDate(currentUser?.join_date) : null,
       pv: currentUser?.poin_user?.poin,
       hpv: currentUser?.poin_user?.hpv,
       poin_user_this_month: currentUser?.poin_user_this_month,

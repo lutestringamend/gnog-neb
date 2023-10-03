@@ -208,12 +208,12 @@ function VideoPlayer(props) {
       console.error(e);
     }
     newHeader = `${newHeader} (${watermarkSize.width}x${watermarkSize.height})`;
-    if (currentUser?.id === 8054 || currentUser?.id === 11193 || currentUser?.id === 11447) {
+    /*if (currentUser?.id === 8054 || currentUser?.id === 11193 || currentUser?.id === 11447) {
       newHeader = `${newHeader} (Tester)`;
       setTester(true);
     } else {
       setTester(false);
-    }
+    }*/
     setHeaderTitle(newHeader);
   }, [currentUser]);
 
@@ -768,6 +768,12 @@ function VideoPlayer(props) {
         />
       </ViewShot>
 
+      <ImageBackground
+        source={require("../../assets/profilbg.png")}
+        style={styles.background}
+        resizeMode="cover"
+      />
+
       {!videoSize.isLandscape ? (
         <View style={styles.containerHeader}>
           <TouchableOpacity
@@ -1003,8 +1009,8 @@ function VideoPlayer(props) {
               styles.buttonCircle,
               {
                 backgroundColor: status.isLoaded
-                  ? colors.daclen_blue
-                  : colors.daclen_gray,
+                  ? colors.daclen_light
+                  : colors.daclen_lightgrey_button,
                 marginTop: 0,
                 marginStart: 10,
               },
@@ -1019,7 +1025,7 @@ function VideoPlayer(props) {
             <MaterialCommunityIcons
               name={status.isPlaying ? "pause" : "play"}
               size={18}
-              color={colors.daclen_light}
+              color={colors.daclen_black}
             />
           </TouchableOpacity>
           <TouchableOpacity
@@ -1033,10 +1039,8 @@ function VideoPlayer(props) {
                   videoLoading ||
                   !status.isLoaded ||
                   watermarkImage === null
-                    ? colors.daclen_gray
-                    : rawUri === null || resultUri === null
-                    ? colors.daclen_blue
-                    : colors.daclen_green,
+                    ? colors.daclen_lightgrey_button
+                    : colors.daclen_light,
               },
               isTester ? null : { flex: 1 },
             ]}
@@ -1067,7 +1071,7 @@ function VideoPlayer(props) {
                     : "check-bold"
                 }
                 size={18}
-                color={colors.daclen_light}
+                color={colors.daclen_black}
               />
             )}
             {videoSize.isLandscape || isTester ? null : (
@@ -1097,8 +1101,8 @@ function VideoPlayer(props) {
                   watermarkImage === null ||
                   rawUri === null ||
                   resultUri === null
-                    ? colors.daclen_gray
-                    : colors.daclen_orange,
+                    ? colors.daclen_lightgrey_button
+                    : colors.daclen_light,
               },
               isTester ? null : { flex: 1 },
             ]}
@@ -1116,7 +1120,7 @@ function VideoPlayer(props) {
             <MaterialCommunityIcons
               name="share-variant"
               size={18}
-              color={colors.daclen_light}
+              color={colors.daclen_black}
             />
             {videoSize.isLandscape || isTester ? null : (
               <Text allowFontScaling={false} style={styles.textButton}>
@@ -1131,8 +1135,8 @@ function VideoPlayer(props) {
                 {
                   backgroundColor:
                     loading || videoLoading || !sharingAvailability
-                      ? colors.daclen_gray
-                      : colors.daclen_cyan,
+                    ? colors.daclen_lightgrey_button
+                    : colors.daclen_light,
                 },
               ]}
               onPress={() => shareWatermarkImage()}
@@ -1141,7 +1145,7 @@ function VideoPlayer(props) {
               <MaterialCommunityIcons
                 name="picture-in-picture-top-right"
                 size={18}
-                color={colors.daclen_light}
+                color={colors.daclen_black}
               />
             </TouchableOpacity>
           ) : null}
@@ -1153,8 +1157,8 @@ function VideoPlayer(props) {
                 {
                   backgroundColor:
                     videoLoading || loading
-                      ? colors.daclen_gray
-                      : colors.daclen_indigo,
+                    ? colors.daclen_lightgrey_button
+                    : colors.daclen_light,
                 },
               ]}
               onPress={() => openFullLogs()}
@@ -1163,7 +1167,7 @@ function VideoPlayer(props) {
               <MaterialCommunityIcons
                 name="text-box"
                 size={18}
-                color={colors.daclen_light}
+                color={colors.daclen_black}
               />
             </TouchableOpacity>
           ) : null}
@@ -1236,8 +1240,8 @@ function VideoPlayer(props) {
               {
                 backgroundColor:
                   loading || videoLoading
-                    ? colors.daclen_gray
-                    : colors.daclen_black,
+                    ? colors.daclen_lightgrey_button
+                    : colors.daclen_light,
                 width: "90%",
                 marginTop: 10,
               },
@@ -1262,8 +1266,8 @@ function VideoPlayer(props) {
               {
                 backgroundColor:
                   loading || videoLoading
-                    ? colors.daclen_gray
-                    : colors.daclen_cyan,
+                    ? colors.daclen_lightgrey_button
+                    : colors.daclen_light,
                 width: "90%",
                 marginTop: 10,
               },
@@ -1285,6 +1289,14 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: colors.black,
+  },
+  background: {
+    position: "absolute",
+    zIndex: 0,
+    top: 0,
+    start: 0,
+    width: "100%",
+    height: "100%",
   },
   scrollView: {
     flex: 1,
@@ -1388,9 +1400,9 @@ const styles = StyleSheet.create({
     width: 60,
     height: 40,
     paddingVertical: 10,
-    borderRadius: 4,
+    borderRadius: 6,
     marginHorizontal: 10,
-    backgroundColor: colors.daclen_blue,
+    backgroundColor: colors.daclen_light,
   },
   buttonCircle: {
     alignItems: "center",
@@ -1399,7 +1411,7 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 24,
     marginStart: 20,
-    backgroundColor: colors.daclen_blue,
+    backgroundColor: colors.daclen_light,
   },
   buttonClose: {
     width: 20,
@@ -1418,7 +1430,7 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: 14,
     fontFamily: "Poppins-SemiBold",
-    color: colors.white,
+    color: colors.daclen_black,
     alignSelf: "center",
     marginStart: 6,
   },

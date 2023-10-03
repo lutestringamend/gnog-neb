@@ -480,6 +480,22 @@ export function getLaporanPoin(id, token) {
   };
 }
 
+export function convertInvoiceNumbertoRegDate (inv) {
+  try {
+    "REG/20230728/00003"
+    let invoiceDate = inv.split("/")[1];
+    let date = new Date();
+    date.setFullYear(parseInt(invoiceDate.substring(0, 4)));
+    date.setMonth(parseInt(invoiceDate.substring(4, 6)) - 1);
+    date.setDate(parseInt(invoiceDate.substring(6, 8)));
+    date.setHours(0, 0, 0);
+    return date.toISOString();
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
 export const showHPV = async (id, token) => {
   if (id === undefined || id === null || token === undefined || token === null) {
     return {

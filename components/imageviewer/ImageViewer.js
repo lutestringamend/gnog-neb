@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   SafeAreaView,
@@ -7,6 +7,7 @@ import {
   Text,
   Platform,
   ScrollView,
+  ImageBackground,
   TouchableOpacity,
   Dimensions,
 } from "react-native";
@@ -358,7 +359,9 @@ const ImageViewer = (props) => {
     try {
       const result = await MediaLibrary.saveToLibraryAsync(uri);
       console.log("savetoLibraryAsync result", result);
-      setError(`Foto tersimpan di ${Platform.OS === "ios" ? "Camera Roll" : "Gallery"}`);
+      setError(
+        `Foto tersimpan di ${Platform.OS === "ios" ? "Camera Roll" : "Gallery"}`
+      );
       setDownloadUri(JSON.stringify(result));
       setSuccess(true);
     } catch (e) {
@@ -477,6 +480,15 @@ const ImageViewer = (props) => {
           />
         </ViewShot>
       )}
+      {watermarkData === null ||
+      watermarkData === undefined ||
+      disableWatermark ? null : (
+        <ImageBackground
+          source={require("../../assets/profilbg.png")}
+          style={styles.background}
+          resizeMode="cover"
+        />
+      )}
       {error ? (
         <Text
           allowFontScaling={false}
@@ -567,10 +579,8 @@ const ImageViewer = (props) => {
                 {
                   backgroundColor:
                     loading || transformedImage === null
-                      ? colors.daclen_gray
-                      : downloadUri === null
-                      ? colors.daclen_blue
-                      : colors.daclen_green,
+                      ? colors.daclen_lightgrey_button
+                      : colors.daclen_light,
                 },
               ]}
               disabled={
@@ -580,14 +590,14 @@ const ImageViewer = (props) => {
               {loading || transformedImage === null ? (
                 <ActivityIndicator
                   size="small"
-                  color={colors.daclen_light}
+                  color={colors.daclen_black}
                   style={{ alignSelf: "center" }}
                 />
               ) : (
                 <MaterialCommunityIcons
                   name={downloadUri === null ? "file-download" : "check-bold"}
                   size={18}
-                  color={colors.daclen_light}
+                  color={colors.daclen_black}
                 />
               )}
 
@@ -605,8 +615,8 @@ const ImageViewer = (props) => {
                 {
                   backgroundColor:
                     loading || sharing || transformedImage === null
-                      ? colors.daclen_gray
-                      : colors.daclen_orange,
+                      ? colors.daclen_lightgrey_button
+                      : colors.daclen_light,
                 },
               ]}
               disabled={loading || sharing || transformedImage === null}
@@ -614,14 +624,14 @@ const ImageViewer = (props) => {
               {loading || sharing ? (
                 <ActivityIndicator
                   size="small"
-                  color={colors.daclen_light}
+                  color={colors.daclen_black}
                   style={{ alignSelf: "center" }}
                 />
               ) : (
                 <MaterialCommunityIcons
                   name="share-variant"
                   size={18}
-                  color={colors.daclen_light}
+                  color={colors.daclen_black}
                 />
               )}
 
@@ -682,11 +692,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
+    backgroundColor: colors.white,
   },
   scrollView: {
     flexGrow: 1,
     width: "100%",
-    backgroundColor: colors.white,
+    marginTop: 24,
+    backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -695,7 +707,7 @@ const styles = StyleSheet.create({
     zIndex: 3,
     marginTop: 32,
     width: "100%",
-    backgroundColor: colors.white,
+    backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -708,14 +720,6 @@ const styles = StyleSheet.create({
     start: 0,
     zIndex: -1,
     opacity: 100,
-  },
-  containerImage: {
-    flex: 1,
-    zIndex: 3,
-    backgroundColor: colors.white,
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "visible",
   },
   containerImagePreview: {
     backgroundColor: "transparent",
@@ -753,15 +757,15 @@ const styles = StyleSheet.create({
     width: 60,
     height: 40,
     paddingVertical: 10,
-    borderRadius: 4,
+    borderRadius: 6,
     marginHorizontal: 10,
-    backgroundColor: colors.daclen_blue,
+    backgroundColor: colors.daclen_light,
   },
   textButton: {
     fontSize: 14,
     fontFamily: "Poppins-SemiBold",
     marginStart: 10,
-    color: colors.daclen_light,
+    color: colors.daclen_black,
   },
   textError: {
     width: "100%",
@@ -780,6 +784,14 @@ const styles = StyleSheet.create({
   textWatermark: {
     position: "absolute",
     fontFamily: "Poppins-Bold",
+  },
+  background: {
+    position: "absolute",
+    zIndex: 0,
+    top: 0,
+    start: 0,
+    width: "100%",
+    height: "100%",
   },
   spinner: {
     marginVertical: 20,

@@ -30,7 +30,7 @@ const WatermarkPhotosSegment = (props) => {
   function openPhoto(item) {
     navigation.navigate("ImageViewer", {
       disableWatermark: false,
-      title: `Foto ${item?.id.toString()}`,
+      title,
       id: item?.id,
       uri: item?.foto,
       thumbnail: item?.thumbnail,
