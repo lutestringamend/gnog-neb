@@ -173,6 +173,20 @@ const UserRoots = (props) => {
       poin_user_this_month: currentUser?.poin_user_this_month,
       total_nominal_penjualan: currentUser?.total_nominal_penjualan,
     };
+
+    if (!(hpvArray?.length === undefined || hpvArray?.length < 1)) {
+      for (let h of hpvArray) {
+        if (h?.id === currentUser?.id) {
+          newSelfData = { ...newSelfData, ...h };
+          setSelfData(newSelfData);
+          return;
+        }
+      }
+    }
+    fetchSelfHPV(newSelfData);
+  };
+
+  const fetchSelfHPV = async (newSelfData) => {
     const result = await showHPV(currentUser?.id, token);
     if (
       !(
@@ -187,7 +201,7 @@ const UserRoots = (props) => {
     }
     setSelfData(newSelfData);
     concatHPVArray(currentUser?.id, newSelfData);
-  };
+  }
 
   function refreshChildren() {
     setRefreshing(true);

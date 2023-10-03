@@ -31,6 +31,7 @@ import {
   countdownseconds,
   countdowntitle,
 } from "../constants";
+import { recruitmenttarget } from "../../../axios/constants";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
@@ -422,14 +423,14 @@ const DashboardTimer = (props) => {
                 },
               ]}
             >
-              {target_rekrutmen > 0 && countdownColor !== countdownfrozen
+              {target_rekrutmen > 0 && countdownColor !== countdownfrozen && total_rekrutmen?.showHPV < recruitmenttarget
                 ? `${countdownbottom}${target_rekrutmen} ${
                     target_rekrutmen > 1
                       ? countdownbottomplural
                       : countdownbottomsingular
                   }`
-                : `${countdownbottomfrozen}${total_rekrutmen} ${
-                    total_rekrutmen > 1
+                : `${countdownbottomfrozen}${total_rekrutmen?.showHPV} ${
+                    total_rekrutmen?.showHPV > 1
                       ? countdownbottomplural
                       : countdownbottomsingular
                   }`}

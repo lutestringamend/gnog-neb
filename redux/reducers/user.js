@@ -41,6 +41,7 @@ import {
   USER_RIWAYAT_SALDO_STATE_CHANGE,
   USER_HPV_ARRAY_STATE_CHANGE,
   USER_HPV_ARRAY_INCREMENT_STATE_CHANGE,
+  USER_HPV_TOTAL_REKRUTMEN_STATE_CHANGE,
 } from "../constants";
 
 import { mainhttp } from "../../axios/constants";
@@ -59,6 +60,7 @@ export const initialState = {
   addressId: null,
   hpv: null,
   hpvArray: [],
+  hpvTotalRekrutmen: 0,
   points: null,
   syaratRoot: [],
   saldo: null,
@@ -196,6 +198,11 @@ export const user = (state = initialState, action) => {
       return {
         ...state,
         hpvArray: [...state.hpvArray].concat(action.data),
+      };
+    case USER_HPV_TOTAL_REKRUTMEN_STATE_CHANGE:
+      return {
+        ...state,
+        hpvTotalRekrutmen: action.data,
       };
     case USER_POINTS_STATE_CHANGE:
       return {

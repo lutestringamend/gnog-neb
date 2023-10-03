@@ -43,20 +43,14 @@ import DashboardVerification from "./components/DashboardVerification";
 import DashboardCreatePIN from "./components/DashboardCreatePIN";
 import DashboardUpgrade from "./components/DashboardUpgrade";
 import DashboardTimer from "./components/DashboardTimer";
+import { checkNumberEmpty } from "../../axios";
+
+const defaultTotalRekrutmen = {
+  showHPV: 0,
+  childrenSize: 0,
+};
 
 const Dashboard = (props) => {
-  const [message, setMessage] = useState({
-    text: null,
-    isError: false,
-  });
-  const [pinLoading, setPinLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const [fetchingToken, setFetchingToken] = useState(false);
-  const [showTimerModal, setShowTimerModal] = useState(true);
-  const [total_rekrutmen, setTotalRekrutmen] = useState(0);
-  const [regDate, setRegDate] = useState(null);
-  const [hpvError, setHpvError] = useState(null);
-
   const {
     currentUser,
     token,
@@ -67,6 +61,23 @@ const Dashboard = (props) => {
     regDateInMs,
     recruitmentTimer,
   } = props;
+
+  const [message, setMessage] = useState({
+    text: null,
+    isError: false,
+  });
+  const [pinLoading, setPinLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [fetchingToken, setFetchingToken] = useState(false);
+  const [showTimerModal, setShowTimerModal] = useState(true);
+  const [total_rekrutmen, setTotalRekrutmen] = useState({
+    ...defaultTotalRekrutmen,
+    showHPV: checkNumberEmpty(props.hpvTotalRekrutmen),
+  });
+  const [regDate, setRegDate] = useState(null);
+  const [hpvError, setHpvError] = useState(null);
+
+
 
   /*const [isSharingAvailable, setSharingAvailable] = useState(false);
   useEffect(() => {
@@ -120,10 +131,16 @@ const Dashboard = (props) => {
         isError: false,
       });
       try {
-        setTotalRekrutmen(hpv?.data?.children[0]?.children?.length);
+        setTotalRekrutmen({
+          ...total_rekrutmen,
+          childrenSize: hpv?.data?.children[0]?.children?.length,
+        });
       } catch (e) {
         console.error(e);
-        setTotalRekrutmen(0);
+        setTotalRekrutmen({
+          ...total_rekrutmen,
+          childrenSize: 0,
+        });
       }
       console.log("redux HPV", hpv);
       setObjectAsync(ASYNC_USER_HPV_KEY, hpv);
@@ -142,6 +159,10 @@ const Dashboard = (props) => {
       isError: false,
     });
   }, [profileLock, pinLoading]);
+
+  useEffect(() => {
+    console.log("Dashboard total_rekrutmen", total_rekrutmen);
+  }, [total_rekrutmen]);
 
   const checkAsyncSnapToken = async () => {
     if (fetchingToken) {
@@ -424,6 +445,7 @@ const mapStateToProps = (store) => ({
   profilePIN: store.userState.profilePIN,
   profileLock: store.userState.profileLock,
   hpv: store.userState.hpv,
+  hpvTotalRekrutmen: store.userState.hpvTotalRekrutmen,
 });
 
 const mapDispatchProps = (dispatch) =>

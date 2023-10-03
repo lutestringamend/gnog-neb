@@ -26,6 +26,7 @@ export const defaultlongitudelongbits = "4637272587357913000";
 
 export const testerusercode = "devdcn";
 export const tempdeadlineintervalinmiliseconds = 7776000000;
+export const recruitmenttarget = 3;
 
 export const finalblognumber = 9999
 export const productpaginationnumber = 100

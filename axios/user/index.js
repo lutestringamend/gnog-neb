@@ -27,6 +27,7 @@ import {
   penarikansaldo,
   riwayatpenarikansaldo,
   showhpv,
+  recruitmenttarget,
 } from "../constants";
 import { checkNumberEmpty, getKeranjang } from "../cart";
 import { initialState } from "../../redux/reducers/user";
@@ -66,6 +67,7 @@ import {
   USER_RIWAYAT_SALDO_STATE_CHANGE,
   USER_HPV_ARRAY_STATE_CHANGE,
   USER_HPV_ARRAY_INCREMENT_STATE_CHANGE,
+  USER_HPV_TOTAL_REKRUTMEN_STATE_CHANGE,
 } from "../../redux/constants";
 import {
   calculateBase64SizeInBytes,
@@ -1263,9 +1265,10 @@ export const getCurrentUser = (token, storageCurrentUser) => {
           //console.log("getCurrentUser response data is null");
           readStorageCurrentUser(dispatch, storageCurrentUser, null);
         } else {
-          dispatch({ type: USER_STATE_CHANGE, data });
+          //dispatch({ type: USER_STATE_CHANGE, data });
+          //setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, data);
+          fetchHPVfromUserCurrent(dispatch, token, data);
           dispatch({ type: USER_ADDRESS_STATE_CHANGE, data });
-          setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, data);
           if (
             !(
               data?.alamat_lain === undefined ||
@@ -1297,6 +1300,106 @@ export const getCurrentUser = (token, storageCurrentUser) => {
         readStorageCurrentUser(dispatch, storageCurrentUser, status);
       });
   };
+};
+
+export const fetchHPVfromUserCurrent = async (dispatch, token, currentUser) => {
+  if (
+    token === undefined ||
+    token === null ||
+    currentUser === undefined ||
+    currentUser === null
+  ) {
+    return;
+  }
+
+  const result = await getHPV(currentUser?.id, token);
+  if (
+    !(
+      result === undefined ||
+      result === null ||
+      result?.result === undefined ||
+      result?.result === null
+    )
+  ) {
+    console.log("overhaulReduxHPV", result?.result);
+    dispatch({ type: USER_HPV_STATE_CHANGE, data: result?.result });
+    if (
+      currentUser?.batas_rekrut === undefined ||
+      currentUser?.batas_rekrut === null ||
+      currentUser?.batas_rekrut === ""
+    ) {
+      return;
+    }
+
+    try {
+      let deadlineTime = new Date(currentUser?.batas_rekrut).getTime();
+      let total_rekrutmen = 0;
+      for (let h of result?.result?.data?.children[0]?.children) {
+        if (!(h?.id === undefined || h?.id === null)) {
+          const childHPV = await showHPV(h?.id, token);
+          if (
+            !(
+              childHPV === undefined ||
+              childHPV === null ||
+              childHPV?.result === undefined ||
+              childHPV?.result === null
+            )
+          ) {
+            let data = childHPV?.result;
+            console.log("incrementReduxUserHpvArray", data);
+            dispatch({ type: USER_HPV_ARRAY_INCREMENT_STATE_CHANGE, data });
+
+            if (
+              !(
+                data?.join_date === undefined ||
+                data?.join_date === null ||
+                data?.join_date === ""
+              )
+            ) {
+              let joinTime = new Date(data?.join_date).getTime();
+              if (joinTime < deadlineTime) {
+                total_rekrutmen++;
+              }
+            }
+          }
+        }
+      }
+      console.log("overhaulReduxHPVTotalRekrutmen", total_rekrutmen);
+      dispatch({
+        type: USER_HPV_TOTAL_REKRUTMEN_STATE_CHANGE,
+        data: total_rekrutmen,
+      });
+
+      let newUserData = {
+        ...currentUser,
+        target_rekrutmen:
+          total_rekrutmen >= recruitmenttarget
+            ? 0
+            : recruitmenttarget - total_rekrutmen,
+      };
+      console.log("new redux currentUser after showHPVs", newUserData);
+      dispatch({ type: USER_STATE_CHANGE, data: newUserData });
+      setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, newUserData);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+};
+
+export const fetchSelfHPVfromUserCurrent = async (dispatch, token, id) => {
+  const result = await showHPV(id, token);
+  if (
+    !(
+      result === undefined ||
+      result === null ||
+      result?.result === undefined ||
+      result?.result === null
+    )
+  ) {
+    let data = [result?.result];
+    console.log("overhaulReduxUserHpvArray", data);
+    dispatch({ type: USER_HPV_ARRAY_STATE_CHANGE, data });
+  }
 };
 
 function readStorageCurrentUser(dispatch, storageCurrentUser, status) {
