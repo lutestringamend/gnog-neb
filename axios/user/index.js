@@ -1382,6 +1382,8 @@ export const fetchHPVfromUserCurrent = async (dispatch, token, currentUser) => {
       setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, newUserData);
     } catch (e) {
       console.error(e);
+      dispatch({ type: USER_STATE_CHANGE, data: currentUser });
+      setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, currentUser);
     }
   }
 };
