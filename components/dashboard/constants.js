@@ -110,11 +110,19 @@ export const withdrawalexplanation = `
 `;
 
 export const countdowntitle = "COUNTDOWN";
+export const countdowncompletedtitle = "MISSION COMPLETED"
 export const countdowndays = "DAYS";
 export const countdownhours = "HOURS";
 export const countdownminutes = "MINUTES";
 export const countdownseconds = "SECONDS";
 export const countdownbottom = "90 Days Recruitment Target: "
+export const countdownbottomfrozen = "Total Recruitment for 90 Days: "
+export const countdownbottomplural = "Sellers"
+export const countdownbottomsingular = "Seller"
+export const countdowngreen = "green"
+export const countdownorange = "orange"
+export const countdownred = "red"
+export const countdownfrozen = "frozen"
 
 export const timereplanationtext = `
 1. Tampilan dasar countdown terdiri atas 4 warna, yaitu Merah, Orange, Hijau dan Biru yang merupakan indikasi sisa waktu yang tersedia.

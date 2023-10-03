@@ -2,6 +2,7 @@ import Axioss, { isUserDevServer } from "../index";
 import Axios from "axios";
 import { Linking, Platform, ToastAndroid } from "react-native";
 import * as Crypto from "expo-crypto";
+import moment from "moment";
 
 import {
   getcurrentuser,
@@ -27,7 +28,7 @@ import {
   riwayatpenarikansaldo,
   showhpv,
 } from "../constants";
-import { getKeranjang } from "../cart";
+import { checkNumberEmpty, getKeranjang } from "../cart";
 import { initialState } from "../../redux/reducers/user";
 
 import {
@@ -101,6 +102,12 @@ import { MAXIMUM_FILE_SIZE_IN_BYTES } from "../../components/media/constants";
 import { sentryLog } from "../../sentry";
 import { aes } from "./aes";
 import { processDbAlamatLainToRedux } from "../address";
+import {
+  countdownfrozen,
+  countdowngreen,
+  countdownorange,
+  countdownred,
+} from "../../components/dashboard/constants";
 
 export const resetPassword = () => {
   Linking.openURL(resetpassword);
@@ -480,9 +487,9 @@ export function getLaporanPoin(id, token) {
   };
 }
 
-export function convertInvoiceNumbertoRegDate (inv) {
+export function convertInvoiceNumbertoRegDate(inv) {
   try {
-    "REG/20230728/00003"
+    ("REG/20230728/00003");
     let invoiceDate = inv.split("/")[1];
     let date = new Date();
     date.setFullYear(parseInt(invoiceDate.substring(0, 4)));
@@ -496,8 +503,43 @@ export function convertInvoiceNumbertoRegDate (inv) {
   }
 }
 
+export function determineCountdownColor(batas_rekrut, target_rekrutmen) {
+  if (
+    batas_rekrut === undefined ||
+    batas_rekrut === null ||
+    batas_rekrut === "" ||
+    target_rekrutmen === undefined ||
+    target_rekrutmen === null
+  ) {
+    return null;
+  } else if (checkNumberEmpty(target_rekrutmen) < 1) {
+    return countdownfrozen;
+  }
+
+  try {
+    let deadline = new Date(batas_rekrut).getTime();
+    let now = new Date().getTime();
+    let days = Math.floor(moment.duration(deadline - now).asDays());
+    if (days > 59) {
+      return countdowngreen;
+    } else if (days > 29) {
+      return countdownorange;
+    } else {
+      return countdownred;
+    }
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
 export const showHPV = async (id, token) => {
-  if (id === undefined || id === null || token === undefined || token === null) {
+  if (
+    id === undefined ||
+    id === null ||
+    token === undefined ||
+    token === null
+  ) {
     return {
       result: null,
       error: null,
@@ -514,29 +556,28 @@ export const showHPV = async (id, token) => {
   console.log("showHPV", url);
 
   try {
-    const response = await Axioss.get(url, config)
-      .catch((error) => {
-        console.error(error);
-        sentryLog(error);
-        return {
-          result: null,
-          error: error.toString(),
-        }
-      });
+    const response = await Axioss.get(url, config).catch((error) => {
+      console.error(error);
+      sentryLog(error);
+      return {
+        result: null,
+        error: error.toString(),
+      };
+    });
     //console.log("showHPV response", response);
     return {
       result: response?.data?.data,
       error: null,
-    }
+    };
   } catch (e) {
     console.error(e);
     sentryLog(e);
     return {
       result: null,
       error: e.toString(),
-    }
+    };
   }
-}
+};
 
 export const getHPV = async (id, token) => {
   if (

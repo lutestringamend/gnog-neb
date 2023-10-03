@@ -53,6 +53,7 @@ const Dashboard = (props) => {
   const [refreshing, setRefreshing] = useState(false);
   const [fetchingToken, setFetchingToken] = useState(false);
   const [showTimerModal, setShowTimerModal] = useState(true);
+  const [total_rekrutmen, setTotalRekrutmen] = useState(0);
   const [regDate, setRegDate] = useState(null);
   const [hpvError, setHpvError] = useState(null);
 
@@ -118,6 +119,12 @@ const Dashboard = (props) => {
         text: null,
         isError: false,
       });
+      try {
+        setTotalRekrutmen(hpv?.data?.children[0]?.children?.length);
+      } catch (e) {
+        console.error(e);
+        setTotalRekrutmen(0);
+      }
       console.log("redux HPV", hpv);
       setObjectAsync(ASYNC_USER_HPV_KEY, hpv);
     }
@@ -338,7 +345,9 @@ const Dashboard = (props) => {
           showTimerModal={showTimerModal}
           setShowTimerModal={setShowTimerModal}
           regDateInMs={regDateInMs}
+          countdownColor={currentUser?.countdownColor ? currentUser?.countdownColor : null}
           target_rekrutmen={currentUser?.target_rekrutmen}
+          total_rekrutmen={total_rekrutmen}
         />
       )}
     </View>

@@ -67,6 +67,18 @@ export const colors = {
   timer_green_dark: "#0c4824",
   timer_green_light: "#0c8a38",
   timer_green_outline: "#04a23d",
+  timer_orange_dark: "#ff6801",
+  timer_orange_light: "#ffad01",
+  timer_orange_outline: "#ffb200",
+  timer_red_dark: "#730101",
+  timer_red_light: "#fe0000",
+  timer_red_outline: "#fe0000",
+  timer_frozen_dark: "#609bd3",
+  timer_frozen_light: "#88c1e7",
+  timer_frozen_outline: "#b0d1f1",
+  timer_frozen_title: "#eaf2fa",
+  timer_frozen_digit: "#f8feff",
+  timer_frozen_ok: "#3575ba",
 };
 
 export const padding = {

@@ -6,6 +6,7 @@ import {
   Text,
   Dimensions,
   ActivityIndicator,
+  ImageBackground,
 } from "react-native";
 import { BlurView } from "expo-blur";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -17,9 +18,16 @@ import { addZeroToArray } from "../../../axios";
 import { useNavigation } from "@react-navigation/native";
 import {
   countdownbottom,
+  countdownbottomfrozen,
+  countdownbottomplural,
+  countdownbottomsingular,
+  countdowncompletedtitle,
   countdowndays,
+  countdownfrozen,
   countdownhours,
   countdownminutes,
+  countdownorange,
+  countdownred,
   countdownseconds,
   countdowntitle,
 } from "../constants";
@@ -32,8 +40,9 @@ const modalHeight = 224;
 const digitTextWidth = 32;
 const digitTextHeight = 48;
 const defaultDigit = ["0", "0", "0", "0", "0", "0", "0", "0"];
+const frozenDigit = ["9", "0", "0", "0", "0", "0", "0", "0"];
 
-const DigitText = ({ number }) => {
+const DigitText = ({ number, countdownColor }) => {
   try {
     return (
       <View
@@ -42,18 +51,61 @@ const DigitText = ({ number }) => {
           { width: digitTextWidth, height: digitTextHeight },
         ]}
       >
-        <LinearGradient
-          colors={[colors.timer_green_dark, colors.timer_green_light]}
+        {countdownColor === countdownfrozen ? (
+          <ImageBackground
+            source={require("../../../assets/frozen_dg.png")}
+            style={[
+              styles.background,
+              {
+                width: digitTextWidth,
+                height: digitTextHeight,
+                borderRadius: 6,
+                borderWidth: 0,
+                elevation: 6,
+                borderColor: colors.timer_frozen_outline,
+              },
+            ]}
+            imageStyle={{ borderRadius: 6, borderWidth: 0 }}
+            resizeMode="cover"
+          />
+        ) : (
+          <LinearGradient
+            colors={
+              countdownColor === countdownred
+                ? [colors.timer_red_dark, colors.timer_red_light]
+                : countdownColor === countdownorange
+                ? [colors.timer_orange_dark, colors.timer_orange_light]
+                : [colors.timer_green_dark, colors.timer_green_light]
+            }
+            style={[
+              styles.background,
+              {
+                width: digitTextWidth,
+                height: digitTextHeight,
+                borderRadius: 6,
+                borderColor:
+                  countdownColor === countdownred
+                    ? colors.timer_red_outline
+                    : countdownColor === countdownorange
+                    ? colors.timer_orange_outline
+                    : colors.timer_green_outline,
+              },
+            ]}
+          />
+        )}
+
+        <Text
+          allowFontScaling={false}
           style={[
-            styles.background,
+            styles.digitText,
             {
-              width: digitTextWidth,
-              height: digitTextHeight,
-              borderRadius: 6,
+              color:
+                countdownColor === countdownfrozen
+                  ? colors.timer_frozen_digit
+                  : colors.daclen_light,
             },
           ]}
-        />
-        <Text allowFontScaling={false} style={styles.digitText}>
+        >
           {number.toString()}
         </Text>
       </View>
@@ -67,11 +119,47 @@ const DigitText = ({ number }) => {
           {
             width: digitTextWidth,
             height: digitTextHeight,
-            backgroundColor: colors.timer_green_dark,
+            backgroundColor:
+              countdownColor === countdownred
+                ? colors.timer_red_dark
+                : countdownColor === countdownorange
+                ? colors.timer_orange_dark
+                : countdownColor === countdownfrozen
+                ? colors.timer_frozen_dark
+                : colors.timer_green_dark,
           },
         ]}
       >
-        <Text allowFontScaling={false} style={styles.digitText}>
+        {countdownColor === countdownfrozen ? (
+          <ImageBackground
+            source={require("../../../assets/frozen_dg.png")}
+            style={[
+              styles.background,
+              {
+                width: digitTextWidth,
+                height: digitTextHeight,
+                borderRadius: 6,
+                borderWidth: 0,
+                elevation: 6,
+                borderColor: colors.timer_frozen_outline,
+              },
+            ]}
+            imageStyle={{ borderRadius: 6, borderWidth: 0 }}
+            resizeMode="cover"
+          />
+        ) : null}
+        <Text
+          allowFontScaling={false}
+          style={[
+            styles.digitText,
+            {
+              color:
+                countdownColor === countdownfrozen
+                  ? colors.timer_frozen_digit
+                  : colors.daclen_light,
+            },
+          ]}
+        >
           {number.toString()}
         </Text>
       </View>
@@ -79,14 +167,25 @@ const DigitText = ({ number }) => {
   }
 };
 
-const ContainerDigit = ({ digit1, digit2, label }) => {
+const ContainerDigit = ({ digit1, digit2, label, countdownColor }) => {
   return (
     <View style={styles.containerDigitItem}>
       <View style={styles.containerDoubleDigit}>
-        <DigitText number={digit1} />
-        <DigitText number={digit2} />
+        <DigitText number={digit1} countdownColor={countdownColor} />
+        <DigitText number={digit2} countdownColor={countdownColor} />
       </View>
-      <Text allowFontScaling={false} style={styles.timeLabel}>
+      <Text
+        allowFontScaling={false}
+        style={[
+          styles.timeLabel,
+          {
+            color:
+              countdownColor === countdownfrozen
+                ? colors.timer_frozen_title
+                : colors.daclen_light,
+          },
+        ]}
+      >
         {label}
       </Text>
     </View>
@@ -94,12 +193,22 @@ const ContainerDigit = ({ digit1, digit2, label }) => {
 };
 
 const DashboardTimer = (props) => {
-  const { recruitmentTimer, setShowTimerModal, regDateInMs, target_rekrutmen } =
-    props;
+  const {
+    recruitmentTimer,
+    setShowTimerModal,
+    regDateInMs,
+    target_rekrutmen,
+    total_rekrutmen,
+    countdownColor,
+  } = props;
   const [digits, setDigits] = useState(defaultDigit);
   const navigation = useNavigation();
 
   useEffect(() => {
+    if (countdownColor === countdownfrozen) {
+      setDigits(frozenDigit);
+      return;
+    }
     try {
       let days = Math.floor(moment.duration(recruitmentTimer).asDays());
       let hours = Math.floor(
@@ -146,19 +255,18 @@ const DashboardTimer = (props) => {
         ]}
         onPress={() => setShowTimerModal((showTimerModal) => !showTimerModal)}
       >
-                <BlurView
+        <BlurView
           intensity={10}
           style={[
             styles.container,
             {
               width: screenWidth,
               height: screenHeight,
-
               opacity: 0.95,
             },
           ]}
         >
-        <View
+          <View
             style={[
               styles.containerTimer,
               {
@@ -171,17 +279,51 @@ const DashboardTimer = (props) => {
               },
             ]}
           >
-            <LinearGradient
-              colors={[colors.timer_green_light, colors.timer_green_dark]}
-              style={[
-                styles.background,
-                {
-                  width: modalWidth,
-                  height: modalHeight,
+            {countdownColor === countdownfrozen ? (
+              <ImageBackground
+                source={require("../../../assets/frozen_bg.png")}
+                style={[
+                  styles.background,
+                  {
+                    width: modalWidth,
+                    height: modalHeight,
+                    borderRadius: 12,
+                    borderColor: colors.timer_frozen_outline,
+                  },
+                ]}
+                imageStyle={{
                   borderRadius: 12,
-                },
-              ]}
-            />
+                  borderWidth: 1,
+                  borderColor: colors.timer_frozen_outline,
+                }}
+                resizeMode="cover"
+              />
+            ) : (
+              <LinearGradient
+                colors={
+                  countdownColor === countdownred
+                    ? [colors.timer_red_light, colors.timer_red_dark]
+                    : countdownColor === countdownorange
+                    ? [colors.timer_orange_light, colors.timer_orange_dark]
+                    : [colors.timer_green_light, colors.timer_green_dark]
+                }
+                style={[
+                  styles.background,
+                  {
+                    width: modalWidth,
+                    height: modalHeight,
+                    borderRadius: 12,
+                    borderColor:
+                      countdownColor === countdownred
+                        ? colors.timer_red_outline
+                        : countdownColor === countdownorange
+                        ? colors.timer_orange_outline
+                        : colors.timer_green_outline,
+                  },
+                ]}
+              />
+            )}
+
             <TouchableOpacity
               style={styles.containerModalTitle}
               onPress={() =>
@@ -192,13 +334,30 @@ const DashboardTimer = (props) => {
                 })
               }
             >
-              <Text allowFontScaling={false} style={styles.textHeader}>
-                {countdowntitle}
+              <Text
+                allowFontScaling={false}
+                style={[
+                  styles.textHeader,
+                  {
+                    color:
+                      countdownColor === countdownfrozen
+                        ? colors.timer_frozen_title
+                        : colors.daclen_light,
+                  },
+                ]}
+              >
+                {countdownColor === countdownfrozen
+                  ? countdowncompletedtitle
+                  : countdowntitle}
               </Text>
               <MaterialCommunityIcons
                 name="help-circle"
                 size={20}
-                color={colors.daclen_light}
+                color={
+                  countdownColor === countdownfrozen
+                    ? colors.timer_frozen_title
+                    : colors.daclen_light
+                }
                 style={styles.help}
               />
             </TouchableOpacity>
@@ -215,6 +374,7 @@ const DashboardTimer = (props) => {
                   digit1={digits[0]}
                   digit2={digits[1]}
                   label={countdowndays}
+                  countdownColor={countdownColor}
                 />
                 <Text allowFontScaling={false} style={styles.textWall}>
                   :
@@ -223,6 +383,7 @@ const DashboardTimer = (props) => {
                   digit1={digits[2]}
                   digit2={digits[3]}
                   label={countdownhours}
+                  countdownColor={countdownColor}
                 />
                 <Text allowFontScaling={false} style={styles.textWall}>
                   :
@@ -231,6 +392,7 @@ const DashboardTimer = (props) => {
                   digit1={digits[4]}
                   digit2={digits[5]}
                   label={countdownminutes}
+                  countdownColor={countdownColor}
                 />
                 <Text allowFontScaling={false} style={styles.textWall}>
                   :
@@ -239,6 +401,7 @@ const DashboardTimer = (props) => {
                   digit1={digits[6]}
                   digit2={digits[7]}
                   label={countdownseconds}
+                  countdownColor={countdownColor}
                 />
               </View>
             )}
@@ -252,135 +415,93 @@ const DashboardTimer = (props) => {
                   end: 0,
                   width: modalWidth,
                   bottom: 28,
+                  color:
+                    countdownColor === countdownfrozen
+                      ? colors.timer_frozen_title
+                      : colors.daclen_light,
                 },
               ]}
             >
-              {`${countdownbottom}${
-                target_rekrutmen > 1
-                  ? `${target_rekrutmen} Sellers`
-                  : `${target_rekrutmen} Seller`
-              }`}
+              {target_rekrutmen > 0 && countdownColor !== countdownfrozen
+                ? `${countdownbottom}${target_rekrutmen} ${
+                    target_rekrutmen > 1
+                      ? countdownbottomplural
+                      : countdownbottomsingular
+                  }`
+                : `${countdownbottomfrozen}${total_rekrutmen} ${
+                    total_rekrutmen > 1
+                      ? countdownbottomplural
+                      : countdownbottomsingular
+                  }`}
             </Text>
 
-            <View style={[styles.containerOK, { start: modalWidth / 2 - 60 }]}>
-              <Text allowFontScaling={false} style={styles.textOK}>
+            <View
+              style={[
+                styles.containerOK,
+                {
+                  start: modalWidth / 2 - 60,
+                  borderWidth: countdownColor === countdownfrozen ? 0 : 1,
+                  backgroundColor:
+                    countdownColor === countdownfrozen
+                      ? "transparent"
+                      : colors.daclen_light,
+                  borderColor:
+                    countdownColor === countdownred
+                      ? colors.timer_red_dark
+                      : countdownColor === countdownorange
+                      ? colors.timer_orange_dark
+                      : countdownColor === countdownfrozen
+                      ? colors.timer_frozen_dark
+                      : colors.timer_green_dark,
+                },
+              ]}
+            >
+              {countdownColor === countdownfrozen ? (
+                <ImageBackground
+                  source={require("../../../assets/frozen_btn.png")}
+                  style={[
+                    styles.background,
+                    {
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: 6,
+                      borderWidth: 0,
+                    },
+                  ]}
+                  imageStyle={{
+                    borderRadius: 6,
+                    borderWidth: 1,
+                    borderColor: colors.timer_frozen_outline,
+                  }}
+                  resizeMode="cover"
+                />
+              ) : null}
+              <Text
+                allowFontScaling={false}
+                style={[
+                  styles.textOK,
+                  {
+                    color:
+                      countdownColor === countdownred
+                        ? colors.timer_red_dark
+                        : countdownColor === countdownorange
+                        ? colors.timer_orange_dark
+                        : countdownColor === countdownfrozen
+                        ? colors.timer_frozen_ok
+                        : colors.timer_green_dark,
+                  },
+                ]}
+              >
                 OK
               </Text>
             </View>
           </View>
         </BlurView>
-
       </TouchableOpacity>
     );
   } catch (e) {
     console.log("DashboardTimer error", e);
-    return (
-      <TouchableOpacity
-        style={[
-          styles.container,
-          {
-            width: screenWidth,
-            height: screenHeight,
-            zIndex: 100,
-            elevation: 4,
-            opacity: 0.95,
-          },
-        ]}
-        onPress={() => setShowTimerModal((showTimerModal) => !showTimerModal)}
-      >
-        <View
-          style={[
-            styles.containerTimer,
-            {
-              backgroundColor: colors.timer_green_light,
-              width: modalWidth,
-              height: modalHeight,
-              start: (screenWidth - modalWidth) / 2,
-              end: (screenWidth - modalWidth) / 2,
-              top: (screenHeight - modalHeight) / 2 - 40,
-              bottom: (screenHeight - modalHeight) / 2 + 40,
-            },
-          ]}
-        >
-          <View style={styles.containerModalTitle}>
-            <Text allowFontScaling={false} style={styles.textHeader}>
-              {countdowntitle}
-            </Text>
-            <MaterialCommunityIcons
-              name="help-circle"
-              size={20}
-              color={colors.daclen_light}
-              style={styles.help}
-            />
-          </View>
-
-          {digits === defaultDigit ? (
-            <ActivityIndicator
-              size="large"
-              color={colors.daclen_light}
-              style={{ alignSelf: "center", marginVertical: 32 }}
-            />
-          ) : (
-            <View style={[styles.containerCountdown, { width: modalWidth }]}>
-              <ContainerDigit
-                digit1={digits[0]}
-                digit2={digits[1]}
-                label={countdowndays}
-              />
-              <Text allowFontScaling={false} style={styles.textWall}>
-                :
-              </Text>
-              <ContainerDigit
-                digit1={digits[2]}
-                digit2={digits[3]}
-                label={countdownhours}
-              />
-              <Text allowFontScaling={false} style={styles.textWall}>
-                :
-              </Text>
-              <ContainerDigit
-                digit1={digits[4]}
-                digit2={digits[5]}
-                label={countdownminutes}
-              />
-              <Text allowFontScaling={false} style={styles.textWall}>
-                :
-              </Text>
-              <ContainerDigit
-                digit1={digits[6]}
-                digit2={digits[7]}
-                label={countdownseconds}
-              />
-            </View>
-          )}
-
-          <Text
-            allowFontScaling={false}
-            style={[
-              styles.textBottom,
-              {
-                start: 0,
-                end: 0,
-                width: modalWidth,
-                bottom: 28,
-              },
-            ]}
-          >
-            {`${countdownbottom}${
-              target_rekrutmen > 1
-                ? `${target_rekrutmen} Sellers`
-                : `${target_rekrutmen} Seller`
-            }`}
-          </Text>
-
-          <View style={[styles.containerOK, { start: modalWidth / 2 - 60 }]}>
-            <Text allowFontScaling={false} style={styles.textOK}>
-              OK
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
+    return null;
   }
 };
 
@@ -402,6 +523,7 @@ const styles = StyleSheet.create({
     start: 0,
     end: 0,
     top: 0,
+    zIndex: 0,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: colors.timer_green_outline,
@@ -412,6 +534,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 24,
     paddingHorizontal: 12,
+    borderRadius: 12,
     elevation: 6,
   },
   containerModalTitle: {
@@ -429,7 +552,7 @@ const styles = StyleSheet.create({
   },
   containerOK: {
     position: "absolute",
-    bottom: -16,
+    bottom: -17,
     zIndex: 6,
     elevation: 6,
     backgroundColor: colors.daclen_light,
@@ -437,7 +560,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.timer_green_dark,
     width: 120,
-    height: 32,
+    height: 34,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -463,7 +586,7 @@ const styles = StyleSheet.create({
   textBottom: {
     backgroundColor: "transparent",
     textAlign: "center",
-    fontFamily: "Poppins",
+    fontFamily: "Poppins-SemiBold",
     fontSize: 12,
     position: "absolute",
     color: colors.daclen_light,
@@ -471,7 +594,7 @@ const styles = StyleSheet.create({
   },
   textHeader: {
     fontFamily: "Poppins-Bold",
-    fontSize: 20,
+    fontSize: 22,
     color: colors.daclen_light,
     textAlign: "center",
     zIndex: 2,
@@ -496,18 +619,19 @@ const styles = StyleSheet.create({
   },
   timeLabel: {
     color: colors.daclen_light,
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "Poppins-SemiBold",
     marginTop: 12,
   },
   textOK: {
     backgroundColor: "transparent",
     color: colors.timer_green_dark,
-    fontSize: 16,
+    fontSize: 18,
     fontFamily: "Poppins-Bold",
     textAlign: "center",
     textAlignVertical: "center",
     alignSelf: "center",
+    zIndex: 6,
   },
   help: {
     marginStart: 10,

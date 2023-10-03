@@ -44,6 +44,7 @@ import {
 } from "../constants";
 
 import { mainhttp } from "../../axios/constants";
+import { determineCountdownColor } from "../../axios/user";
 
 export const initialState = {
   token: null,
@@ -107,6 +108,7 @@ export const user = (state = initialState, action) => {
         ...state,
         currentUser: {
           ...action.data,
+          countdownColor: determineCountdownColor(action.data?.batas_rekrut, action.data?.target_rekrutmen),
           bank_set: !(
             checkEmpty(action.data?.detail_user?.bank?.id) === "" ||
             checkEmpty(action.data?.detail_user?.bank?.nama) === "" ||
