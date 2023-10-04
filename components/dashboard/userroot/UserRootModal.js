@@ -75,7 +75,9 @@ const UserRootModal = (props) => {
         newHpvData = { ...newHpvData, ...modalData };
       }
       setHpvData(newHpvData);
-      if (!(props?.concatHPVArray === undefined || props?.concatHPVArray === null)) {
+      if (
+        !(props?.concatHPVArray === undefined || props?.concatHPVArray === null)
+      ) {
         props?.concatHPVArray(modal?.data?.id, newHpvData);
       }
     }
@@ -166,39 +168,45 @@ const UserRootModal = (props) => {
                 </Text>
               ) : (
                 <View style={styles.containerVertical}>
-                  <Text allowFontScaling={false} style={styles.text}>
-                    {`${
-                      hpvData?.join_date
-                        ? `Join Date: ${convertDateISOStringtoDisplayDate(
-                            hpvData?.join_date,
-                            true
-                          )}\n`
-                        : ""
-                    }${hpvData?.email ? `Email: ${hpvData?.email}\n` : ""}${
-                      hpvData?.nomor_telp ? `WA: ${hpvData?.nomor_telp}` : ""
-                    }\nPoin Bulan Ini (PV): ${
-                      hpvData?.pv ? hpvData?.pv.toString() : "0"
-                    }  RPV: ${
-                      hpvData?.rpv ? hpvData?.rpv.toString() : "0"
-                    } HPV: ${hpvData?.hpv ? hpvData?.hpv : "0"}${
-                      hpvData?.distributor_count
-                        ? `\nJumlah Distributor Aktif:  ${hpvData?.distributor_count}`
-                        : ""
-                    }${
-                      hpvData?.agen_count
-                        ? `\nJumlah Agen Aktif:  ${hpvData?.agen_count}`
-                        : ""
-                    }${
-                      hpvData?.reseller_count
-                        ? `\nJumlah Reseller Aktif:  ${hpvData?.reseller_count}`
-                        : ""
-                    }\nPenjualan Bulan Ini: ${
-                      hpvData?.total_nominal_penjualan
-                        ? hpvData?.total_nominal_penjualan.toString()
-                        : "Rp 0"
-                    }
-                `}
-                  </Text>
+                  {modal?.data?.name === "daclen" ? null : (
+                    <Text allowFontScaling={false} style={styles.text}>
+                      {`${
+                        hpvData?.join_date && !modal?.isParent
+                          ? `Join Date: ${convertDateISOStringtoDisplayDate(
+                              hpvData?.join_date,
+                              true
+                            )}\n`
+                          : ""
+                      }${hpvData?.email ? `Email: ${hpvData?.email}\n` : ""}${
+                        hpvData?.nomor_telp ? `WA: ${hpvData?.nomor_telp}` : ""
+                      }${
+                        modal?.isParent
+                          ? ""
+                          : `\nPoin Bulan Ini (PV): ${
+                              hpvData?.pv ? hpvData?.pv.toString() : "0"
+                            }  RPV: ${
+                              hpvData?.rpv ? hpvData?.rpv.toString() : "0"
+                            } HPV: ${hpvData?.hpv ? hpvData?.hpv : "0"}${
+                              hpvData?.distributor_count
+                                ? `\nJumlah Distributor Aktif:  ${hpvData?.distributor_count}`
+                                : ""
+                            }${
+                              hpvData?.agen_count
+                                ? `\nJumlah Agen Aktif:  ${hpvData?.agen_count}`
+                                : ""
+                            }${
+                              hpvData?.reseller_count
+                                ? `\nJumlah Reseller Aktif:  ${hpvData?.reseller_count}`
+                                : ""
+                            }\nPenjualan Bulan Ini: ${
+                              hpvData?.total_nominal_penjualan
+                                ? hpvData?.total_nominal_penjualan.toString()
+                                : "Rp 0"
+                            }
+                                `
+                      }`}
+                    </Text>
+                  )}
                 </View>
               )}
             </View>

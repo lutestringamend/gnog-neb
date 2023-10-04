@@ -497,7 +497,7 @@ const ImageViewer = (props) => {
         <View style={styles.containerInside}>
           <ActivityIndicator
             size={24}
-            color={loading ? colors.daclen_orange : colors.daclen_gray}
+            color={loading ? colors.daclen_lightgrey_button : colors.daclen_light}
             style={styles.spinnerMain}
           />
           {watermarkData === null ||
@@ -796,8 +796,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     alignSelf: "center",
     position: "absolute",
-    top: (screenHeight - 24) / 2,
-    bottom: (screenHeight - 24) / 2,
+    top: (screenHeight - 24) / 4,
     start: (screenWidth - 24) / 2,
     end: (screenWidth - 24) / 2,
   },

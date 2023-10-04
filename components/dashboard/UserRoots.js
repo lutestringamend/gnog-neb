@@ -33,6 +33,7 @@ const defaultModal = {
   visible: false,
   data: null,
   isVerified: true,
+  isParent: false,
 };
 
 export function checkVerification(userData) {
@@ -109,14 +110,15 @@ const UserRoots = (props) => {
   }, [hpv]);
 
   useEffect(() => {
-    console.log("redux hpvArray", hpvArray);
-  }, [hpvArray]);
+    console.log("UserRoots modal", modal);
+  }, [modal]);
 
-  function openUserPopup(data, isVerified) {
+  function openUserPopup(data, isVerified, isParent) {
     setModal({
       visible: true,
       data,
       isVerified,
+      isParent,
     });
   }
 
@@ -323,7 +325,7 @@ const UserRoots = (props) => {
               name: hpv?.data?.name,
               title: hpv?.data?.title,
             }}
-            onPress={() => openUserPopup(hpv?.data, true)}
+            onPress={() => openUserPopup(hpv?.data, true, true)}
             isCurrentUser={false}
             isParent={true}
             status={hpv?.data?.status ? hpv?.data?.status : "Distributor"}
@@ -337,7 +339,7 @@ const UserRoots = (props) => {
           <UserRootItem
             userData={selfData}
             onPress={() =>
-              openUserPopup(selfData, checkVerification(currentUser))
+              openUserPopup(selfData, checkVerification(currentUser), false)
             }
             isCurrentUser={true}
             isParent={false}
@@ -397,7 +399,7 @@ const UserRoots = (props) => {
                 <UserRootItem
                   key={index}
                   userData={item}
-                  onPress={() => openUserPopup(item, checkVerification(item))}
+                  onPress={() => openUserPopup(item, checkVerification(item), false)}
                   isCurrentUser={false}
                   isParent={false}
                   isFirstItem={index === 0}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   TouchableOpacity,
@@ -17,6 +17,10 @@ import { STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE } from "../constants";
 const FlyerMengajak = (props) => {
   const { photos, refreshing, showTitle, jenis_foto, watermarkData, sharingAvailability, userId } = props;
   const navigation = useNavigation();
+
+  useEffect(() => {
+    console.log("FlyerMengajak photos", photos);
+  }, [photos]);
 
   function refreshPage() {
     if (props?.refreshPage === undefined || props?.refreshPage === null) {
@@ -52,11 +56,14 @@ const FlyerMengajak = (props) => {
   return (
     <View style={styles.container}>
       {photos === null || refreshing ? (
-        <ActivityIndicator
-          size="large"
-          color={colors.daclen_light}
-          style={{ alignSelf: "center", marginVertical: 20, zIndex: 1 }}
-        />
+        <View style={styles.containerSpinner}>
+          <ActivityIndicator
+            size="large"
+            color={colors.daclen_light}
+            style={{ alignSelf: "center", marginVertical: 20, zIndex: 1 }}
+          />
+        </View>
+
       ) : null}
       { photos === null || refreshing ? null : photos?.length === undefined || photos?.length < 1 ? (
         <Text allowFontScaling={false} style={styles.textUid}>
@@ -64,7 +71,7 @@ const FlyerMengajak = (props) => {
         </Text>
       ) : (
         <FlashList
-          estimatedItemSize={6}
+          estimatedItemSize={20}
           horizontal={false}
           numColumns={3}
           data={photos}
@@ -115,6 +122,11 @@ const FlyerMengajak = (props) => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: "transparent",
+  },
+  containerSpinner: {
     flex: 1,
     width: "100%",
     backgroundColor: "transparent",
