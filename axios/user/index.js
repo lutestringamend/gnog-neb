@@ -639,7 +639,7 @@ export function deleteAccount(email, password, deviceToken) {
       },
       deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN
     );
-    console.log("deleteAccount with params " + JSON.stringify(params));
+    console.log("deleteAccount");
 
     Axioss.post(userdelete, params)
       .then((response) => {
@@ -1148,7 +1148,6 @@ export function register(authData, deviceToken) {
       },
       deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN
     );
-    console.log("register", params);
 
     let isDevUser = isUserDevServer(authData?.name);
     const newServerUrl = isDevUser ? devhttp : mainhttp;
@@ -1209,7 +1208,7 @@ export function login(email, password, resetPIN, deviceToken) {
     let isDevUser = isUserDevServer(email);
     const newServerUrl = isDevUser ? devhttp : mainhttp;
     let url = `${newServerUrl}${loginlink}`;
-    console.log("login", url, params);
+    console.log("login", url);
 
     Axios.post(url, params)
       .then(async (response) => {
@@ -1295,7 +1294,7 @@ export const getCurrentUser = (token, storageCurrentUser) => {
             )
           ) {
             let addresses = processDbAlamatLainToRedux(data?.alamat_lain);
-            console.log("processDbAlamatLainToRedux", addresses);
+            console.log("processDbAlamatLainToRedux", addresses?.length);
             dispatch({ type: USER_ADDRESSES_STATE_CHANGE, data: addresses });
           }
         }
@@ -1472,7 +1471,7 @@ export function setNewToken(token, storageCurrentUser, key, deviceToken) {
         },
         deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN
       );
-      console.log("setNewToken login", params);
+      //console.log("setNewToken login", params);
 
       Axioss.post(loginlink, params)
         .then((response) => {

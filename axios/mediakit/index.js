@@ -45,7 +45,7 @@ export function updateReduxMediaKitPhotosError(data) {
 
 export function updateReduxMediaKitWatermarkData(data) {
   return (dispatch) => {
-    console.log("updateReduxMediaKitWatermarkData", data);
+    console.log("updateReduxMediaKitWatermarkData");
     dispatch({ type: MEDIA_KIT_WATERMARK_DATA_STATE_CHANGE, data });
   };
 }

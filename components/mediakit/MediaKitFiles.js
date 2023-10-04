@@ -48,10 +48,19 @@ import {
   STARTER_KIT_FLYER_MENGAJAK_TAG,
   STARTER_KIT_HOME,
   STARTER_KIT_VIDEO_PRODUK,
+  STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE,
+  STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE,
+  STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE,
+  STARTER_KIT_VIDEO_MENGAJAK,
+  STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE,
 } from "./constants";
 import StarterKitHome from "./home/StarterKitHome";
 import StarterKitModal from "./home/StarterKitModal";
 import FlyerMengajak from "./photos/FlyerMengajak";
+import {
+  personalwebsiteurlshort,
+  tokoonlineurlshort,
+} from "../../axios/constants";
 
 const defaultModal = {
   visible: false,
@@ -177,8 +186,14 @@ function MediaKitFiles(props) {
       }
 
       //props.updateReduxMediaKitFlyerMengajak(result?.result["Audra"]);
-      if (result?.mengajakArray === undefined || result?.mengajakArray === null || result?.mengajakArray?.length === undefined) {
-        const storageFlyers = await getObjectAsync(ASYNC_MEDIA_FLYER_MENGAJAK_KEY);
+      if (
+        result?.mengajakArray === undefined ||
+        result?.mengajakArray === null ||
+        result?.mengajakArray?.length === undefined
+      ) {
+        const storageFlyers = await getObjectAsync(
+          ASYNC_MEDIA_FLYER_MENGAJAK_KEY
+        );
         if (storageFlyers === undefined || storageFlyers === null) {
           props.updateReduxMediaKitFlyerMengajak([]);
         } else {
@@ -186,7 +201,10 @@ function MediaKitFiles(props) {
         }
       } else {
         props.updateReduxMediaKitFlyerMengajak(result?.mengajakArray);
-        await setObjectAsync(ASYNC_MEDIA_FLYER_MENGAJAK_KEY, result?.mengajakArray);
+        await setObjectAsync(
+          ASYNC_MEDIA_FLYER_MENGAJAK_KEY,
+          result?.mengajakArray
+        );
       }
     };
 
@@ -265,7 +283,25 @@ function MediaKitFiles(props) {
                 },
               ]}
               disabled={photoLoading || videoLoading}
-              onPress={() => navigation.navigate("WatermarkSettings")}
+              onPress={() =>
+                navigation.navigate("WatermarkSettings", {
+                  urlTitle:
+                    activeTab === STARTER_KIT_FLYER_PRODUK
+                      ? STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE
+                      : activeTab === STARTER_KIT_FLYER_MENGAJAK
+                      ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE
+                      : activeTab === STARTER_KIT_VIDEO_PRODUK
+                      ? STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE
+                      : activeTab === STARTER_KIT_VIDEO_MENGAJAK
+                      ? STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE
+                      : null,
+                  urlEndpoint:
+                    activeTab === STARTER_KIT_FLYER_PRODUK ||
+                    activeTab === STARTER_KIT_VIDEO_PRODUK
+                      ? tokoonlineurlshort
+                      : personalwebsiteurlshort,
+                })
+              }
             >
               <Text style={styles.textRefresh}>SETTING</Text>
             </TouchableOpacity>

@@ -37,6 +37,7 @@ import { sentryLog } from "../../sentry";
 const WatermarkSettings = (props) => {
   const { token, currentUser, currentAddress, watermarkData, userUpdate } =
     props;
+  const { urlTitle, urlEndpoint } = props.route.params;
   const [tempWatermarkData, setTempWatermarkData] = useState(WatermarkData);
   const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(false);
@@ -165,9 +166,8 @@ const WatermarkSettings = (props) => {
         <ScrollView style={styles.containerInfo}>
           <View style={styles.containerPrivacy}>
             <Text allowFontScaling={false} style={styles.textUid}>
-              Kirimkan foto dan video promosi dari katalog Daclen dengan
-              watermark spesial untuk kamu. Watermark berisi nama, nomor telepon
-              dan link referral.
+              Kirimkan flyer produk, flyer mengajak, video produk dan video mengajak Daclen dengan
+              watermark spesial berisikan informasi berikut ini:
             </Text>
             <TouchableOpacity
               onPress={() =>
@@ -209,6 +209,9 @@ const WatermarkSettings = (props) => {
             editable={editable}
             maxLength={vwmarktextphonecharlimit}
           />
+          <Text allowFontScaling={false} style={[styles.textCompulsory, {marginTop: 12}]}>
+            {`Link ${urlTitle}:\n${urlEndpoint}${currentUser?.name}`}
+          </Text>
           <View style={styles.containerButtons}>
             <TouchableOpacity
               onPress={() => changeWatermark()}

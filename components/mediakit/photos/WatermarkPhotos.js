@@ -23,13 +23,13 @@ const WatermarkPhotos = ({
   error,
   watermarkData,
   sharingAvailability,
-  refreshPage, 
+  refreshPage,
   jenis_foto,
 }) => {
   try {
     return (
       <View style={styles.container}>
-        {loading ? (
+        {loading || photos === undefined || photos === null ? (
           <ActivityIndicator
             size="large"
             color={colors.daclen_light}
@@ -43,7 +43,7 @@ const WatermarkPhotos = ({
               error="Mohon membuka website Daclen untuk melihat Flyer Produk"
               onOpenExternalLink={() => Linking.openURL(webfotowatermark)}
             />
-          ) : photos === undefined ||
+          ) : loading || photos === undefined ||
             photos === null ? null : photoKeys?.length === undefined ||
             photoKeys?.length < 1 ? (
             <Text allowFontScaling={false} style={styles.textUid}>

@@ -333,11 +333,12 @@ export function getKeranjang(token) {
         Accept: "application/json",
       },
     };
+    console.log("getKeranjang");
 
     Axios.get(getkeranjang, config)
       .then((response) => {
         const data = response.data.data;
-        console.log("getKeranjang", data);
+        //console.log("getKeranjang", data);
         if (data === undefined) {
           dispatch({
             type: USER_CART_STATE_ERROR,

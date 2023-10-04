@@ -50,14 +50,15 @@ const FlyerMengajak = (props) => {
   }
 
   return (
-    <View style={styles.containerFlatlist}>
-      {photos === null ? (
+    <View style={styles.container}>
+      {photos === null || refreshing ? (
         <ActivityIndicator
           size="large"
           color={colors.daclen_light}
           style={{ alignSelf: "center", marginVertical: 20, zIndex: 1 }}
         />
-      ) : photos?.length === undefined || photos?.length < 1 ? (
+      ) : null}
+      { photos === null || refreshing ? null : photos?.length === undefined || photos?.length < 1 ? (
         <Text allowFontScaling={false} style={styles.textUid}>
           Tidak ada Flyer Mengajak tersedia.
         </Text>
@@ -73,6 +74,7 @@ const FlyerMengajak = (props) => {
               onRefresh={() => refreshPage()}
             />
           }
+          contentContainerStyle={styles.containerFlatlist}
           renderItem={({ item, index }) => (
             <TouchableOpacity
               key={index}
@@ -112,6 +114,13 @@ const FlyerMengajak = (props) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   containerFlatlist: {
     flex: 1,
     backgroundColor: "transparent",

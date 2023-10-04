@@ -81,7 +81,7 @@ function Shop(props) {
     if (cartLoading) {
       setCartLoading(false);
     }
-    console.log("redux cart", cart);
+    //console.log("redux cart", cart);
   }, [cart]);
 
   useEffect(() => {
