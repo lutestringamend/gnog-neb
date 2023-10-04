@@ -104,8 +104,8 @@ const VideosFlatlist = (props) => {
             style={[
               styles.containerImage,
               {
-                marginBottom:
-                  videos?.length - index < 1
+                paddingBottom:
+                  videos?.length > 3 && index >= Math.floor(videos?.length / 3) * 3
                     ? staticDimensions.pageBottomPadding / 2
                     : 0,
               },
@@ -117,7 +117,8 @@ const VideosFlatlist = (props) => {
                 source={getTempThumbnail(item)}
                 contentFit="cover"
                 placeholder={blurhash}
-                transition={100}
+                transition={0}
+                cachePolicy="memory-disk"
               />
             </View>
 

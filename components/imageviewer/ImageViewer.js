@@ -22,22 +22,11 @@ import * as ImageManipulator from "expo-image-manipulator";
 import * as MediaLibrary from "expo-media-library";
 import { shareAsync } from "expo-sharing";
 
-import {
-  colors,
-  staticDimensions,
-  dimensions,
-  blurhash,
-} from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 import { sentryLog } from "../../sentry";
+import { sharingOptionsJPEG, sharingOptionsPDF } from "../media/constants";
 import {
-  sharingOptionsJPEG,
-  sharingOptionsPDF,
-  watermarkStyle,
-} from "../media/constants";
-import {
-  filePrintOptions,
   multiplephotoshtml,
-  multiplephotosimgtag,
   multiplephotosimgtagcustomwidthheight,
   pdfpageheight,
   pdfpagewidth,
@@ -48,7 +37,7 @@ import {
   videoplayerportraitiosheight,
   videoplayerportraitpanelandroidheight,
 } from "../mediakit/constants";
-import { getFileName } from "../media";
+//import { getFileName } from "../media";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
@@ -59,6 +48,7 @@ const ImageViewer = (props) => {
     title,
     uri,
     thumbnail,
+    jenis_foto,
     isSquare,
     width,
     height,
@@ -146,6 +136,7 @@ const ImageViewer = (props) => {
     let logs = props.route.params;
     console.log("init params", {
       ...logs,
+      jenis_foto,
       screenWidth,
       screenHeight,
       projectedImageWidth,
@@ -476,6 +467,7 @@ const ImageViewer = (props) => {
             text_y={text_y}
             fontSize={fontSize}
             watermarkData={watermarkData}
+            jenis_foto={jenis_foto}
             username={currentUser?.name}
           />
         </ViewShot>
@@ -549,6 +541,7 @@ const ImageViewer = (props) => {
                   zIndex: 4,
                 }}
                 watermarkData={watermarkData}
+                jenis_foto={jenis_foto}
                 username={currentUser?.name}
               />
             </View>

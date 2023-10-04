@@ -25,6 +25,8 @@ import {
   updateReduxMediaKitPhotosUri,
   updateReduxMediaKitPhotosError,
   setWatermarkDatafromCurrentUser,
+  updateReduxMediaKitFlyerMengajak,
+  updateReduxMediaKitVideosMengajak,
 } from "../../axios/mediakit";
 import { overwriteWatermarkVideos } from "../media";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
@@ -34,6 +36,7 @@ import WatermarkPhotos from "./photos/WatermarkPhotos";
 import WatermarkVideos from "./videos/WatermarkVideos";
 import { sentryLog } from "../../sentry";
 import {
+  ASYNC_MEDIA_FLYER_MENGAJAK_KEY,
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
   ASYNC_MEDIA_WATERMARK_PHOTOS_KEY,
 } from "../asyncstorage/constants";
@@ -48,6 +51,7 @@ import {
 } from "./constants";
 import StarterKitHome from "./home/StarterKitHome";
 import StarterKitModal from "./home/StarterKitModal";
+import FlyerMengajak from "./photos/FlyerMengajak";
 
 const defaultModal = {
   visible: false,
@@ -71,6 +75,7 @@ function MediaKitFiles(props) {
     photoError,
     watermarkData,
     mediaKitPhotos,
+    flyerMengajak,
     mediaKitVideos,
     products,
   } = props;
@@ -153,6 +158,7 @@ function MediaKitFiles(props) {
 
     const fetchWatermarkPhotos = async () => {
       const result = await getMediaKitPhotos(token);
+      console.log("getMediaKitPhotos", result);
       if (
         result === undefined ||
         result === null ||
@@ -168,6 +174,19 @@ function MediaKitFiles(props) {
       } else {
         props.updateReduxMediaKitPhotos(result?.result);
         props.updateReduxMediaKitPhotosError(null);
+      }
+
+      //props.updateReduxMediaKitFlyerMengajak(result?.result["Audra"]);
+      if (result?.mengajakArray === undefined || result?.mengajakArray === null || result?.mengajakArray?.length === undefined) {
+        const storageFlyers = await getObjectAsync(ASYNC_MEDIA_FLYER_MENGAJAK_KEY);
+        if (storageFlyers === undefined || storageFlyers === null) {
+          props.updateReduxMediaKitFlyerMengajak([]);
+        } else {
+          props.updateReduxMediaKitFlyerMengajak(storageFlyers);
+        }
+      } else {
+        props.updateReduxMediaKitFlyerMengajak(result?.mengajakArray);
+        await setObjectAsync(ASYNC_MEDIA_FLYER_MENGAJAK_KEY, result?.mengajakArray);
       }
     };
 
@@ -292,8 +311,7 @@ function MediaKitFiles(props) {
               loading={videoLoading}
               refreshPage={() => refreshVideos()}
             />
-          ) : activeTab === STARTER_KIT_FLYER_PRODUK ||
-            activeTab === STARTER_KIT_FLYER_MENGAJAK ? (
+          ) : activeTab === STARTER_KIT_FLYER_PRODUK ? (
             <WatermarkPhotos
               userId={currentUser?.id}
               loading={photoLoading}
@@ -302,11 +320,18 @@ function MediaKitFiles(props) {
               sharingAvailability={sharingAvailability}
               photos={mediaKitPhotos}
               photoKeys={photoKeys}
-              jenis_foto={
-                activeTab === STARTER_KIT_FLYER_MENGAJAK
-                  ? STARTER_KIT_FLYER_MENGAJAK_TAG
-                  : STARTER_KIT_FLYER_PRODUK_TAG
-              }
+              jenis_foto={STARTER_KIT_FLYER_PRODUK_TAG}
+              refreshPage={() => refreshPhotos()}
+            />
+          ) : activeTab === STARTER_KIT_FLYER_MENGAJAK ? (
+            <FlyerMengajak
+              photos={flyerMengajak}
+              refreshing={photoLoading}
+              showTitle={false}
+              userId={currentUser?.id}
+              watermarkData={watermarkData}
+              sharingAvailability={sharingAvailability}
+              jenis_foto={STARTER_KIT_FLYER_MENGAJAK_TAG}
               refreshPage={() => refreshPhotos()}
             />
           ) : (
@@ -448,6 +473,8 @@ const mapStateToProps = (store) => ({
   watermarkData: store.mediaKitState.watermarkData,
   mediaKitPhotos: store.mediaKitState.photos,
   mediaKitVideos: store.mediaKitState.videos,
+  flyerMengajak: store.mediaKitState.flyerMengajak,
+  videosMengajak: store.mediaKitState.videosMengajak,
   photoError: store.mediaKitState.photoError,
   products: store.productState.products,
 });
@@ -463,6 +490,8 @@ const mapDispatchProps = (dispatch) =>
       clearMediaKitPhotosError,
       clearMediaKitData,
       overwriteWatermarkVideos,
+      updateReduxMediaKitFlyerMengajak,
+      updateReduxMediaKitVideosMengajak,
     },
     dispatch
   );

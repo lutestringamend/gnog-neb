@@ -52,6 +52,7 @@ const PhotosSegment = (props) => {
     navigation.navigate("ImageViewer", {
       disableWatermark: false,
       title: `Foto ${item?.id.toString()}`,
+      jenis_foto,
       id: item?.id,
       uri: item?.foto,
       thumbnail: item?.thumbnail,

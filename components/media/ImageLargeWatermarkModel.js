@@ -8,13 +8,17 @@ import {
   vwmarktextphonecharlimit,
   wmarkhorizontalmargin,
 } from "../mediakit/constants";
-import VWatermarkModel from "./VWatermarkModel";
-import { tokoonlineurlshort } from "../../axios/constants";
+import {
+  tokoonlineurlshort,
+  personalwebsiteurlshort,
+} from "../../axios/constants";
+import { STARTER_KIT_FLYER_PRODUK_TAG } from "../mediakit/constants";
 
 function ImageLargeWatermarkModel(props) {
   const {
     watermarkData,
     style,
+    jenis_foto,
     uri,
     width,
     height,
@@ -81,7 +85,8 @@ function ImageLargeWatermarkModel(props) {
           },
         ]}
       >
-        <Text allowFontScaling={false}
+        <Text
+          allowFontScaling={false}
           style={[
             styles.textUrl,
             {
@@ -90,9 +95,15 @@ function ImageLargeWatermarkModel(props) {
             },
           ]}
         >
-          {`${watermarkData?.url ? watermarkData?.url : username ? `${tokoonlineurlshort}${
+          {`${
             username
-          }` : ""}`}
+              ? `${
+                  jenis_foto === STARTER_KIT_FLYER_PRODUK_TAG
+                    ? tokoonlineurlshort
+                    : personalwebsiteurlshort
+                }${username}`
+              : ""
+          }`}
         </Text>
       </View>
 
@@ -108,7 +119,8 @@ function ImageLargeWatermarkModel(props) {
           },
         ]}
       >
-        <Text allowFontScaling={false}
+        <Text
+          allowFontScaling={false}
           style={[
             styles.textUrl,
             {
@@ -124,7 +136,8 @@ function ImageLargeWatermarkModel(props) {
               : watermarkData?.name
           }`}
         </Text>
-        <Text allowFontScaling={false}
+        <Text
+          allowFontScaling={false}
           style={[
             styles.textUrl,
             {

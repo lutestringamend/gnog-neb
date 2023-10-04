@@ -133,6 +133,7 @@ const StarterKitHome = (props) => {
             text={STARTER_KIT_PERSONAL_WEBSITE}
             style={{ marginHorizontal: 6 }}
             fontSize={12}
+            disabled={true}
           />
           <StarterKitHomeButton
             onPress={() => openReferral()}

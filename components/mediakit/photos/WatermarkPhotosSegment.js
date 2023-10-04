@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { memo } from "react";
 import {
   StyleSheet,
   View,
@@ -25,11 +25,11 @@ const WatermarkPhotosSegment = (props) => {
     watermarkData,
     jenis_foto,
   } = props;
-  const [arraySize, setArraySize] = useState(null);
+  //const [arraySize, setArraySize] = useState(null);
   const navigation = useNavigation();
   const { width } = Dimensions.get("window");
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (photos?.length === undefined || photos?.length < 1) {
       setArraySize(null);
       return;
@@ -41,7 +41,7 @@ const WatermarkPhotosSegment = (props) => {
       }
     }
     setArraySize(newSize);
-  }, [photos]);
+  }, [photos]);*/
 
   function openSegmentScreen() {
     navigation.navigate("PhotosSegment", {
@@ -53,6 +53,7 @@ const WatermarkPhotosSegment = (props) => {
     navigation.navigate("ImageViewer", {
       disableWatermark: false,
       title,
+      jenis_foto,
       id: item?.id,
       uri: item?.foto,
       thumbnail: item?.thumbnail,
@@ -72,7 +73,7 @@ const WatermarkPhotosSegment = (props) => {
     });
   }
 
-  if (arraySize === null || arraySize < 1) {
+  if (photos?.length === undefined || photos?.length < 1) {
     return null;
   }
 
@@ -112,7 +113,7 @@ const WatermarkPhotosSegment = (props) => {
             data={photos}
             contentContainerStyle={styles.containerFlatlist}
             renderItem={({ item, i }) =>
-              item?.jenis_foto === jenis_foto ? (
+              (
                 <TouchableOpacity
                   onPress={() => openPhoto(item)}
                   key={i}
@@ -138,7 +139,7 @@ const WatermarkPhotosSegment = (props) => {
                     cachePolicy="memory-disk"
                   />
                 </TouchableOpacity>
-              ) : null
+              )
             }
           />
         </View>

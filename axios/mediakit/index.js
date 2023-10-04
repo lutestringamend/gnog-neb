@@ -9,8 +9,11 @@ import {
   MEDIA_KIT_WATERMARK_DATA_STATE_CHANGE,
   MEDIA_KIT_VIDEOS_STATE_CHANGE,
   MEDIA_KIT_VIDEOS_ERROR_STATE_CHANGE,
+  MEDIA_KIT_FLYER_MENGAJAK_STATE_CHANGE,
+  MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE,
 } from "../../redux/constants";
 import { sentryLog } from "../../sentry";
+import { STARTER_KIT_FLYER_PRODUK_TAG } from "../../components/mediakit/constants";
 
 export function clearMediaKitData() {
   return (dispatch) => {
@@ -65,6 +68,27 @@ export function updateReduxMediaKitPhotos(data) {
   return (dispatch) => {
     console.log("updateReduxMediaKitPhotos", data);
     dispatch({ type: MEDIA_KIT_PHOTOS_STATE_CHANGE, data });
+    /*let flyerProduk = [];
+    let flyerMengajak = [];
+    if (!(data === undefined || data === null || data?.length === undefined || data?.length < 1)) {
+      for (let p of data) {
+        if (p?.jenis_foto === STARTER_KIT_FLYER_PRODUK_TAG) {
+          flyerProduk.push(p);
+        } else {
+          flyerMengajak.push(p);
+        }
+      }
+    }
+    
+    console.log("updateReduxMediaKitFlyerMengajak", flyerMengajak);
+    dispatch({ type: MEDIA_KIT_FLYER_MENGAJAK_STATE_CHANGE, data: flyerMengajak });*/
+  };
+}
+
+export function updateReduxMediaKitFlyerMengajak(data) {
+  return (dispatch) => {
+    console.log("updateReduxMediaKitFlyerMengajak", data);
+    dispatch({ type: MEDIA_KIT_FLYER_MENGAJAK_STATE_CHANGE, data });
   };
 }
 
@@ -72,6 +96,13 @@ export function updateReduxMediaKitVideos(data) {
   return (dispatch) => {
     console.log("updateReduxMediaKitVideos", data);
     dispatch({ type: MEDIA_KIT_VIDEOS_STATE_CHANGE, data });
+  };
+}
+
+export function updateReduxMediaKitVideosMengajak(data) {
+  return (dispatch) => {
+    console.log("updateReduxMediaKitVideosMengajak", data);
+    dispatch({ type: MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE, data });
   };
 }
 
@@ -236,7 +267,7 @@ export const getMediaKitPhotos = async (token) => {
       });
 
       const responseData = response.data?.data;
-      console.log("getMediaKitPhotos response", responseData);
+      //console.log("getMediaKitPhotos response", responseData);
       if (responseData === undefined || responseData === null || responseData?.length === undefined || responseData?.length < 1) {
         return {
         result: {},
@@ -244,9 +275,12 @@ export const getMediaKitPhotos = async (token) => {
       }
       } else {
         let data = {};
+        let mengajakArray = [];
         let othersArray = [];
         for (let photo of responseData) {
-          if (
+          if (photo?.jenis_foto !== STARTER_KIT_FLYER_PRODUK_TAG) {
+            mengajakArray.unshift(photo);
+          } else if (
             photo?.kategori === undefined ||
             photo?.kategori?.length === undefined ||
             photo?.kategori?.length === undefined ||
@@ -264,6 +298,7 @@ export const getMediaKitPhotos = async (token) => {
         } 
         return {
           result: data,
+          mengajakArray,
           error: null,
         }
       }

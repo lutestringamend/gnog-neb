@@ -40,15 +40,14 @@ const WatermarkPhotos = ({
         <View style={styles.containerInside}>
           {error ? (
             <ErrorView
-              error="Mohon membuka website Daclen untuk melihat foto Media Kit"
+              error="Mohon membuka website Daclen untuk melihat Flyer Produk"
               onOpenExternalLink={() => Linking.openURL(webfotowatermark)}
             />
-          ) : loading ||
-            photos === undefined ||
+          ) : photos === undefined ||
             photos === null ? null : photoKeys?.length === undefined ||
             photoKeys?.length < 1 ? (
             <Text allowFontScaling={false} style={styles.textUid}>
-              Tidak ada Foto Promosi tersedia.
+              Tidak ada Flyer Produk tersedia.
             </Text>
           ) : (
             <FlatList

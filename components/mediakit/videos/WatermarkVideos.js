@@ -5,8 +5,9 @@ import {
   ActivityIndicator,
   Text,
   RefreshControl,
+  FlatList,
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
+//import { FlashList } from "@shopify/flash-list";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
@@ -159,7 +160,7 @@ const WatermarkVideos = (props) => {
         <View style={styles.containerInside}>
           {mediaKitVideos?.length < 1 ? (
             <Text allowFontScaling={false} style={styles.textUid}>
-              Tidak ada Video Promosi tersedia.
+              Tidak ada Video Produk tersedia.
             </Text>
           ) : videos === null && videoKeys !== null ? (
             <VideosFlatlist
@@ -170,7 +171,7 @@ const WatermarkVideos = (props) => {
               userId={userId}
             />
           ) : (
-            <FlashList
+            <FlatList
               estimatedItemSize={10}
               horizontal={false}
               numColumns={1}
