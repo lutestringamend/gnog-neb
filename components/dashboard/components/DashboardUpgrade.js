@@ -118,35 +118,35 @@ const DashboardUpgrade = (props) => {
           />
         <Text allowFontScaling={false} style={styles.textButton}>{dashboardonboardingbutton}</Text>
       </TouchableOpacity>
-      {registerSnapToken === null ? null : (
-        <TouchableOpacity
-          onPress={() => loadData()}
-          style={[
-            styles.button,
-            {
-              backgroundColor:
-                fetchingToken || registerSnapToken === null
-                  ? colors.daclen_lightgrey_button
-                  : colors.daclen_light,
-            },
-          ]}
-        >
-          {fetchingToken ? (
-            <ActivityIndicator
-              color={colors.daclen_black}
-              size="small"
-              style={styles.spinner}
-            />
-          ) : (
-            <MaterialCommunityIcons
-              name="refresh"
-              size={20}
-              color={colors.daclen_black}
-            />
-          )}
-          <Text allowFontScaling={false} style={styles.textButton}>Cek Status Pembayaran</Text>
-        </TouchableOpacity>
-      )}
+
+      <TouchableOpacity
+        onPress={() => loadData()}
+        style={[
+          styles.button,
+          {
+            backgroundColor:
+              fetchingToken || registerSnapToken === null
+                ? colors.daclen_lightgrey_button
+                : colors.daclen_light,
+          },
+        ]}
+      >
+        {registerSnapToken === null || fetchingToken ? (
+          <ActivityIndicator
+            color={colors.daclen_black}
+            size="small"
+            style={styles.spinner}
+          />
+        ) : (
+          <MaterialCommunityIcons
+            name="refresh"
+            size={20}
+            color={colors.daclen_black}
+          />
+        )}
+        <Text allowFontScaling={false} style={styles.textButton}>Cek Status Pembayaran</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity
         onPress={() => openKodeEtik()}
         style={styles.button}

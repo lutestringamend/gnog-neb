@@ -95,7 +95,8 @@ const Dashboard = (props) => {
       currentUser?.id === undefined ||
       currentUser?.id === null ||
       currentUser?.status_member === undefined ||
-      currentUser?.status_member === "premium"
+      currentUser?.status_member === "premium" ||
+      (currentUser?.status !== undefined && currentUser?.status !== null)
     ) {
       setRegDate(currentUser?.join_date ? convertInvoiceNumbertoRegDate(currentUser?.join_date) : null);
       return;

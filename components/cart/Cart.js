@@ -228,7 +228,8 @@ function Cart(props) {
               ? `Login/Register`
               : currentUser?.isActive
               ? `Masukkan Keranjang`
-              : `Bergabung`}
+              : currentUser?.status === null ?
+              "Bergabung" : "Verifikasi No HP"}
           </Text>
         )}
       </TouchableOpacity>

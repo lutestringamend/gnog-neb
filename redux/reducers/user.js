@@ -143,6 +143,8 @@ export const user = (state = initialState, action) => {
             action.data?.status_member === undefined ||
             action.data?.status_member === null ||
             action.data?.status_member !== "premium" ||
+            action.data?.status === undefined ||
+            action.data?.status === null ||
             action.data?.nomor_telp_verified_at === undefined ||
             action.data?.nomor_telp_verified_at === null ||
             action.data?.nomor_telp_verified_at === ""
