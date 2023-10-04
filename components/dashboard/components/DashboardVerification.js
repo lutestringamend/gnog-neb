@@ -38,14 +38,14 @@ const DashboardVerification = () => {
 const styles = StyleSheet.create({
   containerVerification: {
     flex: 1,
+    backgroundColor: colors.daclen_bg_highlighted,
+    opacity: 0.9,
     marginHorizontal: 10,
     marginVertical: 20,
-    borderColor: colors.daclen_gray,
-    borderWidth: 2,
     borderRadius: 6,
-    padding: 10,
+    elevation: 2,
+    paddingHorizontal: 10,
     paddingBottom: 20,
-    backgroundColor: colors.white,
     alignItems: "center",
   },
   containerLogo: {
@@ -71,24 +71,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: colors.daclen_orange,
+    backgroundColor: colors.daclen_light,
   },
   textHeader: {
     fontSize: 16,
     fontFamily: "Poppins-SemiBold",
     textAlign: "center",
-    color: colors.daclen_black,
+    color: colors.daclen_light,
   },
   text: {
     fontFamily: "Poppins", fontSize: 14,
     marginVertical: 20,
-    color: colors.daclen_gray,
+    color: colors.daclen_light,
     textAlign: "center",
   },
   textButton: {
     fontSize: 16,
     fontFamily: "Poppins-SemiBold",
-    color: colors.daclen_light,
+    color: colors.daclen_black,
   },
 });
 

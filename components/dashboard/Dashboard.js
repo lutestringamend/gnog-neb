@@ -196,7 +196,9 @@ const Dashboard = (props) => {
       token === null ||
       currentUser === null ||
       currentUser?.id === undefined ||
-      currentUser?.id === null
+      currentUser?.id === null ||
+      currentUser?.status === undefined ||
+      currentUser?.status === null
     ) {
       return;
     }
@@ -302,19 +304,18 @@ const Dashboard = (props) => {
         currentUser?.id === undefined ||
         currentUser?.name === undefined ? (
           <DashboardLogout />
-        ) : currentUser?.status_member === undefined ||
-          currentUser?.status_member === null ||
-          currentUser?.status_member !== "premium" ? (
+        ) : currentUser?.status === undefined ||
+          currentUser?.status === null ? (
           <DashboardUpgrade
             registerSnapToken={registerSnapToken}
             fetchingToken={fetchingToken}
             loadData={() => loadUpgradeData()}
           />
-        ) : profilePIN === null || profilePIN === "" ? (
-          <DashboardCreatePIN />
         ) : currentUser?.nomor_telp_verified_at === null ||
           currentUser?.nomor_telp_verified_at === "" ? (
           <DashboardVerification />
+        ) : profilePIN === null || profilePIN === "" ? (
+          <DashboardCreatePIN />
         ) : profileLock === undefined ||
             profileLock === null ||
             profileLock ||
@@ -350,9 +351,8 @@ const Dashboard = (props) => {
       </ScrollView>
 
       {currentUser === null ||
-      currentUser?.status_member === undefined ||
-      currentUser?.status_member === null ||
-      currentUser?.status_member !== "premium" ||
+      currentUser?.status === undefined ||
+      currentUser?.status === null ||
       profileLock === undefined ||
       profileLock === null ||
       profileLock ||

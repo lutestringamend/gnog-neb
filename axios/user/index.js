@@ -1267,7 +1267,7 @@ export const getCurrentUser = (token, storageCurrentUser) => {
       },
     };
 
-    console.log("getCurrentUser", `${token}`);
+    console.log("getCurrentUser", token);
     Axioss.get(getcurrentuser, config)
       .then((response) => {
         const data = response?.data ? response?.data?.data : null;
@@ -1275,9 +1275,11 @@ export const getCurrentUser = (token, storageCurrentUser) => {
           //console.log("getCurrentUser response data is null");
           readStorageCurrentUser(dispatch, storageCurrentUser, null);
         } else {
+          //console.log("user current response", data);
           if (
-            data?.target_rekrutmen === undefined ||
-            data?.target_rekrutmen === null
+            data?.status !== null &&
+            (data?.target_rekrutmen === undefined ||
+              data?.target_rekrutmen === null)
           ) {
             fetchHPVfromUserCurrent(dispatch, token, data);
           } else {

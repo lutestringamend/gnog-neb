@@ -106,15 +106,15 @@ const DashboardUpgrade = (props) => {
           {
             backgroundColor:
               fetchingToken || registerSnapToken === null
-                ? colors.daclen_gray
-                : colors.daclen_blue,
+                ? colors.daclen_lightgrey_button
+                : colors.daclen_light,
           },
         ]}
       >
           <MaterialCommunityIcons
             name="cursor-pointer"
             size={20}
-            color={colors.daclen_light}
+            color={colors.daclen_black}
           />
         <Text allowFontScaling={false} style={styles.textButton}>{dashboardonboardingbutton}</Text>
       </TouchableOpacity>
@@ -126,14 +126,14 @@ const DashboardUpgrade = (props) => {
             {
               backgroundColor:
                 fetchingToken || registerSnapToken === null
-                  ? colors.daclen_gray
-                  : colors.daclen_indigo,
+                  ? colors.daclen_lightgrey_button
+                  : colors.daclen_light,
             },
           ]}
         >
           {fetchingToken ? (
             <ActivityIndicator
-              color={colors.daclen_light}
+              color={colors.daclen_black}
               size="small"
               style={styles.spinner}
             />
@@ -141,7 +141,7 @@ const DashboardUpgrade = (props) => {
             <MaterialCommunityIcons
               name="refresh"
               size={20}
-              color={colors.daclen_light}
+              color={colors.daclen_black}
             />
           )}
           <Text allowFontScaling={false} style={styles.textButton}>Cek Status Pembayaran</Text>
@@ -149,17 +149,12 @@ const DashboardUpgrade = (props) => {
       )}
       <TouchableOpacity
         onPress={() => openKodeEtik()}
-        style={[
-          styles.button,
-          {
-            backgroundColor: colors.daclen_gold_brown,
-          },
-        ]}
+        style={styles.button}
       >
         <MaterialCommunityIcons
           name="file-document-multiple"
           size={20}
-          color={colors.daclen_light}
+          color={colors.daclen_black}
         />
         <Text allowFontScaling={false} style={styles.textButton}>Kode Etik</Text>
       </TouchableOpacity>
@@ -187,12 +182,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: colors.daclen_blue,
+    backgroundColor: colors.daclen_light,
   },
   textButton: {
     fontSize: 14,
     fontFamily: "Poppins-SemiBold",
-    color: colors.daclen_light,
+    color: colors.daclen_black,
     marginStart: 10,
   },
   text: {
