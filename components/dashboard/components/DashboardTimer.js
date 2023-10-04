@@ -41,7 +41,6 @@ const modalHeight = 224;
 const digitTextWidth = 32;
 const digitTextHeight = 48;
 const defaultDigit = ["0", "0", "0", "0", "0", "0", "0", "0"];
-const frozenDigit = ["9", "0", "0", "0", "0", "0", "0", "0"];
 
 const DigitText = ({ number, countdownColor }) => {
   try {
@@ -207,7 +206,7 @@ const DashboardTimer = (props) => {
 
   useEffect(() => {
     if (countdownColor === countdownfrozen) {
-      setDigits(frozenDigit);
+      setDigits(defaultDigit);
       return;
     }
     try {

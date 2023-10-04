@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -28,11 +28,28 @@ const UserRootItem = ({
   isSingleChild,
   isVerified,
   isCurrentVerified,
+  hpvArray,
   status,
   onPress,
   openUserPopup,
 }) => {
   const [expand, setExpand] = useState(true);
+  const [hpvStatus, setHpvStatus] = useState(null);
+
+  useEffect(() => {
+    if (hpvArray?.length === undefined || hpvArray?.length < 1) {
+      setHpvStatus(null);
+      return;
+    }
+    for (let h of hpvArray) {
+      if (
+        h?.id === userData?.id &&
+        !(h?.status === undefined || h?.status === null || h?.status === "")
+      ) {
+        setHpvStatus(h?.status);
+      }
+    }
+  }, [hpvArray]);
 
   function userPress() {
     let message = `${userData?.name}`;
@@ -180,7 +197,13 @@ const UserRootItem = ({
             <View style={styles.containerValue}>
               <Text allowFontScaling={false} style={styles.text}>
                 {`${isCurrentUser ? "Saya - " : ""}${
-                  status ? capitalizeFirstLetter(status) : "Reseller"
+                  status
+                    ? capitalizeFirstLetter(status)
+                    : userData?.status
+                    ? capitalizeFirstLetter(userData?.status)
+                    : hpvStatus
+                    ? capitalizeFirstLetter(hpvStatus)
+                    : ""
                 }`}
               </Text>
             </View>

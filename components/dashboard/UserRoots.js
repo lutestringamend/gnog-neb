@@ -26,6 +26,7 @@ import {
   convertInvoiceNumbertoRegDate,
 } from "../../axios/user";
 import { devuserroottree } from "./constants";
+import { capitalizeFirstLetter } from "../../axios/cart";
 /*import UserRootHeaderItem from "./UserRootHeaderItem";
 import { notverified, userverified } from "./constants";*/
 
@@ -169,7 +170,9 @@ const UserRoots = (props) => {
         : null,
       email: currentUser?.email,
       nomor_telp: currentUser?.nomor_telp,
-      join_date: currentUser?.join_date ? convertInvoiceNumbertoRegDate(currentUser?.join_date) : null,
+      join_date: currentUser?.join_date
+        ? convertInvoiceNumbertoRegDate(currentUser?.join_date)
+        : null,
       pv: currentUser?.poin_user?.poin,
       hpv: currentUser?.poin_user?.hpv,
       poin_user_this_month: currentUser?.poin_user_this_month,
@@ -203,7 +206,7 @@ const UserRoots = (props) => {
     }
     setSelfData(newSelfData);
     concatHPVArray(currentUser?.id, newSelfData);
-  }
+  };
 
   function refreshChildren() {
     setRefreshing(true);
@@ -326,14 +329,21 @@ const UserRoots = (props) => {
               title: hpv?.data?.title,
             }}
             onPress={() => openUserPopup(hpv?.data, true, true)}
+            status={
+              hpv?.data?.status
+                ? capitalizeFirstLetter(hpv?.data?.status)
+                : currentUser?.status == "distributor" || currentUser?.status === "agen"
+                ? "Distributor"
+                : "Agen"
+            }
             isCurrentUser={false}
             isParent={true}
-            status={hpv?.data?.status ? hpv?.data?.status : "Distributor"}
             isFirstItem={false}
             isLastItem={false}
             isNextBranch={false}
             isSingleChild={true}
             isVerified={true}
+            hpvArray={hpvArray}
           />
           <VerticalLine style={{ height: 32, marginStart: 80 }} />
           <UserRootItem
@@ -399,7 +409,9 @@ const UserRoots = (props) => {
                 <UserRootItem
                   key={index}
                   userData={item}
-                  onPress={() => openUserPopup(item, checkVerification(item), false)}
+                  onPress={() =>
+                    openUserPopup(item, checkVerification(item), false)
+                  }
                   isCurrentUser={false}
                   isParent={false}
                   isFirstItem={index === 0}
@@ -409,6 +421,7 @@ const UserRoots = (props) => {
                   isCurrentVerified={checkVerification(currentUser)}
                   isVerified={checkVerification(item)}
                   openUserPopup={openUserPopup}
+                  hpvArray={hpvArray}
                 />
               ))}
             </View>
