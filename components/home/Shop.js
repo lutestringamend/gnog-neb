@@ -181,14 +181,6 @@ function Shop(props) {
     return filteredProducts;
   }
 
-  function openLogo() {
-    if (currentUser?.id === 8054) {
-      navigation.navigate("LocationPin");
-    } else {
-      navigation.navigate("About");
-    }
-  }
-
   function toggleSearchIcon() {
     if (isSearch) {
       props.updateProductSearchFilter(null);

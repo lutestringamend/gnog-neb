@@ -36,7 +36,9 @@ const Header = (props) => {
         ]}
       >
         <TouchableOpacity
-          onPress={() => navigation.navigate("About")}
+          onPress={() =>
+            navigation.navigate("About")
+          }
           style={styles.containerLogoSmall}
         >
           <Image
@@ -89,7 +91,10 @@ const Header = (props) => {
           />
           <Text
             allowFontScaling={false}
-            style={[styles.text, { marginTop: 4, alignSelf: "flex-end", textAlign: "right" }]}
+            style={[
+              styles.text,
+              { marginTop: 4, alignSelf: "flex-end", textAlign: "right" },
+            ]}
           >
             {`id referral anda:\n${currentUser?.name}`}
           </Text>

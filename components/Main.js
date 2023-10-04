@@ -51,6 +51,7 @@ import { sentryLog } from "../sentry";
 import Top from "./Top";
 import { colors } from "../styles/base";
 import {
+  TEMP_DEV_DEVICE_TOKEN,
   tokoonlineurlshort,
 } from "../axios/constants";
 import { fetchRajaOngkir } from "../axios/address";
@@ -198,17 +199,17 @@ function Main(props) {
           storageCurrentUser?.name === undefined ||
           storageCurrentUser?.name === null
         ) {
-          props.setNewToken(null, null);
+          props.setNewToken(null, null, null, TEMP_DEV_DEVICE_TOKEN);
           props.clearUserData();
           props.clearMediaKitData();
         } else {
-          props.setNewToken(storageToken, storageCurrentUser, key);
+          props.setNewToken(storageToken, storageCurrentUser, key, TEMP_DEV_DEVICE_TOKEN);
           //props.login(storageCurrentUser?.name, key, false);
         }
       } catch (e) {
         console.error(e);
         userLogout();
-        props.setNewToken(null, null);
+        props.setNewToken(null, null, null, TEMP_DEV_DEVICE_TOKEN);
         props.clearUserData();
         props.clearMediaKitData();
       }

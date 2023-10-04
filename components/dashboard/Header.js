@@ -58,7 +58,9 @@ const Header = (props) => {
       ]}
     >
       <TouchableOpacity
-        onPress={() => navigation.navigate("About")}
+        onPress={() =>
+          navigation.navigate("About")
+        }
         style={styles.containerLogo}
       >
         <Image

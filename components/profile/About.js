@@ -9,6 +9,7 @@ import {
   Linking,
   TouchableOpacity,
 } from "react-native";
+import { connect } from "react-redux";
 
 import { colors, staticDimensions } from "../../styles/base";
 import packageJson from "../../package.json";
@@ -26,8 +27,9 @@ import MainHeader from "../main/MainHeader";
 import SocialsItem from "./SocialsItem";
 import { getObjectAsync } from "../asyncstorage";
 import { ASYNC_SERVER_URL } from "../asyncstorage/constants";
+import { getDeviceInfo } from "../../axios/user";
 
-export default function About() {
+export const About = (props) => {
   const appVersion = `Versi ${packageJson?.version}`;
 
   function openYoutube() {
@@ -39,9 +41,9 @@ export default function About() {
 
   const logoPress = async () => {
     const serverUrl = await getObjectAsync(ASYNC_SERVER_URL);
-    console.log("serverUrl", serverUrl);
+    console.log("serverUrl", serverUrl, props?.currentUser?.id);
     Linking.openURL(serverUrl);
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -57,9 +59,20 @@ export default function About() {
           />
         </TouchableOpacity>
 
-        <Text allowFontScaling={false} style={styles.textCaption}>{appVersion}</Text>
-        <Text allowFontScaling={false} style={styles.textDesc}>{abouttext}</Text>
-        <Text allowFontScaling={false} style={styles.textSocials}>Media Sosial</Text>
+        <Text allowFontScaling={false} style={styles.textCaption}>
+          {appVersion}
+        </Text>
+        <Text allowFontScaling={false} style={styles.textDesc}>
+          {abouttext}
+        </Text>
+        {props?.currentUser?.id === 8054 ? (
+          <Text allowFontScaling={false} style={styles.textDesc}>
+            {JSON.stringify(getDeviceInfo())}
+          </Text>
+        ) : null}
+        <Text allowFontScaling={false} style={styles.textSocials}>
+          Media Sosial
+        </Text>
         <View style={styles.containerSocials}>
           <SocialsItem link={instagramurl} icon="ig" />
           <SocialsItem link={facebookurl} icon="fb" />
@@ -71,7 +84,9 @@ export default function About() {
             icon="youtube"
           />
         </View>
-        <Text allowFontScaling={false} style={styles.textCaption}>{copyrighttext}</Text>
+        <Text allowFontScaling={false} style={styles.textCaption}>
+          {copyrighttext}
+        </Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -112,7 +127,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 10,
     paddingBottom: 20,
-    fontFamily: "Poppins", fontSize: 10,
+    fontFamily: "Poppins",
+    fontSize: 10,
     color: colors.daclen_light,
     textAlign: "justify",
   },
@@ -136,3 +152,9 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
 });
+
+const mapStateToProps = (store) => ({
+  currentUser: store.userState.currentUser,
+});
+
+export default connect(mapStateToProps, null)(About);

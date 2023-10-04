@@ -2,6 +2,7 @@ import Axioss, { isUserDevServer } from "../index";
 import Axios from "axios";
 import { Linking, Platform, ToastAndroid } from "react-native";
 import * as Crypto from "expo-crypto";
+import * as Device from "expo-device";
 import moment from "moment";
 
 import {
@@ -28,6 +29,7 @@ import {
   riwayatpenarikansaldo,
   showhpv,
   recruitmenttarget,
+  TEMP_DEV_DEVICE_TOKEN,
 } from "../constants";
 import { checkNumberEmpty, getKeranjang } from "../cart";
 import { initialState } from "../../redux/reducers/user";
@@ -626,14 +628,17 @@ export const getHPV = async (id, token) => {
   }
 };
 
-export function deleteAccount(email, password) {
+export function deleteAccount(email, password, deviceToken) {
   return (dispatch) => {
     dispatch({ type: USER_AUTH_DELETE_STATE_CHANGE, data: null });
-    const params = {
-      email,
-      password,
-      device_name: Platform.OS,
-    };
+    const params = getAuthDeviceInfo(
+      {
+        email,
+        password,
+        device_name: Platform.OS,
+      },
+      deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN
+    );
     console.log("deleteAccount with params " + JSON.stringify(params));
 
     Axioss.post(userdelete, params)
@@ -1133,14 +1138,17 @@ export function changePassword(authData, id, token) {
   };
 }
 
-export function register(authData) {
+export function register(authData, deviceToken) {
   return (dispatch) => {
     dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: null });
-    const params = {
-      ...authData,
-      device_name: Platform.OS,
-    };
-    console.log("register");
+    const params = getAuthDeviceInfo(
+      {
+        ...authData,
+        device_name: Platform.OS,
+      },
+      deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN
+    );
+    console.log("register", params);
 
     let isDevUser = isUserDevServer(authData?.name);
     const newServerUrl = isDevUser ? devhttp : mainhttp;
@@ -1159,7 +1167,7 @@ export function register(authData) {
           //dispatch(clearUserData());
           setObjectAsync(ASYNC_USER_KEY, null);
         } else {
-          //dispatch(setNewToken(token));
+          //dispatch(setNewToken(token, deviceToken));
           await setObjectAsync(ASYNC_SERVER_URL, newServerUrl);
           Axios.interceptors.request.use(
             async (config) => {
@@ -1186,19 +1194,22 @@ export function register(authData) {
   };
 }
 
-export function login(email, password, resetPIN) {
+export function login(email, password, resetPIN, deviceToken) {
   return (dispatch) => {
     dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: null });
-    const params = {
-      email,
-      password,
-      device_name: Platform.OS,
-    };
+    const params = getAuthDeviceInfo(
+      {
+        email,
+        password,
+        device_name: Platform.OS,
+      },
+      deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN
+    );
 
     let isDevUser = isUserDevServer(email);
     const newServerUrl = isDevUser ? devhttp : mainhttp;
     let url = `${newServerUrl}${loginlink}`;
-    console.log("login", url);
+    console.log("login", url, params);
 
     Axios.post(url, params)
       .then(async (response) => {
@@ -1212,7 +1223,7 @@ export function login(email, password, resetPIN) {
           setObjectAsync(ASYNC_USER_KEY, null);
           //dispatch(clearUserData());
         } else {
-          //dispatch(setNewToken(token));
+          //dispatch(setNewToken(token, deviceToken));
           await setObjectAsync(ASYNC_SERVER_URL, newServerUrl);
           Axios.interceptors.request.use(
             async (config) => {
@@ -1265,9 +1276,16 @@ export const getCurrentUser = (token, storageCurrentUser) => {
           //console.log("getCurrentUser response data is null");
           readStorageCurrentUser(dispatch, storageCurrentUser, null);
         } else {
-          //dispatch({ type: USER_STATE_CHANGE, data });
-          //setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, data);
-          fetchHPVfromUserCurrent(dispatch, token, data);
+          if (
+            data?.target_rekrutmen === undefined ||
+            data?.target_rekrutmen === null
+          ) {
+            fetchHPVfromUserCurrent(dispatch, token, data);
+          } else {
+            dispatch({ type: USER_STATE_CHANGE, data });
+            setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, data);
+          }
+
           dispatch({ type: USER_ADDRESS_STATE_CHANGE, data });
           if (
             !(
@@ -1433,7 +1451,7 @@ function readStorageCurrentUser(dispatch, storageCurrentUser, status) {
   }
 }
 
-export function setNewToken(token, storageCurrentUser, key) {
+export function setNewToken(token, storageCurrentUser, key, deviceToken) {
   return (dispatch) => {
     if (token === undefined || token === null || token === "") {
       console.log("redux token set to null");
@@ -1446,11 +1464,15 @@ export function setNewToken(token, storageCurrentUser, key) {
       dispatch(getKeranjang(token));
       setTokenAsync(token);
     } else {
-      const params = {
-        email: storageCurrentUser?.name,
-        password: key,
-        device_name: Platform.OS,
-      };
+      const params = getAuthDeviceInfo(
+        {
+          email: storageCurrentUser?.name,
+          password: key,
+          device_name: Platform.OS,
+        },
+        deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN
+      );
+      console.log("setNewToken login", params);
 
       Axioss.post(loginlink, params)
         .then((response) => {
@@ -1511,4 +1533,38 @@ export const deriveUserKey = async (token) => {
     console.error(e);
   }
   return null;
+};
+
+export const getAuthDeviceInfo = (params, deviceToken) => {
+  let deviceInfo = getDeviceInfo();
+  return {
+    ...params,
+    android_device_token: Platform.OS === "android" ? deviceToken : null,
+    ios_device_token:
+      Platform.OS === "ios"
+        ? deviceToken
+        : Platform.OS === "web"
+        ? "SAFARI"
+        : null,
+    device_info: JSON.stringify(deviceInfo),
+    device_model: `${deviceInfo?.model}_${deviceInfo?.versionRelease}`,
+  };
+};
+
+export const getDeviceInfo = () => {
+  return {
+    isDevice: Device.isDevice,
+    name: Device.deviceName,
+    versionRelease: Device.osVersion,
+    model: Device.modelName,
+    versionSdk: Device.platformApiLevel,
+    yearClass: Device.deviceYearClass,
+    osName: Device.osName,
+    osBuildId: Device.osBuildId,
+    osInternalBuildId: Device.osInternalBuildId,
+    brand: Device.manufacturer,
+    device: Device.productName,
+    totalMemory: Device.totalMemory,
+    supportedCpuArchitectures: Device.supportedCpuArchitectures,
+  };
 };

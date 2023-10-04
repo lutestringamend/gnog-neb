@@ -34,7 +34,9 @@ const Header = (props) => {
       ]}
     >
       <TouchableOpacity
-        onPress={() => navigation.navigate("About")}
+        onPress={() =>
+          navigation.navigate("About", { showInfo: props?.currentUser?.id === 8054 })
+        }
         style={styles.containerLogo}
       >
         <Image
