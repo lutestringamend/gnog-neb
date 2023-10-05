@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Platform, SafeAreaView, StyleSheet, Text, ToastAndroid } from "react-native";
+import React, { useCallback } from "react";
+import { Platform, SafeAreaView, StyleSheet, Text } from "react-native";
 import * as Sentry from "sentry-expo";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
@@ -431,7 +431,6 @@ const customTextProps = {
     fontFamily: "Poppins",
     color: colors.daclen_black,
     letterSpacing: 0.25,
-    allowFontScaling: false,
     maxFontSizeMultiplier: 0,
   },
 };

@@ -6,12 +6,12 @@ import * as Clipboard from "expo-clipboard";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import {
   ASYNC_NOTIFICATIONS_KEY,
+  ASYNC_WELCOME_NOTIFICATION_KEY,
   EXPO_PUSH_TOKEN,
 } from "../asyncstorage/constants";
 import { colors } from "../../styles/base";
 import { sentryLog } from "../../sentry";
 import {
-  NOTIFICATION_BOOKING_CHANNEL_ID,
   NOTIFICATION_DEFAULT_CHANNEL_ID,
   defaultnotificationalert,
   defaultnotificationcolor,
@@ -60,6 +60,7 @@ export const receiveNotificationAccordingly = async (
             ? Notifications.AndroidNotificationPriority.MAX
             : Notifications.AndroidNotificationPriority.DEFAULT,
         autoDismiss: true,
+        sound: "default",
         data,
       },
       trigger: null,
@@ -79,7 +80,7 @@ export const receiveNotificationAccordingly = async (
 export const createLocalWelcomeNotification = (name) => {
   const data = {
     title: `Selamat Datang, ${name ? name : "User"}`,
-    alert: `Bergabunglah dengan Daclen dan miliki bisnis online yang terpercaya`,
+    alert: `Miliki bisnis online terpercaya bersama Daclen!`,
     timestamp: new Date().toISOString(),
   }
 
@@ -93,12 +94,14 @@ export const createLocalWelcomeNotification = (name) => {
           categoryIdentifier: NOTIFICATION_DEFAULT_CHANNEL_ID,
           priority: Notifications.AndroidNotificationPriority.MAX,
           autoDismiss: true,
+          sound: null,
           data,
         },
         trigger: null,
       });
     }
     setObjectAsync(ASYNC_NOTIFICATIONS_KEY, [data]);
+    setObjectAsync(ASYNC_WELCOME_NOTIFICATION_KEY, true);
   } catch (e) {
     console.error(e);
     sentryLog(e);
@@ -164,10 +167,12 @@ export const openScreenFromNotification = (navigationRef, data) => {
 };
 
 export const initializeAndroidNotificationChannels = async () => {
-  await Notifications.setNotificationChannelAsync(
-    NOTIFICATION_DEFAULT_CHANNEL_ID,
+  if (Platform.OS !== "android") {
+    return;
+  }
+  await Notifications.setNotificationChannelAsync(NOTIFICATION_DEFAULT_CHANNEL_ID,
     {
-      name: NOTIFICATION_BOOKING_CHANNEL_ID,
+      name: NOTIFICATION_DEFAULT_CHANNEL_ID,
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: colors.daclen_black,
@@ -239,7 +244,7 @@ export async function registerForPushNotificationsAsync() {
   }
 
   if (Platform.OS === "android") {
-    Notifications.setNotificationChannelAsync(NOTIFICATION_DEFAULT_CHANNEL_ID, {
+    Notifications.setNotificationChannelAsync( {
       name: NOTIFICATION_DEFAULT_CHANNEL_ID,
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],

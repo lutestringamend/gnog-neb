@@ -70,6 +70,7 @@
         "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"
       ],
       "softwareKeyboardLayoutMode": "resize",
+      "useNextNotificationsApi": true,
       "userInterfaceStyle": "light",
       "versionCode": 77
     },

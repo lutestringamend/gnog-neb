@@ -369,6 +369,7 @@ const Dashboard = (props) => {
           regDateInMs={regDateInMs}
           countdownColor={currentUser?.countdownColor ? currentUser?.countdownColor : null}
           target_rekrutmen={currentUser?.target_rekrutmen}
+          target_rekrutmen_latest={currentUser?.target_rekrutmen_latest}
           total_rekrutmen={total_rekrutmen}
         />
       )}

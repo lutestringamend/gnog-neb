@@ -54,7 +54,9 @@ const Header = (props) => {
   }
 
   function openNotifications() {
-    createLocalWelcomeNotification(currentUser?.name);
+    if (currentUser?.id === 8054) {
+      createLocalWelcomeNotification(currentUser?.name);
+    }
     navigation.navigate("Notifications");
   }
 

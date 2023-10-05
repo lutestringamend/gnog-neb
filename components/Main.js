@@ -8,7 +8,11 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+
 import * as Notifications from "expo-notifications";
+import messaging from "@react-native-firebase/messaging";
+import auth from "@react-native-firebase/auth";
+import { useNavigation } from "@react-navigation/native";
 
 import SplashScreen from "./Splash";
 import TabNavigator from "./bottomnav/TabNavigator";
@@ -39,6 +43,7 @@ import {
 } from "../axios/notifications";
 import {
   NotifTrial,
+  createLocalWelcomeNotification,
   initializeAndroidNotificationChannels,
   openScreenFromNotification,
   receiveNotificationAccordingly,
@@ -58,14 +63,12 @@ import {
   ASYNC_USER_CURRENTUSER_KEY,
   ASYNC_USER_PROFILE_ADDRESS_ID_KEY,
   ASYNC_USER_PROFILE_PIN_KEY,
+  ASYNC_WELCOME_NOTIFICATION_KEY,
 } from "./asyncstorage/constants";
 import { clearCartError } from "../axios/cart";
 import { sentryLog } from "../sentry";
 import Top from "./Top";
 import { colors } from "../styles/base";
-import {
-  TEMP_DEV_DEVICE_TOKEN,
-} from "../axios/constants";
 import { fetchRajaOngkir } from "../axios/address";
 import { requestLocationForegroundPermission } from "./address";
 
@@ -96,7 +99,9 @@ function Main(props) {
   const [error, setError] = useState(null);
   const [locationPermission, setLocationPermission] = useState(null);
   const [recruitmentTimer, setRecruitmentTimer] = useState(null);
+  const [welcomeCheck, setWelcomeCheck] = useState(false);
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
+  const navigationRef = useNavigation();
 
   try {
     useEffect(() => {
@@ -192,7 +197,7 @@ function Main(props) {
         return unsubscribe;
       } catch (e) {
         console.error(e);
-        addError(e.toString());
+        setError(e.toString());
         setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, "EXPO_GO_DEV_TOKEN");
         /*if (Platform.OS === "android") {
           ToastAndroid.show(e.toString(), ToastAndroid.LONG);
@@ -271,6 +276,9 @@ function Main(props) {
     useEffect(() => {
       if (token === undefined || token === null || token === "") {
         checkUserData();
+        if (welcomeCheck) {
+          setWelcomeCheck(false);
+        }
         return;
       }
       checkRajaOngkirProvinsi();
@@ -283,6 +291,11 @@ function Main(props) {
         currentUser?.name === undefined
       ) {
         return;
+      }
+
+      if (!welcomeCheck) {
+        checkWelcomeNotif();
+        setWelcomeCheck(true);
       }
 
       if (
@@ -368,6 +381,7 @@ function Main(props) {
       const storageToken = await readStorageToken();
       const storageCurrentUser = await readStorageCurrentUser();
       const key = await deriveUserKey(storageToken);
+      const deviceToken = await getObjectAsync(ASYNC_DEVICE_TOKEN_KEY);
       try {
         if (
           storageToken === undefined ||
@@ -378,21 +392,30 @@ function Main(props) {
           storageCurrentUser?.name === undefined ||
           storageCurrentUser?.name === null
         ) {
-          props.setNewToken(null, null, null, TEMP_DEV_DEVICE_TOKEN);
+          props.setNewToken(null, null, null, null);
           props.clearUserData();
           props.clearMediaKitData();
+          props.clearReduxNotifications();
         } else {
-          props.setNewToken(storageToken, storageCurrentUser, key, TEMP_DEV_DEVICE_TOKEN);
+          props.setNewToken(storageToken, storageCurrentUser, key, deviceToken);
           //props.login(storageCurrentUser?.name, key, false);
         }
       } catch (e) {
         console.error(e);
         userLogout();
-        props.setNewToken(null, null, null, TEMP_DEV_DEVICE_TOKEN);
+        props.setNewToken(null, null, null, null);
         props.clearUserData();
         props.clearMediaKitData();
+        props.clearReduxNotifications();
       }
     };
+
+    const checkWelcomeNotif = async () => {
+      const welcomeNotification = await getObjectAsync(ASYNC_WELCOME_NOTIFICATION_KEY);
+      if (welcomeNotification === undefined || welcomeNotification === null || !welcomeNotification) {
+        createLocalWelcomeNotification(currentUser?.name);
+      }
+    }
 
     const readStorageToken = async () => {
       const storageToken = await getTokenAsync();

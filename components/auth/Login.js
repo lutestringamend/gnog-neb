@@ -28,8 +28,8 @@ import RegisterBox from "./RegisterBox";
 import ChangePasswordBox from "./ChangePasswordBox";
 import BSPopup from "../bottomsheets/BSPopup";
 import { colors, dimensions, staticDimensions } from "../../styles/base";
-import { setObjectAsync } from "../asyncstorage";
-import { ASYNC_USER_PROFILE_PIN_KEY } from "../asyncstorage/constants";
+import { getObjectAsync, setObjectAsync } from "../asyncstorage";
+import { ASYNC_DEVICE_TOKEN_KEY, ASYNC_USER_PROFILE_PIN_KEY } from "../asyncstorage/constants";
 import { sentryLog } from "../../sentry";
 import { checkEmpty } from "../../redux/reducers/user";
 import { isUserDevServer } from "../../axios";
@@ -164,11 +164,12 @@ function Login(props) {
     if (resetPIN) {
       await setObjectAsync(ASYNC_USER_PROFILE_PIN_KEY, null);
     }
-    props.login(authData?.email, authData?.password, resetPIN);
+    const deviceToken = await getObjectAsync(ASYNC_DEVICE_TOKEN_KEY);
+    props.login(authData?.email, authData?.password, resetPIN, deviceToken);
     setResettingPin(resetPIN);
   };
 
-  const onRegister = () => {
+  const onRegister = async () => {
     if (resetPIN) {
       return;
     } else if (authData?.name === null || authData?.name === undefined) {
@@ -197,7 +198,8 @@ function Login(props) {
     } else {
       setError(null);
       setLoading(true);
-      props.register(authData);
+      const deviceToken = await getObjectAsync(ASYNC_DEVICE_TOKEN_KEY);
+      props.register(authData, deviceToken);
     }
   };
 

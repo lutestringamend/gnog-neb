@@ -6,6 +6,7 @@ export const ASYNC_DEVICE_TOKEN_KEY = "@deviceToken"
 export const ASYNC_NOTIFICATIONS_KEY = "@notifications"
 export const EXPO_PUSH_TOKEN = "EXPO_PUSH_TOKEN"
 export const EXPO_CONSTANTS_INSTALLATION_ID = "EXPO_CONSTANTS_INSTALLATION_ID"
+export const ASYNC_WELCOME_NOTIFICATION_KEY = "@notifications_Welcome"
 
 export const ASYNC_PRODUCTS_ARRAY_KEY = "@products_array"
 export const ASYNC_USER_CURRENTUSER_KEY = "@user_currentUser"

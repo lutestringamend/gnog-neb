@@ -198,6 +198,7 @@ const DashboardTimer = (props) => {
     setShowTimerModal,
     regDateInMs,
     target_rekrutmen,
+    target_rekrutmen_latest,
     total_rekrutmen,
     countdownColor,
   } = props;
@@ -206,40 +207,63 @@ const DashboardTimer = (props) => {
 
   useEffect(() => {
     if (countdownColor === countdownfrozen) {
-      setDigits(defaultDigit);
+      freezeCountdown();
       return;
     }
+
+    let newDigits = getDigits(recruitmentTimer);
+    if (newDigits === null) {
+      setDigits(defaultDigit);
+      setShowTimerModal(false);
+    } else {
+      setDigits(newDigits);
+    }
+  }, [recruitmentTimer]);
+
+  //useEffect(() => {}, [digits]);
+
+  const freezeCountdown = () => {
+    if (!(target_rekrutmen_latest === undefined || target_rekrutmen_latest === null)) {
+      try {
+        let t = new Date(target_rekrutmen_latest?.tgl_akhir).getTime() - new Date(target_rekrutmen_latest?.tanggal_rekrut).getTime();
+        let newDigits = getDigits(t);
+        if (newDigits !== null) {
+          setDigits(newDigits);
+          return;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    setDigits(defaultDigit);
+  }
+
+  const getDigits = (t) => {
     try {
-      let days = Math.floor(moment.duration(recruitmentTimer).asDays());
+      let days = Math.floor(moment.duration(t).asDays());
       let hours = Math.floor(
-        moment.duration(recruitmentTimer).asHours() - days * 24
+        moment.duration(t).asHours() - days * 24
       );
       let minutes = Math.floor(
-        moment.duration(recruitmentTimer).asMinutes() -
+        moment.duration(t).asMinutes() -
           hours * 60 -
           days * 60 * 24
       );
       let seconds = Math.floor(
-        moment.duration(recruitmentTimer).asSeconds() -
+        moment.duration(t).asSeconds() -
           minutes * 60 -
           hours * 60 * 60 -
           days * 60 * 60 * 24
       );
-      setDigits(
-        addZeroToArray(days)
-          .concat(addZeroToArray(hours))
-          .concat(addZeroToArray(minutes))
-          .concat(addZeroToArray(seconds))
-      );
+      return addZeroToArray(days)
+      .concat(addZeroToArray(hours))
+      .concat(addZeroToArray(minutes))
+      .concat(addZeroToArray(seconds));
     } catch (e) {
       console.error(e);
-      sentryLog(e);
-      setDigits(defaultDigit);
-      setShowTimerModal(false);
+      return null;
     }
-  }, [recruitmentTimer]);
-
-  useEffect(() => {}, [digits]);
+  } 
 
   try {
     return (
@@ -362,7 +386,7 @@ const DashboardTimer = (props) => {
               />
             </TouchableOpacity>
 
-            {digits === defaultDigit ? (
+            {digits === defaultDigit && countdownColor !== countdownfrozen ? (
               <ActivityIndicator
                 size="large"
                 color={colors.daclen_light}

@@ -91,6 +91,7 @@ import {
   ASYNC_MEDIA_WATERMARK_PHOTOS_KEY,
   ASYNC_MEDIA_WATERMARK_VIDEOS_KEY,
   ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY,
+  ASYNC_NOTIFICATIONS_KEY,
   ASYNC_SERVER_URL,
   ASYNC_USER_ADDRESSES_KEY,
   ASYNC_USER_CURRENTUSER_KEY,
@@ -101,6 +102,7 @@ import {
   ASYNC_USER_REGISTER_SNAP_TOKEN_KEY,
   ASYNC_USER_TOKEN_KEY,
   ASYNC_WATERMARK_PHOTOS_PDF_KEY,
+  ASYNC_WELCOME_NOTIFICATION_KEY,
 } from "../../components/asyncstorage/constants";
 import { MAXIMUM_FILE_SIZE_IN_BYTES } from "../../components/media/constants";
 import { sentryLog } from "../../sentry";
@@ -133,6 +135,8 @@ export const userLogout = async (username) => {
   await setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY, null);
   await setObjectAsync(ASYNC_USER_PROFILE_ADDRESS_ID_KEY, null);
   await setObjectAsync(ASYNC_USER_ADDRESSES_KEY, null);
+  await setObjectAsync(ASYNC_NOTIFICATIONS_KEY, null);
+  setObjectAsync(ASYNC_WELCOME_NOTIFICATION_KEY, null);
   setObjectAsync(
     ASYNC_USER_PREVIOUS_USERNAME,
     username === undefined || username === null ? null : username
@@ -1208,7 +1212,7 @@ export function login(email, password, resetPIN, deviceToken) {
     let isDevUser = isUserDevServer(email);
     const newServerUrl = isDevUser ? devhttp : mainhttp;
     let url = `${newServerUrl}${loginlink}`;
-    console.log("login", url);
+    //console.log("login", params);
 
     Axios.post(url, params)
       .then(async (response) => {
