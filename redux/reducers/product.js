@@ -4,11 +4,13 @@ import {
   CLEAR_PRODUCT_DATA,
   PRODUCT_MAX_INDEX_STATE_CHANGE,
   PRODUCT_SEARCH_FILTER_STATE_CHANGE,
+  PRODUCT_FETCH_ERROR_STATE_CHANGE,
 } from "../constants";
 
 const initialState = {
   products: [],
   productItems: [],
+  productError: null,
   maxIndex: 0,
   searchFilter: null,
 };
@@ -19,6 +21,11 @@ export const product = (state = initialState, action) => {
       return {
         ...state,
         products: action.products,
+      };
+    case PRODUCT_FETCH_ERROR_STATE_CHANGE:
+      return {
+        ...state,
+        productError: action.data,
       };
     case PRODUCT_ITEM_DATA_STATE_CHANGE:
       return {

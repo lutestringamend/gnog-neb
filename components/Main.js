@@ -52,7 +52,6 @@ import Top from "./Top";
 import { colors } from "../styles/base";
 import {
   TEMP_DEV_DEVICE_TOKEN,
-  tokoonlineurlshort,
 } from "../axios/constants";
 import { fetchRajaOngkir } from "../axios/address";
 import { requestLocationForegroundPermission } from "./address";
@@ -65,6 +64,7 @@ function Main(props) {
   const {
     token,
     currentUser,
+    productError,
     profileLock,
     profileLockTimeout,
     profilePIN,
@@ -96,6 +96,13 @@ function Main(props) {
         //console.log("redux products", props.products);
       }
     }, [props.products]);
+
+    useEffect(() => {
+      if (productError === undefined || productError === null) {
+        return;
+      }
+      setError(`Mengalami gangguan koneksi`);
+    }, [productError]);
 
     /*useEffect(() => {
       if (props.maxIndex > 0) {
@@ -427,6 +434,7 @@ const mapStateToProps = (store) => ({
   profileLockTimeout: store.userState.profileLockTimeout,
   profilePIN: store.userState.profilePIN,
   products: store.productState.products,
+  productError: store.productState.productError,
   maxIndex: store.productState.maxIndex,
   loginToken: store.userState.loginToken,
   registerToken: store.userState.registerToken,

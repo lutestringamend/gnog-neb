@@ -8,6 +8,7 @@ import {
   PRODUCT_MAX_INDEX_STATE_CHANGE,
   PRODUCT_SEARCH_FILTER_STATE_CHANGE,
   CLEAR_PRODUCT_DATA,
+  PRODUCT_FETCH_ERROR_STATE_CHANGE,
 } from "../../redux/constants";
 import { getObjectAsync, setObjectAsync } from "../../components/asyncstorage";
 import { ASYNC_PRODUCTS_ARRAY_KEY } from "../../components/asyncstorage/constants";
@@ -23,7 +24,8 @@ export function clearProductData() {
 export function getProductData(storageProducts, paginationIndex) {
   return (dispatch) => {
     console.log("getProductData");
-    Axios.get(productfetchlink)
+    try {
+      Axios.get(productfetchlink)
       .then((response) => {
         //console.log(response.data);
         const products = response.data?.data;
@@ -33,9 +35,11 @@ export function getProductData(storageProducts, paginationIndex) {
           products?.length === undefined ||
           products?.length < 1
         ) {
-          console.log("getProductData is null");
+          dispatch({ type: PRODUCT_FETCH_ERROR_STATE_CHANGE, data: "getProductData response null" });
+          console.log("getProductData response null", response);
           readStorageProductData(dispatch, storageProducts, paginationIndex, null);
         } else {
+          dispatch({ type: PRODUCT_FETCH_ERROR_STATE_CHANGE, data: null });
           console.log(`saving all product data to async storage with ${products?.length} items`);
           setObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY, products);
 
@@ -64,10 +68,17 @@ export function getProductData(storageProducts, paginationIndex) {
         } 
       })
       .catch((error) => {
-        console.log("getProductData error", error.toString());
+        dispatch({ type: PRODUCT_FETCH_ERROR_STATE_CHANGE, data: error.toString() });
+        console.error(error);
         sentryLog(error);
         readStorageProductData(dispatch, storageProducts, paginationIndex);
       });
+    } catch (e) {
+      dispatch({ type: PRODUCT_FETCH_ERROR_STATE_CHANGE, data: e.toString() });
+      console.error(e);
+      sentryLog(e);
+      readStorageProductData(dispatch, storageProducts, paginationIndex);
+    }
   };
 }
 
