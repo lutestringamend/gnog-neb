@@ -8,10 +8,12 @@ import {
 } from "react-native";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
 
 import { blurhash, colors } from "../styles/base";
 import { capitalizeFirstLetter } from "../axios/cart";
+import { createLocalWelcomeNotification } from "./notifications";
 
 const Header = (props) => {
   const { currentUser } = props;
@@ -51,6 +53,11 @@ const Header = (props) => {
     );
   }
 
+  function openNotifications() {
+    createLocalWelcomeNotification(currentUser?.name);
+    navigation.navigate("Notifications");
+  }
+
   return (
     <View style={[styles.container, { height: 72 }]}>
       <Image
@@ -83,13 +90,15 @@ const Header = (props) => {
       </View>
 
       <View style={styles.containerUser}>
-        <TouchableOpacity onPress={() => navigation.navigate("About")}>
+      <TouchableOpacity onPress={() => navigation.navigate("About")}>
           <Image
             source={require("../assets/splashsmall.png")}
             style={styles.imageLogo}
             contentFit="contain"
           />
-          <Text
+          </TouchableOpacity>
+        <View style={styles.containerHorizontal}>
+        <Text
             allowFontScaling={false}
             style={[
               styles.text,
@@ -98,7 +107,17 @@ const Header = (props) => {
           >
             {`id referral anda:\n${currentUser?.name}`}
           </Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.bell} onPress={() => openNotifications()}>
+          <MaterialCommunityIcons
+              name="bell"
+              size={20}
+              color={colors.daclen_light}
+            />
+          </TouchableOpacity>
+          
+        </View>
+        
+          
       </View>
     </View>
   );
@@ -109,6 +128,11 @@ const styles = StyleSheet.create({
     zIndex: 10,
     backgroundColor: colors.daclen_black,
     opacity: 0.9,
+  },
+  containerHorizontal: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "transparent",
   },
   containerLogoSmall: {
     marginHorizontal: 12,
@@ -153,6 +177,12 @@ const styles = StyleSheet.create({
     start: 12,
     bottom: -12,
     zIndex: 20,
+  },
+  bell: {
+    marginStart: 10,
+    alignSelf: "center",
+    backgroundColor: "transparent",
+    zIndex: 4,
   },
   textName: {
     fontSize: 12,

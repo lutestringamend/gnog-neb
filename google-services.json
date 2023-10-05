@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1095241178397",
+    "project_id": "daclen",
+    "storage_bucket": "daclen.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1095241178397:android:6591a0ee57265e1a8255f4",
+        "android_client_info": {
+          "package_name": "com.daclen.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1095241178397-9a3sf1s80ojesolsuojpoel6cr6qbfmk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.daclen.android",
+            "certificate_hash": "dae274929e90ce442bb66c7581d49417ee6ad02c"
+          }
+        },
+        {
+          "client_id": "1095241178397-csq1nq0ich68vtmrusm3ktq5vd1ukguk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLyBJtRymY4s5nRDSNyRNen6zV8VCOpY8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1095241178397-csq1nq0ich68vtmrusm3ktq5vd1ukguk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

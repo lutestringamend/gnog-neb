@@ -44,6 +44,7 @@ import DeliveryItemScreen from "./components/history/DeliveryItem";
 import BlogFeedScreen from "./components/blog/BlogFeed";
 import BlogScreen from "./components/blog/Blog";
 import ProductScreen from "./components/main/Product";
+import Notifications from "./components/notifications/Notifications";
 
 import CheckoutScreen from "./components/main/Checkout";
 import VerifyPhone from "./components/auth/VerifyPhone";
@@ -89,6 +90,7 @@ import { defaultpoppins } from "./styles/fonts";
 
 SplashScreen.preventAutoHideAsync();
 const Stack = createStackNavigator();
+
 Sentry.init({
   dsn: SENTRY_DSN,
   enableInExpoDevelopment: true,
@@ -166,6 +168,11 @@ export default function App() {
                 name="Dashboard"
                 component={Dashboard}
                 options={{ ...defaultOptions, headerShown: false }}
+              />
+              <Stack.Screen
+                name="Notifications"
+                component={Notifications}
+                options={{ ...defaultOptions, title: "Notifikasi" }}
               />
               <Stack.Screen
                 name="History"

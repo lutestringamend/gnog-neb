@@ -13,6 +13,9 @@ export const googleAPIkey = "AIzaSyAyT3F_f80zLWHNHSiG2oZMjW5G_Z9jhy4"
 export const MIDTRANS_CLIENT_KEY = "Mid-client-BqXWNDpvPhUU7fB1"
 export const SB_MIDTRANS_CLIENT_KEY = "SB-Mid-client-xamInlBsiMBuJSWC"
 
+export const GCMSenderID = "1095241178397";
+export const FCM_SERVER_KEY = "";
+
 export const defaultlatitude = -6.921697335392908;
 export const defaultlongitude = 107.60708919873582;
 export const defaultlatitudedelta = 0.01214273;

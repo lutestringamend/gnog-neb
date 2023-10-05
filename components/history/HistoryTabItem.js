@@ -43,6 +43,7 @@ export default function HistoryTabItem(props) {
         style={{ alignSelf: "center" }}
       />
       <Text
+        allowFontScaling={false} 
         style={[
           styles.text,
           props?.activeTab === props?.name

@@ -1,6 +1,11 @@
 export const ASYNC_SERVER_URL = "@server_url"
 export const ASYNC_USER_TOKEN_KEY = "@user_token"
 export const ASYNC_USER_KEY = "@user_key"
+export const ASYNC_DEVICE_TOKEN_KEY = "@deviceToken"
+
+export const ASYNC_NOTIFICATIONS_KEY = "@notifications"
+export const EXPO_PUSH_TOKEN = "EXPO_PUSH_TOKEN"
+export const EXPO_CONSTANTS_INSTALLATION_ID = "EXPO_CONSTANTS_INSTALLATION_ID"
 
 export const ASYNC_PRODUCTS_ARRAY_KEY = "@products_array"
 export const ASYNC_USER_CURRENTUSER_KEY = "@user_currentUser"
@@ -28,6 +33,4 @@ export const ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY = "@media_savedWatermarkVide
 export const ASYNC_RAJAONGKIR_PROVINSI_KEY = "@rajaongkir_provinsi"
 export const ASYNC_RAJAONGKIR_KOTA_KEY = "@rajaongkir_kota"
 export const ASYNC_RAJAONGKIR_KECAMATAN_KEY = "@rajaongkir_kecamatan"
-
-export const EXPO_CONSTANTS_INSTALLATION_ID = "EXPO_CONSTANTS_INSTALLATION_ID"
 

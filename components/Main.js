@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import * as Notifications from "expo-notifications";
 
 import SplashScreen from "./Splash";
 import TabNavigator from "./bottomnav/TabNavigator";
@@ -32,13 +33,25 @@ import {
   setWatermarkDatafromCurrentUser,
 } from "../axios/mediakit";
 import {
+  clearReduxNotifications,
+  pushNewReduxNotification,
+  overhaulReduxNotifications,
+} from "../axios/notifications";
+import {
+  NotifTrial,
+  initializeAndroidNotificationChannels,
+  openScreenFromNotification,
+  receiveNotificationAccordingly,
+} from "./notifications";
+import {
   convertDateISOStringtoMiliseconds,
-  getRecruitmentDeadlineinMiliseconds,
   updateReduxRegDateInMs,
 } from "../axios/profile";
 import { getObjectAsync, getTokenAsync, setObjectAsync } from "./asyncstorage";
 import {
+  ASYNC_DEVICE_TOKEN_KEY,
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
+  ASYNC_NOTIFICATIONS_KEY,
   ASYNC_PRODUCTS_ARRAY_KEY,
   ASYNC_RAJAONGKIR_PROVINSI_KEY,
   ASYNC_USER_ADDRESSES_KEY,
@@ -56,14 +69,20 @@ import {
 import { fetchRajaOngkir } from "../axios/address";
 import { requestLocationForegroundPermission } from "./address";
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
 function Main(props) {
-  const [error, setError] = useState(null);
-  const [locationPermission, setLocationPermission] = useState(null);
-  const [recruitmentTimer, setRecruitmentTimer] = useState(null);
   const appState = useRef(AppState.currentState);
   const {
     token,
     currentUser,
+    notificationsArray,
     productError,
     profileLock,
     profileLockTimeout,
@@ -74,7 +93,151 @@ function Main(props) {
     addresses,
   } = props;
 
+  const [error, setError] = useState(null);
+  const [locationPermission, setLocationPermission] = useState(null);
+  const [recruitmentTimer, setRecruitmentTimer] = useState(null);
+  const [deviceToken, setDeviceToken] = useState(null);
+  const lastNotificationResponse = Notifications.useLastNotificationResponse();
+
   try {
+    useEffect(() => {
+      props.clearReduxNotifications();
+      if (Platform.OS == "web") {
+        setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, "WEB_DEV_TOKEN");
+        setDeviceToken("WEB_DEV_TOKEN");
+        return;
+      } else if (Platform.OS == "ios") {
+        setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, "DEV_IOS_TOKEN");
+        setDeviceToken("DEV_IOS_TOKEN");
+        return;
+      }
+  
+      try {
+        console.log("firebase auth settings", auth().settings);
+        //auth().settings.appVerificationDisabledForTesting = false;
+  
+        const requestUserPermission = async () => {
+          const authStatus = await messaging().requestPermission();
+          const enabled =
+            authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+            authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  
+          if (enabled) {
+            if (Platform.OS === "android") {
+              await initializeAndroidNotificationChannels();
+            }
+            console.log("Authorization status:", authStatus);
+          }
+        };
+  
+        if (requestUserPermission()) {
+          messaging()
+            .getToken()
+            .then((token) => {
+              console.log("fcm token", token);
+              setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, token);
+              setDeviceToken(token);
+            });
+        } else {
+          addError("FAIL TO GET FCM TOKEN");
+          return;
+        }
+  
+        // Check whether an initial notification is available
+        messaging()
+          .getInitialNotification()
+          .then((remoteMessage) => {
+            if (remoteMessage) {
+              console.log(
+                "Notification caused app to open from quit state:",
+                remoteMessage.notification
+              );
+            }
+          });
+  
+        messaging().onNotificationOpenedApp(async (remoteMessage) => {
+          receiveNotificationAccordingly(
+            props,
+            remoteMessage,
+            isAdmin,
+            currentUser?.id
+          );
+          console.log(
+            "Notification caused app to open from background state:",
+            remoteMessage.notification
+          );
+          //navigation.navigate(remoteMessage.data.type);
+        });
+  
+        // Register background handler
+        messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+          receiveNotificationAccordingly(
+            props,
+            remoteMessage,
+            isAdmin,
+            currentUser?.id
+          );
+          console.log("Message handled in the background!", remoteMessage);
+        });
+  
+        const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+          receiveNotificationAccordingly(
+            props,
+            remoteMessage,
+            isAdmin,
+            currentUser?.id
+          );
+          console.log("FCM message", remoteMessage);
+          /*if (Platform.OS === "android") {
+            ToastAndroid.show(`FCM MESSAGE\n${JSON.stringify(remoteMessage)}`, ToastAndroid.LONG);
+          };*/
+        });
+  
+        return unsubscribe;
+      } catch (e) {
+        console.error(e);
+        addError(e.toString());
+        setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, "EXPO_GO_DEV_TOKEN");
+        setDeviceToken("EXPO_GO_DEV_TOKEN");
+        /*if (Platform.OS === "android") {
+          ToastAndroid.show(e.toString(), ToastAndroid.LONG);
+        }*/
+      }
+    }, []);
+
+    useEffect(() => {
+      if (lastNotificationResponse) {
+        try {
+          console.log(
+            "lastNotificationResponse",
+            lastNotificationResponse?.notification?.request?.content?.data
+          );
+          openScreenFromNotification(
+            navigationRef.current,
+            lastNotificationResponse?.notification?.request?.content?.data
+          );
+        } catch (e) {
+          console.error(e);
+          sentryLog(e);
+        }
+      }
+    }, [lastNotificationResponse]);
+  
+    useEffect(() => {
+      if (
+        notificationsArray === undefined ||
+        notificationsArray === null ||
+        notificationsArray?.length === undefined ||
+        notificationsArray?.length === undefined
+      ) {
+        checkAsyncStorageNotifications();
+        return;
+      } else if (notificationsArray?.length > 0) {
+        setObjectAsync(ASYNC_NOTIFICATIONS_KEY, notificationsArray);
+        //console.log("ChildApp redux notifications", notificationsArray);
+      }
+    }, [notificationsArray]);
+
     useEffect(() => {
       const readStorageProducts = async () => {
         const storageProducts = await getObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY);
@@ -191,6 +354,20 @@ function Main(props) {
         loadStorageAddresses();
       }
     }, [addresses]);
+
+    const checkAsyncStorageNotifications = async () => {
+      const storageNotifications = await getObjectAsync(ASYNC_NOTIFICATIONS_KEY);
+      if (
+        storageNotifications === undefined ||
+        storageNotifications === null ||
+        storageNotifications?.length === undefined ||
+        storageNotifications?.length < 1
+      ) {
+        props.overhaulReduxNotifications([]);
+      } else {
+        props.overhaulReduxNotifications(storageNotifications);
+      }
+    };
 
     const checkUserData = async () => {
       const storageToken = await readStorageToken();
@@ -427,6 +604,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
+  notificationsArray: store.notificationsState.notificationsArray,
   profileLock: store.userState.profileLock,
   addressId: store.userState.addressId,
   addresses: store.userState.addresses,
@@ -448,6 +626,9 @@ const mapDispatchProps = (dispatch) =>
       clearData,
       getCurrentUser,
       clearUserData,
+      clearReduxNotifications,
+      pushNewReduxNotification,
+      overhaulReduxNotifications,
       updateReduxRegDateInMs,
       login,
       setNewToken,

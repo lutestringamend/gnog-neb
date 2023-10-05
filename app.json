@@ -2,7 +2,7 @@
   "expo": {
     "name": "Daclen",
     "slug": "daclen",
-    "version": "1.2.16",
+    "version": "1.2.20",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
     "userInterfaceStyle": "light",
@@ -52,6 +52,7 @@
           "apiKey": "AIzaSyAyT3F_f80zLWHNHSiG2oZMjW5G_Z9jhy4"
         }
       },
+      "googleServicesFile": "./google-services.json",
       "icon": "./assets/favicon.png",
       "package": "com.daclen.android",
       "permissions": [
@@ -131,6 +132,17 @@
         }
       ],
       [
+        "expo-notifications",
+        {
+          "icon": "./assets/favicon.png",
+          "color": "#0a0a0a",
+          "sounds": [
+            "./assets/d.wav",
+            "./local/assets/d.wav"
+          ]
+        }
+      ],
+      [
         "expo-screen-orientation",
         {
           "initialOrientation": "PORTRAIT"
@@ -142,6 +154,8 @@
           "username": "daclenmobile"
         }
       ],
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
       "sentry-expo"
     ],
     "hooks": {
