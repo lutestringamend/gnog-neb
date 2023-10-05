@@ -96,7 +96,6 @@ function Main(props) {
   const [error, setError] = useState(null);
   const [locationPermission, setLocationPermission] = useState(null);
   const [recruitmentTimer, setRecruitmentTimer] = useState(null);
-  const [deviceToken, setDeviceToken] = useState(null);
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
 
   try {
@@ -104,11 +103,9 @@ function Main(props) {
       props.clearReduxNotifications();
       if (Platform.OS == "web") {
         setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, "WEB_DEV_TOKEN");
-        setDeviceToken("WEB_DEV_TOKEN");
         return;
       } else if (Platform.OS == "ios") {
         setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, "DEV_IOS_TOKEN");
-        setDeviceToken("DEV_IOS_TOKEN");
         return;
       }
   
@@ -136,7 +133,6 @@ function Main(props) {
             .then((token) => {
               console.log("fcm token", token);
               setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, token);
-              setDeviceToken(token);
             });
         } else {
           addError("FAIL TO GET FCM TOKEN");
@@ -198,7 +194,6 @@ function Main(props) {
         console.error(e);
         addError(e.toString());
         setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, "EXPO_GO_DEV_TOKEN");
-        setDeviceToken("EXPO_GO_DEV_TOKEN");
         /*if (Platform.OS === "android") {
           ToastAndroid.show(e.toString(), ToastAndroid.LONG);
         }*/

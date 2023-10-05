@@ -137,8 +137,7 @@
           "icon": "./assets/favicon.png",
           "color": "#0a0a0a",
           "sounds": [
-            "./assets/d.wav",
-            "./local/assets/d.wav"
+            "./assets/d.wav"
           ]
         }
       ],
