@@ -256,7 +256,9 @@ function MediaKitFiles(props) {
   };
 
   const onBackPress = () => {
-    if (activeTab !== STARTER_KIT_HOME) {
+    if (modal?.visible) {
+      setModal(defaultModal);
+    } else if (activeTab !== STARTER_KIT_HOME) {
       setActiveTab(STARTER_KIT_HOME);
     } else {
       navigation.goBack();
