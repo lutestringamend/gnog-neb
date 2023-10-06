@@ -110,7 +110,10 @@ export const user = (state = initialState, action) => {
         ...state,
         currentUser: {
           ...action.data,
-          countdownColor: determineCountdownColor(action.data?.batas_rekrut, action.data?.target_rekrutmen),
+          countdownColor: determineCountdownColor(
+            action.data?.batas_rekrut,
+            action.data?.target_rekrutmen
+          ),
           bank_set: !(
             checkEmpty(action.data?.detail_user?.bank?.id) === "" ||
             checkEmpty(action.data?.detail_user?.bank?.nama) === "" ||
@@ -149,6 +152,13 @@ export const user = (state = initialState, action) => {
             action.data?.nomor_telp_verified_at === null ||
             action.data?.nomor_telp_verified_at === ""
           ),
+          join_date: action.data?.join_date
+            ? action.data?.join_date
+            : action.data?.target_rekrutmen_latest
+            ? action.data?.target_rekrutmen_latest?.tgl_mulai
+              ? action.data?.target_rekrutmen_latest?.tgl_mulai
+              : null
+            : null,
         },
       };
     case USER_TOKEN_STATE_CHANGE:

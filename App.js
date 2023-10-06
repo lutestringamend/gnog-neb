@@ -431,7 +431,6 @@ const customTextProps = {
     fontFamily: "Poppins",
     color: colors.daclen_black,
     letterSpacing: 0.25,
-    maxFontSizeMultiplier: 0,
   },
 };
 

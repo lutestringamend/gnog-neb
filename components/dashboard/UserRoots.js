@@ -159,6 +159,13 @@ const UserRoots = (props) => {
   };
 
   const showSelfHPV = async () => {
+    let join_date = currentUser?.join_date;
+    try {
+      let joinDate = new Date(join_date);
+    } catch (e) {
+      console.error(e);
+      join_date = convertInvoiceNumbertoRegDate(join_date);
+    }
     let newSelfData = {
       id: currentUser?.id,
       name: currentUser?.name,
@@ -170,9 +177,7 @@ const UserRoots = (props) => {
         : null,
       email: currentUser?.email,
       nomor_telp: currentUser?.nomor_telp,
-      join_date: currentUser?.join_date
-        ? convertInvoiceNumbertoRegDate(currentUser?.join_date)
-        : null,
+      join_date,
       pv: currentUser?.poin_user?.poin,
       hpv: currentUser?.poin_user?.hpv,
       poin_user_this_month: currentUser?.poin_user_this_month,

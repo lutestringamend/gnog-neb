@@ -4,7 +4,6 @@ import {
   View,
   StyleSheet,
   Text,
-  Platform,
   ActivityIndicator,
   ImageBackground,
   RefreshControl,
@@ -98,7 +97,13 @@ const Dashboard = (props) => {
       currentUser?.status_member === "premium" ||
       (currentUser?.status !== undefined && currentUser?.status !== null)
     ) {
-      setRegDate(currentUser?.join_date ? convertInvoiceNumbertoRegDate(currentUser?.join_date) : null);
+      try {
+        let joinDate = new Date(currentUser?.join_date);
+        setRegDate(currentUser?.join_date);
+      } catch (e) {
+        console.error(e);
+        setRegDate(currentUser?.join_date ? convertInvoiceNumbertoRegDate(currentUser?.join_date) : null);
+      }
       return;
     }
 
@@ -244,13 +249,11 @@ const Dashboard = (props) => {
 
   return (
     <View style={styles.container}>
-      {Platform.OS === "web" ? (
-        <ImageBackground
+      <ImageBackground
           source={require("../../assets/profilbg.png")}
           style={styles.background}
           resizeMode="cover"
         />
-      ) : null}
 
       <Header
         username={currentUser?.name}

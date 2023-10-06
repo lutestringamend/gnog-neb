@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -9,8 +9,9 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ImageBackground,
+  BackHandler,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { isAvailableAsync } from "expo-sharing";
@@ -90,166 +91,187 @@ function MediaKitFiles(props) {
   } = props;
   const navigation = useNavigation();
 
-  try {
-    useEffect(() => {
-      const checkSharing = async () => {
-        const result = await isAvailableAsync();
-        if (!result && Platform.OS === "android") {
-          ToastAndroid.show(
-            "Perangkat tidak mengizinkan sharing file",
-            ToastAndroid.LONG
-          );
-        }
-        console.log("sharingAvailability", result);
-        setSharingAvailability(result);
+  useFocusEffect(
+    useCallback(() => {
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
+      console.log("MediaKitFiles visible, BackHandler active", activeTab);
+      return () => {
+        console.log("MediaKitFiles is not visible");
+        backHandler.remove();
       };
-      checkSharing();
-      //props.clearMediaKitData();
-    }, []);
+    }, [activeTab])
+  );
 
-    useEffect(() => {
-      if (
-        currentUser === null ||
-        currentUser?.name === undefined ||
-        currentUser?.id === undefined
-      ) {
-        return;
+  useEffect(() => {
+    const checkSharing = async () => {
+      const result = await isAvailableAsync();
+      if (!result && Platform.OS === "android") {
+        ToastAndroid.show(
+          "Perangkat tidak mengizinkan sharing file",
+          ToastAndroid.LONG
+        );
       }
-      if (watermarkData === null) {
-        checkWatermarkData();
-      } else {
-        console.log("redux WatermarkData", watermarkData);
-      }
-    }, [watermarkData]);
+      console.log("sharingAvailability", result);
+      setSharingAvailability(result);
+    };
+    checkSharing();
+    //props.clearMediaKitData();
+  }, []);
 
-    useEffect(() => {
-      if (mediaKitPhotos === undefined || mediaKitPhotos === null) {
-        fetchWatermarkPhotos();
-      } else {
-        setPhotoKeys(Object.keys(mediaKitPhotos).sort());
-        if (photoLoading) {
-          setPhotoLoading(false);
-        }
-        setObjectAsync(ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, mediaKitPhotos);
-      }
-    }, [mediaKitPhotos]);
+  useEffect(() => {
+    if (
+      currentUser === null ||
+      currentUser?.name === undefined ||
+      currentUser?.id === undefined
+    ) {
+      return;
+    }
+    if (watermarkData === null) {
+      checkWatermarkData();
+    } else {
+      console.log("redux WatermarkData", watermarkData);
+    }
+  }, [watermarkData]);
 
-    useEffect(() => {
-      if (mediaKitVideos === null || mediaKitVideos?.length === undefined) {
-        return;
-      }
-      if (videoLoading) {
-        setVideoLoading(false);
-      }
-    }, [mediaKitVideos]);
-
-    useEffect(() => {
-      if (photoError === null) {
-        return;
-      }
-      if (
-        photoLoading &&
-        (mediaKitPhotos?.length === undefined || mediaKitPhotos?.length < 1)
-      ) {
+  useEffect(() => {
+    if (mediaKitPhotos === undefined || mediaKitPhotos === null) {
+      fetchWatermarkPhotos();
+    } else {
+      setPhotoKeys(Object.keys(mediaKitPhotos).sort());
+      if (photoLoading) {
         setPhotoLoading(false);
       }
-    }, [photoError]);
+      setObjectAsync(ASYNC_MEDIA_WATERMARK_PHOTOS_KEY, mediaKitPhotos);
+    }
+  }, [mediaKitPhotos]);
 
-    const checkWatermarkData = async () => {
-      let newData = await getObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY);
-      if (!(newData === undefined || newData === null)) {
-        props.updateReduxMediaKitWatermarkData(newData);
-      } else {
-        newData = setWatermarkDatafromCurrentUser(currentUser, false);
-        props.updateReduxMediaKitWatermarkData(newData);
+  useEffect(() => {
+    if (mediaKitVideos === null || mediaKitVideos?.length === undefined) {
+      return;
+    }
+    if (videoLoading) {
+      setVideoLoading(false);
+    }
+  }, [mediaKitVideos]);
+
+  useEffect(() => {
+    if (photoError === null) {
+      return;
+    }
+    if (
+      photoLoading &&
+      (mediaKitPhotos?.length === undefined || mediaKitPhotos?.length < 1)
+    ) {
+      setPhotoLoading(false);
+    }
+  }, [photoError]);
+
+  const checkWatermarkData = async () => {
+    let newData = await getObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY);
+    if (!(newData === undefined || newData === null)) {
+      props.updateReduxMediaKitWatermarkData(newData);
+    } else {
+      newData = setWatermarkDatafromCurrentUser(currentUser, false);
+      props.updateReduxMediaKitWatermarkData(newData);
+    }
+  };
+
+  const fetchWatermarkPhotos = async () => {
+    const result = await getMediaKitPhotos(token);
+    console.log("getMediaKitPhotos", result);
+    if (
+      result === undefined ||
+      result === null ||
+      result?.result === undefined ||
+      result?.result === null
+    ) {
+      props.updateReduxMediaKitPhotos(null);
+      setPhotoKeys([]);
+      if (!(result?.error === undefined || result?.error === null)) {
+        props.updateReduxMediaKitPhotosError(result?.error);
       }
-    };
+      checkStorageMediaKitPhotos();
+    } else {
+      props.updateReduxMediaKitPhotos(result?.result);
+      props.updateReduxMediaKitPhotosError(null);
+    }
 
-    const fetchWatermarkPhotos = async () => {
-      const result = await getMediaKitPhotos(token);
-      console.log("getMediaKitPhotos", result);
-      if (
-        result === undefined ||
-        result === null ||
-        result?.result === undefined ||
-        result?.result === null
-      ) {
-        props.updateReduxMediaKitPhotos(null);
-        setPhotoKeys([]);
-        if (!(result?.error === undefined || result?.error === null)) {
-          props.updateReduxMediaKitPhotosError(result?.error);
-        }
-        checkStorageMediaKitPhotos();
-      } else {
-        props.updateReduxMediaKitPhotos(result?.result);
-        props.updateReduxMediaKitPhotosError(null);
-      }
-
-      //props.updateReduxMediaKitFlyerMengajak(result?.result["Audra"]);
-      if (
-        result?.mengajakArray === undefined ||
-        result?.mengajakArray === null ||
-        result?.mengajakArray?.length === undefined
-      ) {
-        const storageFlyers = await getObjectAsync(
-          ASYNC_MEDIA_FLYER_MENGAJAK_KEY
-        );
-        if (storageFlyers === undefined || storageFlyers === null) {
-          props.updateReduxMediaKitFlyerMengajak([]);
-        } else {
-          props.updateReduxMediaKitFlyerMengajak(storageFlyers);
-        }
-      } else {
-        props.updateReduxMediaKitFlyerMengajak(result?.mengajakArray);
-        await setObjectAsync(
-          ASYNC_MEDIA_FLYER_MENGAJAK_KEY,
-          result?.mengajakArray
-        );
-      }
-    };
-
-    const checkStorageMediaKitPhotos = async () => {
-      const storagePhotos = await getObjectAsync(
-        ASYNC_MEDIA_WATERMARK_PHOTOS_KEY
+    //props.updateReduxMediaKitFlyerMengajak(result?.result["Audra"]);
+    if (
+      result?.mengajakArray === undefined ||
+      result?.mengajakArray === null ||
+      result?.mengajakArray?.length === undefined
+    ) {
+      const storageFlyers = await getObjectAsync(
+        ASYNC_MEDIA_FLYER_MENGAJAK_KEY
       );
-      if (storagePhotos === undefined || storagePhotos === null) {
-        //props.clearMediaKitPhotosError();
-        props.updateReduxMediaKitPhotos(null);
-        if (photoLoading) {
-          setPhotoLoading(false);
-        }
+      if (storageFlyers === undefined || storageFlyers === null) {
+        props.updateReduxMediaKitFlyerMengajak([]);
       } else {
-        props.updateReduxMediaKitPhotos(storagePhotos);
+        props.updateReduxMediaKitFlyerMengajak(storageFlyers);
       }
-    };
+    } else {
+      props.updateReduxMediaKitFlyerMengajak(result?.mengajakArray);
+      await setObjectAsync(
+        ASYNC_MEDIA_FLYER_MENGAJAK_KEY,
+        result?.mengajakArray
+      );
+    }
+  };
 
-    const refreshPhotos = () => {
-      setPhotoLoading(true);
-      fetchWatermarkPhotos();
-    };
-
-    const refreshVideos = () => {
-      setVideoLoading(true);
-      props.getMediaKitVideos(token, products);
-    };
-
-    const refreshContent = () => {
-      if (activeTab === STARTER_KIT_VIDEO_PRODUK) {
-        refreshVideos();
-      } else {
-        refreshPhotos();
+  const checkStorageMediaKitPhotos = async () => {
+    const storagePhotos = await getObjectAsync(
+      ASYNC_MEDIA_WATERMARK_PHOTOS_KEY
+    );
+    if (storagePhotos === undefined || storagePhotos === null) {
+      //props.clearMediaKitPhotosError();
+      props.updateReduxMediaKitPhotos(null);
+      if (photoLoading) {
+        setPhotoLoading(false);
       }
-    };
+    } else {
+      props.updateReduxMediaKitPhotos(storagePhotos);
+    }
+  };
 
+  const refreshPhotos = () => {
+    setPhotoLoading(true);
+    fetchWatermarkPhotos();
+  };
+
+  const refreshVideos = () => {
+    setVideoLoading(true);
+    props.getMediaKitVideos(token, products);
+  };
+
+  const refreshContent = () => {
+    if (activeTab === STARTER_KIT_VIDEO_PRODUK) {
+      refreshVideos();
+    } else {
+      refreshPhotos();
+    }
+  };
+
+  const onBackPress = () => {
+    if (activeTab !== STARTER_KIT_HOME) {
+      setActiveTab(STARTER_KIT_HOME);
+    } else {
+      navigation.goBack();
+    }
+    return true;
+  };
+
+  try {
     return (
       <View style={styles.container}>
-        {Platform.OS === "web" ? (
-          <ImageBackground
+        <ImageBackground
             source={require("../../assets/profilbg.png")}
             style={styles.background}
             resizeMode="cover"
           />
-        ) : null}
 
         <Header />
 

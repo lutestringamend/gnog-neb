@@ -96,14 +96,14 @@ export const fonts = {
 };
 
 export const bottomNav = {
-  color: colors.daclen_graydark,
-  focusedColor: colors.daclen_orange,
-  activeColor: colors.daclen_lightgrey,
-  inactiveColor: colors.daclen_light,
-  barBackground: "white",
+  color: colors.daclen_light,
+  focusedColor: colors.white,
+  activeColor: colors.daclen_light,
+  inactiveColor: colors.daclen_grey_button,
+  barBackground: colors.daclen_bg,
   iconSize: 24,
   fontFamily: "Poppins", 
-  fontSize: 12,
+  fontSize: 14,
 };
 
 export const blurhash = null;

@@ -497,7 +497,6 @@ export function getLaporanPoin(id, token) {
 
 export function convertInvoiceNumbertoRegDate(inv) {
   try {
-    ("REG/20230728/00003");
     let invoiceDate = inv.split("/")[1];
     let date = new Date();
     date.setFullYear(parseInt(invoiceDate.substring(0, 4)));

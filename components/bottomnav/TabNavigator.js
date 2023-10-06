@@ -11,19 +11,18 @@ import TabBarIcon from "./TabBarIcon";
 const Tab = createMaterialBottomTabNavigator();
 
 export default function TabNavigator(props) {
-  const { token, currentUser, recruitmentTimer } = props;
+  const { isLogin, recruitmentTimer } = props;
   return (
     <Tab.Navigator
       initialRouteName="Home"
       labeled={true}
       shifting={false}
+      safeAreaInsets={{top: 0}}
       activeColor={bottomNav.activeColor}
       inactiveColor={bottomNav.inactiveColor}
       barStyle={{
         backgroundColor: bottomNav.barBackground,
-        height: 32,
-        justifyContent: "center",
-        marginTop: 0,
+        height: 60,
         tabBarActiveTintColor: bottomNav.activeColor,
         tabBarInactiveTintColor: bottomNav.inactiveColor,
       }}
@@ -38,6 +37,13 @@ export default function TabNavigator(props) {
       tabBarOptions={{
         activeTintColor: bottomNav.activeColor,
         inactiveTintColor: bottomNav.inactiveColor,
+        tabStyle: {
+          paddingVertical: 0,
+          paddingTop: 0,
+        },
+        style: {
+          backgroundColor: bottomNav.barBackground,
+        }
       }}
     >
       <Tab.Screen
@@ -50,18 +56,12 @@ export default function TabNavigator(props) {
           title: "BELANJA",
           tabBarColor: bottomNav.activeColor,
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon title="BELANJA" iconName="shopping" focused={focused} />
+            <TabBarIcon title="BELANJA" iconName="shopping" isLogin={isLogin} focused={focused} />
           ),
         }}
       />
 
-      {token === null ||
-      currentUser === null ||
-      currentUser?.id === undefined ||
-      currentUser?.isActive === undefined ||
-      currentUser?.isActive === null ||
-      !currentUser?.isActive ? null : (
-        <Tab.Screen
+      {isLogin ? <Tab.Screen
           name="MediaKitTab"
           key="MediaKit"
           component={MediaKitFiles}
@@ -72,14 +72,14 @@ export default function TabNavigator(props) {
             tabBarColor: bottomNav.activeColor,
             tabBarIcon: ({ focused }) => (
               <TabBarIcon
-                title="STARTER KIT"
+                title={`STARTER KIT`}
                 iconName="file-image"
+                isLogin={isLogin}
                 focused={focused}
               />
             ),
           }}
-        />
-      )}
+        /> : null}
 
       <Tab.Screen
         name="ProfileTab"
@@ -94,6 +94,7 @@ export default function TabNavigator(props) {
             <TabBarIcon
               title="PROFIL"
               iconName="account-circle"
+              isLogin={isLogin}
               focused={focused}
             />
           ),

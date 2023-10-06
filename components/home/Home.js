@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, Platform, ImageBackground } from "react-native";
+import { StyleSheet, View, ImageBackground } from "react-native";
 import { connect } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 
@@ -37,13 +37,11 @@ function Home(props) {
 
   return (
     <View style={styles.container}>
-      {Platform.OS === "web" ? (
-        <ImageBackground
+      <ImageBackground
           source={require("../../assets/profilbg.png")}
           style={styles.background}
           resizeMode="cover"
         />
-      ) : null}
       <DashboardHeader
           onSettingPress={() => navigation.navigate("Profile")}
         />

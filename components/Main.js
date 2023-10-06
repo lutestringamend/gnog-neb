@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
   Platform,
-  ImageBackground,
   SafeAreaView,
   StyleSheet,
   AppState,
@@ -42,7 +41,6 @@ import {
   overhaulReduxNotifications,
 } from "../axios/notifications";
 import {
-  NotifTrial,
   createLocalWelcomeNotification,
   initializeAndroidNotificationChannels,
   openScreenFromNotification,
@@ -67,7 +65,7 @@ import {
 } from "./asyncstorage/constants";
 import { clearCartError } from "../axios/cart";
 import { sentryLog } from "../sentry";
-import Top from "./Top";
+//import Top from "./Top";
 import { colors } from "../styles/base";
 import { fetchRajaOngkir } from "../axios/address";
 import { requestLocationForegroundPermission } from "./address";
@@ -113,17 +111,17 @@ function Main(props) {
         setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, "DEV_IOS_TOKEN");
         return;
       }
-  
+
       try {
         console.log("firebase auth settings", auth().settings);
         //auth().settings.appVerificationDisabledForTesting = false;
-  
+
         const requestUserPermission = async () => {
           const authStatus = await messaging().requestPermission();
           const enabled =
             authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
             authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-  
+
           if (enabled) {
             if (Platform.OS === "android") {
               await initializeAndroidNotificationChannels();
@@ -131,7 +129,7 @@ function Main(props) {
             console.log("Authorization status:", authStatus);
           }
         };
-  
+
         if (requestUserPermission()) {
           messaging()
             .getToken()
@@ -143,7 +141,7 @@ function Main(props) {
           addError("FAIL TO GET FCM TOKEN");
           return;
         }
-  
+
         // Check whether an initial notification is available
         messaging()
           .getInitialNotification()
@@ -155,7 +153,7 @@ function Main(props) {
               );
             }
           });
-  
+
         messaging().onNotificationOpenedApp(async (remoteMessage) => {
           receiveNotificationAccordingly(
             props,
@@ -169,7 +167,7 @@ function Main(props) {
           );
           //navigation.navigate(remoteMessage.data.type);
         });
-  
+
         // Register background handler
         messaging().setBackgroundMessageHandler(async (remoteMessage) => {
           receiveNotificationAccordingly(
@@ -180,7 +178,7 @@ function Main(props) {
           );
           console.log("Message handled in the background!", remoteMessage);
         });
-  
+
         const unsubscribe = messaging().onMessage(async (remoteMessage) => {
           receiveNotificationAccordingly(
             props,
@@ -193,7 +191,7 @@ function Main(props) {
             ToastAndroid.show(`FCM MESSAGE\n${JSON.stringify(remoteMessage)}`, ToastAndroid.LONG);
           };*/
         });
-  
+
         return unsubscribe;
       } catch (e) {
         console.error(e);
@@ -222,7 +220,7 @@ function Main(props) {
         }
       }
     }, [lastNotificationResponse]);
-  
+
     useEffect(() => {
       if (
         notificationsArray === undefined ||
@@ -364,7 +362,9 @@ function Main(props) {
     }, [addresses]);
 
     const checkAsyncStorageNotifications = async () => {
-      const storageNotifications = await getObjectAsync(ASYNC_NOTIFICATIONS_KEY);
+      const storageNotifications = await getObjectAsync(
+        ASYNC_NOTIFICATIONS_KEY
+      );
       if (
         storageNotifications === undefined ||
         storageNotifications === null ||
@@ -411,11 +411,17 @@ function Main(props) {
     };
 
     const checkWelcomeNotif = async () => {
-      const welcomeNotification = await getObjectAsync(ASYNC_WELCOME_NOTIFICATION_KEY);
-      if (welcomeNotification === undefined || welcomeNotification === null || !welcomeNotification) {
+      const welcomeNotification = await getObjectAsync(
+        ASYNC_WELCOME_NOTIFICATION_KEY
+      );
+      if (
+        welcomeNotification === undefined ||
+        welcomeNotification === null ||
+        !welcomeNotification
+      ) {
         createLocalWelcomeNotification(currentUser?.name);
       }
-    }
+    };
 
     const readStorageToken = async () => {
       const storageToken = await getTokenAsync();
@@ -570,19 +576,34 @@ function Main(props) {
       props.products?.length < 1
     ) {
       return <SplashScreen loading={true} errorText={error} />;
-    } else if (Platform.OS === "web") {
-      return (
-        <SafeAreaView style={styles.container}>
-          <TabNavigator
-            token={token}
-            currentUser={currentUser}
-            recruitmentTimer={recruitmentTimer}
-          />
-        </SafeAreaView>
-      );
     } else {
       return (
         <SafeAreaView style={styles.container}>
+          <TabNavigator
+            isLogin={
+              !(
+                token === null ||
+                currentUser === null ||
+                currentUser?.id === undefined ||
+                currentUser?.id === null ||
+                currentUser?.name === undefined ||
+                currentUser?.name === null
+              )
+            }
+            recruitmentTimer={recruitmentTimer}
+          />
+          
+        </SafeAreaView>
+      );
+    }
+  } catch (e) {
+    sentryLog(e);
+    return <SplashScreen errorText={e.toString()} />;
+  }
+}
+
+/*
+<SafeAreaView style={styles.container}>
           <ImageBackground
             source={require("../assets/profilbg.png")}
             style={styles.background}
@@ -594,13 +615,7 @@ function Main(props) {
             recruitmentTimer={recruitmentTimer}
           />
         </SafeAreaView>
-      );
-    }
-  } catch (e) {
-    sentryLog(e);
-    return <SplashScreen errorText={e.toString()} />;
-  }
-}
+*/
 
 const styles = StyleSheet.create({
   container: {
@@ -615,7 +630,6 @@ const styles = StyleSheet.create({
     start: 0,
     width: "100%",
     height: "100%",
-    opacity: 0.5,
   },
 });
 
