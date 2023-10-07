@@ -75,7 +75,7 @@ export function convertDateMilisecondstoDisplayDate(ms, isShort) {
     let date = new Date(ms);
     return `${date.getDate().toString()} ${
       isShort ? monthNamesShort[date.getMonth()] : monthNames[date.getMonth()]
-    } ${date.getFullYear().toString()}`;
+    } ${date.getFullYear().toString()} WIB`;
   } catch (e) {
     console.error(e);
     return "";

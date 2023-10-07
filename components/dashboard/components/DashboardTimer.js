@@ -223,9 +223,16 @@ const DashboardTimer = (props) => {
   //useEffect(() => {}, [digits]);
 
   const freezeCountdown = () => {
-    if (!(target_rekrutmen_latest === undefined || target_rekrutmen_latest === null)) {
+    if (
+      !(
+        target_rekrutmen_latest === undefined ||
+        target_rekrutmen_latest === null
+      )
+    ) {
       try {
-        let t = new Date(target_rekrutmen_latest?.tgl_akhir).getTime() - new Date(target_rekrutmen_latest?.tanggal_rekrut).getTime();
+        let t =
+          new Date(target_rekrutmen_latest?.tgl_akhir).getTime() -
+          new Date(target_rekrutmen_latest?.tanggal_rekrut).getTime();
         let newDigits = getDigits(t);
         if (newDigits !== null) {
           setDigits(newDigits);
@@ -236,18 +243,14 @@ const DashboardTimer = (props) => {
       }
     }
     setDigits(defaultDigit);
-  }
+  };
 
   const getDigits = (t) => {
     try {
       let days = Math.floor(moment.duration(t).asDays());
-      let hours = Math.floor(
-        moment.duration(t).asHours() - days * 24
-      );
+      let hours = Math.floor(moment.duration(t).asHours() - days * 24);
       let minutes = Math.floor(
-        moment.duration(t).asMinutes() -
-          hours * 60 -
-          days * 60 * 24
+        moment.duration(t).asMinutes() - hours * 60 - days * 60 * 24
       );
       let seconds = Math.floor(
         moment.duration(t).asSeconds() -
@@ -256,14 +259,14 @@ const DashboardTimer = (props) => {
           days * 60 * 60 * 24
       );
       return addZeroToArray(days)
-      .concat(addZeroToArray(hours))
-      .concat(addZeroToArray(minutes))
-      .concat(addZeroToArray(seconds));
+        .concat(addZeroToArray(hours))
+        .concat(addZeroToArray(minutes))
+        .concat(addZeroToArray(seconds));
     } catch (e) {
       console.error(e);
       return null;
     }
-  } 
+  };
 
   try {
     return (
@@ -355,6 +358,10 @@ const DashboardTimer = (props) => {
                   regDateInMs,
                   recruitmentTimer,
                   target_rekrutmen,
+                  total_rekrutmen:
+                    total_rekrutmen?.childrenSize > total_rekrutmen?.showHPV
+                      ? total_rekrutmen?.childrenSize
+                      : total_rekrutmen?.showHPV,
                 })
               }
             >
@@ -446,14 +453,16 @@ const DashboardTimer = (props) => {
                 },
               ]}
             >
-              {target_rekrutmen > 0 && countdownColor !== countdownfrozen && total_rekrutmen?.showHPV < recruitmenttarget
+              {target_rekrutmen > 0 &&
+              countdownColor !== countdownfrozen &&
+              total_rekrutmen?.childrenSize < recruitmenttarget
                 ? `${countdownbottom}${target_rekrutmen} ${
                     target_rekrutmen > 1
                       ? countdownbottomplural
                       : countdownbottomsingular
                   }`
-                : `${countdownbottomfrozen}${total_rekrutmen?.showHPV} ${
-                    total_rekrutmen?.showHPV > 1
+                : `${countdownbottomfrozen}${total_rekrutmen?.childrenSize} ${
+                    total_rekrutmen?.childrenSize > 1
                       ? countdownbottomplural
                       : countdownbottomsingular
                   }`}
@@ -528,10 +537,6 @@ const DashboardTimer = (props) => {
     return null;
   }
 };
-
-/*
-
-*/
 
 const styles = StyleSheet.create({
   container: {

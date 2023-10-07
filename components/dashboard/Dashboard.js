@@ -76,8 +76,6 @@ const Dashboard = (props) => {
   const [regDate, setRegDate] = useState(null);
   const [hpvError, setHpvError] = useState(null);
 
-
-
   /*const [isSharingAvailable, setSharingAvailable] = useState(false);
   useEffect(() => {
     const checkSharingAsync = async () => {
@@ -102,7 +100,25 @@ const Dashboard = (props) => {
         setRegDate(currentUser?.join_date);
       } catch (e) {
         console.error(e);
-        setRegDate(currentUser?.join_date ? convertInvoiceNumbertoRegDate(currentUser?.join_date) : null);
+        setRegDate(
+          currentUser?.join_date
+            ? convertInvoiceNumbertoRegDate(currentUser?.join_date)
+            : null
+        );
+      }
+      try {
+        setTotalRekrutmen({
+          ...total_rekrutmen,
+          childrenSize: checkNumberEmpty(
+            currentUser?.target_rekrutmen_latest?.target_dicapai
+          ),
+        });
+      } catch (e) {
+        console.error(e);
+        setTotalRekrutmen({
+          ...total_rekrutmen,
+          childrenSize: 0,
+        });
       }
       return;
     }
@@ -136,18 +152,6 @@ const Dashboard = (props) => {
         text: null,
         isError: false,
       });
-      try {
-        setTotalRekrutmen({
-          ...total_rekrutmen,
-          childrenSize: hpv?.data?.children[0]?.children?.length,
-        });
-      } catch (e) {
-        console.error(e);
-        setTotalRekrutmen({
-          ...total_rekrutmen,
-          childrenSize: 0,
-        });
-      }
       console.log("redux HPV", hpv);
       setObjectAsync(ASYNC_USER_HPV_KEY, hpv);
     }
@@ -250,10 +254,10 @@ const Dashboard = (props) => {
   return (
     <View style={styles.container}>
       <ImageBackground
-          source={require("../../assets/profilbg.png")}
-          style={styles.background}
-          resizeMode="cover"
-        />
+        source={require("../../assets/profilbg.png")}
+        style={styles.background}
+        resizeMode="cover"
+      />
 
       <Header
         username={currentUser?.name}
@@ -321,9 +325,9 @@ const Dashboard = (props) => {
         ) : profilePIN === null || profilePIN === "" ? (
           <DashboardCreatePIN />
         ) : profileLock === undefined ||
-            profileLock === null ||
-            profileLock ||
-            pinLoading ? (
+          profileLock === null ||
+          profileLock ||
+          pinLoading ? (
           <DashboardLock receiveOTP={(e) => receiveOTP(e)} />
         ) : (
           <View style={styles.scrollView}>
@@ -370,8 +374,16 @@ const Dashboard = (props) => {
           showTimerModal={showTimerModal}
           setShowTimerModal={setShowTimerModal}
           regDateInMs={regDateInMs}
-          countdownColor={currentUser?.countdownColor ? currentUser?.countdownColor : null}
-          target_rekrutmen={currentUser?.target_rekrutmen}
+          countdownColor={
+            currentUser?.countdownColor ? currentUser?.countdownColor : null
+          }
+          target_rekrutmen={
+            currentUser?.target_rekrutmen_latest
+              ? currentUser?.target_rekrutmen_latest?.target_reseller
+                ? currentUser?.target_rekrutmen_latest?.target_reseller
+                : currentUser?.target_rekrutmen
+              : currentUser?.target_rekrutmen
+          }
           target_rekrutmen_latest={currentUser?.target_rekrutmen_latest}
           total_rekrutmen={total_rekrutmen}
         />

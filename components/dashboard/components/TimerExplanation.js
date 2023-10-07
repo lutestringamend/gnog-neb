@@ -10,9 +10,10 @@ import {
 import { colors, staticDimensions } from "../../../styles/base";
 import { timereplanationtext } from "../constants";
 import { convertDateMilisecondstoDisplayDate } from "../../../axios/profile";
+import { recruitmenttarget } from "../../../axios/constants";
 
 const TimerExplanation = (props) => {
-  const { regDateInMs, recruitmentTimer, target_rekrutmen } =
+  const { regDateInMs, total_rekrutmen, target_rekrutmen } =
     props.route.params;
 
   return (
@@ -25,11 +26,17 @@ const TimerExplanation = (props) => {
           <Text style={[styles.text, { color: colors.daclen_blue }]}>
             {`${convertDateMilisecondstoDisplayDate(regDateInMs)} 23:59:59`}
           </Text>
-          <Text style={styles.textHeader}>Recruitment Target</Text>
-          <Text style={[styles.text, { color: colors.daclen_orange }]}>
+          <Text style={styles.textHeader}>Remaining Recruitment Target</Text>
+          <Text style={[styles.text, { color: total_rekrutmen >= target_rekrutmen ? colors.daclen_green : colors.daclen_orange }]}>
             {target_rekrutmen > 1
               ? `${target_rekrutmen} Sellers`
               : `${target_rekrutmen} Seller`}
+          </Text>
+          <Text style={styles.textHeader}>Total Recruitment</Text>
+          <Text style={[styles.text, { color: total_rekrutmen >= recruitmenttarget ? colors.daclen_green : colors.daclen_orange }]}>
+            {total_rekrutmen > 1
+              ? `${total_rekrutmen} Sellers`
+              : `${total_rekrutmen} Seller`}
           </Text>
           <Image
             source={require("../../../assets/countdown.png")}
