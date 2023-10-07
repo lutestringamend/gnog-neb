@@ -23,6 +23,7 @@
       "bundleIdentifier": "com.daclenmobile.daclen",
       "buildNumber": "1",
       "userInterfaceStyle": "light",
+      "googleServicesFile": "./GoogleService-Info.plist",
       "requireFullScreen": true,
       "config": {
         "googleMaps": {
