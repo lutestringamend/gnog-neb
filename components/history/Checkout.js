@@ -158,15 +158,13 @@ function Checkout(props) {
             props.updateReduxHistoryCheckouts(newArray);
           }
         } else if (status === "ditolak") {
-          /*
-        let newArray = [];
-        for (let i = 0; i < checkouts?.length; i++) {
-          if (checkouts[i]?.id !== id) {
-            newArray.push(checkouts[i]);
+          let newArray = [];
+          for (let i = 0; i < checkouts?.length; i++) {
+            if (checkouts[i]?.id !== id) {
+              newArray.push(checkouts[i]);
+            }
           }
-        }
-        props.updateReduxHistoryCheckouts(newArray);
-          */
+          props.updateReduxHistoryCheckouts(newArray);     
         }
       } catch (e) {
         console.error(e);
@@ -196,6 +194,8 @@ function Checkout(props) {
                 ? colors.daclen_danger
                 : data?.item?.status === "diverifikasi"
                 ? colors.daclen_orange
+                : data?.item?.status === "ditolak" 
+                ? colors.daclen_reddishbrown
                 : colors.daclen_gray,
           },
         ]}
@@ -407,7 +407,7 @@ const styles = StyleSheet.create({
   },
   textUid: {
     fontFamily: "Poppins",
-    fontSize: 16,
+    fontSize: 12,
     marginVertical: 20,
     textAlign: "center",
     padding: 10,

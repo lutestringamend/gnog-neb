@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     marginStart: 10,
   },
   textUid: {
-    fontFamily: "Poppins", fontSize: 16,
+    fontFamily: "Poppins", fontSize: 12,
     marginVertical: 20,
     textAlign: "center",
     padding: 10,
