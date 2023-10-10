@@ -9,6 +9,7 @@ import {
   dashboardhtml,
   cancelcheckout,
   confirmcheckout,
+  deletecheckout,
 } from "../constants";
 
 import {
@@ -208,6 +209,46 @@ export const confirmCheckout = async (token, checkout_id) => {
     return false;
   }
   
+}
+
+export const deleteCheckout = async (token, checkout_id) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  };
+
+  /*const url = cancelcheckout.replace("#ID#", checkout_id);
+  console.log("cancelCheckout", url);*/
+  const params = {
+    checkout_id: [checkout_id],
+  };
+
+  console.log("deleteCheckout", params);
+  try {
+    const response = await Axios.post(deletecheckout, params, config)
+      .catch((error) => {
+        console.log(error);
+        sentryLog(error);
+        if (Platform.OS == "android") {
+          ToastAndroid.show(error.toString(), ToastAndroid.LONG);
+        }
+        return false;
+      });
+    if (response?.data === undefined || response?.data?.message === undefined) {
+      return false;
+    } else {
+      return true;
+    }
+  } catch (e) {
+    console.error(e);
+    if (Platform.OS == "android") {
+      ToastAndroid.show(e.toString(), ToastAndroid.LONG);
+    }
+    return false;
+  }
+
 }
 
 export const cancelCheckout = async (token, checkout_id) => {

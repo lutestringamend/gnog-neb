@@ -96,8 +96,7 @@ const Dashboard = (props) => {
       (currentUser?.status !== undefined && currentUser?.status !== null)
     ) {
       try {
-        let joinDate = new Date(currentUser?.join_date);
-        setRegDate(currentUser?.join_date);
+        setRegDate(new Date(currentUser?.join_date));
       } catch (e) {
         console.error(e);
         setRegDate(
@@ -324,9 +323,7 @@ const Dashboard = (props) => {
           <DashboardVerification />
         ) : profilePIN === null || profilePIN === "" ? (
           <DashboardCreatePIN />
-        ) : profileLock === undefined ||
-          profileLock === null ||
-          profileLock ||
+        ) : profileLock === true ||
           pinLoading ? (
           <DashboardLock receiveOTP={(e) => receiveOTP(e)} />
         ) : (

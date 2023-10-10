@@ -26,6 +26,7 @@ import {
   updateReduxHistoryCheckoutsPageNumber,
   cancelCheckout,
   confirmCheckout,
+  deleteCheckout,
 } from "../../axios/history";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 
@@ -158,13 +159,17 @@ function Checkout(props) {
             props.updateReduxHistoryCheckouts(newArray);
           }
         } else if (status === "ditolak") {
-          let newArray = [];
-          for (let i = 0; i < checkouts?.length; i++) {
-            if (checkouts[i]?.id !== id) {
-              newArray.push(checkouts[i]);
+          const response = await deleteCheckout(token, id);
+          console.log("deleteCheckout response", response);
+          if (response === true) {
+            let newArray = [];
+            for (let i = 0; i < checkouts?.length; i++) {
+              if (checkouts[i]?.id !== id) {
+                newArray.push(checkouts[i]);
+              }
             }
-          }
-          props.updateReduxHistoryCheckouts(newArray);     
+            props.updateReduxHistoryCheckouts(newArray);   
+          }   
         }
       } catch (e) {
         console.error(e);
