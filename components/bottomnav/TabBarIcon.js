@@ -5,6 +5,7 @@ import {
   ImageBackground,
   StyleSheet,
   Dimensions,
+  Platform,
 } from "react-native";
 //import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { bottomNav, colors } from "../../styles/base";
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins",
     textAlign: "center",
     textAlignVertical: "center",
-    marginTop: 24,
+    marginTop: Platform.OS === "ios" ? 48 : 24,
     zIndex: 6,
   },
   textFocused: {
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-SemiBold",
     textAlign: "center",
     textAlignVertical: "center",
-    marginTop: 24,
+    marginTop: Platform.OS === "ios" ? 48 : 24,
     zIndex: 6,
   },
 });
