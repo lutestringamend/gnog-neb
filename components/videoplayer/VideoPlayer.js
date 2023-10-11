@@ -35,10 +35,7 @@ import {
   overwriteWatermarkVideos,
 } from "../media";
 //import { useScreenDimensions } from "../../hooks/useScreenDimensions";
-import {
-  sharingOptionsMP4,
-  sharingOptionsPNG,
-} from "../media/constants";
+import { sharingOptionsMP4, sharingOptionsPNG } from "../media/constants";
 import { sentryLog } from "../../sentry";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY } from "../asyncstorage/constants";
@@ -131,7 +128,9 @@ function VideoPlayer(props) {
   const [rawUri, setRawUri] = useState(null);
   const [resultUri, setResultUri] = useState(null);
   const [output, setOutput] = useState("VIDEO PROCESSING LOGS");
-  const [headerTitle, setHeaderTitle] = useState(title ? title : "Video Promosi");
+  const [headerTitle, setHeaderTitle] = useState(
+    title ? title : "Video Promosi"
+  );
   const [isTester, setTester] = useState(false);
   const [fullLogs, setFullLogs] = useState(
     userId === vwmarkdebuguserid ? "test" : null
@@ -210,7 +209,7 @@ function VideoPlayer(props) {
     } catch (e) {
       console.error(e);
     }
-    newHeader = `${newHeader} (${watermarkSize.width}x${watermarkSize.height} ${deviceModel})`;
+    newHeader = `${newHeader} (${watermarkSize.width}x${watermarkSize.height}) on ${deviceModel}`;
     /*if (currentUser?.id === 8054 || currentUser?.id === 11193 || currentUser?.id === 11447) {
       newHeader = `${newHeader} (Tester)`;
       setTester(true);
@@ -720,7 +719,7 @@ function VideoPlayer(props) {
     } else {
       shareFileAsync(watermarkImage, sharingOptionsPNG);
     }
-  }
+  };
 
   /*const handleFilterChange = (e) => {
     e.preventDefault();
@@ -741,13 +740,21 @@ function VideoPlayer(props) {
             ((videoSize.videoOrientation === "portrait"
               ? vwmarkrenderportraitwidthcompressionconstant
               : vwmarkrenderlandscapewidthcompressionconstant) *
-              (Platform.OS === "ios" ? deviceModel === "iphone8" || deviceModel === "iphone 8" ? 4 : 2 : 1)),
+              (Platform.OS === "ios"
+                ? deviceModel === "iphone 8 plus" || deviceModel === "iphone 8"
+                  ? 4
+                  : 2
+                : 1)),
           height:
             watermarkSize.height /
             ((videoSize.videoOrientation === "portrait"
               ? vwmarkrenderportraitheightcompressionconstant
               : vwmarkrenderlandscapeheightcompressionconstant) *
-              (Platform.OS === "ios" ? deviceModel === "iphone8" || deviceModel === "iphone 8" ? 4 : 2 : 1)),
+              (Platform.OS === "ios"
+                ? deviceModel === "iphone 8 plus" || deviceModel === "iphone 8"
+                  ? 4
+                  : 2
+                : 1)),
         }}
         style={[
           styles.containerViewShot,
@@ -1138,8 +1145,8 @@ function VideoPlayer(props) {
                 {
                   backgroundColor:
                     loading || videoLoading || !sharingAvailability
-                    ? colors.daclen_lightgrey_button
-                    : colors.daclen_light,
+                      ? colors.daclen_lightgrey_button
+                      : colors.daclen_light,
                 },
               ]}
               onPress={() => shareWatermarkImage()}
@@ -1160,8 +1167,8 @@ function VideoPlayer(props) {
                 {
                   backgroundColor:
                     videoLoading || loading
-                    ? colors.daclen_lightgrey_button
-                    : colors.daclen_light,
+                      ? colors.daclen_lightgrey_button
+                      : colors.daclen_light,
                 },
               ]}
               onPress={() => openFullLogs()}
