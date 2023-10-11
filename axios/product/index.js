@@ -23,12 +23,11 @@ export function clearProductData() {
 
 export function getProductData(storageProducts, paginationIndex) {
   return (dispatch) => {
-    console.log("getProductData");
     try {
       Axios.get(productfetchlink)
       .then((response) => {
-        //console.log(response.data);
-        const products = response.data?.data;
+        console.log("getProductData", response?.data);
+        const products = response?.data?.data;
         if (
           products === undefined ||
           products === null ||

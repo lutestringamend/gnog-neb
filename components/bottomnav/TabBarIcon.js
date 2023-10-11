@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins",
     textAlign: "center",
     textAlignVertical: "center",
-    marginTop: Platform.OS === "ios" ? 48 : 24,
+    marginTop: Platform.OS === "ios" ? 60 : 24,
     zIndex: 6,
   },
   textFocused: {
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-SemiBold",
     textAlign: "center",
     textAlignVertical: "center",
-    marginTop: Platform.OS === "ios" ? 48 : 24,
+    marginTop: Platform.OS === "ios" ? 60 : 24,
     zIndex: 6,
   },
 });
