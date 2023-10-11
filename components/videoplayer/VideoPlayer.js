@@ -95,6 +95,24 @@ function VideoPlayer(props) {
     width,
     height,
   };
+  const viewshotwidthratio =
+    (videoSize.videoOrientation === "portrait"
+      ? vwmarkrenderportraitwidthcompressionconstant
+      : vwmarkrenderlandscapewidthcompressionconstant) *
+    (Platform.OS === "ios"
+      ? deviceModel === "iphone 8 plus" || deviceModel === "iphone 8"
+        ? 3
+        : 2
+      : 1);
+  const viewshotheightratio =
+    (videoSize.videoOrientation === "portrait"
+      ? vwmarkrenderportraitheightcompressionconstant
+      : vwmarkrenderlandscapeheightcompressionconstant) *
+    (Platform.OS === "ios"
+      ? deviceModel === "iphone 8 plus" || deviceModel === "iphone 8"
+        ? 3
+        : 2
+      : 1);
 
   const video = useRef(null);
   const waterRef = useRef(null);
@@ -209,7 +227,7 @@ function VideoPlayer(props) {
     } catch (e) {
       console.error(e);
     }
-    newHeader = `${newHeader} (${watermarkSize.width}x${watermarkSize.height}) on ${deviceModel}`;
+    newHeader = `${newHeader} (${watermarkSize.width}x${watermarkSize.height}) on ${deviceModel} (${viewshotwidthratio}:${viewshotheightratio})`;
     /*if (currentUser?.id === 8054 || currentUser?.id === 11193 || currentUser?.id === 11447) {
       newHeader = `${newHeader} (Tester)`;
       setTester(true);
@@ -735,26 +753,8 @@ function VideoPlayer(props) {
           format: "png",
           quality: 1,
           result: "tmpfile",
-          width:
-            watermarkSize.width /
-            ((videoSize.videoOrientation === "portrait"
-              ? vwmarkrenderportraitwidthcompressionconstant
-              : vwmarkrenderlandscapewidthcompressionconstant) *
-              (Platform.OS === "ios"
-                ? deviceModel === "iphone 8 plus" || deviceModel === "iphone 8"
-                  ? 4
-                  : 2
-                : 1)),
-          height:
-            watermarkSize.height /
-            ((videoSize.videoOrientation === "portrait"
-              ? vwmarkrenderportraitheightcompressionconstant
-              : vwmarkrenderlandscapeheightcompressionconstant) *
-              (Platform.OS === "ios"
-                ? deviceModel === "iphone 8 plus" || deviceModel === "iphone 8"
-                  ? 4
-                  : 2
-                : 1)),
+          width: watermarkSize.width / viewshotwidthratio,
+          height: watermarkSize.height / viewshotheightratio,
         }}
         style={[
           styles.containerViewShot,
