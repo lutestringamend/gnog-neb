@@ -33,6 +33,7 @@ import {
   setFilterFFMPEG,
   updateWatermarkVideo,
   overwriteWatermarkVideos,
+  getiOSScaleFactor,
 } from "../media";
 //import { useScreenDimensions } from "../../hooks/useScreenDimensions";
 import { sharingOptionsMP4, sharingOptionsPNG } from "../media/constants";
@@ -55,7 +56,7 @@ import VideoLargeWatermarkModel from "../media/VideoLargeWatermarkModel";
 import { getDeviceInfo } from "../../axios/user";
 
 function VideoPlayer(props) {
-  const deviceModel = getDeviceInfo().model.toLowerCase();
+  const deviceModel = getDeviceInfo().model;
 
   const { videoId, title, uri, width, height, thumbnail, userId } =
     props.route?.params;
@@ -99,20 +100,12 @@ function VideoPlayer(props) {
     (videoSize.videoOrientation === "portrait"
       ? vwmarkrenderportraitwidthcompressionconstant
       : vwmarkrenderlandscapewidthcompressionconstant) *
-    (Platform.OS === "ios"
-      ? deviceModel === "iphone 8 plus" || deviceModel === "iphone 8"
-        ? 3
-        : 2
-      : 1);
+    (Platform.OS === "ios" ? getiOSScaleFactor(deviceModel) : 1);
   const viewshotheightratio =
     (videoSize.videoOrientation === "portrait"
       ? vwmarkrenderportraitheightcompressionconstant
       : vwmarkrenderlandscapeheightcompressionconstant) *
-    (Platform.OS === "ios"
-      ? deviceModel === "iphone 8 plus" || deviceModel === "iphone 8"
-        ? 3
-        : 2
-      : 1);
+    (Platform.OS === "ios" ? getiOSScaleFactor(deviceModel) : 1);
 
   const video = useRef(null);
   const waterRef = useRef(null);
@@ -227,7 +220,7 @@ function VideoPlayer(props) {
     } catch (e) {
       console.error(e);
     }
-    newHeader = `${newHeader} (${watermarkSize.width}x${watermarkSize.height}) on ${deviceModel} (${viewshotwidthratio}:${viewshotheightratio})`;
+    newHeader = `${newHeader} on ${deviceModel} (${viewshotwidthratio}:${viewshotheightratio})`;
     /*if (currentUser?.id === 8054 || currentUser?.id === 11193 || currentUser?.id === 11447) {
       newHeader = `${newHeader} (Tester)`;
       setTester(true);

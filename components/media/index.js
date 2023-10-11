@@ -18,15 +18,28 @@ import {
   CAMERA_COMPRESSION_QUALITY,
   CAMERA_NO_PERMISSION,
   DEFAULT_ANDROID_CAMERA_RATIO,
-  FILE_OVERSIZE,
   imagepickerfail,
   IMAGE_PICKER_ERROR,
   IMAGE_PICKER_NO_PERMISSION,
-  MAXIMUM_FILE_SIZE_IN_BYTES,
   mediafileunusable,
   PICKER_COMPRESSION_QUALITY,
 } from "./constants";
 import { sentryLog } from "../../sentry";
+
+const iPhoneScaleFactorTwo = [
+  "iphone se",
+  "iphone 11",
+  "iphone xr",
+  "iphone 8",
+  "iphone 7",
+  "iphone 6s",
+  "iphone 6",
+  "iphone 5c",
+  "iphone 5s",
+  "iphone 5",
+  "iphone 4s",
+  "iphone 4",
+]
 
 export const intiialPermissions = {
   cameraPermission: null,
@@ -38,6 +51,19 @@ export const foto = {
   type: "",
   name: "",
 };
+
+export function getiOSScaleFactor(model) {
+  try {
+    for (let i of iPhoneScaleFactorTwo) {
+      if (model.toLowerCase() === i) {
+        return 2;
+      }
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  return 3;
+}
 
 export function setSkipWatermarkFFMPEGCommand(
   sourceVideo,
