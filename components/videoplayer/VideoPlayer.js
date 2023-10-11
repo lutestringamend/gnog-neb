@@ -55,8 +55,11 @@ import {
   vwmarkrenderportraitwidthcompressionconstant,
 } from "../mediakit/constants";
 import VideoLargeWatermarkModel from "../media/VideoLargeWatermarkModel";
+import { getDeviceInfo } from "../../axios/user";
 
 function VideoPlayer(props) {
+  const deviceModel = getDeviceInfo().model.toLowerCase();
+
   const { videoId, title, uri, width, height, thumbnail, userId } =
     props.route?.params;
 
@@ -207,7 +210,7 @@ function VideoPlayer(props) {
     } catch (e) {
       console.error(e);
     }
-    newHeader = `${newHeader} (${watermarkSize.width}x${watermarkSize.height})`;
+    newHeader = `${newHeader} (${watermarkSize.width}x${watermarkSize.height} ${deviceModel})`;
     /*if (currentUser?.id === 8054 || currentUser?.id === 11193 || currentUser?.id === 11447) {
       newHeader = `${newHeader} (Tester)`;
       setTester(true);
@@ -738,13 +741,13 @@ function VideoPlayer(props) {
             ((videoSize.videoOrientation === "portrait"
               ? vwmarkrenderportraitwidthcompressionconstant
               : vwmarkrenderlandscapewidthcompressionconstant) *
-              (Platform.OS === "ios" ? 2 : 1)),
+              (Platform.OS === "ios" ? deviceModel === "iphone8" || deviceModel === "iphone 8" ? 4 : 2 : 1)),
           height:
             watermarkSize.height /
             ((videoSize.videoOrientation === "portrait"
               ? vwmarkrenderportraitheightcompressionconstant
               : vwmarkrenderlandscapeheightcompressionconstant) *
-              (Platform.OS === "ios" ? 2 : 1)),
+              (Platform.OS === "ios" ? deviceModel === "iphone8" || deviceModel === "iphone 8" ? 4 : 2 : 1)),
         }}
         style={[
           styles.containerViewShot,
