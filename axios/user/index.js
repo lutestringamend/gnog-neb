@@ -841,7 +841,7 @@ export function updateUserPhoto(id, token, uri) {
                 type: USER_UPDATE_STATE_CHANGE,
                 data: {
                   session: "photoError",
-                  message: JSON.stringify(data),
+                  message: data[0].toString(),
                 },
               });
             }
