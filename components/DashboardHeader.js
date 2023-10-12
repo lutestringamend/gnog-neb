@@ -38,9 +38,7 @@ const Header = (props) => {
         ]}
       >
         <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("About")
-          }
+          onPress={() => openAbout()}
           style={styles.containerLogoSmall}
         >
           <Image
@@ -51,6 +49,14 @@ const Header = (props) => {
         </TouchableOpacity>
       </View>
     );
+  }
+
+  function openAbout() {
+    if (currentUser?.id === 8054) {
+      navigation.navigate("WmarkTestScreen");
+    } else {
+      navigation.navigate("About");
+    }
   }
 
   function openProfile() {
@@ -98,7 +104,7 @@ const Header = (props) => {
       </View>
 
       <View style={styles.containerUser}>
-      <TouchableOpacity onPress={() => navigation.navigate("About")}>
+      <TouchableOpacity onPress={() => openAbout()}>
           <Image
             source={require("../assets/splashsmall.png")}
             style={styles.imageLogo}

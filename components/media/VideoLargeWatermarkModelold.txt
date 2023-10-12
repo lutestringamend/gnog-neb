@@ -5,9 +5,7 @@ import { colors } from "../../styles/base";
 import {
   vmwarkdefaultpositionendtovideotruewidthratio,
   vmwarkportraittopenlargementconstant,
-  vwmark2templatewidth,
   vwmarkdefaultpositiontoptovideotrueheightratio,
-  vwmarkdefaultwmark2tovideotruewidthratio,
   vwmarkdefaultwmarktovideotruewidthratio,
   vwmarkportraitenlargementconstant,
   vwmarktemplatewidth,
@@ -18,7 +16,8 @@ import {
   vwmarkurlpaddinghorizontal,
   vwmarkurlpaddingvertical,
 } from "../mediakit/constants";
-import VWatermarkModel2 from "./VWatermarkModel2";
+import VWatermarkModel from "./VWatermarkModel";
+import { tokoonlineurlshort } from "../../axios/constants";
 
 function VideoLargeWatermarkModel(props) {
   const {
@@ -34,13 +33,15 @@ function VideoLargeWatermarkModel(props) {
   const orientationConstant = orientation === "portrait" ? vwmarkportraitenlargementconstant : 1;
   const topOrientationConstant = orientation === "portrait" ? vmwarkportraittopenlargementconstant : 1;
   const ratio =
-    (vwmarkdefaultwmark2tovideotruewidthratio *
+    (vwmarkdefaultwmarktovideotruewidthratio *
       width *
       orientationConstant) /
-    vwmark2templatewidth;
+    vwmarktemplatewidth;
 
+  const displayWatermarkPositionEnd =
+    vmwarkdefaultpositionendtovideotruewidthratio * width * orientationConstant;
   const displayWatermarkPositionStart = Math.ceil(
-    width - (ratio * vwmark2templatewidth)
+    width - displayWatermarkPositionEnd - (ratio * vwmarktemplatewidth) / 2
   );
   const displayWatermarkPositionTop = Math.ceil(
     vwmarkdefaultpositiontoptovideotrueheightratio * height * orientationConstant
@@ -85,7 +86,7 @@ function VideoLargeWatermarkModel(props) {
         style ? style : null,
       ]}
     >
-      <VWatermarkModel2
+      <VWatermarkModel
         watermarkData={watermarkData}
         ratio={ratio}
         style={[
@@ -97,7 +98,48 @@ function VideoLargeWatermarkModel(props) {
         ]}
         onLoadEnd={() => onLoadEnd()}
       />
-      
+      {watermarkData === undefined ||
+      watermarkData === null ||
+      watermarkData?.name === undefined ||
+      watermarkData?.name === null ||
+      watermarkData?.name === "" ||
+      watermarkData?.name?.length === undefined ||
+      watermarkData?.name?.length < 1 ? null : (
+        <View
+          style={[
+            styles.containerUrl,
+            {
+              paddingHorizontal:
+                (videoToScreenRatio ? videoToScreenRatio : 1) * topOrientationConstant *
+                vwmarkurlpaddinghorizontal,
+              paddingVertical:
+                (videoToScreenRatio ? videoToScreenRatio : 1) * topOrientationConstant *
+                vwmarkurlpaddingvertical,
+              marginTop:
+                (videoToScreenRatio ? videoToScreenRatio : 1) *
+                vwmarkurlmargintop,
+              borderRadius:
+                (videoToScreenRatio ? videoToScreenRatio : 1) *
+                vwmarkurlborderradius,
+            },
+          ]}
+        >
+          <Text allowFontScaling={false}
+            style={[
+              styles.textUrl,
+              {
+                fontSize:
+                  (videoToScreenRatio ? videoToScreenRatio : 1) * topOrientationConstant *
+                  vwmarkurlfontsize,
+              },
+            ]}
+          >
+             {`${watermarkData?.url ? watermarkData?.url : username ? `${tokoonlineurlshort}${
+            username
+          }` : ""}`}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }

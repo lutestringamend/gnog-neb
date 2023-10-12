@@ -48,14 +48,26 @@ export const wmarkhorizontalmargin = 24;
 export const vwmarktemplatewidth = 3508;
 export const vwmarktemplateheight = 762;
 
+export const vwmark2templatewidth = 1080;
+export const vwmark2templateheight = 358;
+export const vwmark2texturlfontsize = 50;
+export const vwmark2texturltop = 45;
+export const vwmark2texturlstart = 140;
+
 export const vwmarktextnamefontsize = 250;
+export const vwmark2textnamefontsize = 70;
 export const vwmarktextnametop = 0;
 export const vwmarktextnamestart = 1350;
+export const vwmark2textnametop = 205;
+export const vwmark2textnamestart = 540;
 export const vwmarktextnamecharlimit = 10;
 
 export const vwmarktextphonefontsize = 310;
+export const vwmark2textphonefontsize = 70;
 export const vwmarktextphonetop = 300;
-export const vwmarktextphonestart = 510;
+export const vwmarktextphonestart = 530;
+export const vwmark2textphonetop = 125;
+export const vwmark2textphonestart = 475;
 export const vwmarktextphonecharlimit = 13;
 
 export const vwmarkdefaultsourcewidth = 720;
@@ -70,7 +82,8 @@ export const vwmarkurlfontsize = 10;
 export const vwmarkportraitenlargementconstant = 1.4;
 export const vmwarkportraittopenlargementconstant = 1.15;
 export const vwmarkdefaultwmarktovideotruewidthratio = 0.25;
-export const vwmarkdefaultpositiontoptovideotrueheightratio = 0.11;
+export const vwmarkdefaultwmark2tovideotruewidthratio = 0.35;
+export const vwmarkdefaultpositiontoptovideotrueheightratio = 0.01;
 export const vmwarkdefaultpositionendtovideotruewidthratio = 0.15;
 export const vwmarkrenderenlargementconstant = 2;
 export const vwmarkrenderendratioconstant = 0.125;

@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import * as MediaLibrary from "expo-media-library";
 //import { FlashList } from "@shopify/flash-list";
 
 import { colors } from "../../../styles/base";
@@ -20,6 +19,7 @@ import { webfotowatermark } from "../../../axios/constants";
 import { ErrorView } from "../../webview/WebviewChild";
 import WatermarkPhotosSegment from "./WatermarkPhotosSegment";
 import { sentryLog } from "../../../sentry";
+import { STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE, STARTER_KIT_FLYER_MENGAJAK_TAG, STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE } from "../constants";
 
 const defaultSelected = {
   ids: {},
@@ -42,12 +42,6 @@ const WatermarkPhotos = ({
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(null);
     const [downloading, setDownloading] = useState(false);
-    const [permissionResponse, requestPermission] =
-      MediaLibrary.usePermissions();
-
-    useEffect(() => {
-      console.log("MediaLibrary permissionResponse", permissionResponse);
-    }, [permissionResponse]);
 
     useEffect(() => {
       console.log("selected", selected);
@@ -61,40 +55,25 @@ const WatermarkPhotos = ({
       setError(null);
     };
 
-    const startDownload = async () => {
-      setDownloading(true);
-      try {
-        if (
-          !(
-            permissionResponse?.status === "granted" &&
-            permissionResponse?.granted
-          )
-        ) {
-          const request = await requestPermission();
-          console.log("requestPermission", request);
-        }
-
-        for (let i = 0; i < selected?.urls?.length; i++) {
-          const result = await MediaLibrary.saveToLibraryAsync(
-            selected?.urls[i]
-          );
-          console.log(`savetoLibraryAsync ${selected?.urls[i]}`, result);
-        }
-
-        setSuccess(true);
-        setError(
-          `${selected?.urls?.length} Flyer tersimpan di ${
-            Platform.OS === "ios" ? "Camera Roll" : " Galeri"
-          }`
-        );
-        clearSelection();
-      } catch (e) {
-        console.error(e);
-        setSuccess(false);
-        setError(`Gagal menyimpan Flyer\n${e.toString()}`);
-      }
-      setDownloading(false);
+    const startDownload = () => {
+      navigation.navigate("MultipleImageSave", {
+        photos: selected?.urls,
+        sharingAvailability,
+        jenis_foto,
+        title: `Menyimpan ${jenis_foto === STARTER_KIT_FLYER_MENGAJAK_TAG ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE : STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE}`,
+      });
     };
+
+    const filterPhotoProps = (item) => {
+      return {
+        id: item?.id,
+        foto: item?.foto,
+        width: item?.width,
+        height: item?.height,
+        text_y: item?.text_y,
+        link_y: item?.link_y,
+      }
+    }
 
     const deselectItem = (item) => {
       let ids = selected?.ids;
@@ -104,7 +83,7 @@ const WatermarkPhotos = ({
         !(selected?.urls?.length === undefined || selected?.urls?.length < 1)
       ) {
         for (let i = 0; i < selected?.urls?.length; i++) {
-          if (selected?.urls[i] !== item?.foto) {
+          if (selected?.urls[i]?.id === item?.id) {
             urls.push(selected?.urls[i]);
           }
         }
@@ -132,14 +111,14 @@ const WatermarkPhotos = ({
             )
           ) {
             for (let i = 0; i < selected?.urls?.length; i++) {
-              if (selected?.urls[i] === item?.foto) {
+              if (selected?.urls[i]?.id === item?.id) {
                 isFound = true;
               }
               urls.push(selected?.urls[i]);
             }
           }
           if (!isFound) {
-            urls.push(item?.foto);
+            urls.push(filterPhotoProps(item));
           }
           setSelected({
             ids,

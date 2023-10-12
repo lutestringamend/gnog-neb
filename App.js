@@ -66,6 +66,7 @@ import EditProfileScreen from "./components/profile/EditProfile";
 import CameraView from "./components/media/CameraView";
 import ImageViewer from "./components/imageviewer/ImageViewer";
 import MultipleImageView from "./components/imageviewer/MultipleImageView";
+import MultipleImageSave from "./components/imageviewer/MultipleImageSave";
 import MediaKitFiles from "./components/mediakit/MediaKitFiles";
 import WatermarkSettings from "./components/mediakit/WatermarkSettings";
 import PhotosSegment from "./components/mediakit/photos/PhotosSegment";
@@ -300,6 +301,11 @@ export default function App() {
                 name="MultipleImageView"
                 component={MultipleImageView}
                 options={{ ...defaultOptions, title: "Download All" }}
+              />
+              <Stack.Screen
+                name="MultipleImageSave"
+                component={MultipleImageSave}
+                options={{ ...defaultOptions, title: "Simpan Flyer" }}
               />
               <Stack.Screen
                 name="CameraView"
