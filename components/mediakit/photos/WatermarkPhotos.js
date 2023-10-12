@@ -42,7 +42,8 @@ const WatermarkPhotos = ({
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(null);
     const [downloading, setDownloading] = useState(false);
-    const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
+    const [permissionResponse, requestPermission] =
+      MediaLibrary.usePermissions();
 
     useEffect(() => {
       console.log("MediaLibrary permissionResponse", permissionResponse);
@@ -52,25 +53,41 @@ const WatermarkPhotos = ({
       console.log("selected", selected);
     }, [selected]);
 
+    const clearSelection = () => {
+      setSelected({
+        ids: {},
+        urls: [],
+      });
+      setError(null);
+    };
+
     const startDownload = async () => {
       setDownloading(true);
       try {
-        if (!(permissionResponse?.status === "granted" && permissionResponse?.granted)) {
+        if (
+          !(
+            permissionResponse?.status === "granted" &&
+            permissionResponse?.granted
+          )
+        ) {
           const request = await requestPermission();
           console.log("requestPermission", request);
         }
-        
+
         for (let i = 0; i < selected?.urls?.length; i++) {
-          const result = await MediaLibrary.saveToLibraryAsync(selected?.urls[i]);
+          const result = await MediaLibrary.saveToLibraryAsync(
+            selected?.urls[i]
+          );
           console.log(`savetoLibraryAsync ${selected?.urls[i]}`, result);
         }
 
         setSuccess(true);
-        setError(`${selected?.urls?.length} Flyer tersimpan di ${Platform.OS === "ios" ? "Camera Roll" : " Galeri"}`);
-        setSelected({
-          ids: {},
-          urls: [],
-        });
+        setError(
+          `${selected?.urls?.length} Flyer tersimpan di ${
+            Platform.OS === "ios" ? "Camera Roll" : " Galeri"
+          }`
+        );
+        clearSelection();
       } catch (e) {
         console.error(e);
         setSuccess(false);
@@ -260,42 +277,67 @@ const WatermarkPhotos = ({
           </View>
           {selected?.urls?.length === undefined ||
           selected?.urls?.length < 1 ? null : (
-            <TouchableOpacity
-              onPress={() => startDownload()}
-              style={[
-                styles.button,
-                {
-                  backgroundColor: downloading
-                    ? colors.daclen_lightgrey_button
-                    : colors.daclen_light,
-                },
-              ]}
-              disabled={downloading}
-            >
-              {downloading ? (
-                <ActivityIndicator
-                  size="small"
-                  color={colors.daclen_black}
-                  style={{ alignSelf: "center" }}
-                />
-              ) : (
+            <View style={styles.containerButton}>
+              <TouchableOpacity
+                onPress={() => startDownload()}
+                style={[
+                  styles.button,
+                  {
+                    backgroundColor: downloading
+                      ? colors.daclen_lightgrey_button
+                      : colors.daclen_light,
+                    width: 200,
+                  },
+                ]}
+                disabled={downloading}
+              >
+                {downloading ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={colors.daclen_black}
+                    style={{ alignSelf: "center" }}
+                  />
+                ) : (
+                  <MaterialCommunityIcons
+                    name={
+                      selected?.urls?.length > 1
+                        ? "download-multiple"
+                        : "download"
+                    }
+                    size={18}
+                    color={colors.daclen_black}
+                  />
+                )}
+
+                <Text allowFontScaling={false} style={styles.textButton}>
+                  {selected?.urls?.length > 1
+                    ? "Simpan Semua"
+                    : "Simpan ke Galeri"}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => clearSelection()}
+                style={[
+                  styles.button,
+                  {
+                    backgroundColor: downloading
+                      ? colors.daclen_lightgrey_button
+                      : colors.daclen_light,
+                  },
+                ]}
+                disabled={downloading}
+              >
                 <MaterialCommunityIcons
-                  name={
-                    selected?.urls?.length > 1
-                      ? "download-multiple"
-                      : "download"
-                  }
+                  name="close"
                   size={18}
                   color={colors.daclen_black}
                 />
-              )}
 
-              <Text allowFontScaling={false} style={styles.textButton}>
-                {selected?.urls?.length > 1
-                  ? "Simpan Semua"
-                  : "Simpan ke Galeri"}
-              </Text>
-            </TouchableOpacity>
+                <Text allowFontScaling={false} style={styles.textButton}>
+                  Clear
+                </Text>
+              </TouchableOpacity>
+            </View>
           )}
         </View>
       </View>
@@ -340,8 +382,8 @@ const styles = StyleSheet.create({
   },
   containerError: {
     width: "100%",
-    paddingHorizontal: 20,
     paddingVertical: 10,
+    paddingHorizontal: 10,
     backgroundColor: colors.daclen_danger,
     flexDirection: "row",
     alignItems: "center",
@@ -353,21 +395,31 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: colors.daclen_lightgrey,
   },
+  containerButton: {
+    position: "absolute",
+    width: "100%",
+    end: 0,
+    bottom: 20,
+    zIndex: 10,
+    backgroundColor: "transparent",
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
   button: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "center",
-    width: 200,
+    marginEnd: 12,
     height: 40,
     paddingVertical: 10,
+    paddingHorizontal: 12,
     borderRadius: 6,
+    borderWidth: 1,
+    borderColor: colors.daclen_gray,
     backgroundColor: colors.daclen_light,
-    position: "absolute",
-    end: 20,
-    bottom: 20,
-    zIndex: 10,
+    alignSelf: "center",
     elevation: 4,
   },
   textButton: {
@@ -387,6 +439,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Poppins-SemiBold",
     color: colors.white,
+    marginHorizontal: 10,
     backgroundColor: "transparent",
     textAlign: "center",
     alignSelf: "center",
@@ -404,7 +457,6 @@ const styles = StyleSheet.create({
   close: {
     alignSelf: "center",
     backgroundColor: "transparent",
-    marginStart: 10,
   },
 });
 
