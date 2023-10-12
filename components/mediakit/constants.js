@@ -51,8 +51,8 @@ export const vwmarktemplateheight = 762;
 export const vwmark2templatewidth = 1080;
 export const vwmark2templateheight = 358;
 export const vwmark2texturlfontsize = 50;
-export const vwmark2texturltop = 45;
-export const vwmark2texturlstart = 140;
+export const vwmark2texturltop = 40;
+export const vwmark2texturlstart = 135;
 
 export const vwmarktextnamefontsize = 250;
 export const vwmark2textnamefontsize = 70;
@@ -64,7 +64,7 @@ export const vwmarktextnamecharlimit = 10;
 
 export const vwmarktextphonefontsize = 310;
 export const vwmark2textphonefontsize = 70;
-export const vwmarktextphonetop = 300;
+export const vwmarktextphonetop = 295;
 export const vwmarktextphonestart = 530;
 export const vwmark2textphonetop = 125;
 export const vwmark2textphonestart = 475;

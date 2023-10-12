@@ -63,7 +63,7 @@ const calculateImageDimension = (width, height) => {
   const productPhotoHeight = width > height
     ? height / ratio
     : portraitImageHeight;
-  //const fontSize = font?.size?.ukuran ? font?.size?.ukuran : 48;
+  //const fontSize = font?.size?.ukuran ? font?.size?.ukuran : 48;*/
   return {
     resizedImgWidth,
     resizedImgHeight,
@@ -90,10 +90,26 @@ const MultipleImageSave = (props) => {
 
   try {
     useEffect(() => {
+      if (
+        photos === undefined ||
+        photos === null ||
+        photos?.length === undefined ||
+        photos?.length < 1 ||
+        watermarkData === undefined ||
+        watermarkData === null
+      ) {
+        navigation.goBack();
+        return;
+      }
+
+      for (let i = 0; i < photos.length; i++) {
+        imageRefs.current[i] = createRef();
+      }
+
       if (title !== null && title !== undefined && title !== "") {
         props.navigation.setOptions({ title });
       }
-    }, [title]);
+    }, []);
 
     useEffect(() => {
       checkPermission();

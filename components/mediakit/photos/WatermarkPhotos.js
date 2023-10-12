@@ -44,6 +44,9 @@ const WatermarkPhotos = ({
     const [downloading, setDownloading] = useState(false);
 
     useEffect(() => {
+      if ((selected?.urls?.length === undefined || selected?.urls?.length < 1) && Object.keys(selected?.ids)?.length > 0) {
+        clearSelection();
+      }
       console.log("selected", selected);
     }, [selected]);
 
@@ -404,7 +407,9 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: 14,
     fontFamily: "Poppins-SemiBold",
-    marginStart: 10,
+    marginStart: 6,
+    alignSelf: "center",
+    textAlignVertical: "center",
     color: colors.daclen_black,
   },
   imageList: {
