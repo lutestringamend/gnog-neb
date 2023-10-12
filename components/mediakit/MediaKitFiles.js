@@ -28,6 +28,7 @@ import {
   setWatermarkDatafromCurrentUser,
   updateReduxMediaKitFlyerMengajak,
   updateReduxMediaKitVideosMengajak,
+  updateReduxMediaKitPhotosMultipleSave,
 } from "../../axios/mediakit";
 import { overwriteWatermarkVideos } from "../media";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
@@ -381,6 +382,8 @@ function MediaKitFiles(props) {
               photos={mediaKitPhotos}
               photoKeys={photoKeys}
               jenis_foto={STARTER_KIT_FLYER_PRODUK_TAG}
+              photosMultipleSave={props?.photosMultipleSave}
+              clearMultipleSave={() => props?.updateReduxMediaKitPhotosMultipleSave(null)}
               refreshPage={() => refreshPhotos()}
             />
           ) : activeTab === STARTER_KIT_FLYER_MENGAJAK ? (
@@ -392,6 +395,8 @@ function MediaKitFiles(props) {
               watermarkData={watermarkData}
               sharingAvailability={sharingAvailability}
               jenis_foto={STARTER_KIT_FLYER_MENGAJAK_TAG}
+              photosMultipleSave={props?.photosMultipleSave}
+              clearMultipleSave={() => props?.updateReduxMediaKitPhotosMultipleSave(null)}
               refreshPage={() => refreshPhotos()}
             />
           ) : (
@@ -536,6 +541,7 @@ const mapStateToProps = (store) => ({
   flyerMengajak: store.mediaKitState.flyerMengajak,
   videosMengajak: store.mediaKitState.videosMengajak,
   photoError: store.mediaKitState.photoError,
+  photosMultipleSave: store.mediaKitState.photosMultipleSave,
   products: store.productState.products,
 });
 
@@ -552,6 +558,7 @@ const mapDispatchProps = (dispatch) =>
       overwriteWatermarkVideos,
       updateReduxMediaKitFlyerMengajak,
       updateReduxMediaKitVideosMengajak,
+      updateReduxMediaKitPhotosMultipleSave,
     },
     dispatch
   );

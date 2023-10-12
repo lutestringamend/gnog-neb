@@ -23,7 +23,7 @@ import * as FileSystem from "expo-file-system";
 import { colors, staticDimensions } from "../../styles/base";
 import { sentryLog } from "../../sentry";
 import { pdfpagewidth } from "./constants";
-import { updateReduxMediaKitPhotosUri } from "../../axios/mediakit";
+import { updateReduxMediaKitPhotosMultipleSave } from "../../axios/mediakit";
 import { ErrorView } from "../webview/WebviewChild";
 import { webfotowatermark } from "../../axios/constants";
 import ImageLargeWatermarkModel from "../media/ImageLargeWatermarkModel";
@@ -60,9 +60,8 @@ const calculateImageDimension = (width, height) => {
       ? screenWidth - staticDimensions.productPhotoWidthMargin
       : portraitImageWidth;
   const ratio = width / productPhotoWidth;
-  const productPhotoHeight = width > height
-    ? height / ratio
-    : portraitImageHeight;
+  const productPhotoHeight =
+    width > height ? height / ratio : portraitImageHeight;
   //const fontSize = font?.size?.ukuran ? font?.size?.ukuran : 48;*/
   return {
     resizedImgWidth,
@@ -98,6 +97,10 @@ const MultipleImageSave = (props) => {
         watermarkData === undefined ||
         watermarkData === null
       ) {
+        props.updateReduxMediaKitPhotosMultipleSave({
+          success: false,
+          error: null,
+        });
         navigation.goBack();
         return;
       }
@@ -187,7 +190,7 @@ const MultipleImageSave = (props) => {
       newWidth,
       newHeight,
       text_y,
-      link_y,
+      link_y
     ) => {
       addLogs(
         `\nloading image index ${index} id ${id}\noriginal ${width}x${height}\nrezized to ${newWidth}x${newHeight}\ntext_y ${text_y} link_y ${link_y}`
@@ -253,7 +256,12 @@ const MultipleImageSave = (props) => {
 
     const savePhotos = async () => {
       try {
-        if (!(permissionResponse?.status === "granted" && permissionResponse?.granted)) {
+        if (
+          !(
+            permissionResponse?.status === "granted" &&
+            permissionResponse?.granted
+          )
+        ) {
           const request = await requestPermission();
           console.log("requestPermission", request);
         }
@@ -263,10 +271,18 @@ const MultipleImageSave = (props) => {
           addLogs(`savetoLibraryAsync ${i} ${JSON.stringify(result)}`);
         }
 
+        props.updateReduxMediaKitPhotosMultipleSave({
+          success: true,
+          error: `Berhasil menyimpan ${savedUris?.length} Flyer ke Galeri`,
+        });
         navigation.goBack();
       } catch (e) {
         console.error(e);
         addError(e.toString());
+        props.updateReduxMediaKitPhotosMultipleSave({
+          success: false,
+          error,
+        });
       }
       setLoading(false);
     };
@@ -314,6 +330,7 @@ const MultipleImageSave = (props) => {
                             .resizedImgWidth,
                           height: calculateImageDimension(width, height)
                             .resizedImgHeight,
+                          zIndex: index * 2,
                         },
                       ]}
                       contentFit="contain"
@@ -327,7 +344,7 @@ const MultipleImageSave = (props) => {
                           height,
                           calculateImageDimension(width, height)
                             .resizedImgWidth,
-                            calculateImageDimension(width, height)
+                          calculateImageDimension(width, height)
                             .resizedImgHeight,
                           text_y,
                           link_y
@@ -335,7 +352,7 @@ const MultipleImageSave = (props) => {
                       }
                     />
                     <ImageLargeWatermarkModel
-                      style={styles.image}
+                      style={[styles.image, { zIndex: index * 2 + 1 }]}
                       width={width}
                       height={height}
                       displayWidth={
@@ -378,9 +395,7 @@ const MultipleImageSave = (props) => {
 
           <Text allowFontScaling={false} style={styles.textLoading}>
             {loading
-              ? `Menyimpan ${
-                  tiSize <= 0 ? "flyer" : `${tiSize} flyer`
-                }...`
+              ? `Menyimpan ${tiSize <= 0 ? "flyer" : `${tiSize} flyer`}...`
               : "Berhasil menyimpan flyer"}
           </Text>
           {Platform.OS === "web" || currentUser?.id === 8054 ? (
@@ -449,7 +464,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   image: {
-    backgroundColor: colors.white,
+    position: "absolute",
+    top: 0,
+    start: 0,
+    backgroundColor: "transparent",
+    zIndex: 4,
     overflow: "visible",
   },
   containerButton: {
@@ -514,7 +533,7 @@ const mapStateToProps = (store) => ({
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
-      updateReduxMediaKitPhotosUri,
+      updateReduxMediaKitPhotosMultipleSave,
     },
     dispatch
   );

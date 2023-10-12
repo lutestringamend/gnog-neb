@@ -11,7 +11,8 @@ import {
   MEDIA_KIT_VIDEOS_URI_STATE_CHANGE,
   MEDIA_KIT_VIDEOS_ERROR_STATE_CHANGE,
   MEDIA_KIT_FLYER_MENGAJAK_STATE_CHANGE,
-  MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE
+  MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE,
+  MEDIA_KIT_PHOTOS_MULTIPLE_SAVE_STATE_CHANGE
 } from "../constants";
 
 const initialState = {
@@ -24,6 +25,10 @@ const initialState = {
   fonts: [],
   colors: [],
   sizes: [],
+  photosMultipleSave: {
+    success: false,
+    error: null,
+  },
   photoError: null,
   videoError: null,
   watermarkData: null,
@@ -60,6 +65,11 @@ export const mediakit = (state = initialState, action) => {
       return {
         ...state,
         flyerMengajak: action.data,
+    };
+    case MEDIA_KIT_PHOTOS_MULTIPLE_SAVE_STATE_CHANGE:
+      return {
+        ...state,
+        photosMultipleSave: action.data,
     };
     case MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE:
       return {

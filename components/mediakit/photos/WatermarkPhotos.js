@@ -26,22 +26,34 @@ const defaultSelected = {
   urls: [],
 };
 
-const WatermarkPhotos = ({
-  photos,
-  photoKeys,
-  loading,
-  error,
-  watermarkData,
-  sharingAvailability,
-  refreshPage,
-  jenis_foto,
-}) => {
+const WatermarkPhotos = (props) => {
+  const {
+    photos,
+    photoKeys,
+    loading,
+    error,
+    watermarkData,
+    sharingAvailability,
+    refreshPage,
+    photosMultipleSave,
+    jenis_foto,
+  } = props;
   const navigation = useNavigation();
   try {
     const [selected, setSelected] = useState(defaultSelected);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(null);
     const [downloading, setDownloading] = useState(false);
+
+    useEffect(() => {
+      if (photosMultipleSave?.success !== success) {
+        setSuccess(photosMultipleSave?.success ? photosMultipleSave?.success : false);
+      }
+      if (photosMultipleSave?.error !== error) {
+        setError(photosMultipleSave?.error ? photosMultipleSave?.error : null);
+      }
+      console.log("redux photosMultipleSave", photosMultipleSave);
+    }, [photosMultipleSave]);
 
     useEffect(() => {
       if ((selected?.urls?.length === undefined || selected?.urls?.length < 1) && Object.keys(selected?.ids)?.length > 0) {
@@ -51,12 +63,19 @@ const WatermarkPhotos = ({
     }, [selected]);
 
     const clearSelection = () => {
+      clearError();
       setSelected({
         ids: {},
         urls: [],
       });
-      setError(null);
     };
+
+    const clearError = () => {
+      if (!(props?.clearMultipleSave === undefined || props?.clearMultipleSave === null)) {
+        props?.clearMultipleSave();
+      }
+      setError(null);
+    }
 
     const startDownload = () => {
       navigation.navigate("MultipleImageSave", {
@@ -198,7 +217,7 @@ const WatermarkPhotos = ({
               {error}
             </Text>
             <TouchableOpacity
-              onPress={() => setError(null)}
+              onPress={() => clearError()}
               style={styles.close}
             >
               <MaterialCommunityIcons

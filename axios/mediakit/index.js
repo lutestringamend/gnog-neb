@@ -11,6 +11,7 @@ import {
   MEDIA_KIT_VIDEOS_ERROR_STATE_CHANGE,
   MEDIA_KIT_FLYER_MENGAJAK_STATE_CHANGE,
   MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE,
+  MEDIA_KIT_PHOTOS_MULTIPLE_SAVE_STATE_CHANGE,
 } from "../../redux/constants";
 import { sentryLog } from "../../sentry";
 import { STARTER_KIT_FLYER_PRODUK_TAG } from "../../components/mediakit/constants";
@@ -40,6 +41,16 @@ export function updateReduxMediaKitPhotosError(data) {
   return (dispatch) => {
     console.log("updateReduxMediaKitPhotosError", data);
     dispatch({ type: MEDIA_KIT_PHOTOS_ERROR_STATE_CHANGE, data });
+  };
+}
+
+export function updateReduxMediaKitPhotosMultipleSave(data) {
+  return (dispatch) => {
+    console.log("updateReduxMediaKitPhotosMultipleSave", data);
+    dispatch({ type: MEDIA_KIT_PHOTOS_MULTIPLE_SAVE_STATE_CHANGE, data: data ? data : {
+      success: false,
+      error: null,
+    } });
   };
 }
 
