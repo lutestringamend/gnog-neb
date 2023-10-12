@@ -467,6 +467,7 @@ export const pickImage = async () => {
         aspect: [1, 1],
         quality: PICKER_COMPRESSION_QUALITY,
         allowsMultipleSelection: false,
+        presentationStyle: 0,
       });
     } catch (e) {
       console.error(e);
