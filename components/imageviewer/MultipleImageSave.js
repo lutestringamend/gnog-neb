@@ -228,13 +228,13 @@ const MultipleImageSave = (props) => {
           .capture()
           .then(async (uri) => {
             let newUri = uri;
-            try {
+            /*try {
               newUri = await FileSystem.getContentUriAsync(uri);
             } catch (error) {
               addError(
                 `index ${index} getContentUriAsync error\n${error.toString()}`
               );
-            }
+            }*/
             addLogs(`new capture index ${index} uri ${newUri}`);
             setSavedUris((savedUris) => [...savedUris, newUri]);
             setTiSize((tiSize) => tiSize + 1);
@@ -412,7 +412,6 @@ const styles = StyleSheet.create({
   },
   containerLoading: {
     width: "100%",
-    height: "100%",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -467,6 +466,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_orange,
   },
   textLogs: {
+    flex: 1,
     fontFamily: "Poppins",
     fontSize: 12,
     marginVertical: 20,

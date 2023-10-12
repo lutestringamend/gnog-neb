@@ -293,8 +293,8 @@ const WatermarkPhotos = ({
 
                 <Text allowFontScaling={false} style={styles.textButton}>
                   {selected?.urls?.length > 1
-                    ? "Simpan Semua"
-                    : "Simpan ke Galeri"}
+                    ? `Simpan ${selected?.urls?.length} Flyer`
+                    : `Simpan Flyer`}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
