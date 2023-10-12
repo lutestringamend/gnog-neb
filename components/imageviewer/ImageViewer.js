@@ -107,8 +107,14 @@ const ImageViewer = (props) => {
   const [pdfUri, setPdfUri] = useState(null);
   const [downloadUri, setDownloadUri] = useState(null);
 
+  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
+
   const { watermarkData, currentUser } = props;
   const imageRef = useRef();
+
+  useEffect(() => {
+    console.log("MediaLibrary permissionResponse", permissionResponse);
+  }, [permissionResponse]);
 
   useEffect(() => {
     if (title !== null && title !== undefined && title !== "") {
@@ -348,6 +354,10 @@ const ImageViewer = (props) => {
 
   const saveIos = async (uri) => {
     try {
+      if (!(permissionResponse?.status === "granted" && permissionResponse?.granted)) {
+        const request = await requestPermission();
+        console.log("requestPermission", request);
+      }
       const result = await MediaLibrary.saveToLibraryAsync(uri);
       console.log("savetoLibraryAsync result", result);
       setError(

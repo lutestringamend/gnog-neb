@@ -7,26 +7,19 @@ import {
   ActivityIndicator,
   Animated,
   Dimensions,
+  FlatList,
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
+//import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
-import { useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { colors, blurhash, staticDimensions } from "../../../styles/base";
+import PhotoItem from "./PhotoItem";
 
 const WatermarkPhotosSegment = (props) => {
-  const {
-    title,
-    photos,
-    index,
-    isLast,
-    sharingAvailability,
-    watermarkData,
-    jenis_foto,
-  } = props;
+  const { title, photos, index, isLast, navigation, selected } = props;
   //const [arraySize, setArraySize] = useState(null);
-  const navigation = useNavigation();
+
   const { width } = Dimensions.get("window");
 
   /*useEffect(() => {
@@ -49,28 +42,18 @@ const WatermarkPhotosSegment = (props) => {
     });
   }
 
-  function openPhoto(item) {
-    navigation.navigate("ImageViewer", {
-      disableWatermark: false,
-      title,
-      jenis_foto,
-      id: item?.id,
-      uri: item?.foto,
-      thumbnail: item?.thumbnail,
-      isSquare: false,
-      width: item?.width,
-      height: item?.height,
-      text_align: item?.text_align,
-      text_x: item?.text_x,
-      text_y: item?.text_y,
-      link_x: item?.link_x,
-      link_y: item?.link_y,
-      font: item?.font,
-      fontFamily: "Poppins",
-      fontSize: item?.font ? item?.font?.ukuran : 48,
-      watermarkData,
-      sharingAvailability,
-    });
+  function onLongPress(e) {
+    if (props?.onLongPress === undefined || props?.onLongPress === null) {
+      return;
+    }
+    props?.onLongPress(e);
+  }
+
+  function onPress(e) {
+    if (props?.onPress === undefined || props?.onPress === null) {
+      return;
+    }
+    props?.onPress(e, title);
   }
 
   if (photos?.length === undefined || photos?.length < 1) {
@@ -107,40 +90,21 @@ const WatermarkPhotosSegment = (props) => {
         </TouchableOpacity>
 
         <View style={styles.containerCarousel}>
-          <FlashList
+          <FlatList
             estimatedItemSize={10}
             horizontal={true}
             data={photos}
             contentContainerStyle={styles.containerFlatlist}
-            renderItem={({ item, i }) =>
-              (
-                <TouchableOpacity
-                  onPress={() => openPhoto(item)}
-                  key={i}
-                  style={styles.containerImage}
-                >
-                  <Image
-                    style={[
-                      styles.image,
-                      {
-                        borderRadius: 6,
-                        borderWidth: 1,
-                        borderColor: colors.daclen_lightgrey,
-                        marginStart: 0,
-                        alignSelf: "flex-start",
-                        elevation: 4,
-                      },
-                    ]}
-                    source={item?.thumbnail ? item?.thumbnail : null}
-                    onClick={() => openSegmentScreen()}
-                    contentFit="cover"
-                    placeholder={blurhash}
-                    transition={0}
-                    cachePolicy="memory-disk"
-                  />
-                </TouchableOpacity>
-              )
-            }
+            renderItem={({ item, i }) => (
+              <PhotoItem
+                selected={selected}
+                navigation={navigation}
+                item={item}
+                index={i}
+                onLongPress={() => onLongPress(item)}
+                onPress={() => onPress(item)}
+              />
+            )}
           />
         </View>
       </View>
@@ -300,25 +264,11 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     height: 100,
   },
-  containerImage: {
-    backgroundColor: "transparent",
-    width: 104,
-    height: 125,
-    alignSelf: "center",
-  },
   textName: {
     fontFamily: "Poppins-SemiBold",
     fontSize: 16,
     color: colors.daclen_light,
     alignSelf: "flex-start",
-  },
-  image: {
-    width: 94,
-    height: 125,
-    borderRadius: 6,
-    alignSelf: "center",
-    backgroundColor: colors.daclen_light,
-    marginStart: 12,
   },
   textPrice: {
     fontFamily: "Poppins",
