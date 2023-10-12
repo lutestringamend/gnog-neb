@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TouchableOpacity,
@@ -6,21 +6,164 @@ import {
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
+  FlatList,
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
+//import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors, staticDimensions, blurhash } from "../../../styles/base";
+import { defaultSelected, filterPhotoProps } from "./WatermarkPhotos";
+import PhotoItem from "./PhotoItem";
 import { STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE } from "../constants";
 
 const FlyerMengajak = (props) => {
-  const { photos, refreshing, showTitle, jenis_foto, watermarkData, sharingAvailability, userId } = props;
+  const {
+    photos,
+    refreshing,
+    showTitle,
+    jenis_foto,
+    watermarkData,
+    sharingAvailability,
+    photosMultipleSave,
+    userId,
+  } = props;
   const navigation = useNavigation();
+
+  const [selected, setSelected] = useState(defaultSelected);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(null);
+  const [downloading, setDownloading] = useState(false);
+
+  useEffect(() => {
+    if (photosMultipleSave?.success !== success) {
+      setSuccess(
+        photosMultipleSave?.success ? photosMultipleSave?.success : false
+      );
+    }
+    if (photosMultipleSave?.error !== error) {
+      setError(photosMultipleSave?.error ? photosMultipleSave?.error : null);
+    }
+    if (photosMultipleSave?.success === true && selected?.urls?.length > 0) {
+      clearSelection();
+    }
+    console.log("redux photosMultipleSave", photosMultipleSave);
+  }, [photosMultipleSave]);
 
   useEffect(() => {
     console.log("FlyerMengajak photos", photos);
   }, [photos]);
+
+  useEffect(() => {
+    if (
+      (selected?.urls?.length === undefined || selected?.urls?.length < 1) &&
+      Object.keys(selected?.ids)?.length > 0
+    ) {
+      clearSelection();
+    }
+    console.log("selected", selected);
+  }, [selected]);
+
+  const clearSelection = () => {
+    clearError();
+    setSelected({
+      ids: {},
+      urls: [],
+    });
+  };
+
+  const clearError = () => {
+    if (
+      !(
+        props?.clearMultipleSave === undefined ||
+        props?.clearMultipleSave === null
+      )
+    ) {
+      props?.clearMultipleSave();
+    }
+    setError(null);
+  };
+
+  const startDownload = () => {
+    navigation.navigate("MultipleImageSave", {
+      photos: selected?.urls,
+      sharingAvailability,
+      jenis_foto,
+      title: `Menyimpan ${STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE}`,
+    });
+  };
+
+  const deselectItem = (item) => {
+    let ids = selected?.ids;
+    ids[item?.id] = false;
+    let urls = [];
+    if (!(selected?.urls?.length === undefined || selected?.urls?.length < 1)) {
+      for (let i = 0; i < selected?.urls?.length; i++) {
+        if (selected?.urls[i]?.id === item?.id) {
+          urls.push(selected?.urls[i]);
+        }
+      }
+    }
+    setSelected({
+      ids,
+      urls,
+    });
+  };
+
+  const onLongPress = (item) => {
+    try {
+      if (
+        selected.ids[item?.id] === undefined ||
+        selected.ids[item?.id] === null ||
+        !selected.ids[item?.id]
+      ) {
+        let ids = selected?.ids;
+        ids[item?.id] = true;
+        let urls = [];
+        let isFound = false;
+        if (
+          !(selected?.urls?.length === undefined || selected?.urls?.length < 1)
+        ) {
+          for (let i = 0; i < selected?.urls?.length; i++) {
+            if (selected?.urls[i]?.id === item?.id) {
+              isFound = true;
+            }
+            urls.push(selected?.urls[i]);
+          }
+        }
+        if (!isFound) {
+          urls.push(filterPhotoProps(item));
+        }
+        setSelected({
+          ids,
+          urls,
+        });
+      } else {
+        deselectItem(item);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const onPress = (item, title) => {
+    try {
+      if (
+        !(
+          selected.ids[item?.id] === undefined ||
+          selected.ids[item?.id] === null ||
+          !selected.ids[item?.id]
+        )
+      ) {
+        deselectItem(item);
+        return;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    openPhoto(item);
+  };
 
   function refreshPage() {
     if (props?.refreshPage === undefined || props?.refreshPage === null) {
@@ -63,14 +206,14 @@ const FlyerMengajak = (props) => {
             style={{ alignSelf: "center", marginVertical: 20, zIndex: 1 }}
           />
         </View>
-
       ) : null}
-      { photos === null || refreshing ? null : photos?.length === undefined || photos?.length < 1 ? (
+      {photos === null || refreshing ? null : photos?.length === undefined ||
+        photos?.length < 1 ? (
         <Text allowFontScaling={false} style={styles.textUid}>
           Tidak ada Flyer Mengajak tersedia.
         </Text>
       ) : (
-        <FlashList
+        <FlatList
           estimatedItemSize={20}
           horizontal={false}
           numColumns={3}
@@ -83,9 +226,89 @@ const FlyerMengajak = (props) => {
           }
           contentContainerStyle={styles.containerFlatlist}
           renderItem={({ item, index }) => (
+            <PhotoItem
+              selected={selected}
+              navigation={navigation}
+              item={item}
+              index={index}
+              style={styles.containerImage}
+              onLongPress={() => onLongPress(item)}
+              onPress={() => onPress(item)}
+            />
+          )}
+        />
+      )}
+      {selected?.urls?.length === undefined ||
+      selected?.urls?.length < 1 ? null : (
+        <View style={styles.containerButton}>
+          <TouchableOpacity
+            onPress={() => startDownload()}
+            style={[
+              styles.button,
+              {
+                backgroundColor: downloading
+                  ? colors.daclen_lightgrey_button
+                  : colors.daclen_light,
+                width: 200,
+              },
+            ]}
+            disabled={downloading}
+          >
+            {downloading ? (
+              <ActivityIndicator
+                size="small"
+                color={colors.daclen_black}
+                style={{ alignSelf: "center" }}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name={
+                  selected?.urls?.length > 1 ? "download-multiple" : "download"
+                }
+                size={18}
+                color={colors.daclen_black}
+              />
+            )}
+
+            <Text allowFontScaling={false} style={styles.textButton}>
+              {selected?.urls?.length > 1
+                ? `Simpan ${selected?.urls?.length} Flyer`
+                : `Simpan Flyer`}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => clearSelection()}
+            style={[
+              styles.button,
+              {
+                backgroundColor: downloading
+                  ? colors.daclen_lightgrey_button
+                  : colors.daclen_light,
+              },
+            ]}
+            disabled={downloading}
+          >
+            <MaterialCommunityIcons
+              name="close"
+              size={18}
+              color={colors.daclen_black}
+            />
+
+            <Text allowFontScaling={false} style={styles.textButton}>
+              Clear
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
+  );
+};
+
+/*
             <TouchableOpacity
               key={index}
-              onPress={() => openPhoto(item)}
+              onLongPress={() => onLongPress(item)}
+              onPress={() => onPress(item)}
               style={[
                 styles.containerImage,
                 {
@@ -113,12 +336,7 @@ const FlyerMengajak = (props) => {
                 </Text>
               ) : null}
             </TouchableOpacity>
-          )}
-        />
-      )}
-    </View>
-  );
-};
+*/
 
 const styles = StyleSheet.create({
   container: {
@@ -138,6 +356,17 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     width: "100%",
   },
+  containerButton: {
+    position: "absolute",
+    width: "100%",
+    end: 0,
+    bottom: 20,
+    zIndex: 10,
+    backgroundColor: "transparent",
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
   containerImage: {
     flex: 1,
     backgroundColor: "transparent",
@@ -151,6 +380,30 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.daclen_lightgrey,
     backgroundColor: colors.daclen_lightgrey,
+  },
+  button: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    marginEnd: 12,
+    height: 40,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: colors.daclen_gray,
+    backgroundColor: colors.daclen_light,
+    alignSelf: "center",
+    elevation: 4,
+  },
+  textButton: {
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
+    marginStart: 6,
+    alignSelf: "center",
+    textAlignVertical: "center",
+    color: colors.daclen_black,
   },
   imageList: {
     flex: 1,

@@ -8,7 +8,6 @@ import {
   RefreshControl,
   FlatList,
   TouchableOpacity,
-  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -19,12 +18,23 @@ import { webfotowatermark } from "../../../axios/constants";
 import { ErrorView } from "../../webview/WebviewChild";
 import WatermarkPhotosSegment from "./WatermarkPhotosSegment";
 import { sentryLog } from "../../../sentry";
-import { STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE, STARTER_KIT_FLYER_MENGAJAK_TAG, STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE } from "../constants";
+import { STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE } from "../constants";
 
-const defaultSelected = {
+export const defaultSelected = {
   ids: {},
   urls: [],
 };
+
+export const filterPhotoProps = (item) => {
+  return {
+    id: item?.id,
+    foto: item?.foto,
+    width: item?.width,
+    height: item?.height,
+    text_y: item?.text_y,
+    link_y: item?.link_y,
+  }
+}
 
 const WatermarkPhotos = (props) => {
   const {
@@ -51,6 +61,9 @@ const WatermarkPhotos = (props) => {
       }
       if (photosMultipleSave?.error !== error) {
         setError(photosMultipleSave?.error ? photosMultipleSave?.error : null);
+      }
+      if (photosMultipleSave?.success === true && selected?.urls?.length > 0) {
+        clearSelection();
       }
       console.log("redux photosMultipleSave", photosMultipleSave);
     }, [photosMultipleSave]);
@@ -82,20 +95,9 @@ const WatermarkPhotos = (props) => {
         photos: selected?.urls,
         sharingAvailability,
         jenis_foto,
-        title: `Menyimpan ${jenis_foto === STARTER_KIT_FLYER_MENGAJAK_TAG ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE : STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE}`,
+        title: `Menyimpan ${STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE}`,
       });
     };
-
-    const filterPhotoProps = (item) => {
-      return {
-        id: item?.id,
-        foto: item?.foto,
-        width: item?.width,
-        height: item?.height,
-        text_y: item?.text_y,
-        link_y: item?.link_y,
-      }
-    }
 
     const deselectItem = (item) => {
       let ids = selected?.ids;

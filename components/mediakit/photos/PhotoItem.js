@@ -6,7 +6,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { blurhash, colors } from "../../../styles/base";
 
 const PhotoItem = (props) => {
-  const { item, index, selected } = props;
+  const { item, index, selected, style } = props;
   const [active, setActive] = useState(false);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ const PhotoItem = (props) => {
       onLongPress={() => onLongPress()}
       onPress={() => onPress()}
       key={index}
-      style={styles.containerImage}
+      style={[styles.containerImage, style ? style : null]}
     >
       <Image
         style={[
