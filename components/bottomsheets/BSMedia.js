@@ -128,7 +128,7 @@ function BSMedia(props) {
               color="white"
             />
             <Text allowFontScaling={false} style={styles.textButton}>
-              {`Ambil dari ${Platform.OS === "ios" ? "Camera Roll" : "Galeri"}`}
+              {`Ambil dari Galeri`}
             </Text>
           </TouchableOpacity>
 

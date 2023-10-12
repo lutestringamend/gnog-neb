@@ -52,7 +52,7 @@ export const camerafail = "Error dengan kamera: "
 export const cameranopermissionmessage = "Anda tidak memberikan akses ke Kamera"
 export const imagepickerfail = "Error mengambil dari galeri "
 export const imagepickernopermissionmessage = "\nAnda tidak memberikan akses ke penyimpanan"
-export const imagepickernocameralrollmessage = "\nAnda tidak memberikan akses ke Camera Roll"
+export const imagepickernocameralrollmessage = "\nAnda tidak memberikan akses ke Galeri Foto"
 export const bigmediafileerror = "Ukuran file tidak boleh melebihi 2 MB"
 export const mediafileunusable = "File tidak valid"
 

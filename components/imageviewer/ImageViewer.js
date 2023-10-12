@@ -361,7 +361,7 @@ const ImageViewer = (props) => {
       const result = await MediaLibrary.saveToLibraryAsync(uri);
       console.log("savetoLibraryAsync result", result);
       setError(
-        `Foto tersimpan di ${Platform.OS === "ios" ? "Camera Roll" : "Gallery"}`
+        `Foto tersimpan di Galeri Foto`
       );
       setDownloadUri(JSON.stringify(result));
       setSuccess(true);

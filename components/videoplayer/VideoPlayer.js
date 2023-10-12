@@ -703,7 +703,7 @@ function VideoPlayer(props) {
     await saveToLibraryAsync(uri);
     setOutput(
       (output) =>
-        `${output}\nsaveToLibraryAsync ${uri} successful, check Galery/Camera Roll`
+        `${output}\nsaveToLibraryAsync ${uri} successful, check Gallery`
     );
   };
 
