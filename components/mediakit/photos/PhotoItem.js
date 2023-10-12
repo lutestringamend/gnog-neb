@@ -94,9 +94,9 @@ const styles = StyleSheet.create({
     zIndex: 20,
     opacity: 0.8,
     backgroundColor: colors.daclen_bg,
-    width: 104,
+    width: 94,
     height: 125,
-    borderRadius: 4,
+    borderRadius: 6,
   },
   image: {
     width: 94,
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   },
   check: {
     position: "absolute",
-    end: 16,
+    end: 10,
     bottom: 10,
   },
 });

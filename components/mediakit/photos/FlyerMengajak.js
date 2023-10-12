@@ -198,6 +198,32 @@ const FlyerMengajak = (props) => {
 
   return (
     <View style={styles.container}>
+      {error ? (
+          <View
+            style={[
+              styles.containerError,
+              {
+                backgroundColor: success
+                  ? colors.daclen_green
+                  : colors.daclen_danger,
+              },
+            ]}
+          >
+            <Text allowFontScaling={false} style={styles.textError}>
+              {error}
+            </Text>
+            <TouchableOpacity
+              onPress={() => clearError()}
+              style={styles.close}
+            >
+              <MaterialCommunityIcons
+                name="close"
+                size={20}
+                color={colors.daclen_light}
+              />
+            </TouchableOpacity>
+          </View>
+        ) : null}
       {photos === null || refreshing ? (
         <View style={styles.containerSpinner}>
           <ActivityIndicator
@@ -368,10 +394,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   containerImage: {
-    flex: 1,
+    flex: 1 / 3,
     backgroundColor: "transparent",
     marginHorizontal: 10,
-    paddingTop: 10,
+    marginTop: 10,
   },
   containerThumbnail: {
     flex: 1,
@@ -380,6 +406,25 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.daclen_lightgrey,
     backgroundColor: colors.daclen_lightgrey,
+  },
+  containerError: {
+    width: "100%",
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    backgroundColor: colors.daclen_danger,
+    flexDirection: "row",
+    alignItems: "center",
+    zIndex: 4,
+  },
+  textError: {
+    flex: 1,
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
+    color: colors.white,
+    marginHorizontal: 10,
+    backgroundColor: "transparent",
+    textAlign: "center",
+    alignSelf: "center",
   },
   button: {
     flexDirection: "row",
@@ -432,6 +477,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
     zIndex: 20,
     height: "100%",
+    backgroundColor: "transparent",
+  },
+  close: {
+    alignSelf: "center",
     backgroundColor: "transparent",
   },
 });
