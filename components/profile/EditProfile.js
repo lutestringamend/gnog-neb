@@ -214,7 +214,7 @@ function EditProfile(props) {
       setLoading(false);
     } else if (userUpdate?.session === "photoError") {
       setSuccess(false);
-      setError("Error mengambil foto baru\n" + userUpdate?.message);
+      setError(userUpdate?.message === undefined || userUpdate?.message === null || userUpdate?.message === "" ? "Error mengambil foto baru" : userUpdate?.message);
       setUploadingPhoto(defaultUploadingPhoto);
       props.setMediaProfilePicture(null, currentUser?.id);
     }
