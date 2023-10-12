@@ -53,6 +53,10 @@ const Header = (props) => {
     );
   }
 
+  function openProfile() {
+    navigation.navigate("ProfileTab", { screen: "Main" });
+  }
+
   function openNotifications() {
     if (currentUser?.id === 8054) {
       createLocalWelcomeNotification(currentUser?.name);
@@ -62,19 +66,21 @@ const Header = (props) => {
 
   return (
     <View style={[styles.container, { height: 72 }]}>
-      <Image
-        key="userImage"
-        style={styles.image}
-        source={
-          currentUser?.detail_user?.foto
-            ? currentUser?.detail_user?.foto
-            : require("../assets/user.png")
-        }
-        alt={currentUser?.name}
-        contentFit="cover"
-        placeholder={blurhash}
-        transition={100}
-      />
+      <TouchableOpacity style={styles.containerImage} onPress={() => openProfile()}>
+        <Image
+          key="userImage"
+          style={styles.image}
+          source={
+            currentUser?.detail_user?.foto
+              ? currentUser?.detail_user?.foto
+              : require("../assets/user.png")
+          }
+          alt={currentUser?.name}
+          contentFit="cover"
+          placeholder={blurhash}
+          transition={100}
+        />
+      </TouchableOpacity>
       <View style={styles.containerText}>
         <Text allowFontScaling={false} style={styles.text}>
           Welcome!
@@ -157,6 +163,21 @@ const styles = StyleSheet.create({
     top: 12,
     end: 10,
   },
+  containerImage: {
+    width: 76,
+    height: 76,
+    elevation: 4,
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 38,
+    borderWidth: 1,
+    borderColor: colors.daclen_light,
+    position: "absolute",
+    start: 12,
+    bottom: -12,
+    zIndex: 20,
+  },
   imageLogoSmall: {
     width: 75,
     height: 20,
@@ -170,15 +191,9 @@ const styles = StyleSheet.create({
   image: {
     width: 76,
     height: 76,
-    elevation: 4,
     backgroundColor: colors.daclen_light,
     borderRadius: 38,
-    borderWidth: 1,
-    borderColor: colors.daclen_light,
-    position: "absolute",
-    start: 12,
-    bottom: -12,
-    zIndex: 20,
+    alignSelf: "center",
   },
   bell: {
     marginStart: 10,

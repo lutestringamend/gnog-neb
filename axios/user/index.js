@@ -821,13 +821,30 @@ export function updateUserPhoto(id, token, uri) {
               });
             }
           } else {
-            dispatch({
-              type: USER_UPDATE_STATE_CHANGE,
-              data: {
-                session: "photoError",
-                message: id === 8054 ? JSON.stringify(data) : "",
-              },
-            });
+            try {
+              let message = "";
+              for (let a of data) {
+                if (!(a === null || a === "")) {
+                  message = `${message === "" ? a : `${message}\n${a}`}`;
+                }
+              }
+              dispatch({
+                type: USER_UPDATE_STATE_CHANGE,
+                data: {
+                  session: "photoError",
+                  message,
+                },
+              });
+            } catch (e) {
+              console.error(e);
+              dispatch({
+                type: USER_UPDATE_STATE_CHANGE,
+                data: {
+                  session: "photoError",
+                  message: JSON.stringify(data),
+                },
+              });
+            }
           }
           dispatch({ type: MEDIA_CLEAR_DATA });
         })
