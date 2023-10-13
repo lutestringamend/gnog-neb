@@ -25,6 +25,7 @@ import {
 } from "../../asyncstorage/constants";
 import WatermarkVideosSegment from "./WatermarkVideosSegment";
 import VideosFlatlist from "./VideosFlatlist";
+import { STARTER_KIT_VIDEO_PRODUK_TAG } from "../constants";
 
 const WatermarkVideos = (props) => {
   const [refreshing, setRefreshing] = useState(false);
@@ -192,6 +193,7 @@ const WatermarkVideos = (props) => {
                   videos={videos[item]}
                   refreshing={refreshing}
                   userId={userId}
+                  jenis_video={STARTER_KIT_VIDEO_PRODUK_TAG}
                 />
               )}
             />

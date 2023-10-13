@@ -5,7 +5,7 @@ import { colors, staticDimensions } from "../../../styles/base";
 import VideosFlatlist from "./VideosFlatlist";
 
 const WatermarkVideosSegment = (props) => {
-  const { title, videos, index, isLast, refreshing, userId } = props;
+  const { title, videos, index, isLast, refreshing, userId, jenis_video } = props;
 
   function refreshPage() {
     if (props?.refreshPage === undefined || props?.refreshPage === null) {
@@ -37,6 +37,7 @@ const WatermarkVideosSegment = (props) => {
           refreshPage={() => refreshPage()}
           showTitle={false}
           userId={userId}
+          jenis_video={jenis_video}
         />
       </View>
     </View>

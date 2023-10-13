@@ -65,7 +65,7 @@ const Dashboard = (props) => {
     text: null,
     isError: false,
   });
-  const [pinLoading, setPinLoading] = useState(false);
+  //const [pinLoading, setPinLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchingToken, setFetchingToken] = useState(false);
   const [showTimerModal, setShowTimerModal] = useState(true);
@@ -160,14 +160,14 @@ const Dashboard = (props) => {
     if (profileLock) {
       return;
     }
-    if (pinLoading) {
+    /*if (pinLoading) {
       setPinLoading(false);
-    }
+    }*/
     setMessage({
       text: null,
       isError: false,
     });
-  }, [profileLock, pinLoading]);
+  }, [profileLock]);
 
   useEffect(() => {
     console.log("Dashboard total_rekrutmen", total_rekrutmen);
@@ -237,7 +237,7 @@ const Dashboard = (props) => {
 
   function receiveOTP(e) {
     console.log("receiveOTP", e);
-    setPinLoading(true);
+    //setPinLoading(true);
     if (e === profilePIN) {
       setMessage({ text: "PIN benar", isError: false });
       props.updateReduxProfileLockStatus(false);
@@ -246,7 +246,7 @@ const Dashboard = (props) => {
         text: "PIN salah. Tekan Reset PIN jika Anda lupa PIN.",
         isError: true,
       });
-      setPinLoading(false);
+      //setPinLoading(false);
     }
   }
 
@@ -323,8 +323,7 @@ const Dashboard = (props) => {
           <DashboardVerification />
         ) : profilePIN === null || profilePIN === "" ? (
           <DashboardCreatePIN />
-        ) : profileLock === true ||
-          pinLoading ? (
+        ) : profileLock === true ? (
           <DashboardLock receiveOTP={(e) => receiveOTP(e)} />
         ) : (
           <View style={styles.scrollView}>
@@ -346,7 +345,7 @@ const Dashboard = (props) => {
             />
           </View>
         )}
-        {profileLock && pinLoading ? (
+        {profileLock === undefined || profileLock === null ? (
           <ActivityIndicator
             size="large"
             color={colors.daclen_light}
@@ -358,10 +357,7 @@ const Dashboard = (props) => {
       {currentUser === null ||
       currentUser?.status === undefined ||
       currentUser?.status === null ||
-      profileLock === undefined ||
-      profileLock === null ||
       profileLock ||
-      pinLoading ||
       recruitmentTimer === undefined ||
       recruitmentTimer === null ||
       recruitmentTimer < 0 ||

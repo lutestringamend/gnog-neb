@@ -55,7 +55,7 @@ export const vwmark2texturltop = 40;
 export const vwmark2texturlstart = 135;
 
 export const vwmarktextnamefontsize = 250;
-export const vwmark2textnamefontsize = 70;
+export const vwmark2textnamefontsize = 65;
 export const vwmarktextnametop = 0;
 export const vwmarktextnamestart = 1350;
 export const vwmark2textnametop = 205;
@@ -66,9 +66,11 @@ export const vwmarktextphonefontsize = 310;
 export const vwmark2textphonefontsize = 70;
 export const vwmarktextphonetop = 295;
 export const vwmarktextphonestart = 530;
-export const vwmark2textphonetop = 125;
+export const vwmark2textphonetop = 122;
 export const vwmark2textphonestart = 475;
 export const vwmarktextphonecharlimit = 13;
+
+export const vwmarktexturlcharlimit = 16;
 
 export const vwmarkdefaultsourcewidth = 720;
 export const vwmarkdefaultsourceheight = 1080;

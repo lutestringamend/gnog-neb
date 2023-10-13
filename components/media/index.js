@@ -467,7 +467,7 @@ export const pickImage = async () => {
         aspect: [1, 1],
         quality: PICKER_COMPRESSION_QUALITY,
         allowsMultipleSelection: false,
-        presentationStyle: ImagePicker.UIImagePickerPresentationStyle.CURRENT_CONTEXT,
+        presentationStyle: ImagePicker.UIImagePickerPresentationStyle.OVER_FULL_SCREEN,
       });
     } catch (e) {
       console.error(e);

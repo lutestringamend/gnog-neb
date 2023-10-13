@@ -17,7 +17,7 @@ import {
   } from "../constants";
 
 const VideosFlatlist = (props) => {
-  const { videos, refreshing, showTitle, userId } = props;
+  const { videos, refreshing, showTitle, userId, jenis_video } = props;
   const navigation = useNavigation();
 
   function refreshPage() {
@@ -59,6 +59,7 @@ const VideosFlatlist = (props) => {
       title: getTitle(item),
       width: item?.width ? item?.width : vwmarkdefaultsourcewidth,
       height: item?.height ? item?.height : vwmarkdefaultsourceheight,
+      jenis_video,
     });
   }
 

@@ -54,7 +54,11 @@ const WatermarkSettings = (props) => {
     setTempWatermarkData(watermarkData);
     setObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY, watermarkData);
     if (loading) {
-      changingWatermarkData();
+      if (!(watermarkData?.name === undefined || watermarkData?.name === null || watermarkData?.name === "" || watermarkData?.phone === undefined || watermarkData?.phone === null || watermarkData?.phone === "")) {
+        changingWatermarkData(watermarkData?.name, watermarkData?.phone);
+      } else {
+        setLoading(false);
+      }
     }
   }, [watermarkData]);
 
@@ -99,21 +103,13 @@ const WatermarkSettings = (props) => {
     setTempWatermarkData(setWatermarkDatafromCurrentUser(currentUser, true));
   }
 
-  const changingWatermarkData = async () => {
+  const changingWatermarkData = async (wm_nama, wm_nomor_telepon) => {
     props.updateUserData(
       currentUser?.id,
       {
         ...currentUser?.detail_user,
-        wm_nama: watermarkData?.name
-          ? watermarkData?.name
-          : currentUser?.detail_user?.nama_depan
-          ? currentUser?.detail_user?.nama_depan
-          : null,
-        wm_nomor_telepon: watermarkData?.phone
-          ? watermarkData?.phone
-          : currentUser?.nomor_telp
-          ? currentUser?.nomor_telp
-          : null,
+        wm_nama,
+        wm_nomor_telepon,
       },
       currentAddress,
       token,

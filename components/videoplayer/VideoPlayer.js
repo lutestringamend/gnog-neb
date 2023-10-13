@@ -41,6 +41,8 @@ import { sentryLog } from "../../sentry";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY } from "../asyncstorage/constants";
 import {
+  STARTER_KIT_VIDEO_MENGAJAK_TAG,
+  WatermarkData,
   videoplayermargintop,
   videoplayerportraitiosheight,
   videoplayerportraitpanelandroidheight,
@@ -51,15 +53,21 @@ import {
   vwmarkrenderlandscapewidthcompressionconstant,
   vwmarkrenderportraitheightcompressionconstant,
   vwmarkrenderportraitwidthcompressionconstant,
+  vwmarktexturlcharlimit,
 } from "../mediakit/constants";
 import VideoLargeWatermarkModel from "../media/VideoLargeWatermarkModel";
 import { getDeviceInfo } from "../../axios/user";
+import {
+  personalwebsiteurlshort,
+  tokoonlineurlshort,
+} from "../../axios/constants";
 
 function VideoPlayer(props) {
   const deviceModel = getDeviceInfo().model;
 
-  const { videoId, title, uri, width, height, thumbnail, userId } =
+  const { videoId, title, uri, width, height, thumbnail, userId, jenis_video } =
     props.route?.params;
+  const { watermarkVideos, currentUser } = props;
 
   const ratio =
     width === null || height === null
@@ -110,7 +118,6 @@ function VideoPlayer(props) {
   const video = useRef(null);
   const waterRef = useRef(null);
   const navigation = useNavigation();
-  const { watermarkData, watermarkVideos, currentUser } = props;
   const videoDir = FileSystem.documentDirectory;
   const fileName = getFileName(uri);
 
@@ -127,6 +134,7 @@ function VideoPlayer(props) {
     const [videoSize, setVideoSize] = useState(initialVideoSize);*/
 
   //const [videoSize, setVideoSize] = useState(initialVideoSize);
+  const [watermarkData, setWatermarkData] = useState(WatermarkData);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -211,6 +219,28 @@ function VideoPlayer(props) {
       setVideoLoading(false);
     }
   }, [uri]);
+
+  useEffect(() => {
+    if (
+      !(props?.watermarkData === undefined || props?.watermarkData === null)
+    ) {
+      let url = `${
+        jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG
+          ? personalwebsiteurlshort
+          : tokoonlineurlshort
+      }${
+        currentUser?.name?.length > vwmarktexturlcharlimit
+          ? currentUser?.name.substring(0, vwmarktexturlcharlimit)
+          : currentUser?.name
+      }`;
+      let data = {
+        ...props?.watermarkData,
+        url,
+      };
+      console.log("video watermarkData", data);;
+      setWatermarkData(data);
+    }
+  }, [props?.watermarkData]);
 
   useEffect(() => {
     let newHeader = title;
