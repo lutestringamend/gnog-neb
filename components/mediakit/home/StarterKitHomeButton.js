@@ -16,9 +16,9 @@ const StarterKitHomeButton = (props) => {
     props?.onPress();
   }
 
-  if (disabled) {
+  /*if (disabled) {
     return <View style={[styles.containerBlank, style ? style : null]} />
-  }
+  }*/
 
   return (
     <TouchableOpacity
