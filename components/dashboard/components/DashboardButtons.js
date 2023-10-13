@@ -50,9 +50,9 @@ const ratio =
     : screenWidth / dashboardbuttonsdefaultscreenwidth;
 
 export const DashButton = (props) => {
-  if (props?.disabled) {
+  /*if (props?.disabled) {
     return null;
-  }
+  }*/
 
   return (
     <TouchableOpacity
