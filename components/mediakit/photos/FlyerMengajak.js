@@ -260,7 +260,9 @@ const FlyerMengajak = (props) => {
               navigation={navigation}
               item={item}
               index={index}
-              style={styles.containerImage}
+              style={[styles.containerImage, {
+                marginBottom: index >= photos?.length - 1 ? staticDimensions.pageBottomPadding / 2 : 0,
+              }]}
               onLongPress={() => onLongPress(item)}
               onPress={() => onPress(item)}
             />
