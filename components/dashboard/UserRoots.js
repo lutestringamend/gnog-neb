@@ -58,7 +58,7 @@ const UserRoots = (props) => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [modal, setModal] = useState(defaultModal);
-  const { token, currentUser, hpv, hpvArray } = props;
+  const { token, currentUser, hpv, hpvArray, profilePicture } = props;
 
   useEffect(() => {
     if (currentUser === null) {
@@ -170,11 +170,6 @@ const UserRoots = (props) => {
       id: currentUser?.id,
       name: currentUser?.name,
       status: currentUser?.status,
-      foto: currentUser?.detail_user
-        ? currentUser?.detail_user?.foto
-          ? currentUser?.detail_user?.foto
-          : null
-        : null,
       email: currentUser?.email,
       nomor_telp: currentUser?.nomor_telp,
       join_date,
@@ -352,7 +347,10 @@ const UserRoots = (props) => {
           />
           <VerticalLine style={{ height: 32, marginStart: 80 }} />
           <UserRootItem
-            userData={selfData}
+            userData={{
+              ...selfData,
+              foto: profilePicture ? profilePicture : null,
+            }}
             onPress={() =>
               openUserPopup(selfData, checkVerification(currentUser), false)
             }
@@ -567,6 +565,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
+  profilePicture: store.userState.profilePicture,
   hpv: store.userState.hpv,
   hpvArray: store.userState.hpvArray,
 });

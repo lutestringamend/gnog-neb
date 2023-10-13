@@ -70,6 +70,7 @@ import {
   USER_HPV_ARRAY_STATE_CHANGE,
   USER_HPV_ARRAY_INCREMENT_STATE_CHANGE,
   USER_HPV_TOTAL_REKRUTMEN_STATE_CHANGE,
+  USER_PROFILE_PICTURE_STATE_CHANGE,
 } from "../../redux/constants";
 import {
   calculateBase64SizeInBytes,
@@ -1307,6 +1308,14 @@ export const getCurrentUser = (token, storageCurrentUser) => {
             setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, data);
           }
 
+          dispatch({
+            type: USER_PROFILE_PICTURE_STATE_CHANGE,
+            data: data?.detail_user
+              ? data?.detail_user?.foto
+                ? data?.detail_user?.foto
+                : null
+              : null,
+          });
           dispatch({ type: USER_ADDRESS_STATE_CHANGE, data });
           if (
             !(
@@ -1465,6 +1474,14 @@ function readStorageCurrentUser(dispatch, storageCurrentUser, status) {
   } else {
     console.log("reading from storage currentUser");
     dispatch({ type: USER_STATE_CHANGE, data: storageCurrentUser });
+    dispatch({
+      type: USER_PROFILE_PICTURE_STATE_CHANGE,
+      data: storageCurrentUser?.detail_user
+        ? storageCurrentUser?.detail_user?.foto
+          ? storageCurrentUser?.detail_user?.foto
+          : null
+        : null,
+    });
     dispatch({
       type: USER_ADDRESS_STATE_CHANGE,
       data: storageCurrentUser,

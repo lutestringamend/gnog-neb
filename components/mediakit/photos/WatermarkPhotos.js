@@ -273,6 +273,7 @@ const WatermarkPhotos = (props) => {
                     photos={photos[item]}
                     watermarkData={watermarkData}
                     sharingAvailability={sharingAvailability}
+                    navigation={navigation}
                     selected={selected}
                     onPress={(e, title) => onPress(e, title)}
                     onLongPress={(e) => onLongPress(e)}

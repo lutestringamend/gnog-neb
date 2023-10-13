@@ -12,7 +12,7 @@ export default function Header(props) {
   const [login, setLogin] = useState(false);
   const [userData, setUserData] = useState(ProfileHeaderUserData);
   const navigation = useNavigation();
-  const { token, currentUser } = props;
+  const { token, currentUser, profilePicture } = props;
 
   useEffect(() => {
     if (
@@ -33,16 +33,9 @@ export default function Header(props) {
           currentUser?.detail_user?.nama_lengkap === undefined
             ? username
             : currentUser?.detail_user?.nama_lengkap;
-        let photo =
-          currentUser?.detail_user === undefined ||
-          currentUser?.detail_user === null ||
-          currentUser?.detail_user?.foto === undefined
-            ? null
-            : currentUser?.detail_user?.foto;
         setUserData({
           username,
           displayName,
-          photo,
         });
         setLogin(true);
       }
@@ -74,8 +67,8 @@ export default function Header(props) {
                 key="userImage"
                 style={styles.image}
                 source={
-                  userData?.photo
-                    ? userData?.photo
+                  profilePicture
+                    ? profilePicture
                     : require("../../assets/user.png")
                 }
                 alt={userData?.username}

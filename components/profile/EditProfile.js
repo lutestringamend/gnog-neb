@@ -68,7 +68,8 @@ function EditProfile(props) {
   const [bankName, setBankName] = useState("");
   const [displayDatePicker, setDisplayDatePicker] = useState(false);
 
-  const { token, currentUser, currentAddress, userUpdate } = props;
+  const { token, currentUser, currentAddress, userUpdate, userProfilePicture } =
+    props;
   const navigation = useNavigation();
   const rbSheet = useRef();
   const rbSheetMedia = useRef();
@@ -152,9 +153,6 @@ function EditProfile(props) {
         return;
       }
     }
-    /*if (currentUser?.id === 8054 && !(currentUser?.detail_user === undefined || currentUser?.detail_user === null || currentUser?.detail_user?.foto === undefined)) {
-      setError(`foto ${currentUser?.detail_user?.foto}`);
-    }*/
   }, [currentUser]);
 
   useEffect(() => {
@@ -214,7 +212,13 @@ function EditProfile(props) {
       setLoading(false);
     } else if (userUpdate?.session === "photoError") {
       setSuccess(false);
-      setError(userUpdate?.message === undefined || userUpdate?.message === null || userUpdate?.message === "" ? "Error mengambil foto baru" : userUpdate?.message);
+      setError(
+        userUpdate?.message === undefined ||
+          userUpdate?.message === null ||
+          userUpdate?.message === ""
+          ? "Error mengambil foto baru"
+          : userUpdate?.message
+      );
       setUploadingPhoto(defaultUploadingPhoto);
       props.setMediaProfilePicture(null, currentUser?.id);
     }
@@ -318,7 +322,9 @@ function EditProfile(props) {
           uploading: false,
         });
       }
-      executeUploadData(currentUser?.detail_user?.foto);
+      executeUploadData(
+        userProfilePicture ? userProfilePicture : currentUser?.detail_user?.foto
+      );
     }
   }
 
@@ -354,7 +360,8 @@ function EditProfile(props) {
     return (
       <View style={styles.container}>
         {error ? (
-          <Text allowFontScaling={false}
+          <Text
+            allowFontScaling={false}
             style={[
               styles.textError,
               success && { backgroundColor: colors.daclen_green },
@@ -380,14 +387,9 @@ function EditProfile(props) {
                 props.profilePicture === undefined ||
                 props.profilePicture === null ||
                 props.profilePicture === ""
-                  ? currentUser === null ||
-                    currentUser?.detail_user === undefined ||
-                    currentUser?.detail_user === null ||
-                    currentUser?.detail_user?.foto === undefined ||
-                    currentUser?.detail_user?.foto === null ||
-                    currentUser?.detail_user?.foto === ""
-                    ? require("../../assets/user.png")
-                    : currentUser?.detail_user?.foto
+                  ? userProfilePicture
+                    ? userProfilePicture
+                    : require("../../assets/user.png")
                   : props.profilePicture
               }
               alt={user?.nama_lengkap}
@@ -414,9 +416,14 @@ function EditProfile(props) {
             )}
           </TouchableOpacity>
 
-          <Text allowFontScaling={false} style={styles.textCompulsory}>Nomor Telepon*</Text>
+          <Text allowFontScaling={false} style={styles.textCompulsory}>
+            Nomor Telepon*
+          </Text>
           {currentUser?.nomor_telp_verified_at && (
-            <Text allowFontScaling={false} style={[styles.text, { marginBottom: 4 }]}>
+            <Text
+              allowFontScaling={false}
+              style={[styles.text, { marginBottom: 4 }]}
+            >
               Telah diverifikasi pada
               {moment(currentUser?.nomor_telp_verified_at).format(
                 " MMM DD YYYY, HH:mm"
@@ -445,9 +452,14 @@ function EditProfile(props) {
             onChangeText={(nomor_telp) => setUser({ ...user, nomor_telp })}
           />
 
-          <Text allowFontScaling={false} style={styles.textCompulsory}>Email*</Text>
+          <Text allowFontScaling={false} style={styles.textCompulsory}>
+            Email*
+          </Text>
           {currentUser?.email_verified_at && (
-            <Text allowFontScaling={false} style={[styles.text, { marginBottom: 4 }]}>
+            <Text
+              allowFontScaling={false}
+              style={[styles.text, { marginBottom: 4 }]}
+            >
               Telah diverifikasi pada
               {moment(currentUser?.email_verified_at).format(
                 " MMM DD YYYY, HH:mm"
@@ -475,7 +487,9 @@ function EditProfile(props) {
             onChangeText={(email) => setUser({ ...user, email })}
           />
 
-          <Text allowFontScaling={false} style={styles.textCompulsory}>Nama depan*</Text>
+          <Text allowFontScaling={false} style={styles.textCompulsory}>
+            Nama depan*
+          </Text>
           <TextInput
             value={user?.nama_depan}
             style={[
@@ -492,7 +506,9 @@ function EditProfile(props) {
               currentUser?.bank_set === undefined || !currentUser?.bank_set
             }
           />
-          <Text allowFontScaling={false} style={styles.text}>Nama belakang (opsional)</Text>
+          <Text allowFontScaling={false} style={styles.text}>
+            Nama belakang (opsional)
+          </Text>
           <TextInput
             value={user?.nama_belakang}
             style={styles.textInput}
@@ -504,7 +520,9 @@ function EditProfile(props) {
             }
           />
 
-          <Text allowFontScaling={false} style={styles.text}>Jenis kelamin (opsional)</Text>
+          <Text allowFontScaling={false} style={styles.text}>
+            Jenis kelamin (opsional)
+          </Text>
           <RadioGroup
             containerStyle={styles.radioGroup}
             radioButtons={genderArray}
@@ -512,7 +530,9 @@ function EditProfile(props) {
             layout="row"
           />
 
-          <Text allowFontScaling={false} style={styles.textCompulsory}>Tanggal Lahir*</Text>
+          <Text allowFontScaling={false} style={styles.textCompulsory}>
+            Tanggal Lahir*
+          </Text>
           {Platform.OS === "web" ? (
             <TextInput
               value={user?.tanggal_lahir ? user?.tanggal_lahir : ""}
@@ -550,15 +570,22 @@ function EditProfile(props) {
 
           <Separator thickness={2} />
 
-          <Text allowFontScaling={false}
+          <Text
+            allowFontScaling={false}
             style={[
               styles.textCompulsory,
-              { fontFamily: "Poppins", fontSize: 18, marginTop: 20, marginBottom: 4 },
+              {
+                fontFamily: "Poppins",
+                fontSize: 18,
+                marginTop: 20,
+                marginBottom: 4,
+              },
             ]}
           >
             Info Bank
           </Text>
-          <Text allowFontScaling={false}
+          <Text
+            allowFontScaling={false}
             style={[styles.text, { marginBottom: 20, textAlign: "justify" }]}
           >
             {currentUser?.bank_set === undefined || !currentUser?.bank_set
@@ -566,7 +593,9 @@ function EditProfile(props) {
               : bankinfodescset}
           </Text>
 
-          <Text allowFontScaling={false} style={styles.textCompulsory}>Nomor Rekening*</Text>
+          <Text allowFontScaling={false} style={styles.textCompulsory}>
+            Nomor Rekening*
+          </Text>
           <TextInput
             value={
               currentUser?.bank_set
@@ -593,7 +622,9 @@ function EditProfile(props) {
             }
           />
 
-          <Text allowFontScaling={false} style={styles.textCompulsory}>Nama Bank*</Text>
+          <Text allowFontScaling={false} style={styles.textCompulsory}>
+            Nama Bank*
+          </Text>
           <BSTextInput
             disabled={loading || currentUser?.bank_set}
             onPress={() => openBottomSheet()}
@@ -617,7 +648,9 @@ function EditProfile(props) {
             ]}
           />
 
-          <Text allowFontScaling={false} style={styles.text}>Cabang Bank</Text>
+          <Text allowFontScaling={false} style={styles.text}>
+            Cabang Bank
+          </Text>
           <TextInput
             value={
               currentUser?.bank_set
@@ -647,7 +680,9 @@ function EditProfile(props) {
               }
               disabled={loading}
             >
-              <Text allowFontScaling={false} style={styles.textChange}>Baca {privacypolicy}</Text>
+              <Text allowFontScaling={false} style={styles.textChange}>
+                Baca {privacypolicy}
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -671,7 +706,9 @@ function EditProfile(props) {
                 style={{ alignSelf: "center" }}
               />
             ) : (
-              <Text allowFontScaling={false} style={styles.textButton}>Simpan Profil</Text>
+              <Text allowFontScaling={false} style={styles.textButton}>
+                Simpan Profil
+              </Text>
             )}
           </TouchableOpacity>
           <TouchableOpacity
@@ -684,7 +721,9 @@ function EditProfile(props) {
             ]}
             disabled={loading}
           >
-            <Text allowFontScaling={false} style={styles.textButton}>Hapus Akun Daclen</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>
+              Hapus Akun Daclen
+            </Text>
           </TouchableOpacity>
         </ScrollView>
         <RBSheet ref={rbSheetMedia} openDuration={250} height={300}>
@@ -724,7 +763,9 @@ function EditProfile(props) {
           color={colors.daclen_orange}
           style={{ alignSelf: "center", marginVertical: 20 }}
         />
-        <Text allowFontScaling={false} style={styles.textUid}>{e?.message}</Text>
+        <Text allowFontScaling={false} style={styles.textUid}>
+          {e?.message}
+        </Text>
       </View>
     );
   }
@@ -835,7 +876,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
     marginHorizontal: 20,
     marginBottom: 20,
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins",
+    fontSize: 14,
   },
   radioGroup: {
     marginTop: 4,
@@ -868,7 +910,8 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   textUid: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins",
+    fontSize: 12,
     color: colors.daclen_gray,
     marginHorizontal: 20,
     textAlign: "center",
@@ -878,6 +921,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
+  userProfilePicture: store.userState.profilePicture,
   currentAddress: store.userState.currentAddress,
   userUpdate: store.userState.userUpdate,
   banks: store.userState.banks,

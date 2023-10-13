@@ -42,6 +42,7 @@ import {
   USER_HPV_ARRAY_STATE_CHANGE,
   USER_HPV_ARRAY_INCREMENT_STATE_CHANGE,
   USER_HPV_TOTAL_REKRUTMEN_STATE_CHANGE,
+  USER_PROFILE_PICTURE_STATE_CHANGE,
 } from "../constants";
 
 import { mainhttp } from "../../axios/constants";
@@ -54,6 +55,7 @@ export const initialState = {
   profileLock: true,
   profileLockTimeout: null,
   profilePIN: null,
+  profilePicture: null,
   regDateInMs: null,
   recruitmentDeadline: null,
   addresses: null,
@@ -190,6 +192,11 @@ export const user = (state = initialState, action) => {
       return {
         ...state,
         regDateInMs: action.data,
+      };
+    case USER_PROFILE_PICTURE_STATE_CHANGE:
+      return {
+        ...state,
+        profilePicture: action.data,
       };
     case USER_RECRUITMENT_DEADLINE_STATE_CHANGE:
       return {

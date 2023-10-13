@@ -53,6 +53,7 @@ const Dashboard = (props) => {
   const {
     currentUser,
     token,
+    profilePicture,
     registerSnapToken,
     hpv,
     profileLock,
@@ -327,7 +328,7 @@ const Dashboard = (props) => {
           <DashboardLock receiveOTP={(e) => receiveOTP(e)} />
         ) : (
           <View style={styles.scrollView}>
-            <DashboardUser currentUser={currentUser} regDate={regDate} />
+            <DashboardUser currentUser={currentUser} regDate={regDate} profilePicture={profilePicture} />
             <DashboardStats
               currentUser={currentUser}
               recruitmentTimer={recruitmentTimer}
@@ -450,6 +451,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
+  profilePicture: store.userState.profilePicture,
   regDateInMs: store.userState.regDateInMs,
   registerSnapToken: store.userState.registerSnapToken,
   profilePIN: store.userState.profilePIN,

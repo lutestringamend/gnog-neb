@@ -350,6 +350,10 @@ function Main(props) {
     }, [profilePIN]);
 
     useEffect(() => {
+      console.log("redux user profilePicture", props?.profilePicture);
+    }, [props?.profilePicture]);
+
+    useEffect(() => {
       if (addressId === null) {
         checkStorageAddressId();
       }
@@ -638,6 +642,7 @@ const mapStateToProps = (store) => ({
   currentUser: store.userState.currentUser,
   notificationsArray: store.notificationsState.notificationsArray,
   profileLock: store.userState.profileLock,
+  profilePicture: store.userState.profilePicture,
   addressId: store.userState.addressId,
   addresses: store.userState.addresses,
   regDateInMs: store.userState.regDateInMs,

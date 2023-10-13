@@ -16,7 +16,7 @@ import { capitalizeFirstLetter } from "../axios/cart";
 import { createLocalWelcomeNotification } from "./notifications";
 
 const Header = (props) => {
-  const { currentUser } = props;
+  const { currentUser, profilePicture } = props;
   const navigation = useNavigation();
 
   if (
@@ -77,8 +77,8 @@ const Header = (props) => {
           key="userImage"
           style={styles.image}
           source={
-            currentUser?.detail_user?.foto
-              ? currentUser?.detail_user?.foto
+            profilePicture
+              ? profilePicture
               : require("../assets/user.png")
           }
           alt={currentUser?.name}
@@ -223,6 +223,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (store) => ({
   currentUser: store.userState.currentUser,
+  profilePicture: store.userState.profilePicture,
 });
 
 export default connect(mapStateToProps, null)(Header);

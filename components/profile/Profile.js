@@ -59,7 +59,7 @@ export const userLogOut = async (props, username) => {
 };
 
 function Profile(props) {
-  const { currentUser, token } = props;
+  const { currentUser, token, profilePicture } = props;
   const [loggingOut, setLoggingOut] = useState(false);
   const appVersion = `Versi ${packageJson?.version}`;
   const rbSheet = useRef();
@@ -138,7 +138,7 @@ function Profile(props) {
         style={styles.scrollView}
         contentContainerStyle={styles.containerVertical}
       >
-        <Header token={token} currentUser={currentUser} thickness={3} />
+        <Header token={token} currentUser={currentUser} profilePicture={profilePicture} thickness={3} />
 
         {currentUser === null || currentUser?.id === undefined ? null : (
           <View>
@@ -261,6 +261,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   currentUser: store.userState.currentUser,
   token: store.userState.token,
+  profilePicture: store.userState.profilePicture,
 });
 
 const mapDispatchProps = (dispatch) =>

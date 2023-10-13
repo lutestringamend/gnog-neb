@@ -14,7 +14,7 @@ import { capitalizeFirstLetter } from "../../../axios/cart";
 import { convertDateISOStringtoDisplayDate } from "../../../axios/profile";
 
 export default function DashboardUser(props) {
-  const { currentUser, regDate } = props;
+  const { currentUser, regDate, profilePicture } = props;
   const navigation = useNavigation();
 
   function openWithdrawal() {
@@ -40,8 +40,8 @@ export default function DashboardUser(props) {
           key="userImage"
           style={styles.image}
           source={
-            currentUser?.detail_user?.foto
-              ? currentUser?.detail_user?.foto
+            profilePicture
+              ? profilePicture
               : require("../../../assets/user.png")
           }
           alt={currentUser?.name}
