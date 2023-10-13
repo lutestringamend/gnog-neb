@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, Image } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 import { colors } from "../../../styles/base";
 import {
   STARTER_KIT_DEFAULT_FONT_SIZE,
@@ -15,6 +15,11 @@ const StarterKitHomeButton = (props) => {
     }
     props?.onPress();
   }
+
+  if (disabled) {
+    return <View style={[styles.containerBlank, style ? style : null]} />
+  }
+
   return (
     <TouchableOpacity
       onPress={() => onPress()}
@@ -58,6 +63,11 @@ const StarterKitHomeButton = (props) => {
 };
 
 const styles = StyleSheet.create({
+  containerBlank: {
+    flex: 1,
+    backgroundColor: "transparent",
+    height: 160,
+  },
   container: {
     flex: 1,
     borderRadius: 4,

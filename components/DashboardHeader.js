@@ -82,9 +82,8 @@ const Header = (props) => {
               : require("../assets/user.png")
           }
           alt={currentUser?.name}
-          contentFit="cover"
-          placeholder={blurhash}
-          transition={100}
+          contentFit={Platform.OS === "ios" && profilePicture === null ? "contain" : "cover"}
+          transition={0}
         />
       </TouchableOpacity>
       <View style={styles.containerText}>

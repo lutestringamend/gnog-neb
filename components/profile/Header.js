@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Platform } from "react-native";
 import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
@@ -72,8 +72,7 @@ export default function Header(props) {
                     : require("../../assets/user.png")
                 }
                 alt={userData?.username}
-                contentFit="cover"
-                placeholder={require("../../assets/user.png")}
+                contentFit={Platform.OS === "ios" && profilePicture === null ? "contain" : "cover"}
                 transition={0}
               />
             </View>

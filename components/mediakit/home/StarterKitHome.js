@@ -95,13 +95,13 @@ const StarterKitHome = (props) => {
             onPress={() => setActiveTab(STARTER_KIT_FLYER_PRODUK)}
             icon={STARTER_KIT_FLYER_PRODUK_ICON}
             text={STARTER_KIT_FLYER_PRODUK_TEXT}
-            style={{ marginEnd: 10 }}
+            style={{ marginEnd: 10, flex: 1 / 2 }}
           />
           <StarterKitHomeButton
             onPress={() => setActiveTab(STARTER_KIT_VIDEO_PRODUK)}
             icon={STARTER_KIT_VIDEO_PRODUK_ICON}
             text={STARTER_KIT_VIDEO_PRODUK_TEXT}
-            style={{ marginStart: 10 }}
+            style={{ marginStart: 10, flex: 1 / 2 }}
           />
         </View>
         <View style={styles.containerHorizontal}>
@@ -109,13 +109,13 @@ const StarterKitHome = (props) => {
             onPress={() => setActiveTab(STARTER_KIT_FLYER_MENGAJAK)}
             icon={STARTER_KIT_FLYER_MENGAJAK_ICON}
             text={STARTER_KIT_FLYER_MENGAJAK_TEXT}
-            style={{ marginEnd: 10 }}
+            style={{ marginEnd: 10, flex: 1 / 2 }}
           />
           <StarterKitHomeButton
             onPress={() => setActiveTab(STARTER_KIT_VIDEO_MENGAJAK)}
             icon={STARTER_KIT_VIDEO_MENGAJAK_ICON}
             text={STARTER_KIT_VIDEO_MENGAJAK_TEXT}
-            style={{ marginStart: 10 }}
+            style={{ marginStart: 10, flex: 1 / 2 }}
             disabled={true}
           />
         </View>
@@ -124,14 +124,14 @@ const StarterKitHome = (props) => {
             onPress={() => openTokoOnline()}
             icon={STARTER_KIT_TOKO_ONLINE_ICON}
             text={STARTER_KIT_TOKO_ONLINE_TEXT}
-            style={{ marginHorizontal: 6 }}
+            style={{ marginHorizontal: 6, flex: 1 / 3 }}
             fontSize={12}
           />
           <StarterKitHomeButton
             onPress={() => openPersonalWeb()}
             icon={STARTER_KIT_PERSONAL_WEBSITE_ICON}
             text={STARTER_KIT_PERSONAL_WEBSITE}
-            style={{ marginHorizontal: 6 }}
+            style={{ marginHorizontal: 6, flex: 1 / 3 }}
             fontSize={12}
             disabled={true}
           />
@@ -139,7 +139,7 @@ const StarterKitHome = (props) => {
             onPress={() => openReferral()}
             icon={STARTER_KIT_REFERRAL_ICON}
             text={STARTER_KIT_REFERRAL}
-            style={{ marginHorizontal: 6 }}
+            style={{ marginHorizontal: 6, flex: 1 / 3 }}
             fontSize={12}
           />
         </View>

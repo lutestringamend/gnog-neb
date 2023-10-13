@@ -50,6 +50,10 @@ const ratio =
     : screenWidth / dashboardbuttonsdefaultscreenwidth;
 
 export const DashButton = (props) => {
+  if (props?.disabled) {
+    return null;
+  }
+
   return (
     <TouchableOpacity
       style={[
@@ -189,6 +193,7 @@ const DashboardButtons = ({ userId, username }) => {
             text="KODE ETIK"
             icon="file-document-multiple"
             onPress={() => openKodeEtik()}
+            disabled={true}
           />
           <DashButton
             text="BLOG"
@@ -199,6 +204,7 @@ const DashboardButtons = ({ userId, username }) => {
             text="TUTORIAL"
             icon="play-box"
             onPress={() => openTutorial()}
+            disabled={true}
           />
         </View>
         <View style={[styles.containerVertical, { marginStart: 10 }]}>
@@ -211,6 +217,7 @@ const DashboardButtons = ({ userId, username }) => {
             text={`PENJELASAN\nBISNIS`}
             icon="help-rhombus"
             onPress={() => openExplanation()}
+            disabled={true}
           />
           <DashButton
             text={`DASHBOARD\nWEBSITE`}
@@ -221,6 +228,7 @@ const DashboardButtons = ({ userId, username }) => {
             text={`KATALOG\nHADIAH`}
             icon="gift"
             onPress={() => openCatalog()}
+            disabled={true}
           />
         </View>
       </View>

@@ -4,7 +4,7 @@ import {
   View,
   TouchableOpacity,
   Text,
-  Linking,
+  Platform,
 } from "react-native";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
@@ -45,9 +45,8 @@ export default function DashboardUser(props) {
               : require("../../../assets/user.png")
           }
           alt={currentUser?.name}
-          contentFit="cover"
-          placeholder={require("../../../assets/user.png")}
-          transition={100}
+          contentFit={Platform.OS === "ios" && profilePicture === null ? "contain" : "cover"}
+          transition={0}
         />
       </TouchableOpacity>
 
