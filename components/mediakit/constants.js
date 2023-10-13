@@ -4,6 +4,8 @@ export const WatermarkData = {
   url: "",
 }
 
+export const FLYER_SELECTION_LIMIT = 10;
+
 export const STARTER_KIT_HOME = "STARTER_KIT_HOME";
 export const STARTER_KIT_DEFAULT_FONT_SIZE = 14;
 export const STARTER_KIT_DEFAULT_ICON_WIDTH = 80;

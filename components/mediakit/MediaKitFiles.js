@@ -12,6 +12,7 @@ import {
   BackHandler,
 } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { isAvailableAsync } from "expo-sharing";
@@ -79,6 +80,7 @@ function MediaKitFiles(props) {
   const [sharingAvailability, setSharingAvailability] = useState(null);
   const [photoKeys, setPhotoKeys] = useState([]);
   const [modal, setModal] = useState(defaultModal);
+  const [selectMode, setSelectMode] = useState(false);
 
   const {
     token,
@@ -271,15 +273,15 @@ function MediaKitFiles(props) {
     return (
       <View style={styles.container}>
         <ImageBackground
-            source={require("../../assets/profilbg.png")}
-            style={styles.background}
-            resizeMode="cover"
-          />
+          source={require("../../assets/profilbg.png")}
+          style={styles.background}
+          resizeMode="cover"
+        />
 
         <Header />
 
-        {activeTab === STARTER_KIT_HOME ? null : (
-          <View style={styles.containerNav}>
+        <View style={styles.containerNav}>
+          {activeTab === STARTER_KIT_HOME ? (
             <TouchableOpacity
               style={[
                 styles.containerRefresh,
@@ -290,21 +292,6 @@ function MediaKitFiles(props) {
                       : colors.daclen_bg_highlighted,
                   borderTopStartRadius: 6,
                   borderBottomStartRadius: 6,
-                },
-              ]}
-              disabled={photoLoading || videoLoading}
-              onPress={() => setActiveTab(STARTER_KIT_HOME)}
-            >
-              <Text style={styles.textRefresh}>BACK</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.containerRefresh,
-                {
-                  backgroundColor:
-                    photoLoading || videoLoading
-                      ? colors.daclen_gray
-                      : colors.daclen_green_button,
                 },
               ]}
               disabled={photoLoading || videoLoading}
@@ -328,29 +315,72 @@ function MediaKitFiles(props) {
                 })
               }
             >
-              <Text style={styles.textRefresh}>SETTING</Text>
+              <Text style={styles.textRefresh}>SETTING WATERMARK</Text>
             </TouchableOpacity>
+          ) : (
             <TouchableOpacity
-              style={styles.containerRefresh}
+              style={[
+                styles.containerRefresh,
+                {
+                  backgroundColor:
+                    photoLoading || videoLoading
+                      ? colors.daclen_gray
+                      : colors.daclen_bg_highlighted,
+                  borderTopStartRadius: 6,
+                  borderBottomStartRadius: 6,
+                },
+              ]}
               disabled={photoLoading || videoLoading}
-              onPress={() => refreshContent()}
+              onPress={() => setActiveTab(STARTER_KIT_HOME)}
             >
-              {photoLoading || videoLoading ? (
-                <ActivityIndicator
-                  size="small"
-                  color={colors.daclen_light}
-                  style={{
-                    alignSelf: "center",
-                    marginVertical: 10,
-                    marginHorizontal: 12,
-                  }}
-                />
-              ) : (
-                <Text style={styles.textRefresh}>REFRESH</Text>
-              )}
+              <Text style={styles.textRefresh}>BACK</Text>
             </TouchableOpacity>
-          </View>
-        )}
+          )}
+
+          {selectMode &&
+          (activeTab === STARTER_KIT_FLYER_MENGAJAK ||
+            activeTab === STARTER_KIT_FLYER_PRODUK) ? (
+            <TouchableOpacity
+              style={[
+                styles.containerRefresh,
+                {
+                  backgroundColor:
+                    photoLoading || videoLoading
+                      ? colors.daclen_gray
+                      : colors.daclen_blue,
+                },
+              ]}
+              disabled={photoLoading || videoLoading}
+            >
+              <Text style={styles.textRefresh}>SIMPAN FILE</Text>
+            </TouchableOpacity>
+          ) : null}
+
+          <TouchableOpacity
+            style={styles.containerRefresh}
+            disabled={photoLoading || videoLoading}
+            onPress={() => refreshContent()}
+          >
+            {photoLoading || videoLoading ? (
+              <ActivityIndicator
+                size="small"
+                color={colors.daclen_light}
+                style={{
+                  alignSelf: "center",
+                  marginVertical: 10,
+                  marginHorizontal: 12,
+                }}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name="refresh"
+                size={24}
+                color={colors.daclen_light}
+                style={styles.refresh}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.scrollView}>
           {token === null ||
@@ -383,8 +413,11 @@ function MediaKitFiles(props) {
               photoKeys={photoKeys}
               jenis_foto={STARTER_KIT_FLYER_PRODUK_TAG}
               photosMultipleSave={props?.photosMultipleSave}
-              clearMultipleSave={() => props?.updateReduxMediaKitPhotosMultipleSave(null)}
+              clearMultipleSave={() =>
+                props?.updateReduxMediaKitPhotosMultipleSave(null)
+              }
               refreshPage={() => refreshPhotos()}
+              setSelectMode={(e) => setSelectMode(e)}
             />
           ) : activeTab === STARTER_KIT_FLYER_MENGAJAK ? (
             <FlyerMengajak
@@ -396,8 +429,11 @@ function MediaKitFiles(props) {
               sharingAvailability={sharingAvailability}
               jenis_foto={STARTER_KIT_FLYER_MENGAJAK_TAG}
               photosMultipleSave={props?.photosMultipleSave}
-              clearMultipleSave={() => props?.updateReduxMediaKitPhotosMultipleSave(null)}
+              clearMultipleSave={() =>
+                props?.updateReduxMediaKitPhotosMultipleSave(null)
+              }
               refreshPage={() => refreshPhotos()}
+              setSelectMode={(e) => setSelectMode(e)}
             />
           ) : (
             <StarterKitHome
@@ -469,12 +505,12 @@ const styles = StyleSheet.create({
     elevation: 4,
     backgroundColor: colors.daclen_bg,
     borderColor: colors.daclen_light,
-    borderTopStartRadius: 6,
-    borderBottomStartRadius: 6,
+    borderTopStartRadius: 8,
+    borderBottomStartRadius: 8,
     borderTopWidth: 1,
     borderStartWidth: 1,
     borderBottomWidth: 1,
-    paddingEnd: 20,
+    paddingEnd: 4,
   },
   containerRefresh: {
     backgroundColor: "transparent",
@@ -507,6 +543,11 @@ const styles = StyleSheet.create({
   spinner: {
     alignSelf: "center",
     marginVertical: 20,
+  },
+  refresh: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
+    marginHorizontal: 8,
   },
   textRefresh: {
     backgroundColor: "transparent",

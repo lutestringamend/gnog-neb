@@ -162,7 +162,7 @@ const WatermarkSettings = (props) => {
         <ScrollView style={styles.containerInfo}>
           <View style={styles.containerPrivacy}>
             <Text allowFontScaling={false} style={styles.textUid}>
-              {`Kirimkan ${urlTitle} Daclen dengan watermark spesial berisikan informasi berikut ini:`}
+              {`Kirimkan ${urlTitle === null ? "flyer dan video " : urlTitle} Daclen dengan watermark spesial berisikan informasi berikut ini:`}
             </Text>
             <TouchableOpacity
               onPress={() =>
@@ -204,12 +204,13 @@ const WatermarkSettings = (props) => {
             editable={editable}
             maxLength={vwmarktextphonecharlimit}
           />
-          <Text
+          {urlTitle && urlEndpoint ? <Text
             allowFontScaling={false}
             style={[styles.textCompulsory, { marginTop: 12 }]}
           >
             {`Link ${urlTitle}:\n${urlEndpoint}${currentUser?.name}`}
-          </Text>
+          </Text> : null}
+          
           <View style={styles.containerButtons}>
             <TouchableOpacity
               onPress={() => changeWatermark()}

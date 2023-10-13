@@ -75,6 +75,8 @@ const WatermarkPhotos = (props) => {
       if ((selected?.urls?.length === undefined || selected?.urls?.length < 1) && Object.keys(selected?.ids)?.length > 0) {
         clearSelection();
       }
+      props?.setSelectMode(!(selected?.urls?.length === undefined || selected?.urls?.length < 1 || props?.setSelectMode === undefined || props?.setSelectMode === null));
+     
       console.log("selected", selected);
     }, [selected]);
 
@@ -84,6 +86,9 @@ const WatermarkPhotos = (props) => {
         ids: {},
         urls: [],
       });
+      if (!(props?.setSelectMode === undefined || props?.setSelectMode === null)) {
+        props?.setSelectMode(false);
+      }
     };
 
     const clearError = () => {

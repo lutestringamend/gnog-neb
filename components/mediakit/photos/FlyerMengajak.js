@@ -65,6 +65,8 @@ const FlyerMengajak = (props) => {
     ) {
       clearSelection();
     }
+    props?.setSelectMode(!(selected?.urls?.length === undefined || selected?.urls?.length < 1 || props?.setSelectMode === undefined || props?.setSelectMode === null));
+     
     console.log("selected", selected);
   }, [selected]);
 
@@ -74,6 +76,9 @@ const FlyerMengajak = (props) => {
       ids: {},
       urls: [],
     });
+    if (!(props?.setSelectMode === undefined || props?.setSelectMode === null)) {
+      props?.setSelectMode(false);
+    }
   };
 
   const clearError = () => {

@@ -68,7 +68,7 @@ const PhotoItem = (props) => {
         <View style={styles.containerSelected}>
           <MaterialCommunityIcons
             name="check-circle"
-            size={18}
+            size={24}
             color={colors.daclen_light}
             style={styles.check}
           />
