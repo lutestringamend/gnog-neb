@@ -182,6 +182,45 @@ function MediaKitFiles(props) {
     }
   }, [photoError]);
 
+  useEffect(() => {
+    if (!selectMode) {
+      if (
+        activeTab === STARTER_KIT_FLYER_PRODUK &&
+        selection.flyerProduk !== DefaultSelected
+      ) {
+        setSelection({
+          ...selection,
+          flyerProduk: {
+            ids: {},
+            urls: [],
+          },
+        });
+      } else if (
+        activeTab === STARTER_KIT_FLYER_MENGAJAK &&
+        selection.flyerMengajak !== DefaultSelected
+      ) {
+        setSelection({
+          ...selection,
+          flyerMengajak: {
+            ids: {},
+            urls: [],
+          },
+        });
+      } else {
+        setSelection({
+          flyerProduk: {
+            ids: {},
+            urls: [],
+          },
+          flyerMengajak: {
+            ids: {},
+            urls: [],
+          },
+        });
+      }
+    }
+  }, [selectMode]);
+
   const checkWatermarkData = async () => {
     let newData = await getObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY);
     if (!(newData === undefined || newData === null)) {
@@ -272,6 +311,7 @@ function MediaKitFiles(props) {
     if (modal?.visible) {
       setModal(defaultModal);
     } else if (activeTab !== STARTER_KIT_HOME) {
+      setSelectMode(false);
       setActiveTab(STARTER_KIT_HOME);
     } else {
       navigation.goBack();
@@ -363,7 +403,7 @@ function MediaKitFiles(props) {
     }
   };
 
-  const clearSelection = () => {
+  /*const clearSelection = () => {
     if (
       (activeTab === STARTER_KIT_FLYER_PRODUK &&
         (selection.flyerProduk.urls?.length === undefined ||
@@ -376,7 +416,7 @@ function MediaKitFiles(props) {
     } else {
       setSelected(true, null);
     }
-  };
+  };*/
 
   const openMultipleImageSave = () => {
     navigation.navigate("MultipleImageSave", {
@@ -455,7 +495,7 @@ function MediaKitFiles(props) {
                 },
               ]}
               disabled={photoLoading || videoLoading}
-              onPress={() => setActiveTab(STARTER_KIT_HOME)}
+              onPress={() => onBackPress()}
             >
               <Text style={styles.textRefresh}>BACK</Text>
             </TouchableOpacity>
@@ -471,12 +511,12 @@ function MediaKitFiles(props) {
                     photoLoading ||
                     videoLoading ||
                     (selectMode &&
-                      activeTab === STARTER_KIT_FLYER_PRODUK &&
-                      (selection.flyerProduk.urls?.length === undefined ||
-                        selection.flyerProduk.urls?.length < 1)) ||
-                    (activeTab === STARTER_KIT_FLYER_MENGAJAK &&
-                      (selection.flyerMengajak.urls?.length === undefined ||
-                        selection.flyerMengajak.urls?.length < 1))
+                      ((activeTab === STARTER_KIT_FLYER_PRODUK &&
+                        (selection.flyerProduk.urls?.length === undefined ||
+                          selection.flyerProduk.urls?.length < 1)) ||
+                        (activeTab === STARTER_KIT_FLYER_MENGAJAK &&
+                          (selection.flyerMengajak.urls?.length === undefined ||
+                            selection.flyerMengajak.urls?.length < 1))))
                       ? colors.daclen_gray
                       : colors.daclen_blue,
                 },
@@ -486,12 +526,12 @@ function MediaKitFiles(props) {
                 photoLoading ||
                 videoLoading ||
                 (selectMode &&
-                  activeTab === STARTER_KIT_FLYER_PRODUK &&
-                  (selection.flyerProduk.urls?.length === undefined ||
-                    selection.flyerProduk.urls?.length < 1)) ||
-                (activeTab === STARTER_KIT_FLYER_MENGAJAK &&
-                  (selection.flyerMengajak.urls?.length === undefined ||
-                    selection.flyerMengajak.urls?.length < 1))
+                  ((activeTab === STARTER_KIT_FLYER_PRODUK &&
+                    (selection.flyerProduk.urls?.length === undefined ||
+                      selection.flyerProduk.urls?.length < 1)) ||
+                    (activeTab === STARTER_KIT_FLYER_MENGAJAK &&
+                      (selection.flyerMengajak.urls?.length === undefined ||
+                        selection.flyerMengajak.urls?.length < 1))))
               }
             >
               <Text style={styles.textRefresh}>
@@ -537,7 +577,7 @@ function MediaKitFiles(props) {
             </Text>
 
             <TouchableOpacity
-              onPress={() => clearSelection()}
+              onPress={() => setSelectMode(false)}
               style={styles.button}
             >
               <MaterialCommunityIcons
