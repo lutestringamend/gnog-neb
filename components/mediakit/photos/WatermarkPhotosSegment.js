@@ -17,7 +17,7 @@ import { colors, blurhash, staticDimensions } from "../../../styles/base";
 import PhotoItem from "./PhotoItem";
 
 const WatermarkPhotosSegment = (props) => {
-  const { title, photos, index, isLast, navigation, selected } = props;
+  const { title, photos, index, isLast, navigation, selected, selectMode } = props;
   //const [arraySize, setArraySize] = useState(null);
 
   const { width } = Dimensions.get("window");
@@ -101,6 +101,7 @@ const WatermarkPhotosSegment = (props) => {
                 navigation={navigation}
                 item={item}
                 index={i}
+                selectMode={selectMode}
                 onLongPress={() => onLongPress(item)}
                 onPress={() => onPress(item)}
               />

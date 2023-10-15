@@ -18,23 +18,6 @@ import { webfotowatermark } from "../../../axios/constants";
 import { ErrorView } from "../../webview/WebviewChild";
 import WatermarkPhotosSegment from "./WatermarkPhotosSegment";
 import { sentryLog } from "../../../sentry";
-import { STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE } from "../constants";
-
-export const defaultSelected = {
-  ids: {},
-  urls: [],
-};
-
-export const filterPhotoProps = (item) => {
-  return {
-    id: item?.id,
-    foto: item?.foto,
-    width: item?.width,
-    height: item?.height,
-    text_y: item?.text_y,
-    link_y: item?.link_y,
-  }
-}
 
 const WatermarkPhotos = (props) => {
   const {
@@ -47,10 +30,11 @@ const WatermarkPhotos = (props) => {
     refreshPage,
     photosMultipleSave,
     jenis_foto,
+    selectMode,
+    selected,
   } = props;
   const navigation = useNavigation();
   try {
-    const [selected, setSelected] = useState(defaultSelected);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(null);
     const [downloading, setDownloading] = useState(false);
@@ -63,10 +47,7 @@ const WatermarkPhotos = (props) => {
         setError(photosMultipleSave?.error ? photosMultipleSave?.error : null);
       }
       if (photosMultipleSave?.success === true && selected?.urls?.length > 0) {
-        setSelected({
-          ids: {},
-          urls: [],
-        });
+        setSelected(true, null);
       }
       console.log("redux photosMultipleSave", photosMultipleSave);
     }, [photosMultipleSave]);
@@ -76,16 +57,18 @@ const WatermarkPhotos = (props) => {
         clearSelection();
       }
       props?.setSelectMode(!(selected?.urls?.length === undefined || selected?.urls?.length < 1 || props?.setSelectMode === undefined || props?.setSelectMode === null));
-     
-      console.log("selected", selected);
     }, [selected]);
+
+    function setSelected (isAdd, e) {
+      if (props?.setSelected === undefined || props?.setSelected === null) {
+        return;
+      }
+      props?.setSelected(isAdd, e);
+    }
 
     const clearSelection = () => {
       clearError();
-      setSelected({
-        ids: {},
-        urls: [],
-      });
+      setSelected(true, null);
       if (!(props?.setSelectMode === undefined || props?.setSelectMode === null)) {
         props?.setSelectMode(false);
       }
@@ -98,32 +81,8 @@ const WatermarkPhotos = (props) => {
       setError(null);
     }
 
-    const startDownload = () => {
-      navigation.navigate("MultipleImageSave", {
-        photos: selected?.urls,
-        sharingAvailability,
-        jenis_foto,
-        title: `Menyimpan ${STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE}`,
-      });
-    };
-
     const deselectItem = (item) => {
-      let ids = selected?.ids;
-      ids[item?.id] = false;
-      let urls = [];
-      if (
-        !(selected?.urls?.length === undefined || selected?.urls?.length < 1)
-      ) {
-        for (let i = 0; i < selected?.urls?.length; i++) {
-          if (selected?.urls[i]?.id === item?.id) {
-            urls.push(selected?.urls[i]);
-          }
-        }
-      }
-      setSelected({
-        ids,
-        urls,
-      });
+      setSelected(false, item);
     };
 
     const onLongPress = (item) => {
@@ -133,29 +92,7 @@ const WatermarkPhotos = (props) => {
           selected.ids[item?.id] === null ||
           !selected.ids[item?.id]
         ) {
-          let ids = selected?.ids;
-          ids[item?.id] = true;
-          let urls = [];
-          let isFound = false;
-          if (
-            !(
-              selected?.urls?.length === undefined || selected?.urls?.length < 1
-            )
-          ) {
-            for (let i = 0; i < selected?.urls?.length; i++) {
-              if (selected?.urls[i]?.id === item?.id) {
-                isFound = true;
-              }
-              urls.push(selected?.urls[i]);
-            }
-          }
-          if (!isFound) {
-            urls.push(filterPhotoProps(item));
-          }
-          setSelected({
-            ids,
-            urls,
-          });
+          setSelected(true, item);
         } else {
           deselectItem(item);
         }
@@ -174,6 +111,9 @@ const WatermarkPhotos = (props) => {
           )
         ) {
           deselectItem(item);
+          return;
+        } else if (selectMode) {
+          setSelected(true, item);
           return;
         }
       } catch (e) {
@@ -280,6 +220,7 @@ const WatermarkPhotos = (props) => {
                     sharingAvailability={sharingAvailability}
                     navigation={navigation}
                     selected={selected}
+                    selectMode={selectMode}
                     onPress={(e, title) => onPress(e, title)}
                     onLongPress={(e) => onLongPress(e)}
                   />
@@ -287,70 +228,6 @@ const WatermarkPhotos = (props) => {
               />
             )}
           </View>
-          {selected?.urls?.length === undefined ||
-          selected?.urls?.length < 1 ? null : (
-            <View style={styles.containerButton}>
-              <TouchableOpacity
-                onPress={() => startDownload()}
-                style={[
-                  styles.button,
-                  {
-                    backgroundColor: downloading
-                      ? colors.daclen_lightgrey_button
-                      : colors.daclen_light,
-                    width: 200,
-                  },
-                ]}
-                disabled={downloading}
-              >
-                {downloading ? (
-                  <ActivityIndicator
-                    size="small"
-                    color={colors.daclen_black}
-                    style={{ alignSelf: "center" }}
-                  />
-                ) : (
-                  <MaterialCommunityIcons
-                    name={
-                      selected?.urls?.length > 1
-                        ? "download-multiple"
-                        : "download"
-                    }
-                    size={18}
-                    color={colors.daclen_black}
-                  />
-                )}
-
-                <Text allowFontScaling={false} style={styles.textButton}>
-                  {selected?.urls?.length > 1
-                    ? `Simpan ${selected?.urls?.length} Flyer`
-                    : `Simpan Flyer`}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => clearSelection()}
-                style={[
-                  styles.button,
-                  {
-                    backgroundColor: downloading
-                      ? colors.daclen_lightgrey_button
-                      : colors.daclen_light,
-                  },
-                ]}
-                disabled={downloading}
-              >
-                <MaterialCommunityIcons
-                  name="close"
-                  size={18}
-                  color={colors.daclen_black}
-                />
-
-                <Text allowFontScaling={false} style={styles.textButton}>
-                  Clear
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
         </View>
       </View>
     );
@@ -417,30 +294,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "center",
-  },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    alignSelf: "center",
-    marginEnd: 12,
-    height: 40,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: colors.daclen_gray,
-    backgroundColor: colors.daclen_light,
-    alignSelf: "center",
-    elevation: 4,
-  },
-  textButton: {
-    fontSize: 14,
-    fontFamily: "Poppins-SemiBold",
-    marginStart: 6,
-    alignSelf: "center",
-    textAlignVertical: "center",
-    color: colors.daclen_black,
   },
   imageList: {
     flex: 1,

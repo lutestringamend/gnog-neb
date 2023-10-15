@@ -4,6 +4,11 @@ export const WatermarkData = {
   url: "",
 }
 
+export const DefaultSelected = {
+  ids: {},
+  urls: [],
+}
+
 export const FLYER_SELECTION_LIMIT = 10;
 
 export const STARTER_KIT_HOME = "STARTER_KIT_HOME";

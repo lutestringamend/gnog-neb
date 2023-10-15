@@ -12,9 +12,10 @@ import {
   MEDIA_KIT_FLYER_MENGAJAK_STATE_CHANGE,
   MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE,
   MEDIA_KIT_PHOTOS_MULTIPLE_SAVE_STATE_CHANGE,
+  MEDIA_KIT_FLYER_PRODUK_SELECTED_STATE_CHANGE,
 } from "../../redux/constants";
 import { sentryLog } from "../../sentry";
-import { STARTER_KIT_FLYER_PRODUK_TAG } from "../../components/mediakit/constants";
+import { DefaultSelected, STARTER_KIT_FLYER_PRODUK_TAG } from "../../components/mediakit/constants";
 
 export function clearMediaKitData() {
   return (dispatch) => {
@@ -115,6 +116,17 @@ export function updateReduxMediaKitVideosMengajak(data) {
     console.log("updateReduxMediaKitVideosMengajak", data);
     dispatch({ type: MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE, data });
   };
+}
+
+export const filterPhotoProps = (item) => {
+  return {
+    id: item?.id,
+    foto: item?.foto,
+    width: item?.width,
+    height: item?.height,
+    text_y: item?.text_y,
+    link_y: item?.link_y,
+  }
 }
 
 export function setWatermarkDatafromCurrentUser(currentUser, isOriginal) {

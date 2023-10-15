@@ -6,7 +6,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { blurhash, colors } from "../../../styles/base";
 
 const PhotoItem = (props) => {
-  const { item, index, selected, style } = props;
+  const { item, index, selected, style, selectMode } = props;
   const [active, setActive] = useState(false);
 
   useEffect(() => {
@@ -64,10 +64,10 @@ const PhotoItem = (props) => {
         cachePolicy="memory-disk"
       />
 
-      {active ? (
+      {selectMode ? (
         <View style={styles.containerSelected}>
           <MaterialCommunityIcons
-            name="check-circle"
+            name={active ? "check-circle" : "checkbox-blank-circle-outline"}
             size={24}
             color={colors.daclen_light}
             style={styles.check}

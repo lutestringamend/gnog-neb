@@ -30,6 +30,7 @@ import {
   updateReduxMediaKitFlyerMengajak,
   updateReduxMediaKitVideosMengajak,
   updateReduxMediaKitPhotosMultipleSave,
+  filterPhotoProps,
 } from "../../axios/mediakit";
 import { overwriteWatermarkVideos } from "../media";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
@@ -56,6 +57,7 @@ import {
   STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE,
   STARTER_KIT_VIDEO_MENGAJAK,
   STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE,
+  DefaultSelected,
 } from "./constants";
 import StarterKitHome from "./home/StarterKitHome";
 import StarterKitModal from "./home/StarterKitModal";
@@ -81,6 +83,10 @@ function MediaKitFiles(props) {
   const [photoKeys, setPhotoKeys] = useState([]);
   const [modal, setModal] = useState(defaultModal);
   const [selectMode, setSelectMode] = useState(false);
+  const [selection, setSelection] = useState({
+    flyerProduk: DefaultSelected,
+    flyerMengajak: DefaultSelected,
+  });
 
   const {
     token,
@@ -159,6 +165,10 @@ function MediaKitFiles(props) {
       setVideoLoading(false);
     }
   }, [mediaKitVideos]);
+
+  useEffect(() => {
+    console.log("flyer selection", selection);
+  }, [selection]);
 
   useEffect(() => {
     if (photoError === null) {
@@ -269,6 +279,120 @@ function MediaKitFiles(props) {
     return true;
   };
 
+  const setSelected = (isAdd, item) => {
+    try {
+      if (item === null) {
+        if (activeTab === STARTER_KIT_FLYER_PRODUK) {
+          setSelection({
+            ...selection,
+            flyerProduk: DefaultSelected,
+          });
+        } else if (activeTab === STARTER_KIT_FLYER_MENGAJAK) {
+          setSelection({
+            ...selection,
+            flyerMengajak: DefaultSelected,
+          });
+        }
+        return;
+      }
+
+      const selected =
+        activeTab === STARTER_KIT_FLYER_PRODUK
+          ? selection.flyerProduk
+          : selection.flyerMengajak;
+      let ids = selected?.ids;
+      let urls = [];
+
+      if (isAdd) {
+        ids[item?.id] = true;
+
+        let isFound = false;
+        if (
+          !(selected?.urls?.length === undefined || selected?.urls?.length < 1)
+        ) {
+          for (let i = 0; i < selected?.urls?.length; i++) {
+            if (selected?.urls[i]?.id === item?.id) {
+              isFound = true;
+            }
+            urls.push(selected?.urls[i]);
+          }
+        }
+        if (!isFound) {
+          urls.push(filterPhotoProps(item));
+        }
+      } else {
+        ids[item?.id] = false;
+        if (
+          !(selected?.urls?.length === undefined || selected?.urls?.length < 1)
+        ) {
+          for (let i = 0; i < selected?.urls?.length; i++) {
+            if (selected?.urls[i]?.id !== item?.id) {
+              urls.push(selected?.urls[i]);
+            }
+          }
+        }
+      }
+
+      if (activeTab === STARTER_KIT_FLYER_PRODUK) {
+        setSelection({
+          ...selection,
+          flyerProduk: {
+            ids,
+            urls,
+          },
+        });
+      } else if (activeTab === STARTER_KIT_FLYER_MENGAJAK) {
+        setSelection({
+          ...selection,
+          flyerMengajak: {
+            ids,
+            urls,
+          },
+        });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const onSelectPress = () => {
+    if (selectMode) {
+      openMultipleImageSave();
+    } else {
+      setSelectMode(true);
+    }
+  };
+
+  const clearSelection = () => {
+    if (
+      (activeTab === STARTER_KIT_FLYER_PRODUK &&
+        (selection.flyerProduk.urls?.length === undefined ||
+          selection.flyerProduk.urls?.length < 1)) ||
+      (activeTab === STARTER_KIT_FLYER_MENGAJAK &&
+        (selection.flyerMengajak.urls?.length === undefined ||
+          selection.flyerMengajak.urls?.length < 1))
+    ) {
+      setSelectMode(false);
+    } else {
+      setSelected(true, null);
+    }
+  };
+
+  const openMultipleImageSave = () => {
+    navigation.navigate("MultipleImageSave", {
+      photos:
+        activeTab === STARTER_KIT_FLYER_PRODUK
+          ? selection?.flyerProduk?.urls
+          : selection?.flyerMengajak?.urls,
+      sharingAvailability,
+      jenis_foto:
+        activeTab === STARTER_KIT_FLYER_PRODUK
+          ? STARTER_KIT_FLYER_PRODUK_TAG
+          : STARTER_KIT_FLYER_MENGAJAK_TAG,
+      title: `Menyimpan ${STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE}`,
+    });
+  };
+
   try {
     return (
       <View style={styles.container}>
@@ -337,22 +461,42 @@ function MediaKitFiles(props) {
             </TouchableOpacity>
           )}
 
-          {selectMode &&
-          (activeTab === STARTER_KIT_FLYER_MENGAJAK ||
-            activeTab === STARTER_KIT_FLYER_PRODUK) ? (
+          {activeTab === STARTER_KIT_FLYER_MENGAJAK ||
+          activeTab === STARTER_KIT_FLYER_PRODUK ? (
             <TouchableOpacity
               style={[
                 styles.containerRefresh,
                 {
                   backgroundColor:
-                    photoLoading || videoLoading
+                    photoLoading ||
+                    videoLoading ||
+                    (selectMode &&
+                      activeTab === STARTER_KIT_FLYER_PRODUK &&
+                      (selection.flyerProduk.urls?.length === undefined ||
+                        selection.flyerProduk.urls?.length < 1)) ||
+                    (activeTab === STARTER_KIT_FLYER_MENGAJAK &&
+                      (selection.flyerMengajak.urls?.length === undefined ||
+                        selection.flyerMengajak.urls?.length < 1))
                       ? colors.daclen_gray
                       : colors.daclen_blue,
                 },
               ]}
-              disabled={photoLoading || videoLoading}
+              onPress={() => onSelectPress()}
+              disabled={
+                photoLoading ||
+                videoLoading ||
+                (selectMode &&
+                  activeTab === STARTER_KIT_FLYER_PRODUK &&
+                  (selection.flyerProduk.urls?.length === undefined ||
+                    selection.flyerProduk.urls?.length < 1)) ||
+                (activeTab === STARTER_KIT_FLYER_MENGAJAK &&
+                  (selection.flyerMengajak.urls?.length === undefined ||
+                    selection.flyerMengajak.urls?.length < 1))
+              }
             >
-              <Text style={styles.textRefresh}>SIMPAN FILE</Text>
+              <Text style={styles.textRefresh}>
+                {selectMode ? "SIMPAN FILE" : "PILIH FILE"}
+              </Text>
             </TouchableOpacity>
           ) : null}
 
@@ -381,6 +525,33 @@ function MediaKitFiles(props) {
             )}
           </TouchableOpacity>
         </View>
+
+        {selectMode ? (
+          <View style={styles.containerSelection}>
+            <Text allowFontScaling={false} style={styles.textSelection}>
+              {`${
+                activeTab === STARTER_KIT_FLYER_PRODUK
+                  ? selection.flyerProduk.urls?.length
+                  : selection.flyerMengajak.urls?.length
+              } Flyer dipilih`}
+            </Text>
+
+            <TouchableOpacity
+              onPress={() => clearSelection()}
+              style={styles.button}
+            >
+              <MaterialCommunityIcons
+                name="close"
+                size={14}
+                color={colors.daclen_black}
+              />
+
+              <Text allowFontScaling={false} style={styles.textButton}>
+                Clear
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : null}
 
         <View style={styles.scrollView}>
           {token === null ||
@@ -417,7 +588,10 @@ function MediaKitFiles(props) {
                 props?.updateReduxMediaKitPhotosMultipleSave(null)
               }
               refreshPage={() => refreshPhotos()}
+              selectMode={selectMode}
               setSelectMode={(e) => setSelectMode(e)}
+              selected={selection.flyerProduk}
+              setSelected={(isAdd, e) => setSelected(isAdd, e)}
             />
           ) : activeTab === STARTER_KIT_FLYER_MENGAJAK ? (
             <FlyerMengajak
@@ -433,7 +607,10 @@ function MediaKitFiles(props) {
                 props?.updateReduxMediaKitPhotosMultipleSave(null)
               }
               refreshPage={() => refreshPhotos()}
+              selectMode={selectMode}
               setSelectMode={(e) => setSelectMode(e)}
+              selected={selection.flyerMengajak}
+              setSelected={(isAdd, e) => setSelected(isAdd, e)}
             />
           ) : (
             <StarterKitHome
@@ -467,10 +644,6 @@ function MediaKitFiles(props) {
     );
   }
 }
-
-/*
-
-*/
 
 const styles = StyleSheet.create({
   container: {
@@ -527,6 +700,36 @@ const styles = StyleSheet.create({
     padding: 20,
     elevation: 10,
   },
+  containerSelection: {
+    marginHorizontal: 10,
+    marginTop: 12,
+    backgroundColor: "transparent",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  button: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    marginStart: 12,
+    height: 30,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: colors.daclen_gray,
+    backgroundColor: colors.daclen_light,
+    alignSelf: "center",
+    elevation: 4,
+  },
+  textButton: {
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
+    marginStart: 6,
+    alignSelf: "center",
+    textAlignVertical: "center",
+    color: colors.daclen_black,
+  },
   tabView: {
     width: "100%",
     backgroundColor: colors.daclen_light,
@@ -569,6 +772,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Poppins-Bold",
     backgroundColor: "transparent",
+  },
+  textSelection: {
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 14,
+    color: colors.daclen_orange,
+    textAlignVertical: "center",
+    marginVertical: 6,
+    alignSelf: "center",
   },
 });
 

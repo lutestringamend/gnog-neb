@@ -9,12 +9,10 @@ import {
   FlatList,
 } from "react-native";
 //import { FlashList } from "@shopify/flash-list";
-import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, staticDimensions, blurhash } from "../../../styles/base";
-import { defaultSelected, filterPhotoProps } from "./WatermarkPhotos";
+import { colors, staticDimensions } from "../../../styles/base";
 import PhotoItem from "./PhotoItem";
 import { STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE } from "../constants";
 
@@ -28,10 +26,11 @@ const FlyerMengajak = (props) => {
     sharingAvailability,
     photosMultipleSave,
     userId,
+    selectMode,
+    selected,
   } = props;
   const navigation = useNavigation();
 
-  const [selected, setSelected] = useState(defaultSelected);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
   const [downloading, setDownloading] = useState(false);
@@ -46,10 +45,7 @@ const FlyerMengajak = (props) => {
       setError(photosMultipleSave?.error ? photosMultipleSave?.error : null);
     }
     if (photosMultipleSave?.success === true && selected?.urls?.length > 0) {
-      setSelected({
-        ids: {},
-        urls: [],
-      });
+      setSelected(true, null);
     }
     console.log("redux photosMultipleSave", photosMultipleSave);
   }, [photosMultipleSave]);
@@ -66,16 +62,18 @@ const FlyerMengajak = (props) => {
       clearSelection();
     }
     props?.setSelectMode(!(selected?.urls?.length === undefined || selected?.urls?.length < 1 || props?.setSelectMode === undefined || props?.setSelectMode === null));
-     
-    console.log("selected", selected);
   }, [selected]);
+
+  function setSelected (isAdd, e) {
+    if (props?.setSelected === undefined || props?.setSelected === null) {
+      return;
+    }
+    props?.setSelected(isAdd, e);
+  }
 
   const clearSelection = () => {
     clearError();
-    setSelected({
-      ids: {},
-      urls: [],
-    });
+    setSelected(true, null);
     if (!(props?.setSelectMode === undefined || props?.setSelectMode === null)) {
       props?.setSelectMode(false);
     }
@@ -93,30 +91,8 @@ const FlyerMengajak = (props) => {
     setError(null);
   };
 
-  const startDownload = () => {
-    navigation.navigate("MultipleImageSave", {
-      photos: selected?.urls,
-      sharingAvailability,
-      jenis_foto,
-      title: `Menyimpan ${STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE}`,
-    });
-  };
-
   const deselectItem = (item) => {
-    let ids = selected?.ids;
-    ids[item?.id] = false;
-    let urls = [];
-    if (!(selected?.urls?.length === undefined || selected?.urls?.length < 1)) {
-      for (let i = 0; i < selected?.urls?.length; i++) {
-        if (selected?.urls[i]?.id === item?.id) {
-          urls.push(selected?.urls[i]);
-        }
-      }
-    }
-    setSelected({
-      ids,
-      urls,
-    });
+    setSelected(false, item);
   };
 
   const onLongPress = (item) => {
@@ -126,27 +102,7 @@ const FlyerMengajak = (props) => {
         selected.ids[item?.id] === null ||
         !selected.ids[item?.id]
       ) {
-        let ids = selected?.ids;
-        ids[item?.id] = true;
-        let urls = [];
-        let isFound = false;
-        if (
-          !(selected?.urls?.length === undefined || selected?.urls?.length < 1)
-        ) {
-          for (let i = 0; i < selected?.urls?.length; i++) {
-            if (selected?.urls[i]?.id === item?.id) {
-              isFound = true;
-            }
-            urls.push(selected?.urls[i]);
-          }
-        }
-        if (!isFound) {
-          urls.push(filterPhotoProps(item));
-        }
-        setSelected({
-          ids,
-          urls,
-        });
+        setSelected(true, item);
       } else {
         deselectItem(item);
       }
@@ -166,11 +122,14 @@ const FlyerMengajak = (props) => {
       ) {
         deselectItem(item);
         return;
+      } else if (selectMode) {
+        setSelected(true, item);
+        return;
       }
     } catch (e) {
       console.error(e);
     }
-    openPhoto(item);
+    openPhoto(item, title);
   };
 
   function refreshPage() {
@@ -268,73 +227,12 @@ const FlyerMengajak = (props) => {
               style={[styles.containerImage, {
                 marginBottom: index >= photos?.length - 1 ? staticDimensions.pageBottomPadding / 2 : 0,
               }]}
+              selectMode={selectMode}
               onLongPress={() => onLongPress(item)}
               onPress={() => onPress(item)}
             />
           )}
         />
-      )}
-      {selected?.urls?.length === undefined ||
-      selected?.urls?.length < 1 ? null : (
-        <View style={styles.containerButton}>
-          <TouchableOpacity
-            onPress={() => startDownload()}
-            style={[
-              styles.button,
-              {
-                backgroundColor: downloading
-                  ? colors.daclen_lightgrey_button
-                  : colors.daclen_light,
-                width: 200,
-              },
-            ]}
-            disabled={downloading}
-          >
-            {downloading ? (
-              <ActivityIndicator
-                size="small"
-                color={colors.daclen_black}
-                style={{ alignSelf: "center" }}
-              />
-            ) : (
-              <MaterialCommunityIcons
-                name={
-                  selected?.urls?.length > 1 ? "download-multiple" : "download"
-                }
-                size={18}
-                color={colors.daclen_black}
-              />
-            )}
-
-            <Text allowFontScaling={false} style={styles.textButton}>
-              {selected?.urls?.length > 1
-                ? `Simpan ${selected?.urls?.length} Flyer`
-                : `Simpan Flyer`}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => clearSelection()}
-            style={[
-              styles.button,
-              {
-                backgroundColor: downloading
-                  ? colors.daclen_lightgrey_button
-                  : colors.daclen_light,
-              },
-            ]}
-            disabled={downloading}
-          >
-            <MaterialCommunityIcons
-              name="close"
-              size={18}
-              color={colors.daclen_black}
-            />
-
-            <Text allowFontScaling={false} style={styles.textButton}>
-              Clear
-            </Text>
-          </TouchableOpacity>
-        </View>
       )}
     </View>
   );
@@ -435,30 +333,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     textAlign: "center",
     alignSelf: "center",
-  },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    alignSelf: "center",
-    marginEnd: 12,
-    height: 40,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: colors.daclen_gray,
-    backgroundColor: colors.daclen_light,
-    alignSelf: "center",
-    elevation: 4,
-  },
-  textButton: {
-    fontSize: 14,
-    fontFamily: "Poppins-SemiBold",
-    marginStart: 6,
-    alignSelf: "center",
-    textAlignVertical: "center",
-    color: colors.daclen_black,
   },
   imageList: {
     flex: 1,
