@@ -82,6 +82,7 @@ const MultipleImageSave = (props) => {
   const [loadCount, setLoadCount] = useState(0);
   const [tiSize, setTiSize] = useState(0);
   const [transformedImages, setTransformedImages] = useState([]);
+  const [fetchingStates, setFetchingStates] = useState({});
 
   const [savedUris, setSavedUris] = useState([]);
   const navigation = useNavigation();
@@ -105,9 +106,12 @@ const MultipleImageSave = (props) => {
         return;
       }
 
+      let newStates = {};
       for (let i = 0; i < photos.length; i++) {
         imageRefs.current[i] = createRef();
+        newStates[i] = false;
       }
+      setFetchingStates(newStates);
 
       if (title !== null && title !== undefined && title !== "") {
         props.navigation.setOptions({ title });
@@ -183,6 +187,7 @@ const MultipleImageSave = (props) => {
     };
 
     const noteImageLoaded = (
+      e,
       index,
       id,
       width,
@@ -192,6 +197,7 @@ const MultipleImageSave = (props) => {
       text_y,
       link_y
     ) => {
+      //console.log(`onImageLoaded ${index}`, e);
       addLogs(
         `\nloading image index ${index} id ${id}\noriginal ${width}x${height}\nrezized to ${newWidth}x${newHeight}\ntext_y ${text_y} link_y ${link_y}`
       );
@@ -200,8 +206,13 @@ const MultipleImageSave = (props) => {
 
     const startRendering = async () => {
       for (let i = 0; i < loadCount; i++) {
-        await transformImage(i);
-        addLogs(`index ${i} rendered`);
+        if (fetchingStates[i]) {
+          await transformImage(i);
+          addLogs(`index ${i} rendered`);
+        } else {
+          addError(`Foto ${i} tidak bisa diunduh`);
+          addLogs(`index ${i} not rendered, false fetchingState`);
+        }
       }
     };
 
@@ -218,7 +229,7 @@ const MultipleImageSave = (props) => {
       }*/
 
       if (Platform.OS === "web") {
-        addError("ViewShot not available on Web");
+        //addError("ViewShot not available on Web");
         setTransformedImages((transformedImages) => [
           ...transformedImages,
           `IMAGE INDEX ${index}`,
@@ -287,6 +298,25 @@ const MultipleImageSave = (props) => {
       setLoading(false);
     };
 
+    const onError = (index, e) => {
+      //console.log(`Image onError ${index}`, e);
+      if (e?.error === undefined || e?.error === null || e?.error === "") {
+        let newStates = fetchingStates;
+        newStates[index] = true;
+        addLogs(`image ${index} successfully fetched`);
+        setFetchingStates(newStates);
+      } else {
+        if (loading) {
+          setLoading(false);
+        }
+        props.updateReduxMediaKitPhotosMultipleSave({
+          success: false,
+          error: "Gagal mengunduh flyer",
+        });
+        addLogs(`image ${index} ${e?.error}`);
+      }
+    };
+
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.containerInside}>
@@ -336,8 +366,10 @@ const MultipleImageSave = (props) => {
                       contentFit="contain"
                       placeholder={null}
                       transition={0}
-                      onLoadEnd={() =>
+                      onError={(e) => onError(index, e)}
+                      onLoadEnd={(e) =>
                         noteImageLoaded(
+                          e,
                           index,
                           id,
                           width,
@@ -385,24 +417,29 @@ const MultipleImageSave = (props) => {
               {error}
             </Text>
           ) : null}
-          {loading ? (
-            <ActivityIndicator
-              size="large"
-              color={colors.daclen_black}
-              style={styles.spinner}
-            />
-          ) : null}
 
-          <Text allowFontScaling={false} style={styles.textLoading}>
-            {loading
-              ? `Menyimpan ${tiSize <= 0 ? "flyer" : `${tiSize} flyer`}...`
-              : "Berhasil menyimpan flyer"}
-          </Text>
-          {Platform.OS === "web" || currentUser?.id === 8054 ? (
-            <Text allowFontScaling={false} style={styles.textLogs}>
-              {logs}
+          <View style={styles.containerInfo}>
+            {loading ? (
+              <ActivityIndicator
+                size="large"
+                color={colors.daclen_gray}
+                style={styles.spinner}
+              />
+            ) : null}
+
+            <Text allowFontScaling={false} style={styles.textLoading}>
+              {loading
+                ? `Menyimpan ${tiSize <= 0 ? "flyer" : `${tiSize} flyer`}...`
+                : error === "null"
+                ? "Berhasil menyimpan flyer"
+                : "Gagal menyimpan flyer"}
             </Text>
-          ) : null}
+            {Platform.OS === "web" ? (
+              <Text allowFontScaling={false} style={styles.textLogs}>
+                {logs}
+              </Text>
+            ) : null}
+          </View>
         </ScrollView>
       </SafeAreaView>
     );
@@ -440,6 +477,13 @@ const styles = StyleSheet.create({
     top: 0,
     start: 0,
     zIndex: 0,
+  },
+  containerInfo: {
+    backgroundColor: "transparent",
+    width: "100%",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   containerLargeImage: {
     flex: 1,
@@ -500,10 +544,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     backgroundColor: "transparent",
     color: colors.daclen_bg,
+    marginVertical: 20,
   },
   textError: {
     width: "100%",
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "Poppins-SemiBold",
     color: colors.daclen_light,
     paddingHorizontal: 20,
@@ -511,16 +556,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_danger,
     textAlign: "center",
     zIndex: 1,
-    position: "absolute",
-    start: 0,
-    top: 0,
   },
   textWatermark: {
     position: "absolute",
     fontFamily: "Poppins-Bold",
   },
   spinner: {
-    marginVertical: 20,
+    marginTop: 20,
   },
 });
 

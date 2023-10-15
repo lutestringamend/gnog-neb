@@ -165,7 +165,7 @@ const ImageViewer = (props) => {
 
   const transformImage = async () => {
     if (Platform.OS === "web") {
-      setError("ViewShot not available on Web");
+      //setError("ViewShot not available on Web");
       return;
     }
     try {
@@ -354,15 +354,18 @@ const ImageViewer = (props) => {
 
   const saveIos = async (uri) => {
     try {
-      if (!(permissionResponse?.status === "granted" && permissionResponse?.granted)) {
+      if (
+        !(
+          permissionResponse?.status === "granted" &&
+          permissionResponse?.granted
+        )
+      ) {
         const request = await requestPermission();
         console.log("requestPermission", request);
       }
       const result = await MediaLibrary.saveToLibraryAsync(uri);
       console.log("savetoLibraryAsync result", result);
-      setError(
-        `Foto tersimpan di Galeri Foto`
-      );
+      setError(`Foto tersimpan di Galeri Foto`);
       setDownloadUri(JSON.stringify(result));
       setSuccess(true);
     } catch (e) {
@@ -428,8 +431,14 @@ const ImageViewer = (props) => {
     setSharing(false);
   };
 
-  //startDownload(transformedImage !== null && transformedImage !== "")
-  //
+  const onError = (e) => {
+    console.log("Image onError", e);
+    setError(
+      `Foto tidak bisa diunduh, cek koneksi Internet${
+        currentUser?.id === 8054 && Platform.OS !== "web" ? `\n${e?.error}` : ""
+      }`
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -463,6 +472,7 @@ const ImageViewer = (props) => {
             placeholder={null}
             transition={0}
             onLoadEnd={() => transformImage()}
+            onError={(e) => onError(e)}
           />
           <ImageLargeWatermarkModel
             style={styles.image}
@@ -507,7 +517,9 @@ const ImageViewer = (props) => {
         <View style={styles.containerInside}>
           <ActivityIndicator
             size={24}
-            color={loading ? colors.daclen_lightgrey_button : colors.daclen_light}
+            color={
+              loading ? colors.daclen_lightgrey_button : colors.daclen_light
+            }
             style={styles.spinnerMain}
           />
           {watermarkData === null ||
@@ -525,6 +537,7 @@ const ImageViewer = (props) => {
               contentFit="contain"
               placeholder={null}
               transition={0}
+              onError={(e) => onError(e)}
             />
           ) : (
             <View
@@ -772,7 +785,7 @@ const styles = StyleSheet.create({
   },
   textError: {
     width: "100%",
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "Poppins-SemiBold",
     color: colors.white,
     paddingHorizontal: 20,

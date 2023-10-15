@@ -47,7 +47,7 @@ const FlyerMengajak = (props) => {
     if (photosMultipleSave?.success === true && selected?.urls?.length > 0) {
       setSelected(true, null);
     }
-    console.log("redux photosMultipleSave", photosMultipleSave);
+    //console.log("redux photosMultipleSave", photosMultipleSave);
   }, [photosMultipleSave]);
 
   useEffect(() => {

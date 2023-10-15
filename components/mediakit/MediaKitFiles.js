@@ -58,6 +58,7 @@ import {
   STARTER_KIT_VIDEO_MENGAJAK,
   STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE,
   DefaultSelected,
+  FLYER_SELECTION_LIMIT,
 } from "./constants";
 import StarterKitHome from "./home/StarterKitHome";
 import StarterKitModal from "./home/StarterKitModal";
@@ -97,6 +98,7 @@ function MediaKitFiles(props) {
     flyerMengajak,
     mediaKitVideos,
     products,
+    photosMultipleSave,
   } = props;
   const navigation = useNavigation();
 
@@ -221,6 +223,13 @@ function MediaKitFiles(props) {
     }
   }, [selectMode]);
 
+  useEffect(() => {
+    if (photosMultipleSave?.error !== null && selectMode) {
+      setSelectMode(false);
+    }
+    console.log("redux photosMultipleSave", photosMultipleSave);
+  }, [photosMultipleSave]);
+
   const checkWatermarkData = async () => {
     let newData = await getObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY);
     if (!(newData === undefined || newData === null)) {
@@ -344,6 +353,9 @@ function MediaKitFiles(props) {
       let urls = [];
 
       if (isAdd) {
+        if (selected?.urls?.length >= FLYER_SELECTION_LIMIT) {
+          return;
+        }
         ids[item?.id] = true;
 
         let isFound = false;
@@ -573,7 +585,7 @@ function MediaKitFiles(props) {
                 activeTab === STARTER_KIT_FLYER_PRODUK
                   ? selection.flyerProduk.urls?.length
                   : selection.flyerMengajak.urls?.length
-              } Flyer dipilih`}
+              } / ${FLYER_SELECTION_LIMIT} Flyer dipilih`}
             </Text>
 
             <TouchableOpacity
@@ -623,7 +635,7 @@ function MediaKitFiles(props) {
               photos={mediaKitPhotos}
               photoKeys={photoKeys}
               jenis_foto={STARTER_KIT_FLYER_PRODUK_TAG}
-              photosMultipleSave={props?.photosMultipleSave}
+              photosMultipleSave={photosMultipleSave}
               clearMultipleSave={() =>
                 props?.updateReduxMediaKitPhotosMultipleSave(null)
               }
@@ -642,7 +654,7 @@ function MediaKitFiles(props) {
               watermarkData={watermarkData}
               sharingAvailability={sharingAvailability}
               jenis_foto={STARTER_KIT_FLYER_MENGAJAK_TAG}
-              photosMultipleSave={props?.photosMultipleSave}
+              photosMultipleSave={photosMultipleSave}
               clearMultipleSave={() =>
                 props?.updateReduxMediaKitPhotosMultipleSave(null)
               }
