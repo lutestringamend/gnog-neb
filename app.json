@@ -137,8 +137,8 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/notif.png",
           "color": "#0a0a0a",
+          "icon": "./assets/notif.png",
           "sounds": [
             "./assets/d.wav"
           ]

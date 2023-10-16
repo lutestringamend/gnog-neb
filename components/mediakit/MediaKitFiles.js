@@ -613,9 +613,13 @@ function MediaKitFiles(props) {
           {token === null ||
           currentUser === null ||
           currentUser?.id === undefined ||
-          currentUser?.isActive === undefined ||
-          currentUser?.isActive === null ||
-          !currentUser?.isActive ? null : watermarkData === null ? (
+          ((currentUser?.isActive === undefined ||
+            currentUser?.isActive === null ||
+            !currentUser?.isActive) &&
+            !(
+              currentUser?.level === "spv" ||
+              currentUser?.status_member === "supervisor"
+            )) ? null : watermarkData === null ? (
             <ActivityIndicator
               size="large"
               color={colors.daclen_orange}

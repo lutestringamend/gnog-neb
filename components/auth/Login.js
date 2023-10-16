@@ -82,7 +82,7 @@ function Login(props) {
     if (webKey === "changePassword") {
       setChangePassword(true);
     } else if (
-      props?.token !== null &&
+      token !== null &&
       props.loginToken === null &&
       props.registerToken === null &&
       !resetPIN
