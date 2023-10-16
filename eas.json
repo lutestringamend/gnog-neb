@@ -37,10 +37,10 @@
     },
     "production": {
       "android": {
-        "channel": "production-fcm"
+        "channel": "production-zoom"
       },
       "ios": {
-        "channel": "production-ios-fcm",
+        "channel": "production-ios-zoom",
         "resourceClass": "m1-medium"
       }
     }

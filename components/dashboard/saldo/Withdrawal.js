@@ -38,6 +38,7 @@ const Withdrawal = (props) => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [desc, setDesc] = useState(false);
 
   const { token, currentUser, riwayatSaldo } = props;
   const navigation = useNavigation();
@@ -188,7 +189,6 @@ const Withdrawal = (props) => {
         <TextInput
           value={misc}
           style={[styles.textInput, { height: 60, textAlignVertical: "top" }]}
-          inputMode="decimal"
           onChangeText={(misc) => setMisc(misc)}
         />
 
@@ -248,12 +248,21 @@ const Withdrawal = (props) => {
         <Text allowFontScaling={false} style={styles.textCompulsory}>
           Syarat dan Ketentuan Penarikan Saldo
         </Text>
-        <Text allowFontScaling={false} style={styles.textExplanation}>
+
+        <TouchableOpacity style={styles.containerHeader} onPress={() => setDesc((desc) => !desc)}>
+          <Text allowFontScaling={false} style={styles.textCompulsory}>Syarat dan Ketentuan Penarikan Saldo</Text>
+          {desc ? (
+            <MaterialCommunityIcons name="chevron-up" size={24} />
+          ) : (
+            <MaterialCommunityIcons name="chevron-down" size={24} />
+          )}
+        </TouchableOpacity>
+
+        {desc ? <Text allowFontScaling={false} style={styles.textExplanation}>
           {withdrawalexplanation}
-        </Text>
-        <View style={styles.containerBottom} />
-      </ScrollView>
-      {currentUser?.detail_user === undefined ||
+        </Text> : null}
+
+        {currentUser?.detail_user === undefined ||
       currentUser?.detail_user?.nomor_rekening === undefined ||
       currentUser?.detail_user?.nomor_rekening === null ||
       currentUser?.detail_user?.nomor_rekening === "" ||
@@ -299,6 +308,10 @@ const Withdrawal = (props) => {
           )}
         </TouchableOpacity>
       )}
+        
+        <View style={styles.containerBottom} />
+      </ScrollView>
+      
     </SafeAreaView>
   );
 };
@@ -334,6 +347,11 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     height: staticDimensions.pageBottomPadding / 2,
   },
+  containerHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "transparent",
+  },
   button: {
     alignItems: "center",
     justifyContent: "center",
@@ -342,10 +360,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     elevation: 4,
     backgroundColor: colors.daclen_orange,
-    position: "absolute",
-    bottom: 0,
-    start: 20,
-    end: 20,
+    marginHorizontal: 20,
     zIndex: 4,
   },
   textButton: {

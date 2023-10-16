@@ -16,6 +16,7 @@ import { connect } from "react-redux";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import ViewShot from "react-native-view-shot";
+import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import * as FileSystem from "expo-file-system";
 import * as Print from "expo-print";
 import * as ImageManipulator from "expo-image-manipulator";
@@ -525,8 +526,13 @@ const ImageViewer = (props) => {
           {watermarkData === null ||
           watermarkData === undefined ||
           disableWatermark ? (
-            <Image
-              source={uri}
+            <ReactNativeZoomableView
+              maxZoom={1.5}
+              minZoom={0.5}
+              zoomStep={0.5}
+              initialZoom={1}
+              bindToBorders={true}
+              onZoomAfter={(e, gestureState, z) => console.log("onZoomAfter", e, gestureState, z)}
               style={[
                 styles.imageNormal,
                 {
@@ -534,11 +540,23 @@ const ImageViewer = (props) => {
                   height: productPhotoHeight,
                 },
               ]}
-              contentFit="contain"
-              placeholder={null}
-              transition={0}
-              onError={(e) => onError(e)}
-            />
+            >
+              <Image
+                source={uri}
+                style={[
+                  styles.imageNormal,
+                  {
+                    width: productPhotoWidth,
+                    height: productPhotoHeight,
+                  },
+                ]}
+                contentFit="contain"
+                placeholder={null}
+                transition={0}
+                onError={(e) => onError(e)}
+              />
+            </ReactNativeZoomableView>
+            
           ) : (
             <View
               style={[

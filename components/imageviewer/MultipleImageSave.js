@@ -210,7 +210,7 @@ const MultipleImageSave = (props) => {
           await transformImage(i);
           addLogs(`index ${i} rendered`);
         } else {
-          addError(`Foto ${i} tidak bisa diunduh`);
+          //addError(`Flyer ${i + 1} tidak bisa diunduh`);
           addLogs(`index ${i} not rendered, false fetchingState`);
         }
       }
@@ -314,6 +314,7 @@ const MultipleImageSave = (props) => {
           error: "Gagal mengunduh flyer",
         });
         addLogs(`image ${index} ${e?.error}`);
+        setError("Flyer tidak bisa diunduh. Cek koneksi Internet Anda.");
       }
     };
 

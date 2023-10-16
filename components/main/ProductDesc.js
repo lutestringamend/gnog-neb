@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingVertical: 15,
     backgroundColor: "transparent",
+    alignItems: "center",
   },
   containerVertical: {
     backgroundColor: "transparent",
