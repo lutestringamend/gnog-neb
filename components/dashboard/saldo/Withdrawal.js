@@ -21,7 +21,10 @@ import {
   SALDO_ADMIN_FEE,
   SALDO_WITHDRAWAL_MINIMUM,
 } from "../../../axios/constants";
-import { storePenarikanSaldo, updateReduxUserRiwayatSaldo } from "../../../axios/user";
+import {
+  storePenarikanSaldo,
+  updateReduxUserRiwayatSaldo,
+} from "../../../axios/user";
 import { openWhatsapp } from "../../whatsapp/Whatsapp";
 import {
   adminWA,
@@ -73,9 +76,7 @@ const Withdrawal = (props) => {
     if (loading && riwayatSaldo === null) {
       setLoading(true);
       setSuccess(true);
-      setError(
-        "Permintaan penarikan sudah tercatat di Riwayat Penarikan."
-      );
+      setError("Permintaan penarikan sudah tercatat di Riwayat Penarikan.");
     }
   }, [riwayatSaldo]);
 
@@ -110,9 +111,7 @@ const Withdrawal = (props) => {
       setObjectAsync(ASYNC_USER_RIWAYAT_PENARIKAN, null);
       props.updateReduxUserRiwayatSaldo(null);
       setSuccess(true);
-      setError(
-        "Permintaan penarikan saldo telah diterima."
-      );
+      setError("Permintaan penarikan saldo telah diterima.");
     }
     setLoading(false);
   };
@@ -245,73 +244,95 @@ const Withdrawal = (props) => {
           </View>
         )}
 
-        <Text allowFontScaling={false} style={styles.textCompulsory}>
-          Syarat dan Ketentuan Penarikan Saldo
-        </Text>
-
-        <TouchableOpacity style={styles.containerHeader} onPress={() => setDesc((desc) => !desc)}>
-          <Text allowFontScaling={false} style={styles.textCompulsory}>Syarat dan Ketentuan Penarikan Saldo</Text>
-          {desc ? (
-            <MaterialCommunityIcons name="chevron-up" size={24} />
-          ) : (
-            <MaterialCommunityIcons name="chevron-down" size={24} />
-          )}
-        </TouchableOpacity>
-
-        {desc ? <Text allowFontScaling={false} style={styles.textExplanation}>
-          {withdrawalexplanation}
-        </Text> : null}
-
-        {currentUser?.detail_user === undefined ||
-      currentUser?.detail_user?.nomor_rekening === undefined ||
-      currentUser?.detail_user?.nomor_rekening === null ||
-      currentUser?.detail_user?.nomor_rekening === "" ||
-      currentUser?.detail_user?.bank === undefined ||
-      currentUser?.detail_user?.bank?.nama === undefined ||
-      currentUser?.detail_user?.bank?.nama === null ||
-      currentUser?.detail_user?.bank?.nama === "" ? null : (
         <TouchableOpacity
-          onPress={() => submit()}
-          style={[
-            styles.button,
-            {
-              backgroundColor:
-                loading ||
-                amount === "" ||
-                parseInt(amount) < SALDO_WITHDRAWAL_MINIMUM ||
-                checkNumberEmpty(amount) >
-                  checkNumberEmpty(currentUser?.komisi_user?.total)
-                  ? colors.daclen_gray
-                  : colors.daclen_orange,
-              marginTop: 32,
-              marginBottom: staticDimensions.pageBottomPadding / 2,
-            },
-          ]}
-          disabled={
-            loading ||
-            amount === "" ||
-            parseInt(amount) < SALDO_WITHDRAWAL_MINIMUM ||
-            checkNumberEmpty(amount) >
-              checkNumberEmpty(currentUser?.komisi_user?.total)
-          }
+          style={styles.containerHeader}
+          onPress={() => setDesc((desc) => !desc)}
         >
-          {loading ? (
-            <ActivityIndicator
-              size="small"
-              color={colors.daclen_light}
+          <Text
+            allowFontScaling={false}
+            style={[
+              styles.textCompulsory,
+              {
+                alignSelf: "center",
+                marginTop: 0,
+                flex: 1,
+                marginHorizontal: 0,
+                marginEnd: 10,
+              },
+            ]}
+          >
+            Syarat dan Ketentuan Penarikan Saldo
+          </Text>
+          {desc ? (
+            <MaterialCommunityIcons
+              name="chevron-up"
+              size={24}
               style={{ alignSelf: "center" }}
             />
           ) : (
-            <Text allowFontScaling={false} style={styles.textButton}>
-              Kirim Permintaan
-            </Text>
+            <MaterialCommunityIcons
+              name="chevron-down"
+              size={24}
+              style={{ alignSelf: "center" }}
+            />
           )}
         </TouchableOpacity>
-      )}
-        
+
+        {desc ? (
+          <Text allowFontScaling={false} style={styles.textExplanation}>
+            {withdrawalexplanation}
+          </Text>
+        ) : null}
+
+        {currentUser?.detail_user === undefined ||
+        currentUser?.detail_user?.nomor_rekening === undefined ||
+        currentUser?.detail_user?.nomor_rekening === null ||
+        currentUser?.detail_user?.nomor_rekening === "" ||
+        currentUser?.detail_user?.bank === undefined ||
+        currentUser?.detail_user?.bank?.nama === undefined ||
+        currentUser?.detail_user?.bank?.nama === null ||
+        currentUser?.detail_user?.bank?.nama === "" ? null : (
+          <TouchableOpacity
+            onPress={() => submit()}
+            style={[
+              styles.button,
+              {
+                backgroundColor:
+                  loading ||
+                  amount === "" ||
+                  parseInt(amount) < SALDO_WITHDRAWAL_MINIMUM ||
+                  checkNumberEmpty(amount) >
+                    checkNumberEmpty(currentUser?.komisi_user?.total)
+                    ? colors.daclen_gray
+                    : colors.daclen_orange,
+                marginTop: 32,
+                marginBottom: staticDimensions.pageBottomPadding / 2,
+              },
+            ]}
+            disabled={
+              loading ||
+              amount === "" ||
+              parseInt(amount) < SALDO_WITHDRAWAL_MINIMUM ||
+              checkNumberEmpty(amount) >
+                checkNumberEmpty(currentUser?.komisi_user?.total)
+            }
+          >
+            {loading ? (
+              <ActivityIndicator
+                size="small"
+                color={colors.daclen_light}
+                style={{ alignSelf: "center" }}
+              />
+            ) : (
+              <Text allowFontScaling={false} style={styles.textButton}>
+                Kirim Permintaan
+              </Text>
+            )}
+          </TouchableOpacity>
+        )}
+
         <View style={styles.containerBottom} />
       </ScrollView>
-      
     </SafeAreaView>
   );
 };
@@ -351,6 +372,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "transparent",
+    marginTop: 24,
+    marginHorizontal: 20,
   },
   button: {
     alignItems: "center",
