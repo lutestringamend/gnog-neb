@@ -399,7 +399,7 @@ const MultipleImageSave = (props) => {
                       link_y={link_y}
                       text_x={null}
                       text_y={text_y}
-                      fontSize={null}
+                      fontSize={48}
                       watermarkData={watermarkData}
                       jenis_foto={jenis_foto}
                       username={currentUser?.name}
