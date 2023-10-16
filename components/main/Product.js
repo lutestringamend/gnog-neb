@@ -138,18 +138,24 @@ function Product(props) {
   return (
     <SafeAreaView style={styles.container}>
       {product === null || loading ? (
-        <ActivityIndicator
-          size="large"
-          color={colors.daclen_orange}
-          style={{ alignSelf: "center", marginVertical: 20 }}
-        />
+        <View style={styles.containerSpinner}>
+          <ActivityIndicator
+            size="large"
+            color={colors.daclen_gray}
+            style={{ alignSelf: "center", marginVertical: 20 }}
+          />
+        </View>
       ) : (
         <ScrollView style={styles.scrollView}>
           <ProductSlider id={product?.id} title={name} />
           <View style={styles.containerInfo}>
-            <Text allowFontScaling={false} style={styles.text}>{name ? name : product?.nama ? product?.nama : ""}</Text>
+            <Text allowFontScaling={false} style={styles.text}>
+              {name ? name : product?.nama ? product?.nama : ""}
+            </Text>
             <View style={styles.containerTitle}>
-              <Text allowFontScaling={false} style={styles.textPrice}>Rp {product?.harga_currency}</Text>
+              <Text allowFontScaling={false} style={styles.textPrice}>
+                Rp {product?.harga_currency}
+              </Text>
               {token === null ||
               currentUser === null ||
               currentUser?.id === undefined ||
@@ -165,9 +171,15 @@ function Product(props) {
             product?.tag_produk?.length === undefined ||
             product?.tag_produk?.length < 1 ? null : (
               <View style={styles.containerCategory}>
-                <Text allowFontScaling={false} style={styles.textCategory}>Kategori</Text>
+                <Text allowFontScaling={false} style={styles.textCategory}>
+                  Kategori
+                </Text>
                 {product?.tag_produk.map(({ nama }) => (
-                  <Text allowFontScaling={false} key={nama} style={styles.textTag}>
+                  <Text
+                    allowFontScaling={false}
+                    key={nama}
+                    style={styles.textTag}
+                  >
                     {nama}
                   </Text>
                 ))}
@@ -184,7 +196,9 @@ function Product(props) {
                     size={20}
                     color="white"
                   />
-                  <Text allowFontScaling={false} style={styles.textBenefit}>Foto Promosi</Text>
+                  <Text allowFontScaling={false} style={styles.textBenefit}>
+                    Foto Promosi
+                  </Text>
                 </View>
               </TouchableOpacity>
             )}
@@ -287,6 +301,13 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "white",
   },
+  containerSpinner: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   scrollView: {
     flex: 1,
     backgroundColor: "transparent",
@@ -347,7 +368,8 @@ const styles = StyleSheet.create({
   },
   textPrice: {
     flex: 1,
-    fontFamily: "Poppins", fontSize: 16,
+    fontFamily: "Poppins",
+    fontSize: 16,
     marginBottom: 10,
     color: colors.daclen_orange,
     fontFamily: "Poppins-SemiBold",
@@ -355,7 +377,7 @@ const styles = StyleSheet.create({
   textCategory: {
     fontFamily: "Poppins-SemiBold",
     fontSize: 14,
-    color: colors.daclen_blue,
+    color: colors.daclen_gray,
     paddingEnd: 20,
   },
   textTag: {
@@ -364,14 +386,15 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     textAlign: "center",
     fontFamily: "Poppins-SemiBold",
-    backgroundColor: colors.daclen_blue,
+    backgroundColor: colors.daclen_green,
     color: colors.daclen_light,
     borderRadius: 2,
     marginVertical: 2,
     marginEnd: 4,
   },
   textUid: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins",
+    fontSize: 12,
     marginBottom: 20,
     color: colors.daclen_gray,
   },

@@ -513,8 +513,12 @@ function MediaKitFiles(props) {
             </TouchableOpacity>
           )}
 
-          {activeTab === STARTER_KIT_FLYER_MENGAJAK ||
-          activeTab === STARTER_KIT_FLYER_PRODUK ? (
+          {(activeTab === STARTER_KIT_FLYER_MENGAJAK &&
+            !(
+              flyerMengajak?.length === undefined || flyerMengajak?.length < 1
+            )) ||
+          (activeTab === STARTER_KIT_FLYER_PRODUK &&
+            !(photoKeys?.length === undefined || photoKeys?.length < 1)) ? (
             <TouchableOpacity
               style={[
                 styles.containerRefresh,

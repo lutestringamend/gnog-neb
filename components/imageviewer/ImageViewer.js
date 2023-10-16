@@ -16,7 +16,7 @@ import { connect } from "react-redux";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import ViewShot from "react-native-view-shot";
-import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
+import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
 import * as FileSystem from "expo-file-system";
 import * as Print from "expo-print";
 import * as ImageManipulator from "expo-image-manipulator";
@@ -103,7 +103,7 @@ const ImageViewer = (props) => {
   const [error, setError] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [captureFailure, setCaptureFailure] = useState(false);
+  //const [captureFailure, setCaptureFailure] = useState(false);
   const [transformedImage, setTransformedImage] = useState(null);
   const [pdfUri, setPdfUri] = useState(null);
   const [downloadUri, setDownloadUri] = useState(null);
@@ -426,11 +426,11 @@ const ImageViewer = (props) => {
     }
   };
 
-  const sharePDF = async () => {
+  /*const sharePDF = async () => {
     setSharing(true);
     await shareAsync(pdfUri, sharingOptionsPDF);
     setSharing(false);
-  };
+  };*/
 
   const onError = (e) => {
     console.log("Image onError", e);
@@ -516,23 +516,25 @@ const ImageViewer = (props) => {
 
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.containerInside}>
-          <ActivityIndicator
-            size={24}
-            color={
-              loading ? colors.daclen_lightgrey_button : colors.daclen_light
-            }
-            style={styles.spinnerMain}
-          />
+          {error === null ? null : (
+            <ActivityIndicator
+              size={24}
+              color={
+                loading ? colors.daclen_lightgrey_button : colors.daclen_light
+              }
+              style={styles.spinnerMain}
+            />
+          )}
+
           {watermarkData === null ||
           watermarkData === undefined ||
           disableWatermark ? (
             <ReactNativeZoomableView
-              maxZoom={1.5}
+              maxZoom={2}
               minZoom={0.5}
               zoomStep={0.5}
               initialZoom={1}
               bindToBorders={true}
-              onZoomAfter={(e, gestureState, z) => console.log("onZoomAfter", e, gestureState, z)}
               style={[
                 styles.imageNormal,
                 {
@@ -556,7 +558,6 @@ const ImageViewer = (props) => {
                 onError={(e) => onError(e)}
               />
             </ReactNativeZoomableView>
-            
           ) : (
             <View
               style={[
@@ -681,6 +682,9 @@ const ImageViewer = (props) => {
 };
 
 /*
+
+              onZoomAfter={(e, gestureState, z) => console.log("onZoomAfter", e, gestureState, z)}
+
             <TouchableOpacity
               onPress={() => sharePDF()}
               style={[

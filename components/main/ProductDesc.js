@@ -26,9 +26,9 @@ export default function ProductDesc(props) {
         <View style={styles.containerHeader}>
           <Text allowFontScaling={false} style={styles.textHeader}>Deskripsi</Text>
           {desc ? (
-            <MaterialCommunityIcons name="chevron-up" size={24} />
+            <MaterialCommunityIcons name="chevron-up" size={24} color={colors.daclen_gray} />
           ) : (
-            <MaterialCommunityIcons name="chevron-down" size={24} />
+            <MaterialCommunityIcons name="chevron-down" size={24} color={colors.daclen_gray} />
           )}
         </View>
       </TouchableOpacity>
@@ -45,9 +45,9 @@ export default function ProductDesc(props) {
         <View style={styles.containerHeader}>
           <Text allowFontScaling={false} style={styles.textHeader}>Spesifikasi</Text>
           {spec ? (
-            <MaterialCommunityIcons name="chevron-up" size={24} />
+            <MaterialCommunityIcons name="chevron-up" size={24} color={colors.daclen_gray} />
           ) : (
-            <MaterialCommunityIcons name="chevron-down" size={24} />
+            <MaterialCommunityIcons name="chevron-down" size={24} color={colors.daclen_gray} />
           )}
         </View>
       </TouchableOpacity>
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontFamily: "Poppins-SemiBold",
-    color: colors.daclen_blue,
+    color: colors.daclen_gray,
   },
   textDesc: {
     fontFamily: "Poppins", fontSize: 12,

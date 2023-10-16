@@ -33,7 +33,6 @@ const FlyerMengajak = (props) => {
 
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
-  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     if (photosMultipleSave?.success !== success) {
