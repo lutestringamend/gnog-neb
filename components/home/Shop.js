@@ -235,7 +235,8 @@ function Shop(props) {
           <View style={[styles.containerLogo, isSearch ? { flex: 1 } : null]}>
             {isSearch ? (
               <Search />
-            ) : (
+            ) : currentUser?.level === "spv" ||
+              currentUser?.status_member === "supervisor" ? null : (
               <TouchableOpacity
                 onPress={() => loadCart()}
                 style={styles.containerCart}
@@ -340,7 +341,12 @@ function Shop(props) {
         </Text>
       ) : null}
 
-      <View style={[styles.containerFlatlist, {justifyContent: loading ? "center" : "flex-start"}]}>
+      <View
+        style={[
+          styles.containerFlatlist,
+          { justifyContent: loading ? "center" : "flex-start" },
+        ]}
+      >
         {loading ? (
           <ActivityIndicator
             size="large"
@@ -372,10 +378,15 @@ function Shop(props) {
                 ? props.products
                 : products
             }
-            contentContainerStyle={[styles.containerFlatlistBottom, screenWidth > staticDimensions.shopMaxWidth ? {
-              borderEndWidth: 1,
-              borderEndColor: colors.daclen_gray,
-            } : null]}
+            contentContainerStyle={[
+              styles.containerFlatlistBottom,
+              screenWidth > staticDimensions.shopMaxWidth
+                ? {
+                    borderEndWidth: 1,
+                    borderEndColor: colors.daclen_gray,
+                  }
+                : null,
+            ]}
             renderItem={({ item, index }) => (
               <ShopItem
                 id={item?.id}

@@ -218,6 +218,8 @@ function Product(props) {
       currentUser?.isActive === undefined ||
       currentUser?.isActive === null ||
       !currentUser?.isActive ||
+      currentUser?.level === "spv" ||
+      currentUser?.status_member === "supervisor" ||
       product === null ||
       ((cart?.jumlah_produk === undefined ||
         cart?.jumlah_produk === null ||

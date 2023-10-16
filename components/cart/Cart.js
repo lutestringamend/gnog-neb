@@ -176,6 +176,12 @@ function Cart(props) {
   };
 
   function onShopButtonPress() {
+    if (
+      currentUser?.level === "spv" ||
+      currentUser?.status_member === "supervisor"
+    ) {
+      return;
+    }
     if (token === null && !(navigation === undefined || navigation === null)) {
       navigation.navigate("Login");
     } else if (
@@ -210,10 +216,14 @@ function Cart(props) {
         style={styles.container}
         onPress={() => onShopButtonPress()}
         disabled={
-          token === null && (navigation === undefined || navigation === null)
+          (token === null &&
+            (navigation === undefined || navigation === null)) ||
+          currentUser?.level === "spv" ||
+          currentUser?.status_member === "supervisor"
         }
       >
-        {loading ? (
+        {currentUser?.level === "spv" ||
+        currentUser?.status_member === "supervisor" ? null : loading ? (
           <ActivityIndicator
             size="small"
             color={colors.daclen_gray}
@@ -225,9 +235,9 @@ function Cart(props) {
               ? `Login/Register`
               : currentUser?.isActive
               ? `Masukkan Keranjang`
-              : currentUser?.status === null && !(currentUser?.level === "spv" ||
-              currentUser?.status_member === "supervisor") ?
-              "Bergabung" : "Verifikasi No HP"}
+              : currentUser?.status === null
+              ? "Bergabung"
+              : "Verifikasi No HP"}
           </Text>
         )}
       </TouchableOpacity>
