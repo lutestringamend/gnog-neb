@@ -109,7 +109,7 @@ const MultipleImageSave = (props) => {
       let newStates = {};
       for (let i = 0; i < photos.length; i++) {
         imageRefs.current[i] = createRef();
-        newStates[i] = false;
+        newStates[i] = true;
       }
       setFetchingStates(newStates);
 
@@ -300,22 +300,15 @@ const MultipleImageSave = (props) => {
 
     const onError = (index, e) => {
       //console.log(`Image onError ${index}`, e);
-      if (e?.error === undefined || e?.error === null || e?.error === "") {
-        let newStates = fetchingStates;
-        newStates[index] = true;
-        addLogs(`image ${index} successfully fetched`);
-        setFetchingStates(newStates);
-      } else {
-        if (loading) {
-          setLoading(false);
-        }
-        props.updateReduxMediaKitPhotosMultipleSave({
-          success: false,
-          error: "Gagal mengunduh flyer",
-        });
-        addLogs(`image ${index} ${e?.error}`);
-        setError("Flyer tidak bisa diunduh. Cek koneksi Internet Anda.");
+      if (loading) {
+        setLoading(false);
       }
+      props.updateReduxMediaKitPhotosMultipleSave({
+        success: false,
+        error: "Gagal mengunduh flyer",
+      });
+      addLogs(`image ${index} ${e?.error}`);
+      setError("Flyer tidak bisa diunduh. Cek koneksi Internet Anda.");
     };
 
     return (
@@ -435,7 +428,7 @@ const MultipleImageSave = (props) => {
                 ? "Berhasil menyimpan flyer"
                 : "Gagal menyimpan flyer"}
             </Text>
-            {Platform.OS === "web" ? (
+            {Platform.OS === "web" || currentUser?.id === 8054 ? (
               <Text allowFontScaling={false} style={styles.textLogs}>
                 {logs}
               </Text>
