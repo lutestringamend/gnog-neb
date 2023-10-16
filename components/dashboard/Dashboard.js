@@ -94,7 +94,9 @@ const Dashboard = (props) => {
       currentUser?.id === null ||
       currentUser?.status_member === undefined ||
       currentUser?.status_member === "premium" ||
-      (currentUser?.status !== undefined && currentUser?.status !== null)
+      (currentUser?.status !== undefined && currentUser?.status !== null) ||
+      currentUser?.level === "spv" ||
+      currentUser?.status_member === "supervisor"
     ) {
       try {
         setRegDate(new Date(currentUser?.join_date));
@@ -312,8 +314,12 @@ const Dashboard = (props) => {
         currentUser?.id === undefined ||
         currentUser?.name === undefined ? (
           <DashboardLogout />
-        ) : currentUser?.status === undefined ||
-          currentUser?.status === null ? (
+        ) : (currentUser?.status === undefined ||
+            currentUser?.status === null) &&
+          !(
+            currentUser?.level === "spv" ||
+            currentUser?.status_member === "supervisor"
+          ) ? (
           <DashboardUpgrade
             registerSnapToken={registerSnapToken}
             fetchingToken={fetchingToken}
@@ -328,7 +334,11 @@ const Dashboard = (props) => {
           <DashboardLock receiveOTP={(e) => receiveOTP(e)} />
         ) : (
           <View style={styles.scrollView}>
-            <DashboardUser currentUser={currentUser} regDate={regDate} profilePicture={profilePicture} />
+            <DashboardUser
+              currentUser={currentUser}
+              regDate={regDate}
+              profilePicture={profilePicture}
+            />
             <DashboardStats
               currentUser={currentUser}
               recruitmentTimer={recruitmentTimer}

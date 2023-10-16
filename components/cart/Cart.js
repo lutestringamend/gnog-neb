@@ -184,10 +184,7 @@ function Cart(props) {
         currentUser?.isActive === null ||
         !currentUser?.isActive)
     ) {
-      if (props?.goDashboard === undefined || props?.goDashboard === null) {
-        return;
-      }
-      props?.goDashboard();
+      navigation.navigate("ProfileTab", { screen: "Main" });
     } else {
       //modifyCart(true);
       if (
@@ -228,7 +225,8 @@ function Cart(props) {
               ? `Login/Register`
               : currentUser?.isActive
               ? `Masukkan Keranjang`
-              : currentUser?.status === null ?
+              : currentUser?.status === null && !(currentUser?.level === "spv" ||
+              currentUser?.status_member === "supervisor") ?
               "Bergabung" : "Verifikasi No HP"}
           </Text>
         )}

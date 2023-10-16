@@ -224,7 +224,7 @@ const FlyerMengajak = (props) => {
               item={item}
               index={index}
               style={[styles.containerImage, {
-                marginBottom: index >= photos?.length - 1 ? staticDimensions.pageBottomPadding / 2 : 0,
+                marginBottom: index >= photos?.length - 1 ? staticDimensions.pageBottomPadding : 0,
               }]}
               selectMode={selectMode}
               onLongPress={() => onLongPress(item)}
