@@ -26,6 +26,7 @@ import {
   getRegisterSnapToken,
   updateReduxRegisterSnapToken,
   convertInvoiceNumbertoRegDate,
+  getLaporanSaldo,
 } from "../../axios/user";
 import DashboardUser from "./components/DashboardUser";
 import DashboardStats from "./components/DashboardStats";
@@ -60,6 +61,7 @@ const Dashboard = (props) => {
     profilePIN,
     regDateInMs,
     recruitmentTimer,
+    saldoAkumulasi,
   } = props;
 
   const [message, setMessage] = useState({
@@ -173,8 +175,10 @@ const Dashboard = (props) => {
   }, [profileLock]);
 
   useEffect(() => {
-    console.log("Dashboard total_rekrutmen", total_rekrutmen);
-  }, [total_rekrutmen]);
+    if (saldoAkumulasi === null) {
+      props.getLaporanSaldo(currentUser?.id, token);
+    }
+  }, [saldoAkumulasi]);
 
   const checkAsyncSnapToken = async () => {
     if (fetchingToken) {
@@ -338,6 +342,7 @@ const Dashboard = (props) => {
               currentUser={currentUser}
               regDate={regDate}
               profilePicture={profilePicture}
+              saldoAkumulasi={saldoAkumulasi}
             />
             <DashboardStats
               currentUser={currentUser}
@@ -468,6 +473,7 @@ const mapStateToProps = (store) => ({
   profileLock: store.userState.profileLock,
   hpv: store.userState.hpv,
   hpvTotalRekrutmen: store.userState.hpvTotalRekrutmen,
+  saldoAkumulasi: store.userState.saldoAkumulasi,
 });
 
 const mapDispatchProps = (dispatch) =>
@@ -479,6 +485,7 @@ const mapDispatchProps = (dispatch) =>
       updateReduxProfileLockStatus,
       getRegisterSnapToken,
       updateReduxRegisterSnapToken,
+      getLaporanSaldo,
     },
     dispatch
   );

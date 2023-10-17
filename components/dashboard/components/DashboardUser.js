@@ -10,11 +10,11 @@ import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors } from "../../../styles/base";
-import { capitalizeFirstLetter } from "../../../axios/cart";
+import { capitalizeFirstLetter, formatPrice } from "../../../axios/cart";
 import { convertDateISOStringtoDisplayDate } from "../../../axios/profile";
 
 export default function DashboardUser(props) {
-  const { currentUser, regDate, profilePicture } = props;
+  const { currentUser, regDate, profilePicture, saldoAkumulasi } = props;
   const navigation = useNavigation();
 
   function openWithdrawal() {
@@ -46,7 +46,11 @@ export default function DashboardUser(props) {
           }
           alt={currentUser?.name}
           placeholder={require("../../../assets/user.png")}
-          contentFit={Platform.OS === "ios" && profilePicture === null ? "contain" : "cover"}
+          contentFit={
+            Platform.OS === "ios" && profilePicture === null
+              ? "contain"
+              : "cover"
+          }
           transition={0}
         />
       </TouchableOpacity>
@@ -57,7 +61,16 @@ export default function DashboardUser(props) {
             ? currentUser?.detail_user?.nama_lengkap
             : currentUser?.name}
         </Text>
-        {currentUser?.komisi_user ? (
+        {saldoAkumulasi ? (
+          <Text
+            allowFontScaling={false}
+            style={[styles.textName, { color: colors.daclen_yellow }]}
+          >
+            {`Saldo Akumulasi: ${
+              saldoAkumulasi > 0 ? formatPrice(saldoAkumulasi) : "Rp 0"
+            }`}
+          </Text>
+        ) : currentUser?.komisi_user ? (
           <Text
             allowFontScaling={false}
             style={[styles.textName, { color: colors.daclen_yellow }]}
@@ -77,7 +90,11 @@ export default function DashboardUser(props) {
         } Daclen`}</Text>
         {regDate === undefined || regDate === null ? null : (
           <Text allowFontScaling={false} style={styles.text}>
-            {`Join Date ${convertDateISOStringtoDisplayDate(regDate, true, currentUser?.join_date)}`}
+            {`Join Date ${convertDateISOStringtoDisplayDate(
+              regDate,
+              true,
+              currentUser?.join_date
+            )}`}
           </Text>
         )}
 

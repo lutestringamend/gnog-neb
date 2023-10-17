@@ -71,6 +71,7 @@ import {
   USER_HPV_ARRAY_INCREMENT_STATE_CHANGE,
   USER_HPV_TOTAL_REKRUTMEN_STATE_CHANGE,
   USER_PROFILE_PICTURE_STATE_CHANGE,
+  USER_SALDO_AKUMULASI_STATE_CHANGE,
 } from "../../redux/constants";
 import {
   calculateBase64SizeInBytes,
@@ -459,6 +460,18 @@ export function getLaporanSaldo(id, token) {
       .then((response) => {
         const data = response?.data?.data.reverse();
         dispatch({ type: USER_SALDO_STATE_CHANGE, data });
+        try {
+          let newTotal = 0;
+          for (let d of data) {
+            if (d?.status.toLowerCase() === "saldo masuk" && checkNumberEmpty(d?.total_saldo) >= checkNumberEmpty(d?.saldo)) {
+              newTotal += checkNumberEmpty(d?.saldo);
+            }
+          }
+          console.log("saldoAkumulasi from getLaporanSaldo", newTotal);
+          dispatch({ type: USER_SALDO_AKUMULASI_STATE_CHANGE, data: newTotal });
+        } catch (e) {
+          console.error(e);
+        }
       })
       .catch((error) => {
         console.log(error);

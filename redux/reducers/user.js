@@ -43,6 +43,7 @@ import {
   USER_HPV_ARRAY_INCREMENT_STATE_CHANGE,
   USER_HPV_TOTAL_REKRUTMEN_STATE_CHANGE,
   USER_PROFILE_PICTURE_STATE_CHANGE,
+  USER_SALDO_AKUMULASI_STATE_CHANGE,
 } from "../constants";
 
 import { mainhttp } from "../../axios/constants";
@@ -67,6 +68,7 @@ export const initialState = {
   syaratRoot: [],
   saldo: null,
   riwayatSaldo: null,
+  saldoAkumulasi: null,
   cart: null,
   cartError: null,
   tempCart: [],
@@ -238,6 +240,11 @@ export const user = (state = initialState, action) => {
         ...state,
         saldo: action.data,
       };
+    case USER_SALDO_AKUMULASI_STATE_CHANGE:
+      return {
+        ...state,
+        saldoAkumulasi: action.data,
+      };     
     case USER_RIWAYAT_SALDO_STATE_CHANGE:
       return {
         ...state,
