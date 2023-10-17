@@ -619,7 +619,17 @@ function MediaKitFiles(props) {
             !(
               currentUser?.level === "spv" ||
               currentUser?.status_member === "supervisor"
-            )) ? null : watermarkData === null ? (
+            )) ? (
+            currentUser?.nomor_telp_verified_at === undefined ||
+            currentUser?.nomor_telp_verified_at === null ? (
+              <Text
+                allowFontScaling={false}
+                style={[styles.textSelection, { color: colors.daclen_light }]}
+              >
+                Mohon Verifikasi Nomor HP terlebih dahulu
+              </Text>
+            ) : null
+          ) : watermarkData === null ? (
             <ActivityIndicator
               size="large"
               color={colors.daclen_orange}

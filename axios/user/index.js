@@ -1293,7 +1293,7 @@ export const getCurrentUser = (token, storageCurrentUser) => {
       .then((response) => {
         const data = response?.data ? response?.data?.data : null;
         if (data === undefined || data === null) {
-          //console.log("getCurrentUser response data is null");
+          console.log("getCurrentUser response data invalid", data);
           readStorageCurrentUser(dispatch, storageCurrentUser, null);
         } else {
           //console.log("user current response", data);
@@ -1366,20 +1366,17 @@ export const fetchHPVfromUserCurrent = async (dispatch, token, currentUser) => {
       result === undefined ||
       result === null ||
       result?.result === undefined ||
-      result?.result === null
-    ) {
+      result?.result === null ||
+      currentUser?.batas_rekrut === undefined ||
+      currentUser?.batas_rekrut === null ||
+      currentUser?.batas_rekrut === ""
+    ) { 
       dispatch({ type: USER_STATE_CHANGE, data: currentUser });
       setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, currentUser);
     } else {
       console.log("overhaulReduxHPV", result?.result);
       dispatch({ type: USER_HPV_STATE_CHANGE, data: result?.result });
-      if (
-        currentUser?.batas_rekrut === undefined ||
-        currentUser?.batas_rekrut === null ||
-        currentUser?.batas_rekrut === ""
-      ) {
-        return;
-      }
+      
       let deadlineTime = new Date(currentUser?.batas_rekrut).getTime();
       let total_rekrutmen = 0;
       for (let h of result?.result?.data?.children[0]?.children) {
