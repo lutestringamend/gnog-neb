@@ -1360,26 +1360,26 @@ export const fetchHPVfromUserCurrent = async (dispatch, token, currentUser) => {
     return;
   }
 
-  const result = await getHPV(currentUser?.id, token);
-  if (
-    !(
+  try {
+    const result = await getHPV(currentUser?.id, token);
+    if (
       result === undefined ||
       result === null ||
       result?.result === undefined ||
       result?.result === null
-    )
-  ) {
-    console.log("overhaulReduxHPV", result?.result);
-    dispatch({ type: USER_HPV_STATE_CHANGE, data: result?.result });
-    if (
-      currentUser?.batas_rekrut === undefined ||
-      currentUser?.batas_rekrut === null ||
-      currentUser?.batas_rekrut === ""
     ) {
-      return;
-    }
-
-    try {
+      dispatch({ type: USER_STATE_CHANGE, data: currentUser });
+      setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, currentUser);
+    } else {
+      console.log("overhaulReduxHPV", result?.result);
+      dispatch({ type: USER_HPV_STATE_CHANGE, data: result?.result });
+      if (
+        currentUser?.batas_rekrut === undefined ||
+        currentUser?.batas_rekrut === null ||
+        currentUser?.batas_rekrut === ""
+      ) {
+        return;
+      }
       let deadlineTime = new Date(currentUser?.batas_rekrut).getTime();
       let total_rekrutmen = 0;
       for (let h of result?.result?.data?.children[0]?.children) {
@@ -1428,11 +1428,11 @@ export const fetchHPVfromUserCurrent = async (dispatch, token, currentUser) => {
       console.log("new redux currentUser after showHPVs", newUserData);
       dispatch({ type: USER_STATE_CHANGE, data: newUserData });
       setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, newUserData);
-    } catch (e) {
-      console.error(e);
-      dispatch({ type: USER_STATE_CHANGE, data: currentUser });
-      setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, currentUser);
     }
+  } catch (e) {
+    console.error(e);
+    dispatch({ type: USER_STATE_CHANGE, data: currentUser });
+    setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, currentUser);
   }
 };
 

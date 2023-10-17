@@ -18,6 +18,7 @@ import {
   PROFILE_CLEAR_DATA,
   USER_REG_DATE_IN_MS_STATE_CHANGE,
 } from "../../redux/constants";
+import { convertInvoiceNumbertoRegDate } from "../user";
 
 export function clearProfileData() {
   return (dispatch) => {
@@ -82,9 +83,16 @@ export function convertDateMilisecondstoDisplayDate(ms, isShort) {
   }
 }
 
-export function convertDateISOStringtoDisplayDate(str, isShort) {
+export function convertDateISOStringtoDisplayDate(str, isShort, join_date) {
   try {
     let date = new Date(str);
+    //console.log("convertDateISOStringtoDisplayDate", date.getDate(), date.getMonth(), date.getFullYear());
+    if (isNaN(date.getDate()) || isNaN(date.getMonth()) || isNaN(date.getFullYear())) {
+      if (join_date === null) {
+        return null;
+      }
+      return convertDateISOStringtoDisplayDate(convertInvoiceNumbertoRegDate(join_date), true, null);
+    }
     return `${date.getDate().toString()} ${
       isShort ? monthNamesShort[date.getMonth()] : monthNames[date.getMonth()]
     } ${date.getFullYear().toString()}`;

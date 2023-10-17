@@ -82,6 +82,7 @@ const Header = (props) => {
               : require("../assets/user.png")
           }
           alt={currentUser?.name}
+          placeholder={require("../assets/user.png")}
           contentFit={Platform.OS === "ios" && profilePicture === null ? "contain" : "cover"}
           transition={0}
         />

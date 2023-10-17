@@ -73,6 +73,7 @@ export default function Header(props) {
                 }
                 alt={userData?.username}
                 contentFit={Platform.OS === "ios" && profilePicture === null ? "contain" : "cover"}
+                placeholder={require("../../assets/user.png")}
                 transition={0}
               />
             </View>

@@ -45,6 +45,7 @@ export default function DashboardUser(props) {
               : require("../../../assets/user.png")
           }
           alt={currentUser?.name}
+          placeholder={require("../../../assets/user.png")}
           contentFit={Platform.OS === "ios" && profilePicture === null ? "contain" : "cover"}
           transition={0}
         />
@@ -76,7 +77,7 @@ export default function DashboardUser(props) {
         } Daclen`}</Text>
         {regDate === undefined || regDate === null ? null : (
           <Text allowFontScaling={false} style={styles.text}>
-            {`Join Date ${convertDateISOStringtoDisplayDate(regDate, true)}`}
+            {`Join Date ${convertDateISOStringtoDisplayDate(regDate, true, currentUser?.join_date)}`}
           </Text>
         )}
 

@@ -81,13 +81,13 @@ function Login(props) {
     console.log(webKey);
     if (webKey === "changePassword") {
       setChangePassword(true);
-    } else if (
+    /*} else if (
       token !== null &&
       props.loginToken === null &&
       props.registerToken === null &&
       !resetPIN
     ) {
-      navigation.navigate("Main");
+      navigation.navigate("Main");*/
     } else {
       //props.clearAuthError();
       setChangePassword(false);
