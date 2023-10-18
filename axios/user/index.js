@@ -777,11 +777,10 @@ export function updateUserPhoto(id, token, uri) {
       let name = getProfilePictureName(id, type, uri);
       let method = "";
 
-      //: Platform.OS === "android" ? uri : uri.replace("file://", "")
       const foto = {
         name,
         type,
-        uri,
+        uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
       };
 
       if (Platform.OS === "web") {
