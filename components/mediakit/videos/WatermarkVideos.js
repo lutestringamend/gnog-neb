@@ -167,17 +167,21 @@ const WatermarkVideos = (props) => {
       ) : null}
       {mediaKitVideos?.length === undefined || loading ? null : (
         <View style={styles.containerInside}>
-          {mediaKitVideos?.length < 1 ? (
+          {jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG && videosMengajak?.length < 1 ?
+            <Text allowFontScaling={false} style={styles.textUid}>
+              Tidak ada Video Mengajak tersedia.
+            </Text>
+          : jenis_video === STARTER_KIT_VIDEO_PRODUK_TAG && mediaKitVideos?.length < 1 ? (
             <Text allowFontScaling={false} style={styles.textUid}>
               Tidak ada Video Produk tersedia.
             </Text>
-          ) : videos === null && videoKeys !== null ? (
+          ) : (videos === null && videoKeys !== null) || jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG ? (
             <VideosFlatlist
-              videos={mediaKitVideos}
+              videos={jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG ? videosMengajak : mediaKitVideos}
               refreshing={refreshing}
               refreshPage={() => refreshPage()}
               jenis_video={jenis_video}
-              showTitle={true}
+              showTitle={jenis_video !== STARTER_KIT_VIDEO_MENGAJAK_TAG}
               userId={userId}
             />
           ) : (
