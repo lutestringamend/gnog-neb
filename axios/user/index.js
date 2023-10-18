@@ -777,10 +777,11 @@ export function updateUserPhoto(id, token, uri) {
       let name = getProfilePictureName(id, type, uri);
       let method = "";
 
+      //: Platform.OS === "android" ? uri : uri.replace("file://", "")
       const foto = {
         name,
         type,
-        uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
+        uri,
       };
 
       if (Platform.OS === "web") {
@@ -821,7 +822,7 @@ export function updateUserPhoto(id, token, uri) {
               type: USER_UPDATE_STATE_CHANGE,
               data: {
                 session: "photoError",
-                message: `${foto}\n\n${JSON.stringify(data)}`,
+                message: `${JSON.stringify(foto)}\n\n${JSON.stringify(data)}`,
               },
             });
           } else if (data?.errors !== undefined) {
@@ -830,8 +831,7 @@ export function updateUserPhoto(id, token, uri) {
                 type: USER_UPDATE_STATE_CHANGE,
                 data: {
                   session: "photoError",
-                  message:
-                    id === 8054 ? JSON.stringify(data?.errors?.foto) : "",
+                  message: JSON.stringify(data?.errors?.foto),
                 },
               });
             } else {
@@ -839,7 +839,7 @@ export function updateUserPhoto(id, token, uri) {
                 type: USER_UPDATE_STATE_CHANGE,
                 data: {
                   session: "photoError",
-                  message: id === 8054 ? JSON.stringify(data?.errors) : "",
+                  message: JSON.stringify(data?.errors),
                 },
               });
             }
