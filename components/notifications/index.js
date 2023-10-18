@@ -60,7 +60,7 @@ export const receiveNotificationAccordingly = async (
             ? Notifications.AndroidNotificationPriority.MAX
             : Notifications.AndroidNotificationPriority.DEFAULT,
         autoDismiss: true,
-        sound: "default",
+        sound: "d.wav",
         data,
       },
       trigger: null,
@@ -94,7 +94,7 @@ export const createLocalWelcomeNotification = (name) => {
           categoryIdentifier: NOTIFICATION_DEFAULT_CHANNEL_ID,
           priority: Notifications.AndroidNotificationPriority.MAX,
           autoDismiss: true,
-          sound: null,
+          sound: "d.wav",
           data,
         },
         trigger: null,
@@ -244,11 +244,12 @@ export async function registerForPushNotificationsAsync() {
   }
 
   if (Platform.OS === "android") {
-    Notifications.setNotificationChannelAsync( {
+    Notifications.setNotificationChannelAsync(NOTIFICATION_DEFAULT_CHANNEL_ID, {
       name: NOTIFICATION_DEFAULT_CHANNEL_ID,
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: colors.daclen_black,
+      sound: "d.wav",
     });
   }
 
