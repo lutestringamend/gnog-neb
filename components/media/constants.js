@@ -2,6 +2,7 @@ import { ImageType } from "expo-camera";
 import { colors } from "../../styles/base"
 
 export const CAMERA_COMPRESSION_QUALITY = 0.5
+export const CAMERA_IOS_COMPRESSION_QUALITY = 0.2
 export const PICKER_COMPRESSION_QUALITY = 0.5 //0 lowest, 1 highest, 0.2 default
 export const FILE_OVERSIZE = "FILE_OVERSIZE"
 export const CAMERA_NO_PERMISSION = "CAMERA_NO_PERMISSION"
@@ -58,7 +59,7 @@ export const takePictureOptions = {
 };
 
 export const takePictureIosOptions = {
-  quality: CAMERA_COMPRESSION_QUALITY,
+  quality: CAMERA_IOS_COMPRESSION_QUALITY,
   base64: true,
   imageType: ImageType.jpg,
 };

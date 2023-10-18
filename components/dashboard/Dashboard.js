@@ -175,7 +175,7 @@ const Dashboard = (props) => {
   }, [profileLock]);
 
   useEffect(() => {
-    if (saldoAkumulasi === null) {
+    if (saldoAkumulasi === null && !(token === null || currentUser === null || currentUser?.id === undefined || currentUser?.id === null)) {
       props.getLaporanSaldo(currentUser?.id, token);
     }
   }, [saldoAkumulasi]);
