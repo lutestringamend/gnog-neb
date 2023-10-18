@@ -116,7 +116,7 @@ function CameraView(props) {
             : 0,
         },
       ]);
-      const uri = Platform.OS === "ios" ? rawResult?.uri : rotate?.uri;
+      const uri = rotate?.uri;
       console.log("CameraView snap", { rawResult, uri, key });
 
       if (key === "profilePicture") {
