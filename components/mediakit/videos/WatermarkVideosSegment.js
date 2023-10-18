@@ -3,9 +3,11 @@ import { StyleSheet, View, Text } from "react-native";
 
 import { colors, staticDimensions } from "../../../styles/base";
 import VideosFlatlist from "./VideosFlatlist";
+import { STARTER_KIT_VIDEO_PRODUK_TAG } from "../constants";
 
 const WatermarkVideosSegment = (props) => {
-  const { title, videos, index, isLast, refreshing, userId, jenis_video } = props;
+  const { title, videos, index, isLast, refreshing, userId, jenis_video } =
+    props;
 
   function refreshPage() {
     if (props?.refreshPage === undefined || props?.refreshPage === null) {
@@ -24,11 +26,13 @@ const WatermarkVideosSegment = (props) => {
         },
       ]}
     >
-      <View style={styles.containerScrollHeader}>
-        <Text allowFontScaling={false} style={[styles.textName, { flex: 1 }]}>
-          {title}
-        </Text>
-      </View>
+      {title && jenis_video === STARTER_KIT_VIDEO_PRODUK_TAG ? (
+        <View style={styles.containerScrollHeader}>
+          <Text allowFontScaling={false} style={[styles.textName, { flex: 1 }]}>
+            {title}
+          </Text>
+        </View>
+      ) : null}
 
       <View style={styles.containerCarousel}>
         <VideosFlatlist

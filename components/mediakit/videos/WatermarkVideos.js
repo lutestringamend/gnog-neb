@@ -176,6 +176,7 @@ const WatermarkVideos = (props) => {
               videos={mediaKitVideos}
               refreshing={refreshing}
               refreshPage={() => refreshPage()}
+              jenis_video={jenis_video}
               showTitle={true}
               userId={userId}
             />
@@ -201,7 +202,7 @@ const WatermarkVideos = (props) => {
                   videos={videos[item]}
                   refreshing={refreshing}
                   userId={userId}
-                  jenis_video={STARTER_KIT_VIDEO_PRODUK_TAG}
+                  jenis_video={jenis_video}
                 />
               )}
             />

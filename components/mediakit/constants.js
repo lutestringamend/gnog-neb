@@ -27,6 +27,7 @@ export const STARTER_KIT_VIDEO_PRODUK_TEXT = "VIDEO PRODUK";
 export const STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE = "Video Produk";
 export const STARTER_KIT_VIDEO_PRODUK_ICON = require("../../assets/starterkit/videoproduk.png");
 export const STARTER_KIT_VIDEO_PRODUK_TAG = "produk";
+export const STARTER_KIT_VIDEO_PRODUK_FILE_NAME = "video_produk";
 
 export const STARTER_KIT_FLYER_MENGAJAK = "STARTER_KIT_FLYER_MENGAJAK";
 export const STARTER_KIT_FLYER_MENGAJAK_TEXT = "FLYER MENGAJAK";
@@ -39,6 +40,7 @@ export const STARTER_KIT_VIDEO_MENGAJAK_TEXT = "VIDEO MENGAJAK";
 export const STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE = "Video Mengajak";
 export const STARTER_KIT_VIDEO_MENGAJAK_ICON = require("../../assets/starterkit/videomengajak.png");
 export const STARTER_KIT_VIDEO_MENGAJAK_TAG = "mengajak";
+export const STARTER_KIT_VIDEO_MENGAJAK_FILE_NAME = "video_mengajak";
 
 export const STARTER_KIT_TOKO_ONLINE_TEXT = `TOKO ONLINE\nSAYA`;
 export const STARTER_KIT_TOKO_ONLINE_ICON = require("../../assets/starterkit/tokoonline.png");

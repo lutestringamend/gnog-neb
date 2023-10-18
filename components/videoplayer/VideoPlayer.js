@@ -118,8 +118,6 @@ function VideoPlayer(props) {
   const video = useRef(null);
   const waterRef = useRef(null);
   const navigation = useNavigation();
-  const videoDir = FileSystem.documentDirectory;
-  const fileName = getFileName(uri);
 
   const [permissionResponse, requestPermission] = usePermissions();
 
@@ -147,6 +145,7 @@ function VideoPlayer(props) {
   const [rawUri, setRawUri] = useState(null);
   const [resultUri, setResultUri] = useState(null);
   const [output, setOutput] = useState("VIDEO PROCESSING LOGS");
+  const [fileName, setFileName] = useState("video.mp4");
   const [headerTitle, setHeaderTitle] = useState(
     title ? title : "Video Promosi"
   );
@@ -156,6 +155,8 @@ function VideoPlayer(props) {
   );
   const [sharingAvailability, setSharingAvailability] = useState(false);
   const [updateStorage, setUpdateStorage] = useState(false);
+
+  const videoDir = FileSystem.documentDirectory;
 
   //debugging ffmpeg
   /*const [customFilter, setCustomFilter] = useState(
@@ -239,6 +240,10 @@ function VideoPlayer(props) {
       };
       console.log("video watermarkData", data);;
       setWatermarkData(data);
+
+      let newFileName = getFileName(uri, jenis_video, title, props?.watermarkData?.name);
+      setFileName(newFileName);
+      console.log("output fileName", newFileName);
     }
   }, [props?.watermarkData]);
 
@@ -250,13 +255,11 @@ function VideoPlayer(props) {
     } catch (e) {
       console.error(e);
     }
-    newHeader = `${newHeader} on ${deviceModel} (${viewshotwidthratio}:${viewshotheightratio})`;
-    /*if (currentUser?.id === 8054 || currentUser?.id === 11193 || currentUser?.id === 11447) {
-      newHeader = `${newHeader} (Tester)`;
-      setTester(true);
-    } else {
-      setTester(false);
-    }*/
+    
+    if (currentUser?.id === 8054 || currentUser?.id === 11193 || currentUser?.id === 11447) {
+      newHeader = `${newHeader} on ${deviceModel} (${viewshotwidthratio}:${viewshotheightratio})`;
+      //setTester(true);
+    }
     setHeaderTitle(newHeader);
   }, [currentUser]);
 

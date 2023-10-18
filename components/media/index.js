@@ -26,6 +26,11 @@ import {
   takePictureOptions,
 } from "./constants";
 import { sentryLog } from "../../sentry";
+import {
+  STARTER_KIT_VIDEO_MENGAJAK_FILE_NAME,
+  STARTER_KIT_VIDEO_MENGAJAK_TAG,
+  STARTER_KIT_VIDEO_PRODUK_FILE_NAME,
+} from "../mediakit/constants";
 
 const iPhoneScaleFactorTwo = [
   "iphone se",
@@ -40,7 +45,7 @@ const iPhoneScaleFactorTwo = [
   "iphone 5",
   "iphone 4s",
   "iphone 4",
-]
+];
 
 export const intiialPermissions = {
   cameraPermission: null,
@@ -66,10 +71,7 @@ export function getiOSScaleFactor(model) {
   return 3;
 }
 
-export function setSkipWatermarkFFMPEGCommand(
-  sourceVideo,
-  resultVideo
-) {
+export function setSkipWatermarkFFMPEGCommand(sourceVideo, resultVideo) {
   return `-y -i ${sourceVideo} ${resultVideo}`;
 }
 
@@ -81,22 +83,24 @@ export function setBasicFFMPEGCommand(
   width,
   height
 ) {
-  // -scale=${width ? width.toString() : "720"}:${height ? height.toString() : "1280"},setsar=1:1   
+  // -scale=${width ? width.toString() : "720"}:${height ? height.toString() : "1280"},setsar=1:1
   //-movflags faststart
   //-movflags use_metadata_tags
   //-map_metadata 0
   //-profile:v baseline -level 4.0 -pix_fmt yuv420p -movflags faststart -map_metadata 0
-  //${filter} 
+  //${filter}
   //-metadata:s:v:0 rotate=90
-  //-vcodec libx264 -acodec aac 
-  //-vf scale="${width ? width.toString() : "720"}:-1" 
+  //-vcodec libx264 -acodec aac
+  //-vf scale="${width ? width.toString() : "720"}:-1"
   //-vf 'transpose=1' -metadata:s:v:0 rotate=0 -profile:v baseline -codec copy
   //${width < height ? `-map_metadata 0 -metadata:s:v:0 rotate=90 -vf 'transpose=1'` : ""} 720 1080
   //-vf scale=${width < height ? "720:1080" : "1080:720"}
-  //-vtag avc1 
+  //-vtag avc1
   //-profile:v baseline -level 4.0 -preset ${Platform.OS === "android" ? "faster" : "ultrafast"}
-  
-  return `-y -i ${sourceVideo} -i ${watermarkFile} ${filter} -preset ${Platform.OS === "android" ? "veryfast" : "ultrafast"} ${resultVideo}`;
+
+  return `-y -i ${sourceVideo} -i ${watermarkFile} ${filter} -preset ${
+    Platform.OS === "android" ? "veryfast" : "ultrafast"
+  } ${resultVideo}`;
 }
 
 export function setFilterFFMPEG(flag, paddingX, paddingY) {
@@ -129,7 +133,7 @@ export function setFFMPEGCommand(
   paddingX,
   paddingY,
   width,
-  height,
+  height
 ) {
   return setBasicFFMPEGCommand(
     sourceVideo,
@@ -137,7 +141,7 @@ export function setFFMPEGCommand(
     resultVideo,
     setFilterFFMPEG(flag, paddingX, paddingY),
     width,
-    height,
+    height
   );
 }
 
@@ -212,8 +216,10 @@ export const takePicture = async (ref) => {
 
     if (ref) {
       //console.log("takePicture", options);
-      const picture = await ref.takePictureAsync(Platform.OS === "ios" ? takePictureIosOptions : takePictureOptions);
-      //console.log("takePictureAsync result", picture);
+      const picture = await ref.takePictureAsync(
+        Platform.OS === "ios" ? takePictureIosOptions : takePictureOptions
+      );
+      //console.log("takePictureAsync result", picture);GETmE
       return picture;
     } else {
       console.error("ref error", ref);
@@ -226,10 +232,26 @@ export const takePicture = async (ref) => {
   return null;
 };
 
-export function getFileName(uri) {
+export function getFileName(uri, jenis_video, title, name) {
   try {
     const uriSplit = uri.split("/");
-    return uriSplit[uriSplit.length - 1];
+    let rawFileName = uriSplit[uriSplit.length - 1];
+    if (rawFileName.includes(" ")) {
+      const nameSplit = rawFileName.split(" ");
+      rawFileName = nameSplit[nameSplit.length - 1];
+    } else if (rawFileName.includes("%20")) {
+      const nameSplit = rawFileName.split("%20");
+      rawFileName = nameSplit[nameSplit.length - 1];
+    }
+    const array = title.split(" ");
+    let newHeader = `${array[0]}.mp4`;
+    return `${
+      jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG
+        ? STARTER_KIT_VIDEO_MENGAJAK_FILE_NAME
+        : STARTER_KIT_VIDEO_PRODUK_FILE_NAME
+    }_${name}_${
+      jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG ? rawFileName : newHeader
+    }`;
   } catch (e) {
     console.error(e);
     return "video.mp4";
@@ -461,7 +483,8 @@ export const pickImage = async () => {
         aspect: [1, 1],
         quality: PICKER_COMPRESSION_QUALITY,
         allowsMultipleSelection: false,
-        presentationStyle: ImagePicker.UIImagePickerPresentationStyle.OVER_FULL_SCREEN,
+        presentationStyle:
+          ImagePicker.UIImagePickerPresentationStyle.OVER_FULL_SCREEN,
       });
     } catch (e) {
       console.error(e);
