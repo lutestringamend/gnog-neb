@@ -53,7 +53,7 @@ const Header = (props) => {
           }
           alt={currentUser?.name}
           contentFit="cover"
-          placeholder={require("../../assets/user.png")}
+          placeholder={Platform.OS === "ios" ? null : require("../../assets/user.png")}
           transition={100}
         />
       </TouchableOpacity>

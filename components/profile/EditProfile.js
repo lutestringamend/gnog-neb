@@ -394,7 +394,7 @@ function EditProfile(props) {
               }
               alt={user?.nama_lengkap}
               contentFit={Platform.OS === "ios" && userProfilePicture === null ? "contain" : "cover"}
-              placeholder={require("../../assets/user.png")}
+              placeholder={Platform.OS === "ios" ? null : require("../../assets/user.png")}
               transition={100}
             />
             {uploadingPhoto.pending || uploadingPhoto.uploading ? (

@@ -777,6 +777,12 @@ export function updateUserPhoto(id, token, uri) {
       let name = getProfilePictureName(id, type, uri);
       let method = "";
 
+      const foto = {
+        name,
+        type,
+        uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
+      };
+
       if (Platform.OS === "web") {
         const fileSize = calculateBase64SizeInBytes(uri);
         if (fileSize >= MAXIMUM_FILE_SIZE_IN_BYTES) {
@@ -790,11 +796,6 @@ export function updateUserPhoto(id, token, uri) {
         method = "uri to blob";
         console.log("sending blob", name, type, blob);
       } else {
-        let foto = {
-          name,
-          type,
-          uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
-        };
         formData.append("foto", foto);
         method = "using object";
       }
@@ -815,6 +816,14 @@ export function updateUserPhoto(id, token, uri) {
           console.log(data);
           if (data?.session === "success") {
             dispatch({ type: USER_UPDATE_STATE_CHANGE, data: data });
+          } else if (id === 8054) {
+            dispatch({
+              type: USER_UPDATE_STATE_CHANGE,
+              data: {
+                session: "photoError",
+                message: `${foto}\n\n${JSON.stringify(data)}`,
+              },
+            });
           } else if (data?.errors !== undefined) {
             if (data?.errors?.foto !== undefined) {
               dispatch({
