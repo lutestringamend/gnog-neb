@@ -15,7 +15,7 @@ import {
   MEDIA_KIT_FLYER_PRODUK_SELECTED_STATE_CHANGE,
 } from "../../redux/constants";
 import { sentryLog } from "../../sentry";
-import { DefaultSelected, STARTER_KIT_FLYER_PRODUK_TAG } from "../../components/mediakit/constants";
+import { DefaultSelected, STARTER_KIT_FLYER_PRODUK_TAG, STARTER_KIT_VIDEO_MENGAJAK_TAG } from "../../components/mediakit/constants";
 
 export function clearMediaKitData() {
   return (dispatch) => {
@@ -219,12 +219,14 @@ export function getMediaKitVideos(token, products) {
       .then((response) => {
         try {
           const data = response?.data?.data;
-          console.log("getMediaKitVideos", response?.data);
+          console.log("getMediaKitVideos response", data);
           if (data === null || data?.length === undefined || data?.length < 1) {
             dispatch({ type: MEDIA_KIT_VIDEOS_STATE_CHANGE, data: [] });
+            dispatch({ type: MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE, data: [] });
             return;
           }
           let newData = [];
+          let newMengajakData = [];
           for (let i = 0; i < data?.length; i++) {
             if (
               data[i]?.video === undefined &&
@@ -235,15 +237,24 @@ export function getMediaKitVideos(token, products) {
                   data[i]?.videoWatermarks[j],
                   products
                 );
-                newData.unshift(videoItem);
+                if (data[i]?.jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG) {
+                  newMengajakData.unshift(videoItem);
+                } else {
+                  newData.unshift(videoItem);
+                }
               }
             } else {
               let videoItem = getVideoProductData(data[i], products);
-              newData.unshift(videoItem);
+              if (data[i]?.jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG) {
+                newMengajakData.unshift(videoItem);
+              } else {
+                newData.unshift(videoItem);
+              }
             }
           }
-          console.log("video watermark after product process", newData);
+          console.log("post video produk - mengajak", newData, newMengajakData);
           dispatch({ type: MEDIA_KIT_VIDEOS_STATE_CHANGE, data: newData });
+          dispatch({ type: MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE, data: newMengajakData });
         } catch (e) {
           sentryLog(e);
           dispatch({

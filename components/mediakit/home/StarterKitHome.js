@@ -116,7 +116,6 @@ const StarterKitHome = (props) => {
             icon={STARTER_KIT_VIDEO_MENGAJAK_ICON}
             text={STARTER_KIT_VIDEO_MENGAJAK_TEXT}
             style={{ marginStart: 10, flex: 1 / 2 }}
-            disabled={true}
           />
         </View>
         <View style={styles.containerHorizontal}>

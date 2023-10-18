@@ -25,14 +25,14 @@ import {
 } from "../../asyncstorage/constants";
 import WatermarkVideosSegment from "./WatermarkVideosSegment";
 import VideosFlatlist from "./VideosFlatlist";
-import { STARTER_KIT_VIDEO_PRODUK_TAG } from "../constants";
+import { STARTER_KIT_VIDEO_MENGAJAK_TAG, STARTER_KIT_VIDEO_PRODUK_TAG } from "../constants";
 
 const WatermarkVideos = (props) => {
   const [refreshing, setRefreshing] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [videos, setVideos] = useState(null);
   const [videoKeys, setVideoKeys] = useState(null);
-  const { mediaKitVideos, watermarkVideos, userId, token, products, loading } =
+  const { mediaKitVideos, videosMengajak, jenis_video, watermarkVideos, userId, token, products, loading } =
     props;
 
   useEffect(() => {
@@ -50,12 +50,18 @@ const WatermarkVideos = (props) => {
       setRefreshing(false);
     }
     reorganizeVideos();
-    console.log("redux media kit videos", mediaKitVideos);
+    console.log("redux media kit videos - videosMengajak", mediaKitVideos, videosMengajak);
   }, [mediaKitVideos]);
 
   useEffect(() => {
+    if (jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG) {
+      console.log("redux videosMengajak", videosMengajak);
+    }
+  }, [videosMengajak]);
+
+  /*useEffect(() => {
     console.log("videos", videos);
-  }, [videos]);
+  }, [videos]);*/
 
   useEffect(() => {
     if (watermarkVideos?.length === undefined || watermarkVideos?.length < 1) {
@@ -69,8 +75,9 @@ const WatermarkVideos = (props) => {
     let newVideos = {
       Lainnya: [],
     };
+    let rawVideos = jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG ? videosMengajak : mediaKitVideos;
     try {
-      for (let vid of mediaKitVideos) {
+      for (let vid of rawVideos) {
         if (
           vid?.produk === undefined ||
           vid?.produk?.nama === undefined ||
@@ -95,6 +102,7 @@ const WatermarkVideos = (props) => {
       setVideoKeys(Object.keys(newVideos).sort());
     } catch (e) {
       console.error(e);
+      console.log("rawVideos", rawVideos);
       setVideos(null);
       setVideoKeys([]);
     }
@@ -276,6 +284,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   videosUri: store.mediaKitState.videosUri,
   mediaKitVideos: store.mediaKitState.videos,
+  videosMengajak: store.mediaKitState.videosMengajak,
   watermarkVideos: store.mediaState.watermarkVideos,
   videoError: store.mediaKitState.videoError,
   products: store.productState.products,

@@ -59,6 +59,8 @@ import {
   STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE,
   DefaultSelected,
   FLYER_SELECTION_LIMIT,
+  STARTER_KIT_VIDEO_MENGAJAK_TAG,
+  STARTER_KIT_VIDEO_PRODUK_TAG,
 } from "./constants";
 import StarterKitHome from "./home/StarterKitHome";
 import StarterKitModal from "./home/StarterKitModal";
@@ -635,12 +637,13 @@ function MediaKitFiles(props) {
               color={colors.daclen_orange}
               style={styles.spinner}
             />
-          ) : activeTab === STARTER_KIT_VIDEO_PRODUK ? (
+          ) : activeTab === STARTER_KIT_VIDEO_PRODUK || activeTab === STARTER_KIT_VIDEO_MENGAJAK ? (
             <WatermarkVideos
               watermarkData={watermarkData}
               userId={currentUser?.id}
               token={token}
               loading={videoLoading}
+              jenis_video={activeTab === STARTER_KIT_VIDEO_MENGAJAK ? STARTER_KIT_VIDEO_MENGAJAK_TAG : STARTER_KIT_VIDEO_PRODUK_TAG}
               refreshPage={() => refreshVideos()}
             />
           ) : activeTab === STARTER_KIT_FLYER_PRODUK ? (
