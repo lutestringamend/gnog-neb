@@ -1,3 +1,4 @@
+import { ImageType } from "expo-camera";
 import { colors } from "../../styles/base"
 
 export const CAMERA_COMPRESSION_QUALITY = 0.5
@@ -46,6 +47,20 @@ export const sharingOptionsPDF = {
   UTI: ".pdf",
   dialogTitle: "Share PDF Daclen",
   mimeType: "application/pdf",
+};
+
+export const takePictureOptions = {
+  quality: CAMERA_COMPRESSION_QUALITY,
+  base64: true,
+  imageType: ImageType.jpg,
+  exif: true,
+  skipProcessing: false,
+};
+
+export const takePictureIosOptions = {
+  quality: CAMERA_COMPRESSION_QUALITY,
+  base64: true,
+  imageType: ImageType.jpg,
 };
 
 export const camerafail = "Error dengan kamera: "

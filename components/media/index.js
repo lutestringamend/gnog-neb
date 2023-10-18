@@ -1,4 +1,4 @@
-import { Camera, ImageType } from "expo-camera";
+import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { Dimensions, Platform } from "react-native";
 import { getInfoAsync } from "expo-file-system";
@@ -15,7 +15,6 @@ import {
 import {
   bigmediafileerror,
   camerafail,
-  CAMERA_COMPRESSION_QUALITY,
   CAMERA_NO_PERMISSION,
   DEFAULT_ANDROID_CAMERA_RATIO,
   imagepickerfail,
@@ -23,6 +22,8 @@ import {
   IMAGE_PICKER_NO_PERMISSION,
   mediafileunusable,
   PICKER_COMPRESSION_QUALITY,
+  takePictureIosOptions,
+  takePictureOptions,
 } from "./constants";
 import { sentryLog } from "../../sentry";
 
@@ -210,15 +211,8 @@ export const takePicture = async (ref) => {
     }
 
     if (ref) {
-      const options = {
-        quality: CAMERA_COMPRESSION_QUALITY,
-        base64: true,
-        imageType: ImageType.jpg,
-        exif: true,
-        skipProcessing: false,
-      };
       //console.log("takePicture", options);
-      const picture = await ref.takePictureAsync(options);
+      const picture = await ref.takePictureAsync(Platform.OS === "ios" ? takePictureIosOptions : takePictureOptions);
       //console.log("takePictureAsync result", picture);
       return picture;
     } else {
