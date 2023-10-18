@@ -63,6 +63,7 @@ export const takePictureIosOptions = {
   base64: true,
   imageType: ImageType.jpg,
   exif: true,
+  skipProcessing: false,
 };
 
 export const camerafail = "Error dengan kamera: "
