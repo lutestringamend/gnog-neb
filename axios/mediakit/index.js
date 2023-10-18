@@ -157,21 +157,21 @@ export const getVideoProductData = (item, products) => {
     item?.produk === undefined ||
     item?.produk === null
   ) {
-    return item;
+    return checkVideoFileName(item);;
   }
 
   try {
     if (typeof item?.produk === "string") {
       const data = products.find(({ slug }) => slug === item?.produk);
       if (data === undefined) {
-        return item;
+        return checkVideoFileName(item);;
       }
       let nama = item?.nama;
       if (nama.includes("/") || nama.toLowerCase().includes("mp4")) {
         nama = data?.nama ? data?.nama : nama;
       }
       return {
-        ...item,
+        ...checkVideoFileName(item),
         nama,
         product_name: data?.nama,
         produk_id: data?.id,
@@ -183,14 +183,14 @@ export const getVideoProductData = (item, products) => {
       item?.produk?.slug === undefined ||
       item?.produk?.foto === undefined
     ) {
-      return item;
+      return checkVideoFileName(item);;
     } else {
       let nama = item?.nama;
       if (nama.includes("/") || nama.toLowerCase().includes("mp4")) {
         nama = item?.produk?.nama ? item?.produk?.nama : nama;
       }
       return {
-        ...item,
+        ...checkVideoFileName(item),
         nama,
         product_name: item?.produk?.nama,
         produk_id: item?.produk?.id,
@@ -200,9 +200,24 @@ export const getVideoProductData = (item, products) => {
     }
   } catch (e) {
     console.error(e);
-    return item;
+    return checkVideoFileName(item);
   }
 };
+
+export function checkVideoFileName(item) {
+  try {
+    if (item?.video.includes(" ")) {
+      let video = item?.video.replaceAll(" ", "%20");
+      return {
+        ...item,
+        video,
+      };
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  return item;
+}
 
 export function getMediaKitVideos(token, products) {
   if (token === undefined || token === null) {
