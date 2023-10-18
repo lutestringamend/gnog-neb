@@ -79,7 +79,7 @@ const SaldoHistoryItem = ({ item }) => {
           <Text allowFontScaling={false} style={styles.textReferral}>{`${
             item?.keterangan ? `${item?.keterangan}\n` : ""
           }${
-            item?.nomor_invoice ? `Nomor Invoice ${item?.nomor_invoice}` : ""
+            item?.nomor_invoice ? item?.nomor_invoice?.invoice ? `Nomor Invoice ${item?.nomor_invoice?.invoice}` : `Nomor Invoice ${item?.nomor_invoice}` : ""
           }`}</Text>
         ) : null}
 
