@@ -1250,6 +1250,9 @@ export function login(email, password, resetPIN, deviceToken) {
     let isDevUser = isUserDevServer(email);
     const newServerUrl = isDevUser ? devhttp : mainhttp;
     let url = `${newServerUrl}${loginlink}`;
+    if (email === "jasonlimanjaya" && Platform.OS === "android") {
+      ToastAndroid.show(JSON.stringify(params), ToastAndroid.LONG);
+    }
     //console.log("login", params);
 
     Axios.post(url, params)
