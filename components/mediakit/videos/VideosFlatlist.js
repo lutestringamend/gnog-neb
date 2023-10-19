@@ -107,8 +107,8 @@ const VideosFlatlist = (props) => {
               {
                 paddingBottom:
                   videos?.length > 3 && index >= Math.floor(videos?.length / 3) * 3
-                    ? staticDimensions.pageBottomPadding / 2
-                    : 0,
+                    ? staticDimensions.pageBottomPadding
+                    : 20,
               },
             ]}
           >
