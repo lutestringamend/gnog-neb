@@ -123,14 +123,14 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   containerVertical: {
-    marginHorizontal: 12,
+    marginHorizontal: 10,
     backgroundColor: "transparent",
     flex: 1,
   },
   button: {
     borderWidth: 1,
     borderRadius: 2,
-    marginTop: 20,
+    marginTop: 12,
     borderColor: colors.daclen_green_button,
     justifyContent: "center",
     alignItems: "center",
@@ -141,13 +141,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   textButton: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "Poppins-SemiBold",
     color: colors.daclen_green_button,
     textAlign: "center",
   },
   textName: {
-    fontSize: 16,
+    fontSize: 14,
     color: colors.daclen_light,
     fontFamily: "Poppins-SemiBold",
   },
@@ -163,9 +163,9 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 90,
+    height: 90,
     backgroundColor: colors.daclen_light,
-    borderRadius: 50,
+    borderRadius: 45,
   },
 });
