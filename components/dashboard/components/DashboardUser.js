@@ -10,7 +10,11 @@ import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors } from "../../../styles/base";
-import { capitalizeFirstLetter, formatPrice } from "../../../axios/cart";
+import {
+  capitalizeFirstLetter,
+  checkNumberEmpty,
+  formatPrice,
+} from "../../../axios/cart";
 
 export default function DashboardUser(props) {
   const { currentUser, profilePicture, saldoAkumulasi } = props;
@@ -56,46 +60,63 @@ export default function DashboardUser(props) {
         />
       </TouchableOpacity>
 
-      <View style={styles.containerVertical}>
-        <Text allowFontScaling={false} style={styles.text}>{`${
-          currentUser?.status
-            ? capitalizeFirstLetter(currentUser?.status)
-            : "Reseller"
-        } Daclen`}</Text>
-        <Text allowFontScaling={false} style={styles.textName}>
-          {currentUser?.detail_user?.nama_lengkap
-            ? currentUser?.detail_user?.nama_lengkap
-            : currentUser?.name}
-        </Text>
-        <Text
-          allowFontScaling={false}
-          style={[styles.text, { marginTop: 4 }]}
-        >
-          {saldoAkumulasi ? "Saldo Akumulasi" : "Saldo"}
-        </Text>
+      <View style={styles.containerHorizontal}>
+        <View style={styles.containerVertical}>
+          <Text allowFontScaling={false} style={styles.text}>{`${
+            currentUser?.status
+              ? capitalizeFirstLetter(currentUser?.status)
+              : "Reseller"
+          } Daclen`}</Text>
+          <Text
+            allowFontScaling={false}
+            style={[
+              styles.textName,
+              {
+                fontSize: currentUser?.detail_user?.nama_lengkap
+                  ? currentUser?.detail_user?.nama_lengkap?.length > 12
+                    ? 12
+                    : 14
+                  : 14,
+              },
+            ]}
+          >
+            {currentUser?.detail_user?.nama_lengkap
+              ? currentUser?.detail_user?.nama_lengkap
+              : currentUser?.name}
+          </Text>
+          <Text
+            allowFontScaling={false}
+            style={[styles.text, { marginTop: 4 }]}
+          >
+            {saldoAkumulasi ? "Saldo Akumulasi" : "Saldo"}
+          </Text>
 
-        <Text
-          allowFontScaling={false}
-          style={[styles.textName, { color: colors.daclen_yellow }]}
+          <Text
+            allowFontScaling={false}
+            style={[styles.textName, { color: colors.daclen_yellow }]}
+          >
+            {saldoAkumulasi
+              ? saldoAkumulasi > 0
+                ? formatPrice(saldoAkumulasi)
+                : "Rp 0"
+              : currentUser?.komisi_user
+              ? checkNumberEmpty(currentUser?.komisi_user?.total_currency) > 0
+                ? formatPrice(currentUser?.komisi_user?.total_currency)
+                  ? formatPrice(currentUser?.komisi_user?.total_currency)
+                  : "Rp 0"
+                : "Rp 0"
+              : "Rp 0"}
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => openWithdrawal()}
         >
-          {saldoAkumulasi
-            ? saldoAkumulasi > 0
-              ? formatPrice(saldoAkumulasi)
-              : "Rp 0"
-            : currentUser?.komisi_user
-            ? formatPrice(currentUser?.komisi_user?.total_currency)
-              ? formatPrice(currentUser?.komisi_user?.total_currency)
-              : "Rp 0"
-            : "Rp 0"}
-        </Text>
-
-        
+          <Text allowFontScaling={false} style={styles.textButton}>
+            {`CAIRKAN\nSALDO`}
+          </Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.button} onPress={() => openWithdrawal()}>
-        <Text allowFontScaling={false} style={styles.textButton}>
-          {`CAIRKAN\nSALDO`}
-        </Text>
-      </TouchableOpacity>
     </View>
   );
 }
@@ -127,10 +148,14 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     flex: 1,
   },
+  containerHorizontal: {
+    flex: 1,
+    flexDirection: "row",
+    backgroundColor: "transparent",
+  },
   button: {
     borderWidth: 1,
     borderRadius: 2,
-    marginTop: 12,
     borderColor: colors.daclen_green_button,
     justifyContent: "center",
     alignItems: "center",
