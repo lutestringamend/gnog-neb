@@ -60,6 +60,9 @@ export const dashboardbuttonsmaxratio = 1.25;
 
 export const userroottitle = "USER ROOTS";
 
+export const saldomasuktag = "Saldo Masuk";
+export const saldokeluartag = "Saldo Keluar";
+
 export const withdrawalhistorytab = "Riwayat Penarikan"
 export const withdrawalhistoryicon = "cash-refund"
 export const saldohistorytab = "Riwayat Saldo"

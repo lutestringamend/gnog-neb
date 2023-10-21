@@ -23,11 +23,11 @@ export default function DashboardStats(props) {
 
   function showTimerModal() {
     if (props?.showTimerModal === undefined || props?.showTimerModal === null) {
-        return;
+      return;
     }
     props?.showTimerModal();
     console.log("recruitmentTimer", recruitmentTimer);
-}
+  }
 
   function openHistory() {
     navigation.navigate("History");
@@ -53,27 +53,37 @@ export default function DashboardStats(props) {
             .getFullYear()
             .toString()}`}
         </Text>
-  
+
         <View style={styles.containerHorizontal}>
           <View style={styles.containerVertical}>
-            <Text allowFontScaling={false} style={styles.text}>Penjualan Bulan Ini</Text>
-            <Text allowFontScaling={false} style={styles.textYellow}>{`${
+            <Text allowFontScaling={false} style={styles.text}>
+              Penjualan Bulan Ini
+            </Text>
+            <Text
+              allowFontScaling={false}
+              style={[styles.text, { fontFamily: "Poppins-SemiBold" }]}
+            >{`${
               currentUser?.jumlah_invoice ? currentUser?.jumlah_invoice : "0"
             } Invoice`}</Text>
-            <Text allowFontScaling={false} style={styles.textYellow}>
+            <Text allowFontScaling={false} style={[styles.text, { fontFamily: "Poppins-SemiBold" }]}>
               {currentUser?.total_nominal_penjualan
                 ? formatPrice(currentUser?.total_nominal_penjualan)
                 : "Rp 0"}
             </Text>
           </View>
           <TouchableOpacity style={styles.button} onPress={() => openHistory()}>
-            <Text allowFontScaling={false} style={styles.textButton}>{`Riwayat\nTransaksi`}</Text>
+            <Text
+              allowFontScaling={false}
+              style={styles.textButton}
+            >{`Riwayat\nTransaksi`}</Text>
           </TouchableOpacity>
         </View>
-  
+
         <View style={styles.containerHorizontal}>
           <View style={styles.containerVertical}>
-            <Text allowFontScaling={false} style={styles.text}>Home Point Value</Text>
+            <Text allowFontScaling={false} style={styles.text}>
+              Home Point Value
+            </Text>
             <Text allowFontScaling={false} style={styles.text}>{`${
               currentUser?.poin_user?.hpv ? currentUser?.poin_user?.hpv : "0"
             } Point`}</Text>
@@ -82,54 +92,76 @@ export default function DashboardStats(props) {
             style={styles.button}
             onPress={() => openSyaratBonusRoot()}
           >
-            <Text allowFontScaling={false} style={styles.textButton}>{`Syarat\nBonus Root`}</Text>
+            <Text
+              allowFontScaling={false}
+              style={styles.textButton}
+            >{`Syarat\nBonus Root`}</Text>
           </TouchableOpacity>
         </View>
-  
+
         <View style={styles.containerHorizontal}>
           <View style={styles.containerVertical}>
-            <Text allowFontScaling={false} style={styles.text}>Akumulasi Poin</Text>
+            <Text allowFontScaling={false} style={styles.text}>
+              Akumulasi Poin
+            </Text>
             <Text allowFontScaling={false} style={styles.text}>{`${
-              currentUser?.poin_user?.total ? currentUser?.poin_user?.total : "0"
+              currentUser?.poin_user?.total
+                ? currentUser?.poin_user?.total
+                : "0"
             } Point`}</Text>
           </View>
           <TouchableOpacity
             style={styles.button}
             onPress={() => openLaporanPoint()}
           >
-            <Text allowFontScaling={false} style={styles.textButton}>{`Laporan\nPoint`}</Text>
+            <Text
+              allowFontScaling={false}
+              style={styles.textButton}
+            >{`Laporan\nPoint`}</Text>
           </TouchableOpacity>
         </View>
-  
+
         <View style={styles.containerHorizontal}>
           <View style={styles.containerVertical}>
-            <Text allowFontScaling={false}
-              style={[styles.textYellow, { color: colors.daclen_green_pale }]}
+            <Text
+              allowFontScaling={false}
+              style={[styles.text, { fontFamily: "Poppins-SemiBold" }]}
             >{`Bonus Jaringan Level A`}</Text>
             <Text allowFontScaling={false} style={styles.text}>{`Agen Anda: ${
               currentUser?.jumlah_agen ? currentUser?.jumlah_agen : "0"
             } Orang`}</Text>
-            <Text allowFontScaling={false} style={styles.text}>{`Reseller Anda: ${
+            <Text
+              allowFontScaling={false}
+              style={styles.text}
+            >{`Reseller Anda: ${
               currentUser?.jumlah_reseller ? currentUser?.jumlah_reseller : "0"
             } Orang`}</Text>
           </View>
-          <TouchableOpacity style={styles.button} onPress={() => openUserRoots()}>
-            <Text allowFontScaling={false} style={styles.textButton}>{`Tampilkan\nAgen & Reseller`}</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => openUserRoots()}
+          >
+            <Text
+              allowFontScaling={false}
+              style={styles.textButton}
+            >{`Tampilkan\nAgen & Reseller`}</Text>
           </TouchableOpacity>
         </View>
-  
-        <TouchableOpacity style={styles.containerBottom} onPress={() => showTimerModal()}>
-        <Text allowFontScaling={false} style={styles.textBottom}>
+
+        <TouchableOpacity
+          style={styles.containerBottom}
+          onPress={() => showTimerModal()}
+        >
+          <Text allowFontScaling={false} style={styles.textBottom}>
             Countdown Recruitment
-        </Text>
-        <MaterialCommunityIcons
-          name="timer"
-          size={16}
-          color={colors.daclen_light}
-          style={styles.timer}
-        />
+          </Text>
+          <MaterialCommunityIcons
+            name="timer"
+            size={16}
+            color={colors.daclen_light}
+            style={styles.timer}
+          />
         </TouchableOpacity>
-        
       </View>
     );
   } catch (e) {
@@ -137,7 +169,6 @@ export default function DashboardStats(props) {
     sentryLog(e);
     return null;
   }
-
 }
 
 const styles = StyleSheet.create({
@@ -203,13 +234,15 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-SemiBold",
   },
   text: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins",
+    fontSize: 12,
     color: colors.daclen_light,
   },
   textBottom: {
     backgroundColor: "transparent",
     textAlign: "center",
-    fontFamily: "Poppins-SemiBold", fontSize: 12,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 12,
     color: colors.daclen_light,
   },
   image: {

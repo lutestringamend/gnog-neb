@@ -64,7 +64,7 @@ export default function DashboardUser(props) {
         {saldoAkumulasi ? (
           <Text
             allowFontScaling={false}
-            style={[styles.textName, { color: colors.daclen_yellow }]}
+            style={styles.textName}
           >
             {`Saldo Akumulasi: ${
               saldoAkumulasi > 0 ? formatPrice(saldoAkumulasi) : "Rp 0"

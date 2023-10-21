@@ -115,6 +115,8 @@ import {
   countdowngreen,
   countdownorange,
   countdownred,
+  saldokeluartag,
+  saldomasuktag,
 } from "../../components/dashboard/constants";
 
 export const resetPassword = () => {
@@ -599,6 +601,21 @@ export const showHPV = async (id, token) => {
     };
   }
 };
+
+export const checkSaldoMutationType = (item) => {
+  try {
+    if (item?.status === saldokeluartag || checkNumberEmpty(item?.saldo) < 0) {
+      return -1;
+    } else if (item?.status === saldomasuktag || checkNumberEmpty(item?.saldo) > 0) {
+      return 1;
+    } else {
+      return 0;
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  return null;
+}
 
 export const getHPV = async (id, token) => {
   if (

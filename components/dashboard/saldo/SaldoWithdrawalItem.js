@@ -23,7 +23,7 @@ const SaldoWithdrawalItem = ({ item }) => {
             size={24}
             color={
               item?.status === "selesai"
-                ? colors.daclen_green
+                ? colors.daclen_black
                 : colors.daclen_gray
             }
             style={styles.icon}
@@ -35,7 +35,7 @@ const SaldoWithdrawalItem = ({ item }) => {
               {
                 color:
                   item?.status === "selesai"
-                    ? colors.daclen_green
+                    ? colors.daclen_black
                     : colors.daclen_gray,
               },
             ]}
@@ -88,7 +88,7 @@ const SaldoWithdrawalItem = ({ item }) => {
                 {
                   color:
                     item?.status === "selesai"
-                      ? colors.daclen_green
+                      ? colors.daclen_blue
                       : colors.daclen_gray,
                 },
               ]}
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   },
   textTitle: {
     fontFamily: "Poppins-Bold",
-    fontSize: 16,
+    fontSize: 14,
     color: colors.daclen_black,
     marginStart: 10,
     flex: 1,
