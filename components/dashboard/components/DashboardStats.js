@@ -7,9 +7,10 @@ import { colors } from "../../../styles/base";
 import { monthNames } from "../../../axios/constants";
 import { formatPrice } from "../../../axios/cart";
 import { sentryLog } from "../../../sentry";
+import { convertDateISOStringtoDisplayDate } from "../../../axios/profile";
 
 export default function DashboardStats(props) {
-  const { currentUser, recruitmentTimer } = props;
+  const { currentUser, recruitmentTimer, regDate } = props;
   const navigation = useNavigation();
 
   if (
@@ -51,7 +52,15 @@ export default function DashboardStats(props) {
         <Text allowFontScaling={false} style={styles.textHeader}>
           {`${monthNames[new Date().getMonth()]} ${new Date()
             .getFullYear()
-            .toString()}`}
+            .toString()}${
+            regDate === undefined || regDate === null
+              ? ""
+              : `\nJoin Date: ${convertDateISOStringtoDisplayDate(
+                  regDate,
+                  true,
+                  currentUser?.join_date
+                )}`
+          }`}
         </Text>
 
         <View style={styles.containerHorizontal}>
@@ -65,7 +74,10 @@ export default function DashboardStats(props) {
             >{`${
               currentUser?.jumlah_invoice ? currentUser?.jumlah_invoice : "0"
             } Invoice`}</Text>
-            <Text allowFontScaling={false} style={[styles.text, { fontFamily: "Poppins-SemiBold" }]}>
+            <Text
+              allowFontScaling={false}
+              style={[styles.text, { fontFamily: "Poppins-SemiBold" }]}
+            >
               {currentUser?.total_nominal_penjualan
                 ? formatPrice(currentUser?.total_nominal_penjualan)
                 : "Rp 0"}
@@ -224,7 +236,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingHorizontal: 12,
     paddingVertical: 6,
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "Poppins-SemiBold",
     color: colors.daclen_light,
   },

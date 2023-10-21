@@ -340,12 +340,12 @@ const Dashboard = (props) => {
           <View style={styles.scrollView}>
             <DashboardUser
               currentUser={currentUser}
-              regDate={regDate}
               profilePicture={profilePicture}
               saldoAkumulasi={saldoAkumulasi}
             />
             <DashboardStats
               currentUser={currentUser}
+              regDate={regDate}
               recruitmentTimer={recruitmentTimer}
               showTimerModal={() => setShowTimerModal(true)}
             />

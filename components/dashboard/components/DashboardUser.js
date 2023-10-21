@@ -11,10 +11,9 @@ import { useNavigation } from "@react-navigation/native";
 
 import { colors } from "../../../styles/base";
 import { capitalizeFirstLetter, formatPrice } from "../../../axios/cart";
-import { convertDateISOStringtoDisplayDate } from "../../../axios/profile";
 
 export default function DashboardUser(props) {
-  const { currentUser, regDate, profilePicture, saldoAkumulasi } = props;
+  const { currentUser, profilePicture, saldoAkumulasi } = props;
   const navigation = useNavigation();
 
   function openWithdrawal() {
@@ -45,7 +44,9 @@ export default function DashboardUser(props) {
               : require("../../../assets/user.png")
           }
           alt={currentUser?.name}
-          placeholder={Platform.OS === "ios" ? null : require("../../../assets/user.png")}
+          placeholder={
+            Platform.OS === "ios" ? null : require("../../../assets/user.png")
+          }
           contentFit={
             Platform.OS === "ios" && profilePicture === null
               ? "contain"
@@ -56,51 +57,39 @@ export default function DashboardUser(props) {
       </TouchableOpacity>
 
       <View style={styles.containerVertical}>
-        <Text allowFontScaling={false} style={styles.textName}>
-          {currentUser?.detail_user?.nama_lengkap
-            ? currentUser?.detail_user?.nama_lengkap
-            : currentUser?.name}
-        </Text>
-        {saldoAkumulasi ? (
-          <Text
-            allowFontScaling={false}
-            style={styles.textName}
-          >
-            {`Saldo Akumulasi: ${
-              saldoAkumulasi > 0 ? formatPrice(saldoAkumulasi) : "Rp 0"
-            }`}
-          </Text>
-        ) : currentUser?.komisi_user ? (
-          <Text
-            allowFontScaling={false}
-            style={[styles.textName, { color: colors.daclen_yellow }]}
-          >
-            {`Saldo: Rp ${
-              currentUser?.komisi_user?.total_currency
-                ? currentUser?.komisi_user?.total_currency
-                : "0"
-            }`}
-          </Text>
-        ) : null}
-
         <Text allowFontScaling={false} style={styles.text}>{`${
           currentUser?.status
             ? capitalizeFirstLetter(currentUser?.status)
             : "Reseller"
         } Daclen`}</Text>
-        {regDate === undefined || regDate === null ? null : (
-          <Text allowFontScaling={false} style={styles.text}>
-            {`Join Date ${convertDateISOStringtoDisplayDate(
-              regDate,
-              true,
-              currentUser?.join_date
-            )}`}
-          </Text>
-        )}
-
-        <Text allowFontScaling={false} style={styles.textReferral}>
-          {`Referral Id: ${currentUser?.name}`}
+        <Text allowFontScaling={false} style={styles.textName}>
+          {currentUser?.detail_user?.nama_lengkap
+            ? currentUser?.detail_user?.nama_lengkap
+            : currentUser?.name}
         </Text>
+        <Text
+          allowFontScaling={false}
+          style={[styles.text, { marginTop: 4 }]}
+        >
+          {saldoAkumulasi ? "Saldo Akumulasi" : "Saldo"}
+        </Text>
+
+        <Text
+          allowFontScaling={false}
+          style={[styles.textName, { color: colors.daclen_yellow }]}
+        >
+          {saldoAkumulasi
+            ? saldoAkumulasi > 0
+              ? formatPrice(saldoAkumulasi)
+              : "Rp 0"
+            : currentUser?.komisi_user
+            ? formatPrice(currentUser?.komisi_user?.total_currency)
+              ? formatPrice(currentUser?.komisi_user?.total_currency)
+              : "Rp 0"
+            : "Rp 0"}
+        </Text>
+
+        
       </View>
       <TouchableOpacity style={styles.button} onPress={() => openWithdrawal()}>
         <Text allowFontScaling={false} style={styles.textButton}>
@@ -110,6 +99,12 @@ export default function DashboardUser(props) {
     </View>
   );
 }
+
+/*
+<Text allowFontScaling={false} style={styles.textReferral}>
+          {`Referral Id: ${currentUser?.name}`}
+        </Text>
+*/
 
 const styles = StyleSheet.create({
   container: {
@@ -135,28 +130,30 @@ const styles = StyleSheet.create({
   button: {
     borderWidth: 1,
     borderRadius: 2,
+    marginTop: 20,
     borderColor: colors.daclen_green_button,
     justifyContent: "center",
     alignItems: "center",
+    alignSelf: "flex-start",
     opacity: 0.95,
     backgroundColor: colors.daclen_grey_button,
-    paddingVertical: 10,
+    paddingVertical: 4,
     paddingHorizontal: 20,
   },
   textButton: {
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: "Poppins-SemiBold",
     color: colors.daclen_green_button,
     textAlign: "center",
   },
   textName: {
-    fontSize: 12,
+    fontSize: 16,
     color: colors.daclen_light,
     fontFamily: "Poppins-SemiBold",
   },
   text: {
     fontFamily: "Poppins",
-    fontSize: 12,
+    fontSize: 10,
     color: colors.daclen_light,
   },
   textReferral: {
@@ -166,9 +163,9 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   image: {
-    width: 72,
-    height: 72,
+    width: 100,
+    height: 100,
     backgroundColor: colors.daclen_light,
-    borderRadius: 36,
+    borderRadius: 50,
   },
 });
