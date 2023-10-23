@@ -15,7 +15,7 @@ import {
   MEDIA_KIT_FLYER_PRODUK_SELECTED_STATE_CHANGE,
 } from "../../redux/constants";
 import { sentryLog } from "../../sentry";
-import { DefaultSelected, STARTER_KIT_FLYER_PRODUK_TAG, STARTER_KIT_VIDEO_MENGAJAK_TAG } from "../../components/mediakit/constants";
+import { DefaultSelected, STARTER_KIT_FLYER_PRODUK_TAG, STARTER_KIT_VIDEO_MENGAJAK_TAG, STARTER_KIT_VIDEO_PRODUK_TAG } from "../../components/mediakit/constants";
 
 export function clearMediaKitData() {
   return (dispatch) => {
@@ -240,10 +240,17 @@ export function getMediaKitVideos(token, products) {
             dispatch({ type: MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE, data: [] });
             return;
           }
-          let newData = [];
+          let newData = {};
           let newMengajakData = [];
           for (let i = 0; i < data?.length; i++) {
-            if (
+            if (data[i]?.jenis === STARTER_KIT_VIDEO_MENGAJAK_TAG) {
+              newMengajakData = data[i]?.videos;
+              //newMengajakData.push(data[i]);
+            } else if (data[i]?.jenis === STARTER_KIT_VIDEO_PRODUK_TAG && !(data[i]?.nama === undefined || data[i]?.nama === null || data[i]?.nama === "") && !(data[i]?.videos === undefined || data[i]?.videos?.length === undefined)) {
+              newData[data[i]?.nama] = data[i]?.videos;
+            }
+
+            /*if (
               data[i]?.video === undefined &&
               data[i]?.videoWatermarks !== undefined
             ) {
@@ -265,7 +272,7 @@ export function getMediaKitVideos(token, products) {
               } else {
                 newData.unshift(videoItem);
               }
-            }
+            }*/
           }
           console.log("post video produk - mengajak", newData, newMengajakData);
           dispatch({ type: MEDIA_KIT_VIDEOS_STATE_CHANGE, data: newData });

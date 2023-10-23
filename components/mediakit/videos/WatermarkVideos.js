@@ -25,18 +25,28 @@ import {
 } from "../../asyncstorage/constants";
 import WatermarkVideosSegment from "./WatermarkVideosSegment";
 import VideosFlatlist from "./VideosFlatlist";
-import { STARTER_KIT_VIDEO_MENGAJAK_TAG, STARTER_KIT_VIDEO_PRODUK_TAG } from "../constants";
+import {
+  STARTER_KIT_VIDEO_MENGAJAK_TAG,
+  STARTER_KIT_VIDEO_PRODUK_TAG,
+} from "../constants";
 
 const WatermarkVideos = (props) => {
   const [refreshing, setRefreshing] = useState(false);
   const [fetching, setFetching] = useState(false);
-  const [videos, setVideos] = useState(null);
   const [videoKeys, setVideoKeys] = useState(null);
-  const { mediaKitVideos, videosMengajak, jenis_video, watermarkVideos, userId, token, products, loading } =
-    props;
+  const {
+    mediaKitVideos,
+    videosMengajak,
+    jenis_video,
+    watermarkVideos,
+    userId,
+    token,
+    products,
+    loading,
+  } = props;
 
   useEffect(() => {
-    if (mediaKitVideos?.length === undefined || !fetching) {
+    if (mediaKitVideos === null || !fetching) {
       //checkAsyncMediaKitVideos();
       setFetching(true);
       props.getMediaKitVideos(token);
@@ -50,7 +60,11 @@ const WatermarkVideos = (props) => {
       setRefreshing(false);
     }
     reorganizeVideos();
-    console.log("redux media kit videos - videosMengajak", mediaKitVideos, videosMengajak);
+    console.log(
+      "redux media kit videos - videosMengajak",
+      mediaKitVideos,
+      videosMengajak
+    );
   }, [mediaKitVideos]);
 
   useEffect(() => {
@@ -72,43 +86,15 @@ const WatermarkVideos = (props) => {
   }, [watermarkVideos]);
 
   const reorganizeVideos = () => {
-    let newVideos = {
-      Lainnya: [],
-    };
-    let rawVideos = jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG ? videosMengajak : mediaKitVideos;
     try {
-      for (let vid of rawVideos) {
-        if (
-          vid?.produk === undefined ||
-          vid?.produk?.nama === undefined ||
-          vid?.produk?.nama === null
-        ) {
-          newVideos["Lainnya"].unshift(vid);
-        } else {
-          if (newVideos[vid?.produk?.nama] === undefined) {
-            newVideos[vid?.produk?.nama] = [vid];
-          } else {
-            newVideos[vid?.produk?.nama].unshift(vid);
-          }
-        }
-      }
-      if (
-        newVideos["Lainnya"]?.length === undefined ||
-        newVideos["Lainnya"]?.length < 1
-      ) {
-        delete newVideos.Lainnya;
-      }
-      setVideos(newVideos);
-      setVideoKeys(Object.keys(newVideos).sort());
+      setVideoKeys(Object.keys(mediaKitVideos).sort());
     } catch (e) {
       console.error(e);
-      console.log("rawVideos", rawVideos);
-      setVideos(null);
       setVideoKeys([]);
     }
   };
 
-  const checkAsyncMediaKitVideos = async () => {
+  /*const checkAsyncMediaKitVideos = async () => {
     const storageVideos = await getObjectAsync(
       ASYNC_MEDIA_WATERMARK_VIDEOS_KEY
     );
@@ -125,7 +111,7 @@ const WatermarkVideos = (props) => {
     } else {
       props.updateReduxMediaKitVideos(storageVideos);
     }
-  };
+  };*/
 
   const checkAsyncWatermarkVideosSaved = async () => {
     const storageWatermarkVideosSaved = await getObjectAsync(
@@ -158,33 +144,36 @@ const WatermarkVideos = (props) => {
 
   return (
     <View style={styles.container}>
-      {loading || fetching || refreshing || videoKeys === null ? (
+      {loading || fetching || refreshing ? (
         <ActivityIndicator
           size="large"
           color={colors.daclen_light}
           style={{ alignSelf: "center", marginVertical: 20, zIndex: 1 }}
         />
       ) : null}
-      {mediaKitVideos?.length === undefined || loading ? null : (
+      {loading ? null : (
         <View style={styles.containerInside}>
-          {jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG && videosMengajak?.length < 1 ?
-            <Text allowFontScaling={false} style={styles.textUid}>
-              Tidak ada Video Mengajak tersedia.
-            </Text>
-          : jenis_video === STARTER_KIT_VIDEO_PRODUK_TAG && mediaKitVideos?.length < 1 ? (
+          {jenis_video === STARTER_KIT_VIDEO_PRODUK_TAG &&
+          videoKeys?.length < 1 ? (
             <Text allowFontScaling={false} style={styles.textUid}>
               Tidak ada Video Produk tersedia.
             </Text>
-          ) : (videos === null && videoKeys !== null) || jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG ? (
+          ) : jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG &&
+            videosMengajak?.length < 1 ? (
+            <Text allowFontScaling={false} style={styles.textUid}>
+              Tidak ada Video Mengajak tersedia.
+            </Text>
+          ) : jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG ? (
             <VideosFlatlist
-              videos={jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG ? videosMengajak : mediaKitVideos}
+              videos={videosMengajak}
               refreshing={refreshing}
               refreshPage={() => refreshPage()}
               jenis_video={jenis_video}
-              showTitle={jenis_video !== STARTER_KIT_VIDEO_MENGAJAK_TAG}
+              showTitle={true}
+              style={{marginHorizontal: 10, marginTop: 20}}
               userId={userId}
             />
-          ) : (
+          ) : jenis_video === STARTER_KIT_VIDEO_PRODUK_TAG ? (
             <FlatList
               estimatedItemSize={10}
               horizontal={false}
@@ -203,13 +192,17 @@ const WatermarkVideos = (props) => {
                   isLast={index === videoKeys?.length - 1}
                   key={item}
                   title={item}
-                  videos={videos[item]}
+                  videos={mediaKitVideos[item]}
                   refreshing={refreshing}
                   userId={userId}
                   jenis_video={jenis_video}
                 />
               )}
             />
+          ) : (
+            <Text allowFontScaling={false} style={styles.textUid}>
+              Tidak ada video tersedia.
+            </Text>
           )}
         </View>
       )}

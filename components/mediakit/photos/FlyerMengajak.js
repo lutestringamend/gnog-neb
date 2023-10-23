@@ -224,8 +224,12 @@ const FlyerMengajak = (props) => {
               item={item}
               index={index}
               style={[styles.containerImage, {
+                flex: 1 / 3,
+                aspectRatio: 3 / 4,
+                marginHorizontal: 10,
                 marginBottom: photos?.length > 3 && index >= Math.floor(photos?.length / 3) * 3 ? staticDimensions.pageBottomPadding : 20,
               }]}
+              imageStyle={styles.photoImage}
               selectMode={selectMode}
               onLongPress={() => onLongPress(item)}
               onPress={() => onPress(item)}
@@ -287,8 +291,8 @@ const styles = StyleSheet.create({
   containerFlatlist: {
     flex: 1,
     backgroundColor: "transparent",
-    width: "100%",
     marginTop: 20,
+    marginHorizontal: 10,
   },
   containerButton: {
     position: "absolute",
@@ -331,6 +335,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     backgroundColor: "transparent",
     textAlign: "center",
+    alignSelf: "center",
+  },
+  photoImage: {
+    flex: 1,
+    aspectRatio: 3 / 4,
     alignSelf: "center",
   },
   imageList: {

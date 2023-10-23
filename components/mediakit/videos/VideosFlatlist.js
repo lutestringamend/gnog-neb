@@ -17,7 +17,7 @@ import {
   } from "../constants";
 
 const VideosFlatlist = (props) => {
-  const { videos, refreshing, showTitle, userId, jenis_video } = props;
+  const { videos, refreshing, showTitle, userId, jenis_video, style } = props;
   const navigation = useNavigation();
 
   function refreshPage() {
@@ -86,7 +86,7 @@ const VideosFlatlist = (props) => {
   }
 
   return (
-    <View style={styles.containerFlatlist}>
+    <View style={[styles.containerFlatlist, style ? style : {width: "100%"}]}>
       <FlashList
         estimatedItemSize={6}
         horizontal={false}
@@ -123,9 +123,9 @@ const VideosFlatlist = (props) => {
               />
             </View>
 
-            {showTitle ? (
+            {showTitle && item?.judul ? (
               <Text allowFontScaling={false} style={styles.textHeader}>
-                {getTitle(item)}
+                {item?.judul}
               </Text>
             ) : null}
           </TouchableOpacity>
@@ -139,7 +139,6 @@ const styles = StyleSheet.create({
   containerFlatlist: {
     flex: 1,
     backgroundColor: "transparent",
-    width: "100%",
   },
   containerImage: {
     flex: 1,
@@ -162,15 +161,13 @@ const styles = StyleSheet.create({
   },
   textHeader: {
     backgroundColor: "transparent",
-    fontSize: 10,
-    fontFamily: "Poppins-SemiBold",
+    fontSize: 12,
+    fontFamily: "Poppins",
     alignSelf: "center",
     textAlign: "center",
     textAlignVertical: "center",
-    marginTop: 6,
-    marginBottom: 12,
+    marginTop: 10,
     marginHorizontal: 10,
-    height: 52,
     color: colors.daclen_light,
   },
 });

@@ -39,7 +39,7 @@ const WatermarkVideosSegment = (props) => {
           videos={videos}
           refreshing={refreshing}
           refreshPage={() => refreshPage()}
-          showTitle={false}
+          showTitle={true}
           userId={userId}
           jenis_video={jenis_video}
         />
@@ -54,7 +54,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "transparent",
     marginHorizontal: 10,
-    paddingTop: 10,
     elevation: 2,
     borderWidth: 1,
     borderColor: colors.daclen_gray,
@@ -62,7 +61,6 @@ const styles = StyleSheet.create({
   containerScroll: {
     backgroundColor: "transparent",
     marginHorizontal: 10,
-    paddingTop: 10,
   },
   containerScrollHeader: {
     flexDirection: "row",

@@ -6,7 +6,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { blurhash, colors } from "../../../styles/base";
 
 const PhotoItem = (props) => {
-  const { item, index, selected, style, selectMode } = props;
+  const { item, index, selected, style, selectMode, imageStyle } = props;
   const [active, setActive] = useState(false);
 
   useEffect(() => {
@@ -47,13 +47,10 @@ const PhotoItem = (props) => {
       <Image
         style={[
           styles.image,
-          {
-            borderRadius: 6,
-            borderWidth: 1,
-            borderColor: colors.daclen_lightgrey,
-            marginStart: 0,
+          imageStyle ? imageStyle : {
+            width: 94,
+            height: 125,
             alignSelf: "flex-start",
-            elevation: 4,
           },
         ]}
         source={item?.thumbnail ? item?.thumbnail : null}
@@ -81,8 +78,10 @@ const PhotoItem = (props) => {
 const styles = StyleSheet.create({
   containerImage: {
     backgroundColor: "transparent",
-    width: 104,
-    height: 125,
+    marginHorizontal: 10,
+    borderWidth: 1,
+    borderRadius: 6,
+    borderColor: colors.daclen_lightgrey,
     alignSelf: "center",
   },
   containerSelected: {
@@ -94,17 +93,16 @@ const styles = StyleSheet.create({
     zIndex: 20,
     opacity: 0.8,
     backgroundColor: colors.daclen_bg,
-    width: 94,
-    height: 125,
     borderRadius: 6,
   },
   image: {
-    width: 94,
-    height: 125,
-    borderRadius: 6,
     alignSelf: "center",
     backgroundColor: colors.daclen_light,
-    marginStart: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: colors.daclen_lightgrey,
+    marginStart: 0,
+    elevation: 4,
   },
   check: {
     position: "absolute",

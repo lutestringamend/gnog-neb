@@ -100,9 +100,9 @@ export default function DashboardUser(props) {
                 ? formatPrice(saldoAkumulasi)
                 : "Rp 0"
               : currentUser?.komisi_user
-              ? checkNumberEmpty(currentUser?.komisi_user?.total_currency) > 0
-                ? formatPrice(currentUser?.komisi_user?.total_currency)
-                  ? formatPrice(currentUser?.komisi_user?.total_currency)
+              ? checkNumberEmpty(currentUser?.komisi_user?.total) > 0
+                ? formatPrice(currentUser?.komisi_user?.total)
+                  ? formatPrice(currentUser?.komisi_user?.total)
                   : "Rp 0"
                 : "Rp 0"
               : "Rp 0"}
