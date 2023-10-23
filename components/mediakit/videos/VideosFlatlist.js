@@ -85,6 +85,10 @@ const VideosFlatlist = (props) => {
     return require("../../../assets/favicon.png");
   }
 
+  if (refreshing) {
+    return null;
+  }
+
   return (
     <View style={[styles.containerFlatlist, style ? style : {width: "100%"}]}>
       <FlashList

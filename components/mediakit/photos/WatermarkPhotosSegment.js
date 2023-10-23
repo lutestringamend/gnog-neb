@@ -241,6 +241,7 @@ const styles = StyleSheet.create({
   containerScrollHeader: {
     flexDirection: "row",
     backgroundColor: "transparent",
+    marginHorizontal: 10,
   },
   containerFlatlist: {
     backgroundColor: "transparent",
@@ -248,7 +249,7 @@ const styles = StyleSheet.create({
   },
   containerCarousel: {
     backgroundColor: "transparent",
-    marginVertical: 20,
+    marginVertical: 12,
   },
   containerLeft: {
     flex: 2,

@@ -6,9 +6,8 @@ import {
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
-  FlatList,
 } from "react-native";
-//import { FlashList } from "@shopify/flash-list";
+import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
@@ -205,7 +204,7 @@ const FlyerMengajak = (props) => {
           Tidak ada Flyer Mengajak tersedia.
         </Text>
       ) : (
-        <FlatList
+        <FlashList
           estimatedItemSize={20}
           horizontal={false}
           numColumns={3}
@@ -224,7 +223,7 @@ const FlyerMengajak = (props) => {
               item={item}
               index={index}
               style={[styles.containerImage, {
-                flex: 1 / 3,
+                flex: 1,
                 aspectRatio: 3 / 4,
                 marginHorizontal: 10,
                 marginBottom: photos?.length > 3 && index >= Math.floor(photos?.length / 3) * 3 ? staticDimensions.pageBottomPadding : 20,

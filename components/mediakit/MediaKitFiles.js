@@ -162,9 +162,9 @@ function MediaKitFiles(props) {
   }, [mediaKitPhotos]);
 
   useEffect(() => {
-    if (mediaKitVideos === null || mediaKitVideos?.length === undefined) {
+    /*if (mediaKitVideos === null || mediaKitVideos?.length === undefined) {
       return;
-    }
+    }*/
     if (videoLoading) {
       setVideoLoading(false);
     }
@@ -311,7 +311,7 @@ function MediaKitFiles(props) {
   };
 
   const refreshContent = () => {
-    if (activeTab === STARTER_KIT_VIDEO_PRODUK) {
+    if (activeTab === STARTER_KIT_VIDEO_PRODUK || activeTab === STARTER_KIT_VIDEO_MENGAJAK) {
       refreshVideos();
     } else {
       refreshPhotos();

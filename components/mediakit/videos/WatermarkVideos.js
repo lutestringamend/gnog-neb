@@ -41,7 +41,6 @@ const WatermarkVideos = (props) => {
     watermarkVideos,
     userId,
     token,
-    products,
     loading,
   } = props;
 
@@ -151,7 +150,7 @@ const WatermarkVideos = (props) => {
           style={{ alignSelf: "center", marginVertical: 20, zIndex: 1 }}
         />
       ) : null}
-      {loading ? null : (
+      {loading || fetching || refreshing ? null : (
         <View style={styles.containerInside}>
           {jenis_video === STARTER_KIT_VIDEO_PRODUK_TAG &&
           videoKeys?.length < 1 ? (
@@ -285,7 +284,6 @@ const mapStateToProps = (store) => ({
   videosMengajak: store.mediaKitState.videosMengajak,
   watermarkVideos: store.mediaState.watermarkVideos,
   videoError: store.mediaKitState.videoError,
-  products: store.productState.products,
 });
 
 const mapDispatchProps = (dispatch) =>

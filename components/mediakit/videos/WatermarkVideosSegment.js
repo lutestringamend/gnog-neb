@@ -21,7 +21,7 @@ const WatermarkVideosSegment = (props) => {
       style={[
         styles.containerScroll,
         {
-          paddingTop: index === 0 ? 20 : 10,
+          paddingTop: 0,
           paddingBottom: isLast ? staticDimensions.pageBottomPadding / 2 : 0,
         },
       ]}
@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
   containerScrollHeader: {
     flexDirection: "row",
     backgroundColor: "transparent",
+    marginHorizontal: 10,
   },
   containerFlatlist: {
     backgroundColor: "transparent",
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
   },
   containerCarousel: {
     backgroundColor: "transparent",
-    marginVertical: 20,
+    marginVertical: 10,
   },
   containerLeft: {
     flex: 2,
