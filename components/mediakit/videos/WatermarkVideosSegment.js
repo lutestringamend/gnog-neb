@@ -40,6 +40,7 @@ const WatermarkVideosSegment = (props) => {
           refreshing={refreshing}
           refreshPage={() => refreshPage()}
           showTitle={true}
+          title={title}
           userId={userId}
           jenis_video={jenis_video}
         />

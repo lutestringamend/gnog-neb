@@ -49,11 +49,11 @@ const WatermarkPhotosSegment = (props) => {
     props?.onLongPress(e);
   }
 
-  function onPress(e) {
+  function onPress(e, photoIndex) {
     if (props?.onPress === undefined || props?.onPress === null) {
       return;
     }
-    props?.onPress(e, title);
+    props?.onPress(e, title, photoIndex);
   }
 
   if (photos?.length === undefined || photos?.length < 1) {
@@ -95,15 +95,15 @@ const WatermarkPhotosSegment = (props) => {
             horizontal={true}
             data={photos}
             contentContainerStyle={styles.containerFlatlist}
-            renderItem={({ item, i }) => (
+            renderItem={({ item, index }) => (
               <PhotoItem
                 selected={selected}
                 navigation={navigation}
                 item={item}
-                index={i}
+                index={index}
                 selectMode={selectMode}
                 onLongPress={() => onLongPress(item)}
-                onPress={() => onPress(item)}
+                onPress={() => onPress(item, index)}
               />
             )}
           />

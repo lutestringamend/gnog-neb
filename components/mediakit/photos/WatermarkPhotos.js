@@ -100,7 +100,7 @@ const WatermarkPhotos = (props) => {
       }
     };
 
-    const onPress = (item, title) => {
+    const onPress = (item, title, photoIndex) => {
       try {
         if (
           !(
@@ -118,15 +118,16 @@ const WatermarkPhotos = (props) => {
       } catch (e) {
         console.error(e);
       }
-      openPhoto(item, title);
+      openPhoto(item, title, photoIndex);
     };
 
-    function openPhoto(item, title) {
+    function openPhoto(item, title, photoIndex) {
       try {
         navigation.navigate("ImageViewer", {
           disableWatermark: false,
           title,
           jenis_foto,
+          photoIndex,
           id: item?.id,
           uri: item?.foto,
           thumbnail: item?.thumbnail,
@@ -220,7 +221,7 @@ const WatermarkPhotos = (props) => {
                     navigation={navigation}
                     selected={selected}
                     selectMode={selectMode}
-                    onPress={(e, title) => onPress(e, title)}
+                    onPress={(e, title, photoIndex) => onPress(e, title, photoIndex)}
                     onLongPress={(e) => onLongPress(e)}
                   />
                 )}

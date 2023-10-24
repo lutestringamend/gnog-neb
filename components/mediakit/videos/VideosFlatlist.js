@@ -17,7 +17,7 @@ import {
   } from "../constants";
 
 const VideosFlatlist = (props) => {
-  const { videos, refreshing, showTitle, userId, jenis_video, style } = props;
+  const { videos, refreshing, showTitle, userId, jenis_video, style, title } = props;
   const navigation = useNavigation();
 
   function refreshPage() {
@@ -27,36 +27,13 @@ const VideosFlatlist = (props) => {
     props?.refreshPage();
   }
 
-  function getTitle(item) {
-    if (
-      !(
-        item?.produk === undefined ||
-        item?.produk?.nama === undefined ||
-        item?.produk?.nama === null ||
-        item?.produk?.nama === ""
-      )
-    ) {
-      return item?.produk?.nama;
-    }
-    let title = item?.nama ? item?.nama : "Video Promosi";
-    try {
-      if (title.includes("/")) {
-        let items = title.split("/");
-        title = items[items?.length - 1];
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return title;
-  }
-
-  function openVideo(item, index) {
+  function openVideo(item) {
     navigation.navigate("VideoPlayerScreen", {
       userId,
       videoId: item?.id ? item?.id : item?.video,
       uri: item?.video ? item?.video : null,
       thumbnail: getTempThumbnail(item),
-      title: getTitle(item),
+      title: `${title ? title : ""}${item?.judul ? ` ${item?.judul}` : ""}`,
       width: item?.width ? item?.width : vwmarkdefaultsourcewidth,
       height: item?.height ? item?.height : vwmarkdefaultsourceheight,
       jenis_video,
@@ -105,7 +82,7 @@ const VideosFlatlist = (props) => {
         renderItem={({ item, index }) => (
           <TouchableOpacity
             key={index}
-            onPress={() => openVideo(item, index)}
+            onPress={() => openVideo(item)}
             style={[
               styles.containerImage,
               {

@@ -34,6 +34,8 @@ import {
 } from "./constants";
 import ImageLargeWatermarkModel from "../media/ImageLargeWatermarkModel";
 import {
+  STARTER_KIT_FLYER_MENGAJAK_TAG,
+  STARTER_KIT_FLYER_PRODUK_TAG,
   imageviewerportraitheightmargin,
   videoplayerportraitiosheight,
   videoplayerportraitpanelandroidheight,
@@ -43,6 +45,11 @@ import {
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
+const defaultSliderItems = {
+  prevThumbnail: null,
+  nextThumbnail: null,
+};
+
 const ImageViewer = (props) => {
   const {
     id,
@@ -50,6 +57,7 @@ const ImageViewer = (props) => {
     uri,
     thumbnail,
     jenis_foto,
+    photoIndex,
     isSquare,
     width,
     height,
@@ -105,12 +113,13 @@ const ImageViewer = (props) => {
   const [success, setSuccess] = useState(false);
   //const [captureFailure, setCaptureFailure] = useState(false);
   const [transformedImage, setTransformedImage] = useState(null);
+  const [sliderItems, setSliderItems] = useState(defaultSliderItems);
   const [pdfUri, setPdfUri] = useState(null);
   const [downloadUri, setDownloadUri] = useState(null);
 
   const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
 
-  const { watermarkData, currentUser } = props;
+  const { watermarkData, currentUser, mediaKitPhotos, flyerMengajak } = props;
   const imageRef = useRef();
 
   useEffect(() => {
@@ -163,6 +172,36 @@ const ImageViewer = (props) => {
       renderPDF(transformedImage);
     }
   }, [transformedImage]);
+
+  useEffect(() => {
+    if (jenis_foto !== STARTER_KIT_FLYER_PRODUK_TAG || mediaKitPhotos === null || mediaKitPhotos[title] === undefined || mediaKitPhotos[title] === null || photoIndex === undefined || photoIndex === null) {
+      return;
+    }
+    setSliderItemsAccordingly(photoIndex, mediaKitPhotos[title]);
+  }, [mediaKitPhotos]);
+
+  useEffect(() => {
+    if (jenis_foto !== STARTER_KIT_FLYER_MENGAJAK_TAG || flyerMengajak === null || photoIndex === undefined || photoIndex === null) {
+      return;
+    }
+    setSliderItemsAccordingly(photoIndex, flyerMengajak);
+  }, [flyerMengajak]);
+
+  useEffect(() => {
+    console.log("sliderItems", sliderItems);
+  }, [sliderItems]);
+
+  const setSliderItemsAccordingly = (index, photos) => {
+    let prevThumbnail = null;
+    let nextThumbnail = null;
+    if (photoIndex > 0) {
+      prevThumbnail = photos[photoIndex - 1]?.thumbnail;
+    }
+    if (!(photos[index + 1] === undefined || photos[index + 1] === null)) {
+      nextThumbnail = photos[photoIndex + 1]?.thumbnail;
+    }
+    setSliderItems({prevThumbnail, nextThumbnail});
+  }
 
   const transformImage = async () => {
     if (Platform.OS === "web") {
@@ -850,6 +889,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   currentUser: store.userState.currentUser,
   watermarkData: store.mediaKitState.watermarkData,
+  mediaKitPhotos: store.mediaKitState.photos,
+  flyerMengajak: store.mediaKitState.flyerMengajak,
 });
 
 export default connect(mapStateToProps, null)(ImageViewer);

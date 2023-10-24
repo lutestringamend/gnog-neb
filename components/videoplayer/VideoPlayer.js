@@ -146,9 +146,9 @@ function VideoPlayer(props) {
   const [resultUri, setResultUri] = useState(null);
   const [output, setOutput] = useState("VIDEO PROCESSING LOGS");
   const [fileName, setFileName] = useState("video.mp4");
-  const [headerTitle, setHeaderTitle] = useState(
+  /*const [headerTitle, setHeaderTitle] = useState(
     title ? title : "Video Promosi"
-  );
+  );*/
   const [isTester, setTester] = useState(false);
   const [fullLogs, setFullLogs] = useState(
     userId === vwmarkdebuguserid ? "test" : null
@@ -247,7 +247,7 @@ function VideoPlayer(props) {
     }
   }, [props?.watermarkData]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     let newHeader = title;
     try {
       const array = title.split(" ");
@@ -261,7 +261,7 @@ function VideoPlayer(props) {
       //setTester(true);
     }
     setHeaderTitle(newHeader);
-  }, [currentUser]);
+  }, [currentUser]);*/
 
   useEffect(() => {
     setOutput(
@@ -834,7 +834,7 @@ function VideoPlayer(props) {
                   : null,
               ]}
             >
-              {headerTitle}
+              {title}
             </Text>
             {loading || error === null ? null : (
               <Text allowFontScaling={false} style={styles.textError}>

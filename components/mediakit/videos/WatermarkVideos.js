@@ -86,7 +86,7 @@ const WatermarkVideos = (props) => {
 
   const reorganizeVideos = () => {
     try {
-      setVideoKeys(Object.keys(mediaKitVideos).sort());
+      setVideoKeys(Object.keys(mediaKitVideos));
     } catch (e) {
       console.error(e);
       setVideoKeys([]);
