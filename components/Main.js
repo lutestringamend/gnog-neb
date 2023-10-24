@@ -512,7 +512,7 @@ function Main(props) {
         } else {
           setRecruitmentTimer(0);
         }
-        timeoutHandle.current = setTimeout(checkProfileLockTimeout, 1000);
+        timeoutHandle.current = setTimeout(checkProfileLockTimeout, 500);
       } catch (err) {
         console.error(err);
         props.updateReduxProfileLockStatus(false);
