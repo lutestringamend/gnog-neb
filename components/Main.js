@@ -1,10 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import {
-  Platform,
-  SafeAreaView,
-  StyleSheet,
-  AppState,
-} from "react-native";
+import { Platform, SafeAreaView, StyleSheet, AppState } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
@@ -100,6 +95,7 @@ function Main(props) {
   const [welcomeCheck, setWelcomeCheck] = useState(false);
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
   const navigationRef = useNavigation();
+  const timeoutHandle = useRef();
 
   try {
     useEffect(() => {
@@ -288,26 +284,16 @@ function Main(props) {
         currentUser === null ||
         currentUser?.name === undefined
       ) {
+        if (recruitmentTimer !== null) {
+          setRecruitmentTimer(null);
+          clearTimeout(timeoutHandle.current);
+        }
         return;
       }
 
       if (!welcomeCheck) {
         checkWelcomeNotif();
         setWelcomeCheck(true);
-      }
-
-      if (
-        !(
-          currentUser?.batas_rekrut === undefined ||
-          currentUser?.batas_rekrut === null ||
-          currentUser?.target_rekrutmen === undefined ||
-          currentUser?.target_rekrutmen === null
-        )
-      ) {
-        let newRegDateInMs = currentUser?.batas_rekrut
-          ? convertDateISOStringtoMiliseconds(currentUser?.batas_rekrut)
-          : null;
-        props.updateReduxRegDateInMs(newRegDateInMs);
       }
 
       console.log("redux currentUser", currentUser);
@@ -329,11 +315,25 @@ function Main(props) {
     }, [currentUser, profileLock]);
 
     useEffect(() => {
-      if (regDateInMs === null || regDateInMs <= 0) {
-        return;
+      if (
+        currentUser?.batas_rekrut === undefined ||
+        currentUser?.batas_rekrut === null
+      ) {
+        clearTimeout(timeoutHandle.current);
+        props.updateReduxRegDateInMs(null);
+      } else {
+        let newRegDateInMs = currentUser?.batas_rekrut
+          ? convertDateISOStringtoMiliseconds(currentUser?.batas_rekrut)
+          : null;
+        props.updateReduxRegDateInMs(newRegDateInMs);
       }
-      //console.log("redux regDateInMs", regDateInMs);
-      checkProfileLockTimeout();
+    }, [currentUser?.batas_rekrut]);
+
+    useEffect(() => {
+      if (!(regDateInMs === null || regDateInMs <= 0)) {
+        checkProfileLockTimeout();
+      }
+      console.log("redux regDateInMs", regDateInMs);
     }, [regDateInMs]);
 
     useEffect(() => {
@@ -346,7 +346,7 @@ function Main(props) {
       if (profilePIN === null) {
         checkAsyncPIN();
       }
-      console.log("Main redux PIN", profilePIN);
+      //console.log("Main redux PIN", profilePIN);
     }, [profilePIN]);
 
     useEffect(() => {
@@ -471,6 +471,7 @@ function Main(props) {
         appState.current.match(/inactive|background/) &&
         nextAppState === "active"
       ) {
+        clearTimeout(timeoutHandle.current);
         checkProfileLockTimeout();
       }
       appState.current = nextAppState;
@@ -484,15 +485,13 @@ function Main(props) {
     };
 
     const checkProfileLockTimeout = async () => {
-      //console.log("checkProfileLockTimeout");
+      //console.log("checkProfileLockTimeout called");
       if (
         token === null ||
         currentUser === null ||
-        currentUser?.id === undefined ||
-        currentUser?.id === null ||
-        currentUser?.name === undefined ||
-        currentUser?.name === null
+        regDateInMs === null || regDateInMs <= 0
       ) {
+        clearTimeout(timeoutHandle.current);
         return;
       }
       try {
@@ -508,18 +507,16 @@ function Main(props) {
           props.updateReduxProfileLockStatus(true);
         }
 
-        if (regDateInMs === null || regDateInMs <= 0) {
-          return;
-        }
         if (regDateInMs - time > 0) {
           setRecruitmentTimer(regDateInMs - time);
-          setTimeout(checkProfileLockTimeout, 1000);
         } else {
           setRecruitmentTimer(0);
         }
+        timeoutHandle.current = setTimeout(checkProfileLockTimeout, 1000);
       } catch (err) {
         console.error(err);
         props.updateReduxProfileLockStatus(false);
+        clearTimeout(timeoutHandle.current);
       }
     };
 
@@ -596,7 +593,6 @@ function Main(props) {
             }
             recruitmentTimer={recruitmentTimer}
           />
-          
         </SafeAreaView>
       );
     }

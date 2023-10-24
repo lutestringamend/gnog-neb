@@ -207,7 +207,7 @@ export function updateReduxProfileLockTimeout(data) {
 
 export function updateReduxProfilePIN(data) {
   return (dispatch) => {
-    console.log("updateReduxProfilePIN", data);
+    console.log("updateReduxProfilePIN");
     dispatch({ type: USER_PROFILE_PIN_STATE_CHANGE, data });
   };
 }

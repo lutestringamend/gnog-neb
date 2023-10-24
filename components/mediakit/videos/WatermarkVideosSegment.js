@@ -34,17 +34,16 @@ const WatermarkVideosSegment = (props) => {
         </View>
       ) : null}
 
-      <View style={styles.containerCarousel}>
         <VideosFlatlist
           videos={videos}
           refreshing={refreshing}
           refreshPage={() => refreshPage()}
           showTitle={true}
           title={title}
+          style={styles.containerCarousel}
           userId={userId}
           jenis_video={jenis_video}
         />
-      </View>
     </View>
   );
 };

@@ -73,6 +73,7 @@ const VideosFlatlist = (props) => {
         horizontal={false}
         numColumns={3}
         data={videos}
+        contentContainerStyle={styles.containerFlatlist}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -132,13 +133,13 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 1,
     borderColor: colors.daclen_lightgrey,
-    backgroundColor: colors.daclen_lightgrey,
+    backgroundColor: "transparent",
   },
   imageList: {
     flex: 1,
     aspectRatio: 3 / 4,
     borderRadius: 6,
-    backgroundColor: colors.daclen_light,
+    backgroundColor: "transparent",
   },
   textHeader: {
     backgroundColor: "transparent",
