@@ -86,6 +86,7 @@ export const contentslider = "api/mobile/content/slider"
 export const contentbannertiga = "api/mobile/content/tiga-banner"
 export const mediakitphoto = "api/mobile/media-kit/foto"
 export const mediakitvideo = "api/admin/media-kit/video"
+export const mediakitkategori = "api/mobile/media-kit/kategori"
 
 export const personalwebsiteurl = "https://daclen.com/web/"
 export const personalwebsiteurlshort = "daclen.com/web/"

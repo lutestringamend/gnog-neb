@@ -991,31 +991,7 @@ function VideoPlayer(props) {
               />
             )}
 
-            <ImageBackground
-              source={{ uri: thumbnail }}
-              style={[
-                styles.video,
-                {
-                  flex: 1,
-                  position: "absolute",
-                  width: videoSize.videoWidth,
-                  height: videoSize.videoHeight,
-                  zIndex: 3,
-                  backgroundColor: colors.daclen_light,
-                  opacity: status.isLoaded ? 0 : 0.9,
-                },
-                videoSize.videoOrientation === "portrait" && {
-                  top: 0,
-                },
-              ]}
-              resizeMode="cover"
-            >
-              <ActivityIndicator
-                size="large"
-                color={colors.daclen_orange}
-                style={{ zIndex: 10, alignSelf: "center" }}
-              />
-            </ImageBackground>
+            
           </View>
         )}
 
@@ -1230,6 +1206,32 @@ function VideoPlayer(props) {
 }
 
 /*
+
+<ImageBackground
+              source={{ uri: thumbnail }}
+              style={[
+                styles.video,
+                {
+                  flex: 1,
+                  position: "absolute",
+                  width: videoSize.videoWidth,
+                  height: videoSize.videoHeight,
+                  zIndex: 3,
+                  backgroundColor: colors.daclen_light,
+                  opacity: status.isLoaded ? 0 : 0.9,
+                },
+                videoSize.videoOrientation === "portrait" && {
+                  top: 0,
+                },
+              ]}
+              resizeMode="cover"
+            >
+              <ActivityIndicator
+                size="large"
+                color={colors.daclen_orange}
+                style={{ zIndex: 10, alignSelf: "center" }}
+              />
+            </ImageBackground>
 
         {userId === vwmarkdebuguserid &&
         Platform.OS === "web" &&

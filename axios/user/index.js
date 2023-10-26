@@ -751,8 +751,7 @@ export function getOTP(id, token, nomor_telp) {
     };
 
     const url = getotp + "/" + id.toString();
-    console.log("getOTP " + url + " with params and header");
-    console.log({ config, params });
+    console.log("getOTP POST", url, params);
 
     Axioss.post(url, params, config)
       .then((response) => {

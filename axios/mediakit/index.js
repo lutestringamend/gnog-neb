@@ -1,6 +1,6 @@
 import Axios from "../index";
 
-import { mediakitphoto, mediakitvideo, tokoonlineurlshort } from "../constants";
+import { mediakitkategori, mediakitphoto, mediakitvideo, tokoonlineurlshort } from "../constants";
 import {
   MEDIA_KIT_CLEAR_DATA,
   MEDIA_KIT_PHOTOS_STATE_CHANGE,
@@ -15,7 +15,7 @@ import {
   MEDIA_KIT_FLYER_PRODUK_SELECTED_STATE_CHANGE,
 } from "../../redux/constants";
 import { sentryLog } from "../../sentry";
-import { DefaultSelected, STARTER_KIT_FLYER_PRODUK_TAG, STARTER_KIT_VIDEO_MENGAJAK_TAG, STARTER_KIT_VIDEO_PRODUK_TAG } from "../../components/mediakit/constants";
+import { DefaultSelected, STARTER_KIT_FLYER_MENGAJAK_TAG, STARTER_KIT_FLYER_PRODUK_TAG, STARTER_KIT_VIDEO_MENGAJAK_TAG, STARTER_KIT_VIDEO_PRODUK_TAG } from "../../components/mediakit/constants";
 
 export function clearMediaKitData() {
   return (dispatch) => {
@@ -294,14 +294,79 @@ export function getMediaKitVideos(token, products) {
       });
   };
 
-  /* ;*/
+}
+
+export const getMediaKitKategori = async (token) => {
+  if (token === undefined || token === null) {
+    return {
+      result: null,
+      error: "Anda perlu akun Daclen sebelum bisa mengakses Flyer",
+    };
+  }
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  };
+
+    try {
+      const response = await Axios.get(mediakitkategori, config)
+      .catch((error) => {
+        console.error(error);
+        sentryLog(error);
+        return {
+          result: null,
+          error: error.toString(),
+        }
+      });
+
+      const responseData = response.data?.data;
+      console.log("getMediaKitKategori response", responseData);
+      if (responseData === undefined || responseData === null || responseData?.length === undefined || responseData?.length < 1) {
+        return {
+        result: {},
+        error: null,
+      }
+      } else {
+        let data = {};
+        let mengajakArray = [];
+        let othersArray = [];
+        for (let photo of responseData) {
+          if (!(photo?.fotos === undefined || photo?.fotos?.length === undefined || photo?.fotos?.length < 1)) {
+            if (photo?.jenis.toLowerCase() === STARTER_KIT_FLYER_MENGAJAK_TAG) {
+              mengajakArray.unshift(photo);
+            } else if (photo?.jenis.toLowerCase() === STARTER_KIT_FLYER_PRODUK_TAG && !(photo?.nama === undefined ||
+              photo?.nama === null ||
+              photo?.nama === "")) {
+              data[photo?.nama] = photo?.fotos;
+            } else {
+              othersArray.concat(photo, othersArray);
+            }
+          }
+          
+        } 
+        return {
+          result: data,
+          mengajakArray,
+          error: null,
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      sentryLog(e);
+      return {
+        result: null,
+        error: e.toString(),
+      }
+    }
 }
 
 export const getMediaKitPhotos = async (token) => {
   if (token === undefined || token === null) {
     return {
       result: null,
-      error: "Anda perlu login sebelum bisa melihat foto promosi",
+      error: "Anda perlu akun Daclen sebelum bisa mengakses Flyer",
     };
   }
   const config = {

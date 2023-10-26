@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   },
   textHeader: {
     backgroundColor: "transparent",
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: "Poppins",
     alignSelf: "center",
     textAlign: "center",

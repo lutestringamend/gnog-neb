@@ -19,6 +19,7 @@ import { isAvailableAsync } from "expo-sharing";
 
 import {
   getMediaKitPhotos,
+  getMediaKitKategori,
   getMediaKitVideos,
   clearMediaKitPhotosError,
   clearMediaKitData,
@@ -243,8 +244,8 @@ function MediaKitFiles(props) {
   };
 
   const fetchWatermarkPhotos = async () => {
-    const result = await getMediaKitPhotos(token);
-    console.log("getMediaKitPhotos", result);
+    const result = await getMediaKitKategori(token);
+    console.log("getMediaKitKategori", result);
     if (
       result === undefined ||
       result === null ||

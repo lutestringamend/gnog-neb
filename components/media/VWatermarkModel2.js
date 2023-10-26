@@ -108,7 +108,7 @@ function VWatermarkModel2(props) {
       watermarkData?.phone?.length < 1 ? null : (
         <Text allowFontScaling={false} minimumFontScale={1} maxFontSizeMultiplier={1}
           style={[
-            styles.textPhone,
+            styles.textName,
             {
               width: vwmark2templatewidth * ratio,
               fontSize: vwmark2textphonefontsize * ratio,
@@ -145,10 +145,10 @@ const styles = StyleSheet.create({
   },
   textPhone: {
     position: "absolute",
-    zIndex: 2,
+    zIndex: 20,
     backgroundColor: "transparent",
     color: colors.white,
-    fontFamily: "Poppins",
+    fontFamily: "Poppins-Bold",
   },
 });
 
