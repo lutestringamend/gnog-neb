@@ -41,7 +41,9 @@ import { sentryLog } from "../../sentry";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import { ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY } from "../asyncstorage/constants";
 import {
+  STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE,
   STARTER_KIT_VIDEO_MENGAJAK_TAG,
+  STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE,
   WatermarkData,
   videoplayermargintop,
   videoplayerportraitiosheight,
@@ -834,7 +836,7 @@ function VideoPlayer(props) {
                   : null,
               ]}
             >
-              {title}
+              {title ? title : jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG ? STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE : STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE}
             </Text>
             {loading || error === null ? null : (
               <Text allowFontScaling={false} style={styles.textError}>
