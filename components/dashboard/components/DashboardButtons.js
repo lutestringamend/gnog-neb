@@ -50,9 +50,9 @@ const ratio =
     : screenWidth / dashboardbuttonsdefaultscreenwidth;
 
 export const DashButton = (props) => {
-  if (props?.disabled) {
+  /*if (props?.disabled) {
     return null;
-  }
+  }*/
 
   return (
     <TouchableOpacity
@@ -73,6 +73,7 @@ export const DashButton = (props) => {
         },
       ]}
       onPress={() => props?.onPress()}
+      disabled={props?.disabled}
     >
       {props?.icon ? (
         <MaterialCommunityIcons
@@ -157,7 +158,7 @@ const DashboardButtons = ({ userId, username }) => {
   }
 
   function openTutorial() {
-    Linking.openURL(mainhttp);
+    navigation.navigate("Tutorial");
   }
 
   function openExplanation() {
@@ -204,7 +205,6 @@ const DashboardButtons = ({ userId, username }) => {
             text="TUTORIAL"
             icon="play-box"
             onPress={() => openTutorial()}
-            disabled={true}
           />
         </View>
         <View style={[styles.containerVertical, { marginStart: 10 }]}>

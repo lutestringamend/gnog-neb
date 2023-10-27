@@ -52,15 +52,7 @@ export default function DashboardStats(props) {
         <Text allowFontScaling={false} style={styles.textHeader}>
           {`${monthNames[new Date().getMonth()]} ${new Date()
             .getFullYear()
-            .toString()}${
-            regDate === undefined || regDate === null
-              ? ""
-              : `\nJoin Date: ${convertDateISOStringtoDisplayDate(
-                  regDate,
-                  true,
-                  currentUser?.join_date
-                )}`
-          }`}
+            .toString()}`}
         </Text>
 
         <View style={styles.containerHorizontal}>
@@ -164,12 +156,9 @@ export default function DashboardStats(props) {
           style={styles.containerBottom}
           onPress={() => showTimerModal()}
         >
-          <Text allowFontScaling={false} style={styles.textBottom}>
-            Countdown Recruitment
-          </Text>
           <MaterialCommunityIcons
             name="timer"
-            size={16}
+            size={18}
             color={colors.daclen_light}
             style={styles.timer}
           />
@@ -182,6 +171,22 @@ export default function DashboardStats(props) {
     return null;
   }
 }
+
+/*
+}${
+            regDate === undefined || regDate === null
+              ? ""
+              : `\nJoin Date: ${convertDateISOStringtoDisplayDate(
+                  regDate,
+                  true,
+                  currentUser?.join_date
+                )}`
+          
+                
+ <Text allowFontScaling={false} style={styles.textBottom}>
+            Countdown Recruitment
+          </Text>
+*/
 
 const styles = StyleSheet.create({
   container: {

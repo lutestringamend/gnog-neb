@@ -14,6 +14,7 @@ import {
   MEDIA_KIT_FLYER_MENGAJAK_STATE_CHANGE,
   MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE,
   MEDIA_KIT_PHOTOS_MULTIPLE_SAVE_STATE_CHANGE,
+  MEDIA_KIT_TUTORIALS_STATE_CHANGE,
 } from "../constants";
 
 const initialState = {
@@ -23,6 +24,7 @@ const initialState = {
   videos: null,
   videosUri: [],
   videosMengajak: null,
+  tutorials: null,
   fonts: [],
   colors: [],
   sizes: [],
@@ -82,11 +84,16 @@ export const mediakit = (state = initialState, action) => {
         ...state,
         videosUri: action.data,
       };
-      case MEDIA_KIT_VIDEOS_ERROR_STATE_CHANGE:
-        return {
-          ...state,
-          videoError: action.data,
-        }
+    case MEDIA_KIT_VIDEOS_ERROR_STATE_CHANGE:
+      return {
+        ...state,
+        videoError: action.data,
+      }
+    case MEDIA_KIT_TUTORIALS_STATE_CHANGE:
+      return {
+        ...state,
+        tutorials: action.data,
+    };
     case MEDIA_KIT_FONTS_STATE_CHANGE:
       return {
         ...state,

@@ -7,6 +7,7 @@ import {
   Platform,
 } from "react-native";
 import { Image } from "expo-image";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors } from "../../../styles/base";
@@ -22,6 +23,12 @@ export default function DashboardUser(props) {
 
   function openWithdrawal() {
     navigation.navigate("SaldoReportScreen");
+  }
+
+  function refreshSaldo() {
+    if (!(props?.refreshSaldo === undefined || props?.refreshSaldo === null)) {
+      props?.refreshSaldo();
+    }
   }
 
   if (
@@ -84,29 +91,40 @@ export default function DashboardUser(props) {
               ? currentUser?.detail_user?.nama_lengkap
               : currentUser?.name}
           </Text>
-          <Text
-            allowFontScaling={false}
-            style={[styles.text, { marginTop: 4 }]}
-          >
-            {saldoAkumulasi ? "Saldo Akumulasi" : "Saldo"}
-          </Text>
+          <View style={styles.containerSaldoHorizontal}>
+            <View style={styles.containerSaldo}>
+              <Text allowFontScaling={false} style={styles.text}>
+                {saldoAkumulasi ? "Saldo Akumulasi" : "Saldo"}
+              </Text>
 
-          <Text
-            allowFontScaling={false}
-            style={[styles.textName, { color: colors.daclen_yellow }]}
-          >
-            {saldoAkumulasi
-              ? saldoAkumulasi > 0
-                ? formatPrice(saldoAkumulasi)
-                : "Rp 0"
-              : currentUser?.komisi_user
-              ? checkNumberEmpty(currentUser?.komisi_user?.total) > 0
-                ? formatPrice(currentUser?.komisi_user?.total)
-                  ? formatPrice(currentUser?.komisi_user?.total)
-                  : "Rp 0"
-                : "Rp 0"
-              : "Rp 0"}
-          </Text>
+              <Text
+                allowFontScaling={false}
+                style={[styles.textName, { color: colors.daclen_yellow }]}
+              >
+                {saldoAkumulasi
+                  ? saldoAkumulasi > 0
+                    ? formatPrice(saldoAkumulasi)
+                    : "Rp 0"
+                  : currentUser?.komisi_user
+                  ? checkNumberEmpty(currentUser?.komisi_user?.total) > 0
+                    ? formatPrice(currentUser?.komisi_user?.total)
+                      ? formatPrice(currentUser?.komisi_user?.total)
+                      : "Rp 0"
+                    : "Rp 0"
+                  : "Rp 0"}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.refresh}
+              onPress={() => refreshSaldo()}
+            >
+              <MaterialCommunityIcons
+                name="refresh"
+                size={20}
+                color={colors.daclen_light}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
         <TouchableOpacity
           style={styles.button}
@@ -153,6 +171,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "transparent",
   },
+  containerSaldo: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
+  },
+  containerSaldoHorizontal: {
+    flexDirection: "row",
+    backgroundColor: "transparent",
+  },
   button: {
     borderWidth: 1,
     borderRadius: 2,
@@ -164,6 +190,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_grey_button,
     paddingVertical: 4,
     paddingHorizontal: 20,
+  },
+  refresh: {
+    backgroundColor: "transparent",
+    marginStart: 6,
+    alignSelf: "center",
   },
   textButton: {
     fontSize: 12,

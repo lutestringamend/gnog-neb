@@ -342,6 +342,7 @@ const Dashboard = (props) => {
               currentUser={currentUser}
               profilePicture={profilePicture}
               saldoAkumulasi={saldoAkumulasi}
+              refreshSaldo={() => props.getLaporanSaldo(currentUser?.id, token)}
             />
             <DashboardStats
               currentUser={currentUser}

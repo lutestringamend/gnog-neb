@@ -73,6 +73,7 @@ import PhotosSegment from "./components/mediakit/photos/PhotosSegment";
 import QRScreen from "./components/qrscreen/QRScreen";
 import VideoPlayer from "./components/videoplayer/VideoPlayer";
 import VideoLogs from "./components/videoplayer/VideoLogs";
+import Tutorial from "./components/mediakit/tutorial/Tutorial";
 
 import Profile from "./components/profile/Profile";
 import DeleteAccountScreen from "./components/auth/DeleteAccount";
@@ -391,6 +392,11 @@ export default function App() {
                 name="WmarkTestScreen"
                 component={WmarkTestScreen}
                 options={{ ...defaultOptions, title: "Test" }}
+              />
+              <Stack.Screen
+                name="Tutorial"
+                component={Tutorial}
+                options={{ ...defaultOptions, title: "Tutorial" }}
               />
             </Stack.Navigator>
           </NavigationContainer>

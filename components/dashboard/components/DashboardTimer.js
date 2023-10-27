@@ -283,7 +283,7 @@ const DashboardTimer = (props) => {
         onPress={() => setShowTimerModal((showTimerModal) => !showTimerModal)}
       >
         <BlurView
-          intensity={10}
+          intensity={5}
           style={[
             styles.container,
             {
