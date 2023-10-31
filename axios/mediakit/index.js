@@ -1,6 +1,6 @@
 import Axios from "../index";
 
-import { mediakitkategori, mediakitphoto, mediakitvideo, tokoonlineurlshort } from "../constants";
+import { mediakitkategori, mediakitphoto, mediakitvideo, tokoonlineurlshort, tutorialvideo } from "../constants";
 import {
   MEDIA_KIT_CLEAR_DATA,
   MEDIA_KIT_PHOTOS_STATE_CHANGE,
@@ -219,6 +219,49 @@ export function checkVideoFileName(item) {
   return item;
 }
 
+export function getTutorialVideos(token) {
+  if (token === undefined || token === null) {
+    return;
+  }
+  return (dispatch) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    };
+    Axios.get(tutorialvideo, config)
+      .then((response) => {
+        try {
+          const data = response?.data?.data;
+          console.log("getTutorialVideos response", data);
+          /*if (data === null || data?.length === undefined || data?.length < 1) {
+            dispatch({ type: MEDIA_KIT_VIDEOS_STATE_CHANGE, data: [] });
+            dispatch({ type: MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE, data: [] });
+            return;
+          }
+          
+          dispatch({ type: MEDIA_KIT_VIDEOS_STATE_CHANGE, data: newData });
+          dispatch({ type: MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE, data: newMengajakData });*/
+        } catch (e) {
+          sentryLog(e);
+          dispatch({
+            type: MEDIA_KIT_VIDEOS_ERROR_STATE_CHANGE,
+            data: e.toString(),
+          });
+        }
+      })
+      .catch((error) => {
+        sentryLog(error);
+        dispatch({
+          type: MEDIA_KIT_VIDEOS_ERROR_STATE_CHANGE,
+          data: error.toString(),
+        });
+      });
+  };
+
+}
+
 export function getMediaKitVideos(token, products) {
   if (token === undefined || token === null) {
     return;
@@ -335,7 +378,9 @@ export const getMediaKitKategori = async (token) => {
         for (let photo of responseData) {
           if (!(photo?.fotos === undefined || photo?.fotos?.length === undefined || photo?.fotos?.length < 1)) {
             if (photo?.jenis.toLowerCase() === STARTER_KIT_FLYER_MENGAJAK_TAG) {
-              mengajakArray.unshift(photo);
+              if (!(photo?.fotos === undefined || photo?.fotos?.length === undefined || photo?.fotos?.length < 1)) {
+                mengajakArray = photo?.fotos;
+              }
             } else if (photo?.jenis.toLowerCase() === STARTER_KIT_FLYER_PRODUK_TAG && !(photo?.nama === undefined ||
               photo?.nama === null ||
               photo?.nama === "")) {

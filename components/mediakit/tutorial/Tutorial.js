@@ -13,6 +13,7 @@ import { bindActionCreators } from "redux";
 
 import { colors } from "../../../styles/base";
 import VideosFlatlist from "../videos/VideosFlatlist";
+import { getTutorialVideos } from "../../../axios/mediakit";
 
 const Tutorial = (props) => {
   const [refreshing, setRefreshing] = useState(false);
@@ -24,6 +25,10 @@ const Tutorial = (props) => {
     token,
     loading,
   } = props;
+
+  useEffect(() => {
+    props.getTutorialVideos(token);
+  }, [token]);
 
   /*useEffect(() => {
     if (mediaKitVideos === null || !fetching) {
@@ -215,19 +220,18 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (store) => ({
+  token: store.userState.token,
+  currentUser: store.userState.currentUser,
   tutorials: store.mediaKitState.tutorials,
   videoError: store.mediaKitState.videoError,
 });
 
-/*const mapDispatchProps = (dispatch) =>
+const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
-      getMediaKitVideos,
-      clearMediaKitVideosError,
-      updateReduxMediaKitVideos,
-      overwriteWatermarkVideos,
+      getTutorialVideos,
     },
     dispatch
-  );*/
+  );
 
-export default connect(mapStateToProps, null)(Tutorial);
+export default connect(mapStateToProps, mapDispatchProps)(Tutorial);
