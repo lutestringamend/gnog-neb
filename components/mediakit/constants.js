@@ -52,6 +52,9 @@ export const STARTER_KIT_PERSONAL_WEBSITE_ICON = require("../../assets/starterki
 export const STARTER_KIT_REFERRAL = `AJAK TEMAN\nBERGABUNG`;
 export const STARTER_KIT_REFERRAL_ICON = require("../../assets/starterkit/referral.png");
 
+export const VIDEO_TUTORIAL_TAG = "tutorial";
+export const VIDEO_TUTORIAL_TITLE = "Video Tutorial";
+
 export const wmarkhorizontalmargin = 24;
 
 export const vwmarktemplatewidth = 3508;

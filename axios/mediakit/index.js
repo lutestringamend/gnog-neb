@@ -13,6 +13,7 @@ import {
   MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE,
   MEDIA_KIT_PHOTOS_MULTIPLE_SAVE_STATE_CHANGE,
   MEDIA_KIT_FLYER_PRODUK_SELECTED_STATE_CHANGE,
+  MEDIA_KIT_TUTORIALS_STATE_CHANGE,
 } from "../../redux/constants";
 import { sentryLog } from "../../sentry";
 import { DefaultSelected, STARTER_KIT_FLYER_MENGAJAK_TAG, STARTER_KIT_FLYER_PRODUK_TAG, STARTER_KIT_VIDEO_MENGAJAK_TAG, STARTER_KIT_VIDEO_PRODUK_TAG } from "../../components/mediakit/constants";
@@ -115,6 +116,13 @@ export function updateReduxMediaKitVideosMengajak(data) {
   return (dispatch) => {
     console.log("updateReduxMediaKitVideosMengajak", data);
     dispatch({ type: MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE, data });
+  };
+}
+
+export function updateReduxMediaKitVideosTutorial(data) {
+  return (dispatch) => {
+    console.log("updateReduxMediaKitVideosTutorial", data);
+    dispatch({ type: MEDIA_KIT_TUTORIALS_STATE_CHANGE, data });
   };
 }
 
@@ -228,6 +236,7 @@ export function getTutorialVideos(token) {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
       },
     };
     Axios.get(tutorialvideo, config)
@@ -235,14 +244,12 @@ export function getTutorialVideos(token) {
         try {
           const data = response?.data?.data;
           console.log("getTutorialVideos response", data);
-          /*if (data === null || data?.length === undefined || data?.length < 1) {
-            dispatch({ type: MEDIA_KIT_VIDEOS_STATE_CHANGE, data: [] });
-            dispatch({ type: MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE, data: [] });
+          if (data === null || data?.length === undefined || data?.length < 1) {
+            dispatch({ type: MEDIA_KIT_TUTORIALS_STATE_CHANGE, data: [] });
             return;
           }
           
-          dispatch({ type: MEDIA_KIT_VIDEOS_STATE_CHANGE, data: newData });
-          dispatch({ type: MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE, data: newMengajakData });*/
+          dispatch({ type: MEDIA_KIT_TUTORIALS_STATE_CHANGE, data });
         } catch (e) {
           sentryLog(e);
           dispatch({

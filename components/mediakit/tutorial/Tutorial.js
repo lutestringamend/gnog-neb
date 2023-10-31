@@ -5,135 +5,128 @@ import {
   ActivityIndicator,
   Text,
   ImageBackground,
-  RefreshControl,
+  TouchableOpacity,
 } from "react-native";
-//import { FlashList } from "@shopify/flash-list";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { colors } from "../../../styles/base";
 import VideosFlatlist from "../videos/VideosFlatlist";
-import { getTutorialVideos } from "../../../axios/mediakit";
+import {
+  getTutorialVideos,
+  clearMediaKitVideosError,
+  updateReduxMediaKitVideosTutorial,
+} from "../../../axios/mediakit";
+import { getObjectAsync, setObjectAsync } from "../../asyncstorage";
+import { ASYNC_MEDIA_TUTORIAL_VIDEOS_KEY } from "../../asyncstorage/constants";
+import { VIDEO_TUTORIAL_TITLE } from "../constants";
 
 const Tutorial = (props) => {
   const [refreshing, setRefreshing] = useState(false);
-  const [fetching, setFetching] = useState(false);
-  const {
-    tutorials,
-    videoError,
-    userId,
-    token,
-    loading,
-  } = props;
+  const [error, setError] = useState(null);
+  const { tutorials, videoError, currentUser, token } = props;
 
   useEffect(() => {
-    props.getTutorialVideos(token);
-  }, [token]);
+    props.clearMediaKitVideosError();
+  }, []);
 
-  /*useEffect(() => {
-    if (mediaKitVideos === null || !fetching) {
-      //checkAsyncMediaKitVideos();
-      setFetching(true);
-      props.getMediaKitVideos(token);
+  useEffect(() => {
+    if (token === undefined || token === null || currentUser === null || currentUser?.id === undefined) {
+      setError("Register / Login untuk melihat video Tutorial.");
       return;
     }
-    if (fetching) {
-      setObjectAsync(ASYNC_MEDIA_WATERMARK_VIDEOS_KEY, mediaKitVideos);
-      setFetching(false);
+    if (tutorials === null) {
+      checkAsyncTutorial();
+      return;
     }
     if (refreshing) {
       setRefreshing(false);
     }
-    reorganizeVideos();
-    console.log(
-      "redux media kit videos - videosMengajak",
-      mediaKitVideos,
-      videosMengajak
+    setObjectAsync(ASYNC_MEDIA_TUTORIAL_VIDEOS_KEY, tutorials);
+    console.log("redux tutorials", tutorials);
+  }, [tutorials]);
+
+  useEffect(() => {
+    setError(
+      videoError === undefined || videoError === null || videoError === ""
+        ? null
+        : currentUser?.id === 8054
+        ? videoError
+        : "Refresh untuk mendapatkan video Tutorial."
     );
-  }, [mediaKitVideos]);
+  }, [videoError]);
 
-  useEffect(() => {
-    if (jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG) {
-      console.log("redux videosMengajak", videosMengajak);
-    }
-  }, [videosMengajak]);
-
-  useEffect(() => {
-    if (watermarkVideos?.length === undefined || watermarkVideos?.length < 1) {
-      checkAsyncWatermarkVideosSaved();
-      return;
-    }
-    console.log("redux media savedWatermarkVideos", watermarkVideos);
-  }, [watermarkVideos]);
-
-  const reorganizeVideos = () => {
-    try {
-      setVideoKeys(Object.keys(mediaKitVideos));
-    } catch (e) {
-      console.error(e);
-      setVideoKeys([]);
-    }
-  };
-
-  const checkAsyncWatermarkVideosSaved = async () => {
-    const storageWatermarkVideosSaved = await getObjectAsync(
-      ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY
+  const checkAsyncTutorial = async () => {
+    const storageTutorial = await getObjectAsync(
+      ASYNC_MEDIA_TUTORIAL_VIDEOS_KEY
     );
     if (
-      !(
-        storageWatermarkVideosSaved === undefined ||
-        storageWatermarkVideosSaved === null ||
-        storageWatermarkVideosSaved?.length === undefined ||
-        storageWatermarkVideosSaved?.length < 1
-      )
+      storageTutorial === undefined ||
+      storageTutorial === null ||
+      storageTutorial?.length === undefined ||
+      storageTutorial?.length < 1
     ) {
-      props.overwriteWatermarkVideos(storageWatermarkVideosSaved);
+      props.getTutorialVideos(token);
+    } else {
+      if (refreshing) {
+        setRefreshing(false);
+      }
+      props.updateReduxMediaKitVideosTutorial(storageTutorial);
     }
   };
 
   const refreshPage = () => {
-    if (
-      props?.refreshPage === undefined ||
-      props?.refreshPage === null ||
-      loading
-    ) {
-      return;
-    }
     setRefreshing(true);
-    props?.refreshPage();
-    //props.getMediaKitVideos(token, products);
-  };*/
+    setError(null);
+    props.clearMediaKitVideosError();
+    props.getTutorialVideos(token);
+  };
 
   return (
     <View style={styles.container}>
-        <ImageBackground
-          source={require("../../../assets/profilbg.png")}
-          style={styles.background}
-          resizeMode="cover"
-        />
-      {loading || fetching || refreshing ? (
+      <ImageBackground
+        source={require("../../../assets/profilbg.png")}
+        style={styles.background}
+        resizeMode="cover"
+      />
+      {error ? (
+        <View style={styles.containerError}>
+          <Text allowFontScaling={false} style={styles.textError}>
+            {error}
+          </Text>
+          <TouchableOpacity onPress={() => refreshPage()} style={styles.close}>
+            <MaterialCommunityIcons
+              name="refresh"
+              size={20}
+              color={colors.daclen_light}
+            />
+          </TouchableOpacity>
+        </View>
+      ) : null}
+      {(tutorials === null || refreshing) && error === null ? (
         <ActivityIndicator
           size="large"
           color={colors.daclen_light}
           style={{ alignSelf: "center", marginVertical: 20, zIndex: 1 }}
         />
       ) : null}
-      {loading || fetching || refreshing ? null : (
+      {tutorials === null || refreshing ? null : (
         <View style={styles.containerInside}>
-          {tutorials === null || tutorials?.length === undefined || tutorials?.length < 1 ? (
+          {tutorials?.length === undefined || tutorials?.length < 1 ? (
             <Text allowFontScaling={false} style={styles.textUid}>
               Tidak ada Video Tutorial tersedia.
             </Text>
           ) : (
             <VideosFlatlist
-                videos={tutorials}
-                refreshing={refreshing}
-                refreshPage={() => refreshPage()}
-                showTitle={true}
-                title={title}
-                style={styles.containerFlatlist}
-                userId={userId}
-                jenis_video="tutorial"
+              videos={tutorials}
+              refreshing={refreshing}
+              refreshPage={() => refreshPage()}
+              showTitle={true}
+              title={VIDEO_TUTORIAL_TITLE}
+              style={styles.containerFlatlist}
+              userId={currentUser?.id}
+              jenis_video="tutorial"
             />
           )}
         </View>
@@ -141,31 +134,6 @@ const Tutorial = (props) => {
     </View>
   );
 };
-
-/*
-                    <View
-                      style={[
-                        styles.containerOrientation,
-                        {
-                          backgroundColor:
-                            item?.width > item?.height
-                              ? colors.daclen_cyan
-                              : colors.daclen_blue,
-                        },
-                      ]}
-                    >
-                      <MaterialCommunityIcons
-                        name={
-                          item?.width > item?.height
-                            ? "crop-landscape"
-                            : "crop-portrait"
-                        }
-                        size={20}
-                        color={colors.daclen_light}
-                        style={{ alignSelf: "center" }}
-                      />
-                    </View>
-*/
 
 const styles = StyleSheet.create({
   container: {
@@ -183,7 +151,20 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
+  containerError: {
+    width: "100%",
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    backgroundColor: colors.daclen_danger,
+    flexDirection: "row",
+    alignItems: "center",
+    position: "absolute",
+    top: 0,
+    start: 0,
+    zIndex: 4,
+  },
   containerInside: {
+    flex: 1,
     width: "100%",
     height: "100%",
     backgroundColor: "transparent",
@@ -195,6 +176,7 @@ const styles = StyleSheet.create({
   containerFlatlist: {
     flex: 1,
     width: "100%",
+    paddingTop: 24,
     backgroundColor: "transparent",
   },
   containerOrientation: {
@@ -209,6 +191,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  textError: {
+    flex: 1,
+    fontSize: 12,
+    fontFamily: "Poppins-SemiBold",
+    color: colors.white,
+    marginHorizontal: 10,
+    backgroundColor: "transparent",
+    textAlign: "center",
+    alignSelf: "center",
+  },
   textUid: {
     backgroundColor: "transparent",
     fontFamily: "Poppins-SemiBold",
@@ -216,6 +208,10 @@ const styles = StyleSheet.create({
     color: colors.daclen_light,
     margin: 20,
     textAlign: "center",
+  },
+  close: {
+    alignSelf: "center",
+    backgroundColor: "transparent",
   },
 });
 
@@ -230,6 +226,8 @@ const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
       getTutorialVideos,
+      updateReduxMediaKitVideosTutorial,
+      clearMediaKitVideosError,
     },
     dispatch
   );

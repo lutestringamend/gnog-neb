@@ -119,8 +119,8 @@ export default function DashboardUser(props) {
               onPress={() => refreshSaldo()}
             >
               <MaterialCommunityIcons
-                name="refresh"
-                size={20}
+                name="eye"
+                size={16}
                 color={colors.daclen_light}
               />
             </TouchableOpacity>
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   },
   refresh: {
     backgroundColor: "transparent",
-    marginStart: 6,
+    marginStart: 8,
     alignSelf: "center",
   },
   textButton: {

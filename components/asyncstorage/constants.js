@@ -29,6 +29,7 @@ export const ASYNC_MEDIA_FLYER_MENGAJAK_KEY = "@media_flyerMengajak"
 export const ASYNC_WATERMARK_PHOTOS_PDF_KEY = "@media_photosPdf"
 export const ASYNC_MEDIA_WATERMARK_VIDEOS_KEY = "@media_watermarkVideos"
 export const ASYNC_MEDIA_VIDEOS_MENGAJAK_KEY = "@media_videosMengajak"
+export const ASYNC_MEDIA_TUTORIAL_VIDEOS_KEY = "@media_tutorial"
 export const ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY = "@media_savedWatermarkVideos"
 
 export const ASYNC_RAJAONGKIR_PROVINSI_KEY = "@rajaongkir_provinsi"

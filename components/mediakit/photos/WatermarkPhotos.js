@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
   },
   textError: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "Poppins-SemiBold",
     color: colors.white,
     marginHorizontal: 10,

@@ -44,6 +44,8 @@ import {
   STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE,
   STARTER_KIT_VIDEO_MENGAJAK_TAG,
   STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE,
+  VIDEO_TUTORIAL_TAG,
+  VIDEO_TUTORIAL_TITLE,
   WatermarkData,
   videoplayermargintop,
   videoplayerportraitiosheight,
@@ -168,7 +170,7 @@ function VideoPlayer(props) {
   useEffect(() => {
     const checkSharing = async () => {
       const result = await isAvailableAsync();
-      if (!result) {
+      if (!result && jenis_video !== VIDEO_TUTORIAL_TAG) {
         setError(
           (error) =>
             `${
@@ -188,6 +190,7 @@ function VideoPlayer(props) {
     }
 
     let logs = {
+      jenis_video,
       videoId,
       width,
       height,
@@ -225,7 +228,11 @@ function VideoPlayer(props) {
 
   useEffect(() => {
     if (
-      !(props?.watermarkData === undefined || props?.watermarkData === null)
+      !(
+        props?.watermarkData === undefined ||
+        props?.watermarkData === null ||
+        jenis_video === VIDEO_TUTORIAL_TAG
+      )
     ) {
       let url = `${
         jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG
@@ -240,10 +247,15 @@ function VideoPlayer(props) {
         ...props?.watermarkData,
         url,
       };
-      console.log("video watermarkData", data);;
+      console.log("video watermarkData", data);
       setWatermarkData(data);
 
-      let newFileName = getFileName(uri, jenis_video, title, props?.watermarkData?.name);
+      let newFileName = getFileName(
+        uri,
+        jenis_video,
+        title,
+        props?.watermarkData?.name
+      );
       setFileName(newFileName);
       console.log("output fileName", newFileName);
     }
@@ -703,7 +715,9 @@ function VideoPlayer(props) {
       setError("Memulai download video...");
       setLoading(true);
       try {
-        const targetDownload = `${FileSystem.documentDirectory}raw_${new Date().getTime().toString()}.mp4`;
+        const targetDownload = `${FileSystem.documentDirectory}raw_${new Date()
+          .getTime()
+          .toString()}.mp4`;
         console.log("downloadAsync", uri, targetDownload);
         const result = await FileSystem.downloadAsync(uri, targetDownload, {
           cache: true,
@@ -774,37 +788,39 @@ function VideoPlayer(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ViewShot
-        ref={waterRef}
-        options={{
-          fileName: "wtext",
-          format: "png",
-          quality: 1,
-          result: "tmpfile",
-          width: watermarkSize.width / viewshotwidthratio,
-          height: watermarkSize.height / viewshotheightratio,
-        }}
-        style={[
-          styles.containerViewShot,
-          {
-            width: watermarkSize.width,
-            height: watermarkSize.height,
-          },
-        ]}
-        captureMode=""
-        onCapture={onCapture}
-        onCaptureFailure={onCaptureFailure}
-      >
-        <VideoLargeWatermarkModel
-          width={width}
-          height={height}
-          videoToScreenRatio={videoToScreenRatio}
-          watermarkData={watermarkData}
-          orientation={videoSize?.videoOrientation}
-          username={currentUser?.name}
-          onLoadEnd={() => renderWatermark()}
-        />
-      </ViewShot>
+      {jenis_video === VIDEO_TUTORIAL_TAG ? null : (
+        <ViewShot
+          ref={waterRef}
+          options={{
+            fileName: "wtext",
+            format: "png",
+            quality: 1,
+            result: "tmpfile",
+            width: watermarkSize.width / viewshotwidthratio,
+            height: watermarkSize.height / viewshotheightratio,
+          }}
+          style={[
+            styles.containerViewShot,
+            {
+              width: watermarkSize.width,
+              height: watermarkSize.height,
+            },
+          ]}
+          captureMode=""
+          onCapture={onCapture}
+          onCaptureFailure={onCaptureFailure}
+        >
+          <VideoLargeWatermarkModel
+            width={width}
+            height={height}
+            videoToScreenRatio={videoToScreenRatio}
+            watermarkData={watermarkData}
+            orientation={videoSize?.videoOrientation}
+            username={currentUser?.name}
+            onLoadEnd={() => renderWatermark()}
+          />
+        </ViewShot>
+      )}
 
       <ImageBackground
         source={require("../../assets/profilbg.png")}
@@ -831,12 +847,20 @@ function VideoPlayer(props) {
               allowFontScaling={false}
               style={[
                 styles.textHeaderLandscape,
-                loading || error === null
+                jenis_video === VIDEO_TUTORIAL_TAG
                   ? { fontFamily: "Poppins", fontSize: 16, paddingVertical: 9 }
+                  : loading || error === null
+                  ? { fontSize: 14, paddingVertical: 9 }
                   : null,
               ]}
             >
-              {title ? title : jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG ? STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE : STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE}
+              {title
+                ? title
+                : jenis_video === VIDEO_TUTORIAL_TAG
+                ? VIDEO_TUTORIAL_TITLE
+                : jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG
+                ? STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE
+                : STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE}
             </Text>
             {loading || error === null ? null : (
               <Text allowFontScaling={false} style={styles.textError}>
@@ -961,7 +985,8 @@ function VideoPlayer(props) {
               onPlaybackStatusUpdate={(status) => setStatus(() => status)}
             />
 
-            {watermarkLoading && Platform.OS !== "web" ? (
+            {jenis_video === VIDEO_TUTORIAL_TAG ? null : watermarkLoading &&
+              Platform.OS !== "web" ? (
               <ActivityIndicator
                 size="small"
                 color={colors.daclen_orange}
@@ -992,200 +1017,201 @@ function VideoPlayer(props) {
                 username={currentUser?.name}
               />
             )}
-
-            
           </View>
         )}
 
-        <View
-          style={
-            videoSize.videoOrientation === "portrait"
-              ? [
-                  styles.containerPanelVideoPortrait,
-                  {
-                    top:
-                      videoSize.videoHeight - (Platform.OS === "ios" ? 60 : 40),
-                    width: screenWidth,
-                    height:
-                      Platform.OS === "ios"
-                        ? videoplayerportraitiosheight
-                        : videoplayerportraitpanelandroidheight,
-                    backgroundColor: "transparent",
-                  },
-                ]
-              : videoSize.isLandscape
-              ? styles.containerPanelLandscape
-              : styles.containerPanelPortrait
-          }
-        >
-          <TouchableOpacity
-            style={[
-              styles.buttonCircle,
-              {
-                backgroundColor: status.isLoaded
-                  ? colors.daclen_light
-                  : colors.daclen_lightgrey_button,
-                marginTop: 0,
-                marginStart: 10,
-              },
-            ]}
-            onPress={() =>
-              status.isPlaying
-                ? video.current.pauseAsync()
-                : video.current.playAsync()
-            }
-            disabled={videoLoading || !status.isLoaded}
-          >
-            <MaterialCommunityIcons
-              name={status.isPlaying ? "pause" : "play"}
-              size={18}
-              color={colors.daclen_black}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              videoSize.isLandscape || isTester
-                ? styles.buttonCircle
-                : styles.button,
-              {
-                backgroundColor:
-                  loading ||
-                  videoLoading ||
-                  !status.isLoaded ||
-                  watermarkImage === null
-                    ? colors.daclen_lightgrey_button
-                    : colors.daclen_light,
-              },
-              isTester ? null : { flex: 1 },
-            ]}
-            onPress={() => processVideo()}
-            disabled={
-              loading ||
-              videoLoading ||
-              !status.isLoaded ||
-              watermarkImage === null ||
-              (rawUri !== null && resultUri !== null)
+        {jenis_video === VIDEO_TUTORIAL_TAG ? null : (
+          <View
+            style={
+              videoSize.videoOrientation === "portrait"
+                ? [
+                    styles.containerPanelVideoPortrait,
+                    {
+                      top:
+                        videoSize.videoHeight -
+                        (Platform.OS === "ios" ? 60 : 40),
+                      width: screenWidth,
+                      height:
+                        Platform.OS === "ios"
+                          ? videoplayerportraitiosheight
+                          : videoplayerportraitpanelandroidheight,
+                      backgroundColor: "transparent",
+                    },
+                  ]
+                : videoSize.isLandscape
+                ? styles.containerPanelLandscape
+                : styles.containerPanelPortrait
             }
           >
-            {loading ? (
-              <ActivityIndicator
-                size="small"
-                color={colors.daclen_light}
-                style={{
-                  alignSelf: "center",
-                }}
-              />
-            ) : (
+            <TouchableOpacity
+              style={[
+                styles.buttonCircle,
+                {
+                  backgroundColor: status.isLoaded
+                    ? colors.daclen_light
+                    : colors.daclen_lightgrey_button,
+                  marginTop: 0,
+                  marginStart: 10,
+                },
+              ]}
+              onPress={() =>
+                status.isPlaying
+                  ? video.current.pauseAsync()
+                  : video.current.playAsync()
+              }
+              disabled={videoLoading || !status.isLoaded}
+            >
               <MaterialCommunityIcons
-                name={
-                  rawUri === null
-                    ? "file-download"
+                name={status.isPlaying ? "pause" : "play"}
+                size={18}
+                color={colors.daclen_black}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                videoSize.isLandscape || isTester
+                  ? styles.buttonCircle
+                  : styles.button,
+                {
+                  backgroundColor:
+                    loading ||
+                    videoLoading ||
+                    !status.isLoaded ||
+                    watermarkImage === null
+                      ? colors.daclen_lightgrey_button
+                      : colors.daclen_light,
+                },
+                isTester ? null : { flex: 1 },
+              ]}
+              onPress={() => processVideo()}
+              disabled={
+                loading ||
+                videoLoading ||
+                !status.isLoaded ||
+                watermarkImage === null ||
+                (rawUri !== null && resultUri !== null)
+              }
+            >
+              {loading ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.daclen_light}
+                  style={{
+                    alignSelf: "center",
+                  }}
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name={
+                    rawUri === null
+                      ? "file-download"
+                      : resultUri === null
+                      ? "pinwheel"
+                      : "check-bold"
+                  }
+                  size={18}
+                  color={colors.daclen_black}
+                />
+              )}
+              {videoSize.isLandscape || isTester ? null : (
+                <Text allowFontScaling={false} style={styles.textButton}>
+                  {rawUri === null
+                    ? "Download"
                     : resultUri === null
-                    ? "pinwheel"
-                    : "check-bold"
-                }
-                size={18}
-                color={colors.daclen_black}
-              />
-            )}
-            {videoSize.isLandscape || isTester ? null : (
-              <Text allowFontScaling={false} style={styles.textButton}>
-                {rawUri === null
-                  ? "Download"
-                  : resultUri === null
-                  ? "Proses"
-                  : Platform.OS === "android"
-                  ? "Terproses"
-                  : "Terproses"}
-              </Text>
-            )}
-          </TouchableOpacity>
+                    ? "Proses"
+                    : Platform.OS === "android"
+                    ? "Terproses"
+                    : "Terproses"}
+                </Text>
+              )}
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              videoSize.isLandscape || isTester
-                ? styles.buttonCircle
-                : styles.button,
-              {
-                backgroundColor:
-                  !sharingAvailability ||
-                  videoLoading ||
-                  loading ||
-                  !status.isLoaded ||
-                  watermarkImage === null ||
-                  rawUri === null ||
-                  resultUri === null
-                    ? colors.daclen_lightgrey_button
-                    : colors.daclen_light,
-              },
-              isTester ? null : { flex: 1 },
-            ]}
-            onPress={() => shareFileAsync(resultUri, sharingOptionsMP4)}
-            disabled={
-              !sharingAvailability ||
-              loading ||
-              videoLoading ||
-              !status.isLoaded ||
-              watermarkImage === null ||
-              rawUri === null ||
-              resultUri === null
-            }
-          >
-            <MaterialCommunityIcons
-              name="share-variant"
-              size={18}
-              color={colors.daclen_black}
-            />
-            {videoSize.isLandscape || isTester ? null : (
-              <Text allowFontScaling={false} style={styles.textButton}>
-                Share
-              </Text>
-            )}
-          </TouchableOpacity>
-          {isTester ? (
             <TouchableOpacity
               style={[
-                styles.buttonCircle,
+                videoSize.isLandscape || isTester
+                  ? styles.buttonCircle
+                  : styles.button,
                 {
                   backgroundColor:
-                    loading || videoLoading || !sharingAvailability
+                    !sharingAvailability ||
+                    videoLoading ||
+                    loading ||
+                    !status.isLoaded ||
+                    watermarkImage === null ||
+                    rawUri === null ||
+                    resultUri === null
                       ? colors.daclen_lightgrey_button
                       : colors.daclen_light,
                 },
+                isTester ? null : { flex: 1 },
               ]}
-              onPress={() => shareWatermarkImage()}
-              disabled={loading || videoLoading || !sharingAvailability}
+              onPress={() => shareFileAsync(resultUri, sharingOptionsMP4)}
+              disabled={
+                !sharingAvailability ||
+                loading ||
+                videoLoading ||
+                !status.isLoaded ||
+                watermarkImage === null ||
+                rawUri === null ||
+                resultUri === null
+              }
             >
               <MaterialCommunityIcons
-                name="picture-in-picture-top-right"
+                name="share-variant"
                 size={18}
                 color={colors.daclen_black}
               />
+              {videoSize.isLandscape || isTester ? null : (
+                <Text allowFontScaling={false} style={styles.textButton}>
+                  Share
+                </Text>
+              )}
             </TouchableOpacity>
-          ) : null}
+            {isTester ? (
+              <TouchableOpacity
+                style={[
+                  styles.buttonCircle,
+                  {
+                    backgroundColor:
+                      loading || videoLoading || !sharingAvailability
+                        ? colors.daclen_lightgrey_button
+                        : colors.daclen_light,
+                  },
+                ]}
+                onPress={() => shareWatermarkImage()}
+                disabled={loading || videoLoading || !sharingAvailability}
+              >
+                <MaterialCommunityIcons
+                  name="picture-in-picture-top-right"
+                  size={18}
+                  color={colors.daclen_black}
+                />
+              </TouchableOpacity>
+            ) : null}
 
-          {isTester ? (
-            <TouchableOpacity
-              style={[
-                styles.buttonCircle,
-                {
-                  backgroundColor:
-                    videoLoading || loading
-                      ? colors.daclen_lightgrey_button
-                      : colors.daclen_light,
-                },
-              ]}
-              onPress={() => openFullLogs()}
-              disabled={videoLoading || loading}
-            >
-              <MaterialCommunityIcons
-                name="text-box"
-                size={18}
-                color={colors.daclen_black}
-              />
-            </TouchableOpacity>
-          ) : null}
-        </View>
+            {isTester ? (
+              <TouchableOpacity
+                style={[
+                  styles.buttonCircle,
+                  {
+                    backgroundColor:
+                      videoLoading || loading
+                        ? colors.daclen_lightgrey_button
+                        : colors.daclen_light,
+                  },
+                ]}
+                onPress={() => openFullLogs()}
+                disabled={videoLoading || loading}
+              >
+                <MaterialCommunityIcons
+                  name="text-box"
+                  size={18}
+                  color={colors.daclen_black}
+                />
+              </TouchableOpacity>
+            ) : null}
+          </View>
+        )}
       </ScrollView>
       {loading ? (
         <View style={styles.containerLoading}>
