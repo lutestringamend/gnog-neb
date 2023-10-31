@@ -1020,53 +1020,53 @@ function VideoPlayer(props) {
           </View>
         )}
 
-        {jenis_video === VIDEO_TUTORIAL_TAG ? null : (
-          <View
-            style={
-              videoSize.videoOrientation === "portrait"
-                ? [
-                    styles.containerPanelVideoPortrait,
-                    {
-                      top:
-                        videoSize.videoHeight -
-                        (Platform.OS === "ios" ? 60 : 40),
-                      width: screenWidth,
-                      height:
-                        Platform.OS === "ios"
-                          ? videoplayerportraitiosheight
-                          : videoplayerportraitpanelandroidheight,
-                      backgroundColor: "transparent",
-                    },
-                  ]
-                : videoSize.isLandscape
-                ? styles.containerPanelLandscape
-                : styles.containerPanelPortrait
+        <View
+          style={
+            videoSize.videoOrientation === "portrait"
+              ? [
+                  styles.containerPanelVideoPortrait,
+                  {
+                    top:
+                      videoSize.videoHeight - (Platform.OS === "ios" ? 60 : 40),
+                    width: screenWidth,
+                    height:
+                      Platform.OS === "ios"
+                        ? videoplayerportraitiosheight
+                        : videoplayerportraitpanelandroidheight,
+                    backgroundColor: "transparent",
+                  },
+                ]
+              : videoSize.isLandscape
+              ? styles.containerPanelLandscape
+              : styles.containerPanelPortrait
+          }
+        >
+          <TouchableOpacity
+            style={[
+              styles.buttonCircle,
+              {
+                backgroundColor: status.isLoaded
+                  ? colors.daclen_light
+                  : colors.daclen_lightgrey_button,
+                marginTop: 0,
+                marginStart: 10,
+              },
+            ]}
+            onPress={() =>
+              status.isPlaying
+                ? video.current.pauseAsync()
+                : video.current.playAsync()
             }
+            disabled={videoLoading || !status.isLoaded}
           >
-            <TouchableOpacity
-              style={[
-                styles.buttonCircle,
-                {
-                  backgroundColor: status.isLoaded
-                    ? colors.daclen_light
-                    : colors.daclen_lightgrey_button,
-                  marginTop: 0,
-                  marginStart: 10,
-                },
-              ]}
-              onPress={() =>
-                status.isPlaying
-                  ? video.current.pauseAsync()
-                  : video.current.playAsync()
-              }
-              disabled={videoLoading || !status.isLoaded}
-            >
-              <MaterialCommunityIcons
-                name={status.isPlaying ? "pause" : "play"}
-                size={18}
-                color={colors.daclen_black}
-              />
-            </TouchableOpacity>
+            <MaterialCommunityIcons
+              name={status.isPlaying ? "pause" : "play"}
+              size={18}
+              color={colors.daclen_black}
+            />
+          </TouchableOpacity>
+
+          {jenis_video === VIDEO_TUTORIAL_TAG ? null : (
             <TouchableOpacity
               style={[
                 videoSize.isLandscape || isTester
@@ -1125,7 +1125,9 @@ function VideoPlayer(props) {
                 </Text>
               )}
             </TouchableOpacity>
+          )}
 
+          {jenis_video === VIDEO_TUTORIAL_TAG ? null : (
             <TouchableOpacity
               style={[
                 videoSize.isLandscape || isTester
@@ -1167,51 +1169,52 @@ function VideoPlayer(props) {
                 </Text>
               )}
             </TouchableOpacity>
-            {isTester ? (
-              <TouchableOpacity
-                style={[
-                  styles.buttonCircle,
-                  {
-                    backgroundColor:
-                      loading || videoLoading || !sharingAvailability
-                        ? colors.daclen_lightgrey_button
-                        : colors.daclen_light,
-                  },
-                ]}
-                onPress={() => shareWatermarkImage()}
-                disabled={loading || videoLoading || !sharingAvailability}
-              >
-                <MaterialCommunityIcons
-                  name="picture-in-picture-top-right"
-                  size={18}
-                  color={colors.daclen_black}
-                />
-              </TouchableOpacity>
-            ) : null}
+          )}
 
-            {isTester ? (
-              <TouchableOpacity
-                style={[
-                  styles.buttonCircle,
-                  {
-                    backgroundColor:
-                      videoLoading || loading
-                        ? colors.daclen_lightgrey_button
-                        : colors.daclen_light,
-                  },
-                ]}
-                onPress={() => openFullLogs()}
-                disabled={videoLoading || loading}
-              >
-                <MaterialCommunityIcons
-                  name="text-box"
-                  size={18}
-                  color={colors.daclen_black}
-                />
-              </TouchableOpacity>
-            ) : null}
-          </View>
-        )}
+          {isTester ? (
+            <TouchableOpacity
+              style={[
+                styles.buttonCircle,
+                {
+                  backgroundColor:
+                    loading || videoLoading || !sharingAvailability
+                      ? colors.daclen_lightgrey_button
+                      : colors.daclen_light,
+                },
+              ]}
+              onPress={() => shareWatermarkImage()}
+              disabled={loading || videoLoading || !sharingAvailability}
+            >
+              <MaterialCommunityIcons
+                name="picture-in-picture-top-right"
+                size={18}
+                color={colors.daclen_black}
+              />
+            </TouchableOpacity>
+          ) : null}
+
+          {isTester ? (
+            <TouchableOpacity
+              style={[
+                styles.buttonCircle,
+                {
+                  backgroundColor:
+                    videoLoading || loading
+                      ? colors.daclen_lightgrey_button
+                      : colors.daclen_light,
+                },
+              ]}
+              onPress={() => openFullLogs()}
+              disabled={videoLoading || loading}
+            >
+              <MaterialCommunityIcons
+                name="text-box"
+                size={18}
+                color={colors.daclen_black}
+              />
+            </TouchableOpacity>
+          ) : null}
+        </View>
       </ScrollView>
       {loading ? (
         <View style={styles.containerLoading}>
