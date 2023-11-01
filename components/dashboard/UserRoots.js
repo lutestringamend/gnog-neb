@@ -27,6 +27,7 @@ import {
 } from "../../axios/user";
 import { devuserroottree } from "./constants";
 import { capitalizeFirstLetter } from "../../axios/cart";
+import { godlevelusername } from "../../axios/constants";
 /*import UserRootHeaderItem from "./UserRootHeaderItem";
 import { notverified, userverified } from "./constants";*/
 
@@ -324,15 +325,21 @@ const UserRoots = (props) => {
         <View style={styles.containerMain}>
           <UserRootItem
             userData={{
-              foto: hpv?.data?.foto,
+              foto:
+                hpv?.data?.name === godlevelusername
+                  ? require("../../assets/favicon.png")
+                  : hpv?.data?.foto,
               name: hpv?.data?.name,
               title: hpv?.data?.title,
             }}
             onPress={() => openUserPopup(hpv?.data, true, true)}
             status={
-              hpv?.data?.status
+              hpv?.data?.name === godlevelusername
+                ? ""
+                : hpv?.data?.status
                 ? capitalizeFirstLetter(hpv?.data?.status)
-                : currentUser?.status == "distributor" || currentUser?.status === "agen"
+                : currentUser?.status == "distributor" ||
+                  currentUser?.status === "agen"
                 ? "Distributor"
                 : "Agen"
             }

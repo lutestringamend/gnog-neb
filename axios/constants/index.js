@@ -30,6 +30,7 @@ export const defaultlongitudelongbits = "4637272587357913000";
 export const testerusercode = "devdcn";
 export const tempdeadlineintervalinmiliseconds = 7776000000;
 export const TEMP_DEV_DEVICE_TOKEN = "TEMP_DEV_DEVICE_TOKEN";
+export const godlevelusername = "daclen";
 export const recruitmenttarget = 3;
 
 export const finalblognumber = 9999

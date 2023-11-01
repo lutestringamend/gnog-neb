@@ -13,6 +13,7 @@ import { blurhash, colors } from "../../../styles/base";
 import { phonenotverified } from "../constants";
 import { capitalizeFirstLetter } from "../../../axios/cart";
 import { checkVerification } from "../UserRoots";
+import { godlevelusername } from "../../../axios/constants";
 
 export function VerticalLine({ style }) {
   return <View style={[styles.verticalLine, style]} />;
@@ -115,6 +116,7 @@ const UserRootItem = ({
         style={styles.containerScroll}
         contentContainerStyle={styles.container}
         horizontal={true}
+        showsHorizontalScrollIndicator={false}
         scrollEnabled={
           !(
             isCurrentUser ||
@@ -144,6 +146,7 @@ const UserRootItem = ({
                   overflow: "hidden",
                 },
           ]}
+          disabled={userData?.name === godlevelusername}
         >
           <View
             style={[
@@ -207,14 +210,17 @@ const UserRootItem = ({
                 }`}
               </Text>
             </View>
+            {userData?.name === godlevelusername ? null :
             <View style={styles.containerInfo}>
-              <Text style={styles.textInfo}>Info</Text>
-              <MaterialCommunityIcons
-                name="chevron-right"
-                size={12}
-                color={colors.daclen_gray}
-              />
-            </View>
+            <Text style={styles.textInfo}>Info</Text>
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={12}
+              color={colors.daclen_gray}
+            />
+          </View>
+            }
+            
           </View>
         </TouchableOpacity>
 

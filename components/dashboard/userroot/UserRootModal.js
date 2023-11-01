@@ -15,6 +15,8 @@ import { blurhash, colors } from "../../../styles/base";
 //import { phonenotverified, userverified } from "../constants";
 import { convertDateISOStringtoDisplayDate } from "../../../axios/profile";
 import { showHPV } from "../../../axios/user";
+import { godlevelusername } from "../../../axios/constants";
+import { openWhatsapp } from "../../whatsapp/Whatsapp";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
@@ -168,17 +170,29 @@ const UserRootModal = (props) => {
                 </Text>
               ) : (
                 <View style={styles.containerVertical}>
-                  {modal?.data?.name === "daclen" ? null : (
+                  {modal?.data?.name !== godlevelusername && hpvData?.nomor_telp ?
+                    <TouchableOpacity style={styles.containerWhatsapp} onPress={() => openWhatsapp(hpvData?.nomor_telp, null)}>
+                      <MaterialCommunityIcons
+                        name="whatsapp"
+                        size={18}
+                        color={colors.daclen_green}
+                      />
+                      <Text style={styles.textWhatsapp}>
+                        {`${hpvData?.nomor_telp}`}
+                      </Text>
+                    </TouchableOpacity>
+                    : null
+                  }
+                  
+                  {modal?.data?.name === godlevelusername ? null : (
                     <Text allowFontScaling={false} style={styles.text}>
                       {`${
                         hpvData?.join_date && !modal?.isParent
                           ? `Join Date: ${convertDateISOStringtoDisplayDate(
                               hpvData?.join_date,
                               true
-                            )}\n`
+                            )}`
                           : ""
-                      }${hpvData?.email ? `Email: ${hpvData?.email}\n` : ""}${
-                        hpvData?.nomor_telp ? `WA: ${hpvData?.nomor_telp}` : ""
                       }${
                         modal?.isParent
                           ? ""
@@ -229,6 +243,9 @@ const UserRootModal = (props) => {
 };
 
 /*
+${hpvData?.email ? `Email: ${hpvData?.email}` : ""}
+
+
 <Text
                 allowFontScaling={false}
                 style={[
@@ -291,6 +308,13 @@ const styles = StyleSheet.create({
   containerVertical: {
     backgroundColor: "transparent",
   },
+  containerWhatsapp: {
+    backgroundColor: "transparent",
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 10,
+    marginVertical: 4,
+  },
   photo: {
     width: 135,
     height: 180,
@@ -313,10 +337,18 @@ const styles = StyleSheet.create({
     textAlignVertical: "center",
     color: colors.daclen_light,
   },
+  textWhatsapp: {
+    marginStart: 4,
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
+    flex: 1,
+    alignSelf: "center",
+    color: colors.daclen_green,
+  },
   text: {
     fontFamily: "Poppins",
     fontSize: 10,
-    marginVertical: 4,
+    marginBottom: 4,
     marginHorizontal: 10,
     color: colors.daclen_black,
   },

@@ -30,6 +30,7 @@ import {
   showhpv,
   recruitmenttarget,
   TEMP_DEV_DEVICE_TOKEN,
+  monthNamesShort,
 } from "../constants";
 import { checkNumberEmpty, getKeranjang } from "../cart";
 import { initialState } from "../../redux/reducers/user";
@@ -522,6 +523,16 @@ export function convertInvoiceNumbertoRegDate(inv) {
     date.setDate(parseInt(invoiceDate.substring(6, 8)));
     date.setHours(0, 0, 0);
     return date.toISOString();
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
+export function convertInvoiceNumbertoJoinDate(inv) {
+  try {
+    let date = new Date(convertInvoiceNumbertoRegDate(inv));
+    return `${date.getDate()} ${monthNamesShort[date.getMonth()]} ${date.getFullYear()}`
   } catch (e) {
     console.error(e);
     return null;

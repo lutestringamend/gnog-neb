@@ -19,6 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 import {
   countdownbottom,
   countdownbottomfrozen,
+  countdownbottommessage,
   countdownbottomplural,
   countdownbottomsingular,
   countdowncompletedtitle,
@@ -37,7 +38,7 @@ const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 const modalWidth =
   screenWidth < 320 ? 320 : screenWidth > 400 ? 400 : screenWidth;
-const modalHeight = 224;
+const modalHeight = 258;
 const digitTextWidth = 32;
 const digitTextHeight = 48;
 const defaultDigit = ["0", "0", "0", "0", "0", "0", "0", "0"];
@@ -196,6 +197,7 @@ const DashboardTimer = (props) => {
   const {
     recruitmentTimer,
     setShowTimerModal,
+    join_date,
     regDateInMs,
     target_rekrutmen,
     target_rekrutmen_latest,
@@ -393,6 +395,49 @@ const DashboardTimer = (props) => {
               />
             </TouchableOpacity>
 
+            <View style={styles.containerSubheader}>
+              <Text
+                allowFontScaling={false}
+                style={[
+                  styles.textSubheader,
+                  {
+                    color:
+                      countdownColor === countdownfrozen
+                        ? colors.timer_frozen_title
+                        : colors.daclen_light,
+                  },
+                ]}
+              >
+                {`Join Date: ${join_date}`}
+              </Text>
+              <Text
+                allowFontScaling={false}
+                style={[
+                  styles.textSubheader,
+                  {
+                    color:
+                      countdownColor === countdownfrozen
+                        ? colors.timer_frozen_title
+                        : colors.daclen_light,
+                  },
+                ]}
+              >
+                {target_rekrutmen > 0 &&
+                countdownColor !== countdownfrozen &&
+                total_rekrutmen?.childrenSize < recruitmenttarget
+                  ? `${countdownbottom}${target_rekrutmen} ${
+                      target_rekrutmen > 1
+                        ? countdownbottomplural
+                        : countdownbottomsingular
+                    }`
+                  : `${countdownbottomfrozen}${total_rekrutmen?.childrenSize} ${
+                      total_rekrutmen?.childrenSize > 1
+                        ? countdownbottomplural
+                        : countdownbottomsingular
+                    }`}
+              </Text>
+            </View>
+
             {digits === defaultDigit && countdownColor !== countdownfrozen ? (
               <ActivityIndicator
                 size="large"
@@ -437,36 +482,35 @@ const DashboardTimer = (props) => {
               </View>
             )}
 
-            <Text
-              allowFontScaling={false}
+            <View
               style={[
-                styles.textBottom,
+                styles.containerBottom,
                 {
-                  start: 0,
-                  end: 0,
-                  width: modalWidth,
-                  bottom: 28,
-                  color:
-                    countdownColor === countdownfrozen
-                      ? colors.timer_frozen_title
-                      : colors.daclen_light,
+                  start: (modalWidth * 0.15) / 2,
+                  end: (modalWidth * 0.15) / 2,
+                  bottom: 26,
                 },
               ]}
             >
-              {target_rekrutmen > 0 &&
-              countdownColor !== countdownfrozen &&
-              total_rekrutmen?.childrenSize < recruitmenttarget
-                ? `${countdownbottom}${target_rekrutmen} ${
-                    target_rekrutmen > 1
-                      ? countdownbottomplural
-                      : countdownbottomsingular
-                  }`
-                : `${countdownbottomfrozen}${total_rekrutmen?.childrenSize} ${
-                    total_rekrutmen?.childrenSize > 1
-                      ? countdownbottomplural
-                      : countdownbottomsingular
-                  }`}
-            </Text>
+              <Text
+                allowFontScaling={false}
+                style={[
+                  styles.textBottom,
+                  {
+                    color:
+                      countdownColor === countdownred
+                        ? colors.timer_red_dark
+                        : countdownColor === countdownorange
+                        ? colors.timer_orange_dark
+                        : countdownColor === countdownfrozen
+                        ? colors.timer_frozen_dark
+                        : colors.timer_green_dark,
+                  },
+                ]}
+              >
+                {countdownbottommessage}
+              </Text>
+            </View>
 
             <View
               style={[
@@ -572,10 +616,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  containerSubheader: {
+    width: modalWidth * 0.85,
+    backgroundColor: "transparent",
+    flexDirection: "row",
+    marginTop: 6,
+    marginBottom: 4,
+    justifyContent: "space-between",
+    alignSelf: "center",
+  },
   containerCountdown: {
     backgroundColor: "transparent",
     flexDirection: "row",
-    marginVertical: 10,
+    marginBottom: 10,
     justifyContent: "center",
     alignSelf: "center",
   },
@@ -612,14 +665,29 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     flexDirection: "row",
   },
+  containerBottom: {
+    borderRadius: 8,
+    backgroundColor: colors.daclen_light,
+    width: modalWidth * 0.85,
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    zIndex: 6,
+  },
+  textSubheader: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 10,
+    color: colors.daclen_light,
+  },
   textBottom: {
     backgroundColor: "transparent",
     textAlign: "center",
     fontFamily: "Poppins-SemiBold",
-    fontSize: 12,
-    position: "absolute",
-    color: colors.daclen_light,
-    zIndex: 6,
+    fontSize: 10,
   },
   textHeader: {
     fontFamily: "Poppins-Bold",

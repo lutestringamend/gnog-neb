@@ -26,6 +26,7 @@ import {
   getRegisterSnapToken,
   updateReduxRegisterSnapToken,
   convertInvoiceNumbertoRegDate,
+  convertInvoiceNumbertoJoinDate,
   getLaporanSaldo,
 } from "../../axios/user";
 import DashboardUser from "./components/DashboardUser";
@@ -383,6 +384,7 @@ const Dashboard = (props) => {
           recruitmentTimer={recruitmentTimer}
           showTimerModal={showTimerModal}
           setShowTimerModal={setShowTimerModal}
+          join_date={convertInvoiceNumbertoJoinDate(currentUser?.join_date)}
           regDateInMs={regDateInMs}
           countdownColor={
             currentUser?.countdownColor ? currentUser?.countdownColor : null
