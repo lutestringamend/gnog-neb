@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  Platform,
 } from "react-native";
 import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -177,7 +178,7 @@ const UserRootItem = ({
                     },
               ]}
               alt={userData?.name ? userData?.name : ""}
-              contentFit="cover"
+              contentFit="contain"
               placeholder={blurhash}
               transition={0}
             />
@@ -303,7 +304,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   containerPhoto: {
-    height: 80,
+    height: 120,
     alignSelf: "center",
     backgroundColor: "transparent",
   },
