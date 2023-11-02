@@ -91,7 +91,7 @@ export default function DashboardUser(props) {
               ? currentUser?.detail_user?.nama_lengkap
               : currentUser?.name}
           </Text>
-          <View style={styles.containerSaldoHorizontal}>
+          <TouchableOpacity onPress={() => refreshSaldo()} style={styles.containerSaldoHorizontal}>
             <View style={styles.containerSaldo}>
               <Text allowFontScaling={false} style={styles.text}>
                 {saldoAkumulasi ? "Saldo Akumulasi" : "Saldo"}
@@ -114,17 +114,7 @@ export default function DashboardUser(props) {
                   : "Rp 0"}
               </Text>
             </View>
-            <TouchableOpacity
-              style={styles.refresh}
-              onPress={() => refreshSaldo()}
-            >
-              <MaterialCommunityIcons
-                name="eye"
-                size={16}
-                color={colors.daclen_light}
-              />
-            </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
         </View>
         <TouchableOpacity
           style={styles.button}
@@ -143,6 +133,17 @@ export default function DashboardUser(props) {
 <Text allowFontScaling={false} style={styles.textReferral}>
           {`Referral Id: ${currentUser?.name}`}
         </Text>
+
+        <TouchableOpacity
+              style={styles.refresh}
+              onPress={() => refreshSaldo()}
+            >
+              <MaterialCommunityIcons
+                name="eye"
+                size={16}
+                color={colors.daclen_light}
+              />
+            </TouchableOpacity>
 */
 
 const styles = StyleSheet.create({

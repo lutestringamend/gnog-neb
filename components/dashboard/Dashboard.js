@@ -45,6 +45,7 @@ import DashboardCreatePIN from "./components/DashboardCreatePIN";
 import DashboardUpgrade from "./components/DashboardUpgrade";
 import DashboardTimer from "./components/DashboardTimer";
 import { checkNumberEmpty } from "../../axios";
+import { convertDateISOStringtoDisplayDate } from "../../axios/profile";
 
 const defaultTotalRekrutmen = {
   showHPV: 0,
@@ -342,7 +343,7 @@ const Dashboard = (props) => {
             <DashboardUser
               currentUser={currentUser}
               profilePicture={profilePicture}
-              saldoAkumulasi={saldoAkumulasi}
+              saldoAkumulasi={currentUser?.total_komisi_user ? currentUser?.total_komisi_user : saldoAkumulasi}
               refreshSaldo={() => props.getLaporanSaldo(currentUser?.id, token)}
             />
             <DashboardStats
@@ -384,7 +385,7 @@ const Dashboard = (props) => {
           recruitmentTimer={recruitmentTimer}
           showTimerModal={showTimerModal}
           setShowTimerModal={setShowTimerModal}
-          join_date={convertInvoiceNumbertoJoinDate(currentUser?.join_date)}
+          join_date={convertDateISOStringtoDisplayDate(currentUser?.join_date, true, null)}
           regDateInMs={regDateInMs}
           countdownColor={
             currentUser?.countdownColor ? currentUser?.countdownColor : null

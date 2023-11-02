@@ -11,7 +11,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 
 import { blurhash, colors } from "../../../styles/base";
 import { phonenotverified } from "../constants";
-import { capitalizeFirstLetter } from "../../../axios/cart";
+import { capitalizeFirstLetter, checkNumberEmpty, formatPrice } from "../../../axios/cart";
 import { checkVerification } from "../UserRoots";
 import { godlevelusername } from "../../../axios/constants";
 
@@ -207,7 +207,9 @@ const UserRootItem = ({
                     : hpvStatus
                     ? capitalizeFirstLetter(hpvStatus)
                     : ""
-                }`}
+                }${
+                  isCurrentUser || isParent ? "" :
+                  `\nPenjualan: ${checkNumberEmpty(userData?.jumlah_penjualan)} produk\n${checkNumberEmpty(userData?.total_penjualan) > 0 ? formatPrice(checkNumberEmpty(userData?.total_penjualan)) : "Rp 0"}\nRekrutmen: ${checkNumberEmpty(userData?.rekrutmen)}`}`}
               </Text>
             </View>
             {userData?.name === godlevelusername ? null :
@@ -356,7 +358,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_light,
     paddingHorizontal: 6,
     borderBottomEndRadius: 6,
-    height: 56,
+    height: 96,
   },
   textHeader: {
     fontSize: 12,
@@ -367,10 +369,11 @@ const styles = StyleSheet.create({
     color: colors.daclen_light,
   },
   text: {
-    fontSize: 10,
+    fontSize: 9,
     color: colors.daclen_black,
     fontFamily: "Poppins",
     backgroundColor: "transparent",
+    marginEnd: 20,
   },
   textInfo: {
     fontSize: 10,
@@ -380,8 +383,8 @@ const styles = StyleSheet.create({
     marginEnd: 1,
   },
   photo: {
-    width: 60,
-    height: 80,
+    width: 80,
+    height: 120,
     backgroundColor: colors.daclen_light,
     overflow: "hidden",
   },

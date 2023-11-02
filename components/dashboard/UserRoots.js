@@ -27,7 +27,7 @@ import {
 } from "../../axios/user";
 import { devuserroottree } from "./constants";
 import { capitalizeFirstLetter } from "../../axios/cart";
-import { godlevelusername } from "../../axios/constants";
+import { godlevelusername, monthNames, monthNamesShort } from "../../axios/constants";
 /*import UserRootHeaderItem from "./UserRootHeaderItem";
 import { notverified, userverified } from "./constants";*/
 
@@ -284,7 +284,9 @@ const UserRoots = (props) => {
                 selfData?.reseller_count
                   ? `${selfData?.reseller_count} Reseller`
                   : ""
-              }`}
+              } -- ${monthNamesShort[new Date().getMonth()]} ${new Date()
+                .getFullYear()
+                .toString()}`}
             </Text>
           )}
 
@@ -548,12 +550,12 @@ const styles = StyleSheet.create({
     color: colors.daclen_light,
   },
   textUid: {
-    fontFamily: "Poppins",
-    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 12,
     marginVertical: 20,
     textAlign: "center",
     padding: 10,
-    color: colors.daclen_gray,
+    color: colors.daclen_light,
     marginHorizontal: 10,
   },
   parent: {
