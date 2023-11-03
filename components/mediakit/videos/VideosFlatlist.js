@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import { colors, staticDimensions, blurhash } from "../../../styles/base";
 import {
+  STARTER_KIT_VIDEO_PRODUK_TAG,
     vwmarkdefaultsourceheight,
     vwmarkdefaultsourcewidth,
   } from "../constants";
@@ -71,7 +72,7 @@ const VideosFlatlist = (props) => {
       <FlashList
         estimatedItemSize={6}
         horizontal={false}
-        numColumns={3}
+        numColumns={jenis_video === STARTER_KIT_VIDEO_PRODUK_TAG ? 2 : 3}
         data={videos}
         contentContainerStyle={styles.containerFlatlist}
         refreshControl={
@@ -106,7 +107,7 @@ const VideosFlatlist = (props) => {
             </View>
 
             {showTitle && item?.judul ? (
-              <Text allowFontScaling={false} style={styles.textHeader}>
+              <Text allowFontScaling={false} style={[styles.textHeader, { fontSize: jenis_video === STARTER_KIT_VIDEO_PRODUK_TAG ? 14 : 10 }]}>
                 {item?.judul}
               </Text>
             ) : null}

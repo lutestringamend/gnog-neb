@@ -598,7 +598,12 @@ const ImageViewer = (props) => {
               />
             </ReactNativeZoomableView>
           ) : (
-            <View
+            <ReactNativeZoomableView
+              maxZoom={2}
+              minZoom={0.5}
+              zoomStep={0.5}
+              initialZoom={1}
+              bindToBorders={true}
               style={[
                 styles.containerImagePreview,
                 { width: productPhotoWidth, height: productPhotoHeight },
@@ -625,7 +630,7 @@ const ImageViewer = (props) => {
                 jenis_foto={jenis_foto}
                 username={currentUser?.name}
               />
-            </View>
+            </ReactNativeZoomableView>
           )}
         </View>
         {id === undefined ||
@@ -822,7 +827,8 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: staticDimensions.pageBottomPadding / 2,
+    marginBottom: staticDimensions.pageBottomPadding / 3,
+    top: -20,
     zIndex: 20,
   },
   button: {
