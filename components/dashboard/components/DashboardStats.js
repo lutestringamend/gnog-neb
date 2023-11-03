@@ -10,7 +10,7 @@ import { sentryLog } from "../../../sentry";
 import { convertDateISOStringtoDisplayDate } from "../../../axios/profile";
 
 export default function DashboardStats(props) {
-  const { currentUser, recruitmentTimer, regDate } = props;
+  const { currentUser, recruitmentTimer, mockData } = props;
   const navigation = useNavigation();
 
   if (
@@ -20,6 +20,12 @@ export default function DashboardStats(props) {
     currentUser?.detail_user === undefined
   ) {
     return null;
+  }
+
+  function onDatePress() {
+    if (!(props?.onDatePress === undefined || props?.onDatePress === null)) {
+      props?.onDatePress();
+    }
   }
 
   function showTimerModal() {
@@ -49,11 +55,16 @@ export default function DashboardStats(props) {
   try {
     return (
       <View style={styles.container}>
-        <Text allowFontScaling={false} style={styles.textHeader}>
-          {`${monthNames[new Date().getMonth()]} ${new Date()
-            .getFullYear()
-            .toString()}`}
-        </Text>
+        <TouchableOpacity
+          style={styles.containerHeader}
+          onPress={() => onDatePress()}
+        >
+          <Text allowFontScaling={false} style={styles.textHeader}>
+            {`${monthNames[new Date().getMonth()]} ${new Date()
+              .getFullYear()
+              .toString()}`}
+          </Text>
+        </TouchableOpacity>
 
         <View style={styles.containerHorizontal}>
           <View style={styles.containerVertical}>
@@ -64,13 +75,19 @@ export default function DashboardStats(props) {
               allowFontScaling={false}
               style={[styles.text, { fontFamily: "Poppins-SemiBold" }]}
             >{`${
-              currentUser?.jumlah_invoice ? currentUser?.jumlah_invoice : "0"
+              mockData
+                ? mockData?.numInvoice
+                : currentUser?.jumlah_invoice
+                ? currentUser?.jumlah_invoice
+                : "0"
             } Invoice`}</Text>
             <Text
               allowFontScaling={false}
               style={[styles.text, { fontFamily: "Poppins-SemiBold" }]}
             >
-              {currentUser?.total_nominal_penjualan
+              {mockData
+                ? formatPrice(mockData?.transaction)
+                : currentUser?.total_nominal_penjualan
                 ? formatPrice(currentUser?.total_nominal_penjualan)
                 : "Rp 0"}
             </Text>
@@ -89,7 +106,11 @@ export default function DashboardStats(props) {
               Home Point Value
             </Text>
             <Text allowFontScaling={false} style={styles.text}>{`${
-              currentUser?.poin_user?.hpv ? currentUser?.poin_user?.hpv : "0"
+              mockData
+                ? mockData?.hpv
+                : currentUser?.poin_user?.hpv
+                ? currentUser?.poin_user?.hpv
+                : "0"
             } Point`}</Text>
           </View>
           <TouchableOpacity
@@ -109,7 +130,9 @@ export default function DashboardStats(props) {
               Akumulasi Poin
             </Text>
             <Text allowFontScaling={false} style={styles.text}>{`${
-              currentUser?.poin_user?.total
+              mockData?.point
+                ? mockData?.point
+                : currentUser?.poin_user?.total
                 ? currentUser?.poin_user?.total
                 : "0"
             } Point`}</Text>
@@ -130,15 +153,25 @@ export default function DashboardStats(props) {
             <Text
               allowFontScaling={false}
               style={[styles.text, { fontFamily: "Poppins-SemiBold" }]}
-            >{`Bonus Jaringan Level A`}</Text>
+            >{`Bonus Jaringan Level ${
+              mockData?.level ? mockData?.level : "A"
+            }`}</Text>
             <Text allowFontScaling={false} style={styles.text}>{`Agen Anda: ${
-              currentUser?.jumlah_agen ? currentUser?.jumlah_agen : "0"
+              mockData?.agen
+                ? mockData?.agen
+                : currentUser?.jumlah_agen
+                ? currentUser?.jumlah_agen
+                : "0"
             } Orang`}</Text>
             <Text
               allowFontScaling={false}
               style={styles.text}
             >{`Reseller Anda: ${
-              currentUser?.jumlah_reseller ? currentUser?.jumlah_reseller : "0"
+              mockData?.reseller
+                ? mockData?.reseller
+                : currentUser?.jumlah_reseller
+                ? currentUser?.jumlah_reseller
+                : "0"
             } Orang`}</Text>
           </View>
           <TouchableOpacity
@@ -215,6 +248,9 @@ const styles = StyleSheet.create({
     marginEnd: 12,
     backgroundColor: "transparent",
     flex: 1,
+  },
+  containerHeader: {
+    backgroundColor: "transparent",
   },
   button: {
     borderWidth: 1,

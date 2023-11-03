@@ -18,7 +18,7 @@ import {
 } from "../../../axios/cart";
 
 export default function DashboardUser(props) {
-  const { currentUser, profilePicture, saldoAkumulasi } = props;
+  const { currentUser, profilePicture, saldoAkumulasi, mockData } = props;
   const navigation = useNavigation();
 
   function openWithdrawal() {
@@ -65,33 +65,61 @@ export default function DashboardUser(props) {
           }
           transition={0}
         />
+        {currentUser?.status.toLowerCase() === "agen" ||
+        mockData?.status.toLowerCase() === "agen" ? (
+          <View style={styles.containerStar}>
+            <Image
+              style={styles.star}
+              source={require("../../../assets/star_one_agen.png")}
+              contentFit="contain"
+            />
+          </View>
+        ) : null}
       </TouchableOpacity>
 
       <View style={styles.containerHorizontal}>
         <View style={styles.containerVertical}>
           <Text allowFontScaling={false} style={styles.text}>{`${
-            currentUser?.status
+            mockData?.status
+              ? mockData?.status
+              : currentUser?.status
               ? capitalizeFirstLetter(currentUser?.status)
               : "Reseller"
           } Daclen`}</Text>
-          <Text
-            allowFontScaling={false}
-            style={[
-              styles.textName,
-              {
-                fontSize: currentUser?.detail_user?.nama_lengkap
-                  ? currentUser?.detail_user?.nama_lengkap?.length > 12
-                    ? 12
-                    : 14
-                  : 14,
-              },
-            ]}
+          <View style={styles.containerName}>
+            <Text
+              allowFontScaling={false}
+              style={[
+                styles.textName,
+                {
+                  fontSize: currentUser?.detail_user?.nama_lengkap
+                    ? currentUser?.detail_user?.nama_lengkap?.length > 12
+                      ? 12
+                      : 14
+                    : 14,
+                },
+              ]}
+            >
+              {currentUser?.detail_user?.nama_lengkap
+                ? currentUser?.detail_user?.nama_lengkap
+                : currentUser?.name}
+            </Text>
+            {currentUser?.is_lifetime_sales ||
+            checkNumberEmpty(mockData?.reseller) >= 50 ? (
+              <View style={styles.containerCrown}>
+                <Image
+                  style={styles.crown}
+                  source={require("../../../assets/lifetime_gold.png")}
+                  contentFit="contain"
+                />
+              </View>
+            ) : null}
+          </View>
+
+          <TouchableOpacity
+            onPress={() => refreshSaldo()}
+            style={styles.containerSaldoHorizontal}
           >
-            {currentUser?.detail_user?.nama_lengkap
-              ? currentUser?.detail_user?.nama_lengkap
-              : currentUser?.name}
-          </Text>
-          <TouchableOpacity onPress={() => refreshSaldo()} style={styles.containerSaldoHorizontal}>
             <View style={styles.containerSaldo}>
               <Text allowFontScaling={false} style={styles.text}>
                 {saldoAkumulasi ? "Saldo Akumulasi" : "Saldo"}
@@ -101,7 +129,9 @@ export default function DashboardUser(props) {
                 allowFontScaling={false}
                 style={[styles.textName, { color: colors.daclen_yellow }]}
               >
-                {saldoAkumulasi
+                {mockData?.saldo
+                  ? formatPrice(mockData?.saldo)
+                  : saldoAkumulasi
                   ? saldoAkumulasi > 0
                     ? formatPrice(saldoAkumulasi)
                     : "Rp 0"
@@ -172,6 +202,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "transparent",
   },
+  containerName: {
+    flexDirection: "row",
+    backgroundColor: "transparent",
+  },
   containerSaldo: {
     backgroundColor: "transparent",
     alignSelf: "center",
@@ -179,6 +213,24 @@ const styles = StyleSheet.create({
   containerSaldoHorizontal: {
     flexDirection: "row",
     backgroundColor: "transparent",
+  },
+  containerStar: {
+    width: 28,
+    height: 28,
+    backgroundColor: "transparent",
+    position: "absolute",
+    end: 2,
+    bottom: 2,
+    zIndex: 6,
+  },
+  containerCrown: {
+    width: 18,
+    height: 18,
+    backgroundColor: "transparent",
+    marginStart: 2,
+    alignSelf: "center",
+    top: -4,
+    zIndex: 6,
   },
   button: {
     borderWidth: 1,
@@ -207,6 +259,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.daclen_light,
     fontFamily: "Poppins-SemiBold",
+    alignSelf: "center",
   },
   text: {
     fontFamily: "Poppins",
@@ -224,5 +277,15 @@ const styles = StyleSheet.create({
     height: 90,
     backgroundColor: colors.daclen_light,
     borderRadius: 45,
+  },
+  star: {
+    width: 28,
+    height: 28,
+    backgroundColor: "transparent",
+  },
+  crown: {
+    width: 18,
+    height: 18,
+    backgroundColor: "transparent",
   },
 });

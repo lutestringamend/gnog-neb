@@ -46,6 +46,7 @@ import DashboardUpgrade from "./components/DashboardUpgrade";
 import DashboardTimer from "./components/DashboardTimer";
 import { checkNumberEmpty } from "../../axios";
 import { convertDateISOStringtoDisplayDate } from "../../axios/profile";
+import { APRINDA_ID, APRINDA_MOCK, VIOLETTA_ID, VIOLETTA_MOCK } from "../../axios/constants/mockup";
 
 const defaultTotalRekrutmen = {
   showHPV: 0,
@@ -80,6 +81,7 @@ const Dashboard = (props) => {
   });
   const [regDate, setRegDate] = useState(null);
   const [hpvError, setHpvError] = useState(null);
+  const [mockData, setMockData] = useState(null);
 
   /*const [isSharingAvailable, setSharingAvailable] = useState(false);
   useEffect(() => {
@@ -182,6 +184,13 @@ const Dashboard = (props) => {
     }
   }, [saldoAkumulasi]);
 
+  /*useEffect(() => {
+    if (mockData === null) {
+      return;
+    }
+    console.log("mockData", mockData, mockData?.status, mockData?.reseller);
+  }, [mockData]);*/
+
   const checkAsyncSnapToken = async () => {
     if (fetchingToken) {
       return;
@@ -256,6 +265,16 @@ const Dashboard = (props) => {
         isError: true,
       });
       //setPinLoading(false);
+    }
+  }
+
+  function onDatePress() {
+    if (mockData !== null) {
+      setMockData(null);
+    } else if (currentUser?.id === VIOLETTA_ID) {
+      setMockData(VIOLETTA_MOCK);
+    } else if (currentUser?.id === 8054 || currentUser?.id === APRINDA_ID) {
+      setMockData(APRINDA_MOCK);
     }
   }
 
@@ -343,6 +362,7 @@ const Dashboard = (props) => {
             <DashboardUser
               currentUser={currentUser}
               profilePicture={profilePicture}
+              mockData={mockData}
               saldoAkumulasi={currentUser?.total_komisi_user ? currentUser?.total_komisi_user : saldoAkumulasi}
               refreshSaldo={() => props.getLaporanSaldo(currentUser?.id, token)}
             />
@@ -350,6 +370,8 @@ const Dashboard = (props) => {
               currentUser={currentUser}
               regDate={regDate}
               recruitmentTimer={recruitmentTimer}
+              mockData={mockData}
+              onDatePress={() => onDatePress()}
               showTimerModal={() => setShowTimerModal(true)}
             />
             <DashboardButtons

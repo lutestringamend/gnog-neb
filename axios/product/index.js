@@ -26,7 +26,7 @@ export function getProductData(storageProducts, paginationIndex) {
     try {
       Axios.get(productfetchlink)
       .then((response) => {
-        console.log("getProductData", response?.data);
+        console.log("getProductData response", response?.data);
         const products = response?.data?.data;
         if (
           products === undefined ||
