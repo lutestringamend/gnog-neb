@@ -190,7 +190,7 @@ export function postKeranjang(token, produk_id, itemSize) {
     Axios.post(postkeranjang, params, config)
       .then((response) => {
         const data = response.data?.data;
-        console.log("postKeranjang", data);
+        console.log("postKeranjang response", data);
 
         if (data === undefined) {
           dispatch({
@@ -297,7 +297,7 @@ export function alterKeranjang(token, tempCart) {
           Axios.post(postkeranjang, params, config)
             .then((response) => {
               const data = response.data?.data;
-              console.log("postKeranjang", data);
+              console.log("postKeranjang from alteration response", data);
               if (data === undefined) {
                 dispatch({
                   type: USER_CART_STATE_ERROR,

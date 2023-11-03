@@ -24,6 +24,7 @@ import {
   storeCheckout,
   overhaulReduxCart,
   overhaulReduxTempCart,
+  checkNumberEmpty,
 } from "../../axios/cart";
 import { callMasterkurir, getKurirData } from "../../axios/courier";
 import { clearHistoryData } from "../../axios/history";
@@ -166,7 +167,7 @@ function Checkout(props) {
       setWeightVolume(0);
       backHome();
     } else {
-      console.log(props.cart);
+      console.log("redux cart", props.cart);
       setCart(props.cart?.produk);
       setTotalPrice(props.cart?.subtotal + deliveryFee);
 
@@ -588,18 +589,27 @@ function Checkout(props) {
     if (!courierLoading) {
       setCourierLoading(true);
     }
-    const courierMap = {
-      slug: courierSlug,
-      provinsi,
-      kota,
-      berat: weight > props.cart?.berat ? weight : props.cart?.berat,
-      berat_dari_volume:
-        weightVolume > props.cart.berat_dari_volume
-          ? Math.ceil(weightVolume)
-          : Math.ceil(props.cart.berat_dari_volume),
-    };
-    console.log("new courierMap", courierMap);
-    props.getKurirData(token, courierMap);
+    try {
+      const courierMap = {
+        slug: courierSlug,
+        provinsi,
+        kota,
+        berat:
+          props.cart?.berat && weight === props.cart?.berat
+            ? props.cart?.berat
+            : weight,
+        berat_dari_volume:
+          props.cart?.berat_dari_volume &&
+          weightVolume === props.cart?.berat_dari_volume
+            ? props.cart.berat_dari_volume
+            : weightVolume,
+      };
+      console.log("new courierMap", courierMap);
+      props.getKurirData(token, courierMap);
+    } catch (e) {
+      console.error(e);
+      setError(e.toString());
+    }
   };
 
   const createCheckoutJson = () => {
@@ -801,9 +811,9 @@ function Checkout(props) {
               isCart={true}
               subtotal={props.cart?.subtotal_currency}
               berat={
-                weight > 0
-                  ? (weight / 1000).toFixed(2).toString()
-                  : props.cart?.berat_formated
+                props.cart?.berat_fix
+                  ? (props.cart?.berat_fix / 1000).toFixed(2).toString()
+                  : ((weight + weightVolume) / 1000).toFixed(2).toString()
               }
               senderName={senderName.final}
               setSenderName={() => rbSenderName.current.open()}

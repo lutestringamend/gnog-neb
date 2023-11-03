@@ -49,12 +49,17 @@ export function getKurirData(token, map) {
       },
     };
 
-    console.log("getKurirData", map);
+    console.log("getKurirData request", map);
     Axios.post(getkurirdata, map, config)
       .then((response) => {
         try {
+          console.log("getKurirData response", response);
           const data = response.data?.data?.costs;
-          dispatch({ type: USER_COURIERS_STATE_CHANGE, data });
+          if (data === undefined) {
+            dispatch({ type: USER_COURIERS_STATE_CHANGE, data: null });
+          } else {
+            dispatch({ type: USER_COURIERS_STATE_CHANGE, data });
+          }
         } catch (e) {
           console.error(e);
           sentryLog(e);
