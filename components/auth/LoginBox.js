@@ -1,43 +1,53 @@
 import React, { useEffect, useState } from "react";
 import {
   View,
-  TextInput,
   StyleSheet,
   Text,
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import TextInputPassword from "./TextInputPassword";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { eliminateSpaceFromString, resetPassword, setAuthData } from "../../axios/user";
+import {
+  eliminateSpaceFromString,
+  resetPassword,
+  setAuthData,
+} from "../../axios/user";
 import { colors } from "../../styles/base";
 import { getObjectAsync } from "../asyncstorage";
 import { ASYNC_USER_PREVIOUS_USERNAME } from "../asyncstorage/constants";
+import TextInputLabel from "../textinputs/TextInputLabel";
 
 function LoginBox(props) {
   const [previousUsername, setPreviousUsername] = useState(null);
+  const { userExist, resetPIN, errors } = props;
 
   useEffect(() => {
     checkAsyncPreviousUsername();
   }, []);
 
   const checkAsyncPreviousUsername = async () => {
-    const storagePreviousUsername = await getObjectAsync(ASYNC_USER_PREVIOUS_USERNAME);
-    if (storagePreviousUsername === undefined || storagePreviousUsername === null || storagePreviousUsername === "") {
+    const storagePreviousUsername = await getObjectAsync(
+      ASYNC_USER_PREVIOUS_USERNAME
+    );
+    if (
+      storagePreviousUsername === undefined ||
+      storagePreviousUsername === null ||
+      storagePreviousUsername === ""
+    ) {
       setPreviousUsername("");
       return;
     }
     setPreviousUsername(storagePreviousUsername);
-    props.setAuthData({...props.authData, email: storagePreviousUsername });
-  }
+    props.setAuthData({ ...props.authData, email: storagePreviousUsername });
+  };
 
   const checkInputUsername = () => {
     const email = eliminateSpaceFromString(props.authData?.email);
     props.setAuthData({ ...props.authData, email });
-  }
+  };
 
   if (previousUsername === null) {
     return (
@@ -46,27 +56,40 @@ function LoginBox(props) {
         color={colors.daclen_orange}
         style={styles.spinner}
       />
-    )
+    );
   }
-  
+
   return (
     <View style={styles.container}>
-      <Text allowFontScaling={false} style={styles.text}>Username / Email</Text>
-      <TextInput
-        placeholder={previousUsername}
-        style={styles.textInput}
+      <TextInputLabel
+        label="No Handphone / Email / Username"
+        placeholder="08xxxxxx"
         value={props.authData?.email ? props.authData?.email : ""}
-        onChangeText={(email) => props.setAuthData({...props.authData, email })}
+        error={errors?.email}
+        onChangeText={(email) =>
+          props.setAuthData({ ...props.authData, email })
+        }
         onEndEditing={() => checkInputUsername()}
+        verified={userExist && !resetPIN}
       />
-      <Text allowFontScaling={false} style={styles.text}>Password</Text>
-      <TextInputPassword
-        style={styles.textInput}
-        onChangeText={(password) => props.setAuthData({...props.authData, password })}
-      />
-      <TouchableOpacity onPress={() => resetPassword()}>
-        <Text allowFontScaling={false} style={styles.textChange}>Lupa Password?</Text>
-      </TouchableOpacity>
+      {userExist || resetPIN ? (
+        <View style={styles.containerVertical}>
+          <TextInputLabel
+            label="Password"
+            secureTextEntry
+            error={errors?.password}
+            value={props.authData?.password ? props.authData?.password : ""}
+            onChangeText={(password) =>
+              props.setAuthData({ ...props.authData, password })
+            }
+          />
+          <TouchableOpacity onPress={() => resetPassword()}>
+            <Text allowFontScaling={false} style={styles.textChange}>
+              Lupa Password?
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -79,6 +102,9 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     backgroundColor: "transparent",
   },
+  containerVertical: {
+    backgroundColor: "transparent",
+  },
   text: {
     color: colors.daclen_blue,
     fontSize: 12,
@@ -87,7 +113,7 @@ const styles = StyleSheet.create({
   textChange: {
     color: colors.daclen_blue,
     fontSize: 14,
-    fontFamily: "Poppins-SemiBold",
+    fontFamily: "Poppins",
     alignSelf: "flex-end",
   },
   textInput: {
@@ -97,12 +123,13 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 2,
     marginBottom: 10,
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins",
+    fontSize: 14,
   },
   spinner: {
     alignSelf: "center",
     marginVertical: 20,
-  }
+  },
 });
 
 const mapStateToProps = (store) => ({

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import {
   View,
   StyleSheet,
@@ -8,9 +8,10 @@ import {
   ScrollView,
   ActivityIndicator,
   SafeAreaView,
+  BackHandler,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import RBSheet from "react-native-raw-bottom-sheet";
 
 import { connect } from "react-redux";
@@ -21,6 +22,7 @@ import {
   register,
   changePassword,
   setNewToken,
+  loginCheck,
 } from "../../axios/user";
 
 import LoginBox from "./LoginBox";
@@ -29,7 +31,10 @@ import ChangePasswordBox from "./ChangePasswordBox";
 import BSPopup from "../bottomsheets/BSPopup";
 import { colors, dimensions, staticDimensions } from "../../styles/base";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
-import { ASYNC_DEVICE_TOKEN_KEY, ASYNC_USER_PROFILE_PIN_KEY } from "../asyncstorage/constants";
+import {
+  ASYNC_DEVICE_TOKEN_KEY,
+  ASYNC_USER_PROFILE_PIN_KEY,
+} from "../asyncstorage/constants";
 import { sentryLog } from "../../sentry";
 import { checkEmpty } from "../../redux/reducers/user";
 import { isUserDevServer } from "../../axios";
@@ -48,13 +53,19 @@ const defaultRegisterErrorArray = {
   password: false,
   referral: false,
 };
+const defaultLoginError = {
+  email: "",
+  password: "",
+};
 
 function Login(props) {
   const [error, setError] = useState(null);
   const [isLogin, setLogin] = useState(true);
   const [isChangePassword, setChangePassword] = useState(false);
+  const [userExist, setUserExist] = useState(false);
   const [resettingPin, setResettingPin] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loginError, setLoginError] = useState(defaultLoginError);
   const [registerErrorArray, setRegisterErrorArray] = useState(
     defaultRegisterErrorArray
   );
@@ -66,6 +77,20 @@ function Login(props) {
     : false;
   const { token, currentUser, authData, authError } = props;
   const navigation = useNavigation();
+
+  useFocusEffect(
+    useCallback(() => {
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
+      console.log("Login Screen visible, BackHandler active");
+      return () => {
+        console.log("Login Screen is not visible");
+        backHandler.remove();
+      };
+    }, [])
+  );
 
   useEffect(() => {
     if (
@@ -81,7 +106,7 @@ function Login(props) {
     console.log(webKey);
     if (webKey === "changePassword") {
       setChangePassword(true);
-    /*} else if (
+      /*} else if (
       token !== null &&
       props.loginToken === null &&
       props.registerToken === null &&
@@ -119,7 +144,10 @@ function Login(props) {
         setRegisterErrorArray(newRegisterErrorArray);
         setError(newError);
       } else {
-        setError(checkEmpty(authError));
+        setLoginError({
+          ...defaultLoginError,
+          password: checkEmpty(authError),
+        });
       }
     } catch (e) {
       console.error(e);
@@ -127,7 +155,7 @@ function Login(props) {
       setError(`Terjadi kesalahan pada saat autentikasi\n${e.toString()}`);
     }
   }, [authError]);
-  
+
   useEffect(() => {
     console.log("registerErrorArray", registerErrorArray);
   }, [registerErrorArray]);
@@ -149,24 +177,68 @@ function Login(props) {
   }, [props.registerToken]);
 
   const onLogin = async () => {
-    if (authData?.email === null || authData?.email === undefined) {
-      setError("Anda belum mengisi username atau email Anda");
-      return;
-    } else if (
-      authData?.password === undefined ||
-      authData?.password === null
-    ) {
-      setError("Anda belum mengisi password");
-      return;
+    setLoginError(defaultLoginError);
+    if (userExist || resetPIN) {
+      if (
+        authData?.email === undefined ||
+        authData?.email === null ||
+        authData?.email === ""
+      ) {
+        setLoginError({
+          ...loginError,
+          email: "Masukkan no handphone / email / username Daclen",
+        });
+        return;
+      } else if (
+        authData?.password === undefined ||
+        authData?.password === null ||
+        authData?.password === ""
+      ) {
+        setLoginError({
+          ...loginError,
+          password: "Masukkan password akun Daclen Anda",
+        });
+        return;
+      }
+      setError(null);
+      setLoading(true);
+      if (resetPIN) {
+        await setObjectAsync(ASYNC_USER_PROFILE_PIN_KEY, null);
+      }
+
+      const deviceToken = await getObjectAsync(ASYNC_DEVICE_TOKEN_KEY);
+      props.login(authData?.email, authData?.password, resetPIN, deviceToken);
+      setResettingPin(resetPIN);
+    } else {
+      if (
+        authData?.email === undefined ||
+        authData?.email === null ||
+        authData?.email === ""
+      ) {
+        setLoginError({
+          ...loginError,
+          email: "Masukkan no handphone / email / username Daclen",
+        });
+        return;
+      }
+      const check = await loginCheck(authData?.email);
+      if (
+        check?.userId === undefined ||
+        check?.userId === null ||
+        check?.userId === ""
+      ) {
+        setLoginError({
+          ...loginError,
+          email: check?.error
+            ? check?.error
+            : "Mohon cek koneksi Internet Anda",
+        });
+        setUserExist(false);
+      } else {
+        setUserExist(true);
+      }
+      setLoading(false);
     }
-    setError(null);
-    setLoading(true);
-    if (resetPIN) {
-      await setObjectAsync(ASYNC_USER_PROFILE_PIN_KEY, null);
-    }
-    const deviceToken = await getObjectAsync(ASYNC_DEVICE_TOKEN_KEY);
-    props.login(authData?.email, authData?.password, resetPIN, deviceToken);
-    setResettingPin(resetPIN);
   };
 
   const onRegister = async () => {
@@ -242,6 +314,16 @@ function Login(props) {
     }
   }
 
+  const onBackPress = () => {
+    if (userExist) {
+      setUserExist(false);
+    } else if (!isLogin) {
+      setLogin(true);
+    } else {
+      navigation.goBack();
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -249,7 +331,7 @@ function Login(props) {
           <View style={styles.containerHeader}>
             <TouchableOpacity
               style={styles.containerBack}
-              onPress={() => navigation.goBack()}
+              onPress={() => onBackPress()}
             >
               <MaterialCommunityIcons
                 name="arrow-left-bold-circle"
@@ -292,7 +374,11 @@ function Login(props) {
             {isChangePassword ? (
               <ChangePasswordBox />
             ) : isLogin ? (
-              <LoginBox />
+              <LoginBox
+                userExist={userExist}
+                resetPIN={resetPIN}
+                errors={loginError}
+              />
             ) : (
               <RegisterBox errorArray={registerErrorArray} />
             )}
@@ -325,9 +411,9 @@ function Login(props) {
                     ? "Ganti Password"
                     : isLogin
                     ? resetPIN
-                      ? "Login Ulang & Reset PIN"
-                      : "Login"
-                    : "Register"}
+                      ? "Reset PIN"
+                      : "Continue"
+                    : "Daftar"}
                 </Text>
               )}
             </TouchableOpacity>
@@ -335,20 +421,24 @@ function Login(props) {
             {!isChangePassword && !resetPIN ? (
               <View style={styles.containerAdditional}>
                 <Text allowFontScaling={false} style={styles.text}>
-                  {isLogin ? "Belum punya akun?" : "Sudah punya akun?"}
+                  {isLogin ? "Tidak punya akun?" : "Sudah punya akun?"}
                 </Text>
                 <TouchableOpacity
                   onPress={() => setLogin(!isLogin)}
                   disabled={loading}
                 >
                   <Text allowFontScaling={false} style={styles.textChange}>
-                    {isLogin ? "Register" : "Login"}
+                    {isLogin ? "Daftar" : "Login"}
                   </Text>
                 </TouchableOpacity>
               </View>
             ) : null}
 
-            {error ? <Text allowFontScaling={false} style={styles.textError}>{error}</Text> : null}
+            {error ? (
+              <Text allowFontScaling={false} style={styles.textError}>
+                {error}
+              </Text>
+            ) : null}
           </View>
         </View>
       </ScrollView>
@@ -408,9 +498,9 @@ const styles = StyleSheet.create({
   },
   containerBack: {
     position: "absolute",
-    top: 36,
-    start: 20,
-    elevation: 6,
+    top: 48,
+    start: 12,
+    elevation: 4,
   },
   containerHeader: {
     width: "100%",
@@ -420,15 +510,14 @@ const styles = StyleSheet.create({
   },
   containerBox: {
     position: "absolute",
-    width: "90%",
+    width: "100%",
     backgroundColor: "white",
-    borderColor: colors.daclen_gray,
-    borderWidth: 2,
-    borderRadius: 5,
+    borderTopStartRadius: 16,
+    borderTopEndRadius: 16,
     marginHorizontal: 40,
-    marginTop: 100,
+    marginTop: 120,
     padding: 20,
-    elevation: 10,
+    elevation: 4,
   },
   containerAdditional: {
     marginVertical: 10,
@@ -437,9 +526,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   imageLogo: {
-    width: 125,
-    height: 30,
-    marginTop: 32,
+    width: 150,
+    height: 36,
+    marginTop: 48,
   },
   textHeader: {
     fontSize: 24,
@@ -452,11 +541,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginHorizontal: 20,
     marginVertical: 10,
-    paddingVertical: 12,
+    paddingVertical: 10,
     paddingHorizontal: 32,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: colors.daclen_orange,
+    backgroundColor: colors.daclen_yellow_new,
   },
   textError: {
     fontSize: 14,
@@ -469,13 +558,14 @@ const styles = StyleSheet.create({
     textAlignVertical: "center",
   },
   textButton: {
-    fontSize: 16,
-    fontFamily: "Poppins-SemiBold",
-    color: colors.white,
+    fontSize: 14,
+    fontFamily: "Poppins",
+    color: colors.daclen_black,
   },
   text: {
     color: colors.daclen_graydark,
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins",
+    fontSize: 14,
     marginHorizontal: 10,
   },
   textChange: {

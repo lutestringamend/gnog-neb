@@ -31,6 +31,7 @@ import {
   recruitmenttarget,
   TEMP_DEV_DEVICE_TOKEN,
   monthNamesShort,
+  userlogincheck,
 } from "../constants";
 import { checkNumberEmpty, getKeranjang } from "../cart";
 import { initialState } from "../../redux/reducers/user";
@@ -1262,6 +1263,34 @@ export function register(authData, deviceToken) {
         });
       });
   };
+}
+
+export async function loginCheck(email) {
+  const params = { email };
+  let result = {
+    userId: null,
+    error: null,
+  };
+  try {
+    const response = await Axioss.post(userlogincheck, params)
+      .catch((error) => {
+        console.error(error);
+        sentryLog(error);
+        result["error"] = error.toString();
+      });
+    const data = response?.data;
+    console.log("loginCheck", email, data);
+    if (!(data?.user_id === undefined || data?.user_id === null)) {
+      result["userId"] = data?.user_id;
+    } else if (!(data?.errors?.auth[0] === undefined || data?.errors?.auth[0] === null)) {
+      result ["error"] = data?.errors?.auth[0];
+    }
+  } catch (e) {
+    console.error(e);
+    sentryLog(e);
+    result["error"] = e.toString();
+  }
+  return result;
 }
 
 export function login(email, password, resetPIN, deviceToken) {

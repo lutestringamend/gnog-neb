@@ -22,6 +22,7 @@ export const dimensions = {
 export const colors = {
   daclen_black: "#0a0a0a",
   daclen_black_old: "#212529",
+  daclen_yellow_new: "#f8c133",
   daclen_bg: "#0a0a0a",
   daclen_bg_highlighted: "#434343",
   black: "#000000",
@@ -59,6 +60,8 @@ export const colors = {
   daclen_danger: "#dc3545",
   daclen_light: "#f8f9fa",
   daclen_dark: "#212529",
+  daclen_label_grey: "#33373b",
+  daclen_box_grey: "#d6dbe1",
   daclen_search_grey: "#353535",
   daclen_lightgrey: "#e8f5e6",
   daclen_offgreen: "#eaffe7",
