@@ -158,7 +158,7 @@ const TextInputLabel = (props) => {
         <View
           style={[
             styles.containerHorizontal,
-            { marginTop: 6, justifyContent: "flex-end" },
+            { marginTop: 2, justifyContent: "flex-end" },
           ]}
         >
           <Text
