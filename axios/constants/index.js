@@ -27,6 +27,16 @@ export const defaulttoprightlong = 107.86793313814107;*/
 export const defaultlatitudelongbits = "-4603892706931430400";
 export const defaultlongitudelongbits = "4637272587357913000";
 
+export const email_regex = RegExp(
+	/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
+);
+export const username_regex = RegExp(
+  /^(?=.*[0-9])(?=.*[0-9])[a-z0-9]{16}$/
+);
+export const uppercase_regex = RegExp(
+  /[A-Z]/
+);
+
 export const testerusercode = "devdcn";
 export const tempdeadlineintervalinmiliseconds = 7776000000;
 export const TEMP_DEV_DEVICE_TOKEN = "TEMP_DEV_DEVICE_TOKEN";

@@ -96,9 +96,9 @@ const TextInputLabel = (props) => {
           editable={notApplicable || disabled || verified ? false : true}
           inputMode={inputMode ? inputMode : "text"}
           placeholder={placeholder ? placeholder : ""}
-          placeholderTextColor={colors.daclen_lightgrey}
+          placeholderTextColor={colors.daclen_gray}
           maxLength={
-            maxCharacter ? maxCharacter : inputMode === "number" ? 14 : 100
+            maxCharacter ? maxCharacter : inputMode === "decimal" ? 14 : 100
           }
           onEndEditing={() => onEndEditing()}
           multiline={maxCharacter > 30 ? true : false}
@@ -126,7 +126,7 @@ const TextInputLabel = (props) => {
             <MaterialCommunityIcons
               name={isPasswordSecure ? "eye-off" : "eye"}
               size={16}
-              color={colors.daclen_box_grey}
+              color={colors.daclen_gray}
               style={{
                 backgroundColor: "transparent",
                 alignSelf: "center",
@@ -148,7 +148,7 @@ const TextInputLabel = (props) => {
           <MaterialCommunityIcons
             name="chevron-right"
             size={16}
-            color={colors.daclen_box_grey}
+            color={colors.daclen_gray}
             style={styles.arrow}
           />
         ) : null}

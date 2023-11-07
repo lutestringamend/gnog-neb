@@ -38,7 +38,13 @@ import {
 import { sentryLog } from "../../sentry";
 import { checkEmpty } from "../../redux/reducers/user";
 import { isUserDevServer } from "../../axios";
-import { devhttp, mainhttp } from "../../axios/constants";
+import {
+  devhttp,
+  email_regex,
+  mainhttp,
+  uppercase_regex,
+  username_regex,
+} from "../../axios/constants";
 
 function setPageHeight(bottomPadding) {
   return (
@@ -54,8 +60,12 @@ const defaultRegisterErrorArray = {
   referral: false,
 };
 const defaultLoginError = {
+  name: "",
   email: "",
   password: "",
+  confirmPassword: "",
+  nomor_telp: "",
+  referral: "",
 };
 
 function Login(props) {
@@ -66,6 +76,7 @@ function Login(props) {
   const [resettingPin, setResettingPin] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState(defaultLoginError);
+  const [registerError, setRegisterError] = useState(defaultLoginError);
   const [registerErrorArray, setRegisterErrorArray] = useState(
     defaultRegisterErrorArray
   );
@@ -157,8 +168,8 @@ function Login(props) {
   }, [authError]);
 
   useEffect(() => {
-    console.log("registerErrorArray", registerErrorArray);
-  }, [registerErrorArray]);
+    console.log("registerError", registerError);
+  }, [registerError]);
 
   useEffect(() => {
     if (isLogin && !isChangePassword && props.loginToken !== null) {
@@ -175,6 +186,12 @@ function Login(props) {
       rbSheet.current.open();
     }
   }, [props.registerToken]);
+
+  const switchPage = () => {
+    setLoginError(defaultLoginError);
+    setRegisterError(defaultLoginError);
+    setLogin((isLogin) => !isLogin);
+  };
 
   const onLogin = async () => {
     setLoginError(defaultLoginError);
@@ -242,33 +259,84 @@ function Login(props) {
   };
 
   const onRegister = async () => {
+    setRegisterError(defaultLoginError);
     if (resetPIN) {
       return;
-    } else if (authData?.name === null || authData?.name === undefined) {
-      setError("Anda wajib mengisi username untuk register");
-    } else if (authData?.email === null || authData?.email === undefined) {
-      setError("Anda wajib mengisi email untuk register");
-    } else if (
+    }
+
+    if (
+      authData?.nomor_telp === undefined ||
       authData?.nomor_telp === null ||
-      authData?.nomor_telp === undefined
+      authData?.nomor_telp === "" ||
+      authData?.nomor_telp?.length < 10
     ) {
-      setError("Anda wajib mengisi nomor telepon untuk register");
+      setRegisterError({
+        ...defaultLoginError,
+        nomor_telp: "Masukkan Nomor Handphone aktif yang valid",
+      });
     } else if (
-      authData?.password === undefined ||
-      authData?.password === null ||
-      authData?.confirmPassword === undefined ||
-      authData?.confirmPassword === null
+      authData?.email === undefined ||
+      authData?.email === null ||
+      authData?.email === ""
     ) {
-      setError("Anda wajib mengisi password untuk register");
-    } else if (authData?.password !== authData?.confirmPassword) {
-      setError("Konfirmasi password Anda tidak sama");
+      setRegisterError({ ...defaultLoginError, email: "Email wajib diisi" });
+    } else if (!email_regex.test(authData?.email)) {
+      setRegisterError({
+        ...defaultLoginError,
+        email: "Masukkan alamat email aktif yang valid",
+      });
     } else if (
+      authData?.name === undefined ||
+      authData?.name === null ||
+      authData?.name === ""
+    ) {
+      setRegisterError({ ...defaultLoginError, name: "Username wajib diisi" });
+    } else if (authData?.name.includes(" ")) {
+      setRegisterError({
+        ...defaultLoginError,
+        name: "Username tidak boleh mengandung spasi",
+      });
+    } else if (uppercase_regex.test(authData?.name)) {
+      setRegisterError({
+        ...defaultLoginError,
+        name: "Username hanya boleh memakai huruf kecil",
+      });
+    } else if (
+      authData?.referral === "" ||
       authData?.referral === null ||
       authData?.referral === undefined
     ) {
-      setError("Anda wajib mengisi nama referral");
+      setRegisterError({
+        ...defaultLoginError,
+        referral: "Referral wajib diisi",
+      });
+    } else if (authData?.referral.includes(" ")) {
+      setRegisterError({
+        ...defaultLoginError,
+        referral: "Referral tidak boleh mengandung spasi",
+      });
+    } else if (
+      authData?.password === undefined ||
+      authData?.password === null
+    ) {
+      setRegisterError({
+        ...defaultLoginError,
+        password: "Password wajib diisi",
+      });
+    } else if (
+      authData?.confirmPassword === undefined ||
+      authData?.confirmPassword === null
+    ) {
+      setRegisterError({
+        ...defaultLoginError,
+        confirmPassword: "Konfirmasi Password wajib diisi",
+      });
+    } else if (authData?.password !== authData?.confirmPassword) {
+      setRegisterError({
+        ...defaultLoginError,
+        confirmPassword: "Konfirmasi Password tidak sama",
+      });
     } else {
-      setError(null);
       setLoading(true);
       const deviceToken = await getObjectAsync(ASYNC_DEVICE_TOKEN_KEY);
       props.register(authData, deviceToken);
@@ -322,7 +390,7 @@ function Login(props) {
     } else {
       navigation.goBack();
     }
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -380,15 +448,18 @@ function Login(props) {
                 errors={loginError}
               />
             ) : (
-              <RegisterBox errorArray={registerErrorArray} />
+              <RegisterBox
+                errors={registerError}
+                errorArray={registerErrorArray}
+              />
             )}
 
             <TouchableOpacity
               onPress={() =>
-                isChangePassword
-                  ? onChangePassword()
-                  : isLogin
-                  ? onLogin()
+                isLogin
+                  ? isChangePassword
+                    ? onChangePassword()
+                    : onLogin()
                   : onRegister()
               }
               style={[
@@ -424,7 +495,7 @@ function Login(props) {
                   {isLogin ? "Tidak punya akun?" : "Sudah punya akun?"}
                 </Text>
                 <TouchableOpacity
-                  onPress={() => setLogin(!isLogin)}
+                  onPress={() => switchPage()}
                   disabled={loading}
                 >
                   <Text allowFontScaling={false} style={styles.textChange}>

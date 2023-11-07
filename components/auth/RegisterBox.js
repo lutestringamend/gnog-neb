@@ -1,136 +1,85 @@
 import React from "react";
-import { View, TextInput, StyleSheet, Text, Platform } from "react-native";
-
+import { View, StyleSheet, Platform } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { eliminateSpaceFromString, setAuthData } from "../../axios/user";
-import TextInputPassword from "./TextInputPassword";
 import { colors } from "../../styles/base";
+import TextInputLabel from "../textinputs/TextInputLabel";
 
 function RegisterBox(props) {
-  const { errorArray } = props;
+  const { errorArray, errors, authData } = props;
 
   const checkInputUsername = () => {
-    const name = eliminateSpaceFromString(props.authData?.name);
-    props.setAuthData({ ...props.authData, name });
-  }
+    const name = eliminateSpaceFromString(authData?.name);
+    props.setAuthData({ ...authData, name });
+  };
 
   return (
     <View style={styles.container}>
-      <Text
-        style={[
-          styles.text,
-          {
-            color: errorArray?.name ? colors.daclen_danger : colors.daclen_blue,
-          },
-        ]}
-      >
-        Username* (tanpa spasi, digunakan untuk referral Anda)
-      </Text>
-      <TextInput
-        placeholder={
-          Platform.OS === "ios" && props.authData?.username
-            ? props.authData?.username
-            : ""
+      <TextInputLabel
+        label="Nomor Whatsapp Aktif"
+        compulsory
+        value={authData?.nomor_telp}
+        inputMode="decimal"
+        error={errors?.nomor_telp}
+        onChangeText={(nomor_telp) =>
+          props.setAuthData({ ...authData, nomor_telp })
         }
-        style={styles.textInput}
-        value={props.authData?.name ? props.authData?.name : ""}
-        onChangeText={(name) => props.setAuthData({ ...props.authData, name })}
+      />
+
+      <TextInputLabel
+        label="Email"
+        compulsory
+        value={authData?.email}
+        error={errors?.email}
+        onChangeText={(email) =>
+          props.setAuthData({ ...authData, email })
+        }
+      />
+
+      <TextInputLabel
+        label="Username (untuk referral Anda)"
+        compulsory
+        placeholder="Huruf kecil, tanpa spasi"
+        value={authData?.name}
+        error={errors?.name}
+        maxCharacter={16}
+        onChangeText={(name) => props.setAuthData({ ...authData, name })}
         onEndEditing={() => checkInputUsername()}
       />
-      <Text
-        style={[
-          styles.text,
-          {
-            color: errorArray?.email
-              ? colors.daclen_danger
-              : colors.daclen_blue,
-          },
-        ]}
-      >
-        Email*
-      </Text>
-      <TextInput
-        placeholder={Platform.OS === "ios" ? props.authData?.email : ""}
-        style={styles.textInput}
-        onChangeText={(email) =>
-          props.setAuthData({ ...props.authData, email })
-        }
-      />
-      <Text
-        style={[
-          styles.text,
-          {
-            color: errorArray?.nomor_telp
-              ? colors.daclen_danger
-              : colors.daclen_blue,
-          },
-        ]}
-      >
-        Nomor Telepon*
-      </Text>
-      <TextInput
-        placeholder={Platform.OS === "ios" ? props.authData?.phone : ""}
-        style={styles.textInput}
-        inputMode="decimal"
-        onChangeText={(nomor_telp) =>
-          props.setAuthData({ ...props.authData, nomor_telp })
-        }
-      />
-      <Text
-        style={[
-          styles.text,
-          {
-            color: errorArray?.password
-              ? colors.daclen_danger
-              : colors.daclen_blue,
-          },
-        ]}
-      >
-        Password*
-      </Text>
-      <TextInputPassword
-        style={styles.textInput}
-        onChangeText={(password) =>
-          props.setAuthData({ ...props.authData, password })
-        }
-      />
-      <Text
-        style={[
-          styles.text,
-          {
-            color: errorArray?.password
-              ? colors.daclen_danger
-              : colors.daclen_blue,
-          },
-        ]}
-      >
-        Konfirmasi Password*
-      </Text>
-      <TextInputPassword
-        style={styles.textInput}
-        onChangeText={(confirmPassword) =>
-          props.setAuthData({ ...props.authData, confirmPassword })
-        }
-      />
-      <Text
-        style={[
-          styles.text,
-          {
-            color: errorArray?.referral
-              ? colors.daclen_danger
-              : colors.daclen_blue,
-          },
-        ]}
-      >
-        Referral*
-      </Text>
-      <TextInput
-        placeholder={Platform.OS === "ios" ? props.authData?.referral : ""}
-        style={styles.textInput}
+
+      <TextInputLabel
+        label="Referral"
+        compulsory
+        placeholder="Ketikkan username referral Anda"
+        value={authData?.referral}
+        error={errors?.referral}
+        maxCharacter={16}
         onChangeText={(referral) =>
-          props.setAuthData({ ...props.authData, referral })
+          props.setAuthData({ ...authData, referral })
+        }
+      />
+
+      <TextInputLabel
+        label="Password"
+        secureTextEntry
+        compulsory
+        error={errors?.password}
+        value={authData?.password}
+        onChangeText={(password) =>
+          props.setAuthData({ ...authData, password })
+        }
+      />
+
+      <TextInputLabel
+        label="Konfirmasi Password"
+        secureTextEntry
+        compulsory
+        error={errors?.confirmPassword}
+        value={authData?.confirmPassword}
+        onChangeText={(confirmPassword) =>
+          props.setAuthData({ ...authData, confirmPassword })
         }
       />
     </View>
@@ -162,7 +111,8 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 2,
     marginBottom: 10,
-    fontFamily: "Poppins", fontSize: 14,
+    fontFamily: "Poppins",
+    fontSize: 14,
   },
 });
 
