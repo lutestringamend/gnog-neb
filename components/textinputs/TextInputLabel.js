@@ -154,35 +154,40 @@ const TextInputLabel = (props) => {
         ) : null}
       </View>
 
-      {maxCharacter ? (
+      {error || maxCharacter ? (
         <View
           style={[
             styles.containerHorizontal,
-            { marginTop: 2, justifyContent: "flex-end" },
+            {
+              marginTop: 6,
+              justifyContent:
+                maxCharacter && !error ? "flex-end" : "flex-start",
+            },
           ]}
         >
-          <Text
-            allowFontScaling={false}
-            style={[
-              styles.text,
-              { textAlign: "right" },
-              labelStyle ? labelStyle : null,
-            ]}
-          >
-            {`${
-              value ? (value?.length ? value?.length : "0") : "0"
-            }/${maxCharacter}`}
-          </Text>
-        </View>
-      ) : null}
-      {error ? (
-        <View style={[styles.containerHorizontal, { marginTop: 6 }]}>
-          <Text
-            allowFontScaling={false}
-            style={[styles.text, { color: colors.daclen_danger }]}
-          >
-            {error}
-          </Text>
+          {error ? (
+            <Text
+              allowFontScaling={false}
+              style={[styles.text, { color: colors.daclen_danger, flex: 1 }]}
+            >
+              {error}
+            </Text>
+          ) : null}
+
+          {maxCharacter ? (
+            <Text
+              allowFontScaling={false}
+              style={[
+                styles.text,
+                { textAlign: "right" },
+                labelStyle ? labelStyle : null,
+              ]}
+            >
+              {`${
+                value ? (value?.length ? value?.length : "0") : "0"
+              }/${maxCharacter}`}
+            </Text>
+          ) : null}
         </View>
       ) : null}
     </View>
