@@ -531,8 +531,8 @@ const styles = StyleSheet.create({
     marginTop: 48,
   },
   textHeader: {
-    fontSize: 24,
-    fontFamily: "Poppins-Bold",
+    fontSize: 20,
+    fontFamily: "Poppins-SemiBold",
     textAlign: "center",
     marginBottom: 20,
   },

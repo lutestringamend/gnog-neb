@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, TextInput, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  TextInput,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { colors } from "../../styles/base";
 /*import Checkbox from "../checkbox/Checkbox";
@@ -11,6 +17,7 @@ const TextInputLabel = (props) => {
     label,
     compulsory,
     verified,
+    shortVerified,
     showNotApplicable,
     secureTextEntry,
     inputMode,
@@ -111,6 +118,7 @@ const TextInputLabel = (props) => {
         />
         {secureTextEntry ? (
           <TouchableOpacity
+            style={styles.containerEye}
             onPress={() =>
               setIsPasswordSecure((isPasswordSecure) => !isPasswordSecure)
             }
@@ -119,11 +127,23 @@ const TextInputLabel = (props) => {
               name={isPasswordSecure ? "eye-off" : "eye"}
               size={16}
               color={colors.daclen_box_grey}
-              style={styles.arrow}
+              style={{
+                backgroundColor: "transparent",
+                alignSelf: "center",
+              }}
             />
           </TouchableOpacity>
         ) : verified ? (
-          <TextBoxVerified />
+          shortVerified ? (
+            <MaterialCommunityIcons
+              name="check-bold"
+              size={16}
+              color={colors.daclen_green}
+              style={styles.check}
+            />
+          ) : (
+            <TextBoxVerified isShort={shortVerified} />
+          )
         ) : rightArrow ? (
           <MaterialCommunityIcons
             name="chevron-right"
@@ -213,6 +233,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+  containerEye: {
+    alignSelf: "center",
+    marginEnd: 10,
+  },
   textInput: {
     marginHorizontal: 8,
     backgroundColor: "transparent",
@@ -239,6 +263,11 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     alignSelf: "center",
     marginEnd: 10,
+  },
+  check: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
+    marginHorizontal: 10,
   },
 });
 

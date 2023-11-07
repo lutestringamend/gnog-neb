@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native'
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { colors } from '../../styles/base';
 
-const TextBoxVerified = () => {
+const TextBoxVerified = ({ isShort }) => {
   return (
     <View style={styles.containerVerified}>
             <MaterialCommunityIcons
@@ -12,9 +12,10 @@ const TextBoxVerified = () => {
               color={colors.white}
               style={styles.verified}
             />
-            <Text allowFontScaling={false} style={styles.textVerified}>
+            {isShort ? null : <Text allowFontScaling={false} style={styles.textVerified}>
               Verified
-            </Text>
+            </Text>}
+            
           </View>
   )
 }
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         backgroundColor: colors.daclen_green,
         flexDirection: "row",
-        alignItems: "row",
+        alignItems: "self",
       },
       textVerified: {
         backgroundColor: "transparent",

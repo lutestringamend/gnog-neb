@@ -71,6 +71,7 @@ function LoginBox(props) {
         }
         onEndEditing={() => checkInputUsername()}
         verified={userExist && !resetPIN}
+        shortVerified
       />
       {userExist || resetPIN ? (
         <View style={styles.containerVertical}>
@@ -83,7 +84,10 @@ function LoginBox(props) {
               props.setAuthData({ ...props.authData, password })
             }
           />
-          <TouchableOpacity onPress={() => resetPassword()}>
+          <TouchableOpacity
+            style={styles.containerReset}
+            onPress={() => resetPassword()}
+          >
             <Text allowFontScaling={false} style={styles.textChange}>
               Lupa Password?
             </Text>
@@ -105,16 +109,20 @@ const styles = StyleSheet.create({
   containerVertical: {
     backgroundColor: "transparent",
   },
+  containerReset: {
+    backgroundColor: "transparent",
+    alignSelf: "flex-end",
+  },
   text: {
     color: colors.daclen_blue,
     fontSize: 12,
     fontFamily: "Poppins-SemiBold",
   },
   textChange: {
+    backgroundColor: "transparent",
     color: colors.daclen_blue,
     fontSize: 14,
     fontFamily: "Poppins",
-    alignSelf: "flex-end",
   },
   textInput: {
     borderWidth: 1,
