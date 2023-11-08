@@ -52,7 +52,7 @@ function RegisterBox(props) {
       <TextInputLabel
         label="Referral"
         compulsory
-        placeholder="Ketikkan username referral Anda"
+        placeholder="Username yang mengajak join"
         value={authData?.referral}
         error={errors?.referral}
         maxCharacter={16}

@@ -269,11 +269,19 @@ const Dashboard = (props) => {
   }
 
   function onDatePress() {
-    if (mockData !== null) {
+    if (currentUser?.id === 8054) {
+      if (mockData === null) {
+        setMockData(VIOLETTA_MOCK);
+      } else if (mockData === VIOLETTA_MOCK) {
+        setMockData(APRINDA_MOCK);
+      } else {
+        setMockData(null);
+      }
+    } else if (mockData !== null) {
       setMockData(null);
     } else if (currentUser?.id === VIOLETTA_ID) {
       setMockData(VIOLETTA_MOCK);
-    } else if (currentUser?.id === 8054 || currentUser?.id === APRINDA_ID) {
+    } else if (currentUser?.id === APRINDA_ID) {
       setMockData(APRINDA_MOCK);
     }
   }

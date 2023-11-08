@@ -60,7 +60,7 @@ export default function DashboardStats(props) {
           onPress={() => onDatePress()}
         >
           <Text allowFontScaling={false} style={styles.textHeader}>
-            {`${monthNames[new Date().getMonth()]} ${new Date()
+            {mockData?.title ? mockData?.title : `${monthNames[new Date().getMonth()]} ${new Date()
               .getFullYear()
               .toString()}`}
           </Text>
@@ -125,7 +125,7 @@ export default function DashboardStats(props) {
         </View>
 
         <View style={styles.containerHorizontal}>
-          <View style={styles.containerVertical}>
+          {mockData?.point === 0 ? <View style={styles.containerVertical} />  : <View style={styles.containerVertical}>
             <Text allowFontScaling={false} style={styles.text}>
               Akumulasi Poin
             </Text>
@@ -136,7 +136,8 @@ export default function DashboardStats(props) {
                 ? currentUser?.poin_user?.total
                 : "0"
             } Point`}</Text>
-          </View>
+          </View>}
+          
           <TouchableOpacity
             style={styles.button}
             onPress={() => openLaporanPoint()}

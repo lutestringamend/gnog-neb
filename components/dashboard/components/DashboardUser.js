@@ -100,7 +100,7 @@ export default function DashboardUser(props) {
                 },
               ]}
             >
-              {currentUser?.detail_user?.nama_lengkap
+              {mockData?.username ? mockData?.username : currentUser?.detail_user?.nama_lengkap
                 ? currentUser?.detail_user?.nama_lengkap
                 : currentUser?.name}
             </Text>
