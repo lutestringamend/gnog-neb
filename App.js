@@ -74,6 +74,7 @@ import QRScreen from "./components/qrscreen/QRScreen";
 import VideoPlayer from "./components/videoplayer/VideoPlayer";
 import VideoLogs from "./components/videoplayer/VideoLogs";
 import Tutorial from "./components/mediakit/tutorial/Tutorial";
+import Calculator from "./components/dashboard/Calculator";
 
 import Profile from "./components/profile/Profile";
 import DeleteAccountScreen from "./components/auth/DeleteAccount";
@@ -397,6 +398,11 @@ export default function App() {
                 name="Tutorial"
                 component={Tutorial}
                 options={{ ...defaultOptions, title: "Tutorial" }}
+              />
+              <Stack.Screen
+                name="Calculator"
+                component={Calculator}
+                options={{ ...defaultOptions, title: "Kalkulator Poin" }}
               />
             </Stack.Navigator>
           </NavigationContainer>
