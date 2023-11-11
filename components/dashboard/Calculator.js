@@ -1,4 +1,4 @@
-import React, { createFactory, useState } from "react";
+import React, { createFactory, useEffect, useState } from "react";
 import {
   SafeAreaView,
   View,
@@ -17,7 +17,8 @@ const tableWidth = dimensions.fullWidth - 24;
 
 const defaultInputs = {
   numResellerPerMonth: 3,
-  salesPerMonth: 3700000,
+  salesPerMonth: 3000000,
+  periodLength: 3,
   numMonths: 12,
   salesCommission: 0.1,
   ppn: 0.11,
@@ -26,18 +27,52 @@ const defaultInputs = {
 const Calculator = () => {
   const [inputs, setInputs] = useState(defaultInputs);
   const [errors, setErrors] = useState({
-    numResellerPerMonth: null,
-    salesPerMonth: null,
-    numMonths: null,
-    salesCommission: null,
-    ppn: null,
+    numResellerPerMonth: "",
+    salesPerMonth: "",
+    periodLength: "",
+    numMonths: "",
   });
   const [projection, setProjection] = useState(null);
   const [eligible, setEligible] = useState(true);
 
+  useEffect(() => {
+    let allowed = true;
+    let newErrors = { ...errors };
+    if (isNaN(inputs.numResellerPerMonth) || inputs.numResellerPerMonth < 1) {
+      newErrors = { ...newErrors, numResellerPerMonth: "Minimal 1 Reseller" };
+      allowed = false;
+    } else {
+      newErrors = { ...newErrors, numResellerPerMonth: null };
+    }
+    if (isNaN(inputs.salesPerMonth) || inputs.salesPerMonth < 0) {
+      setErrors({
+        ...errors,
+        salesPerMonth: "Tidak boleh lebih kecil dari Rp 0",
+      });
+      allowed = false;
+    } else {
+      newErrors = { ...newErrors, salesPerMonth: null };
+    }
+    if (isNaN(inputs.periodLength) || inputs.periodLength < 1) {
+      newErrors = { ...newErrors, periodLength: "Periode minimal 1 bulan" };
+      allowed = false;
+    } else {
+      newErrors = { ...newErrors, periodLength: null };
+    }
+    if (isNaN(inputs.numMonths) || inputs.numMonths < 1) {
+      newErrors = { ...newErrors, numMonths: "Minimal 1 periode" };
+      allowed = false;
+    } else {
+      newErrors = { ...newErrors, numMonths: null };
+    }
+    setErrors(newErrors);
+    setEligible(allowed);
+  }, [inputs]);
+
   const makeProjections = () => {
     let result = createFixedMonthlyProjections(
       inputs?.numResellerPerMonth,
+      inputs?.periodLength,
       inputs?.salesPerMonth,
       inputs?.numMonths
     );
@@ -52,13 +87,23 @@ const Calculator = () => {
         contentContainerStyle={styles.containerScroll}
       >
         <TextInputLabel
-          label="Rekrutmen Reseller per Bulan"
+          label="Rekrutmen Reseller per Periode"
           compulsory
           value={inputs?.numResellerPerMonth}
           inputMode="decimal"
           error={errors?.numResellerPerMonth}
           onChangeText={(numResellerPerMonth) =>
             setInputs({ ...inputs, numResellerPerMonth })
+          }
+        />
+        <TextInputLabel
+          label="Jumlah Bulan dalam 1 Periode Rekrutmen"
+          compulsory
+          value={inputs?.periodLength}
+          inputMode="decimal"
+          error={errors?.periodLength}
+          onChangeText={(periodLength) =>
+            setInputs({ ...inputs, periodLength })
           }
         />
         <TextInputLabel
@@ -72,7 +117,7 @@ const Calculator = () => {
           }
         />
         <TextInputLabel
-          label="Jumlah Bulan"
+          label="Jumlah Periode"
           compulsory
           value={inputs?.numMonths}
           inputMode="decimal"
@@ -102,7 +147,7 @@ const Calculator = () => {
         projection?.length < 1 ? null : (
           <View style={styles.containerTable}>
             <Text allowFontScaling={false} style={styles.textTableHeader}>
-              Pertumbuhan Reseller dan Penjualan / Bulan
+              Pertumbuhan Seller dan Penjualan / Periode
             </Text>
             <View style={styles.containerSpec}>
               <Text
@@ -115,13 +160,13 @@ const Calculator = () => {
                 allowFontScaling={false}
                 style={[styles.textSpecHeader, { width: 0.3 * tableWidth }]}
               >
-                Member
+                Seller
               </Text>
               <Text
                 allowFontScaling={false}
                 style={[styles.textSpecHeader, { width: 0.5 * tableWidth }]}
               >
-                Penjualan
+                Penjualan/Bulan
               </Text>
             </View>
 
