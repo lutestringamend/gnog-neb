@@ -6,6 +6,8 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  Platform,
+  ToastAndroid,
 } from "react-native";
 
 import { colors, dimensions } from "../../styles/base";
@@ -16,12 +18,12 @@ import { createFixedMonthlyProjections } from ".";
 const tableWidth = dimensions.fullWidth - 24;
 
 const defaultInputs = {
-  numResellerPerMonth: 3,
-  salesPerMonth: 3000000,
-  periodLength: 3,
-  numMonths: 12,
-  salesCommission: 0.1,
-  ppn: 0.11,
+  numResellerPerMonth: "3",
+  salesPerMonth: "3000000",
+  periodLength: "1",
+  numMonths: "12",
+  salesCommission: "0.1",
+  ppn: "0.11",
 };
 
 const Calculator = () => {
@@ -59,8 +61,15 @@ const Calculator = () => {
     } else {
       newErrors = { ...newErrors, periodLength: null };
     }
-    if (isNaN(inputs.numMonths) || inputs.numMonths < 1) {
-      newErrors = { ...newErrors, numMonths: "Minimal 1 periode" };
+    if (
+      isNaN(inputs.numMonths) ||
+      inputs.numMonths < 1 ||
+      inputs.numMonths > 12
+    ) {
+      newErrors = {
+        ...newErrors,
+        numMonths: "Minimal 1 bulan, maksimal 12 bulan",
+      };
       allowed = false;
     } else {
       newErrors = { ...newErrors, numMonths: null };
@@ -71,13 +80,24 @@ const Calculator = () => {
 
   const makeProjections = () => {
     let result = createFixedMonthlyProjections(
-      inputs?.numResellerPerMonth,
-      inputs?.periodLength,
-      inputs?.salesPerMonth,
-      inputs?.numMonths
+      parseInt(inputs?.numResellerPerMonth),
+      parseInt(inputs?.periodLength),
+      parseInt(inputs?.salesPerMonth),
+      parseInt(inputs?.numMonths)
     );
-    //console.log(result);
+    console.log(result);
     setProjection(result);
+  };
+
+  const showPoints = (item) => {
+    if (!(item === undefined || item === null)) {
+      let text = `PPN: ${item?.ppn}\nPenjualan: ${item?.sales}\nKomisi Penjualan: ${item?.salesCommission}\nBV: ${item?.bv}\nPV: ${item?.pv}\nHPV: ${item?.hpv}\nRPV ${item?.pv}`;
+      if (Platform.OS === "android") {
+        ToastAndroid.show(text, ToastAndroid.LONG);
+      } else {
+        console.log("showPoints", text);
+      }
+    }
   };
 
   return (
@@ -87,23 +107,13 @@ const Calculator = () => {
         contentContainerStyle={styles.containerScroll}
       >
         <TextInputLabel
-          label="Rekrutmen Reseller per Periode"
+          label="Rekrutmen Reseller per Bulan"
           compulsory
           value={inputs?.numResellerPerMonth}
           inputMode="decimal"
           error={errors?.numResellerPerMonth}
           onChangeText={(numResellerPerMonth) =>
             setInputs({ ...inputs, numResellerPerMonth })
-          }
-        />
-        <TextInputLabel
-          label="Jumlah Bulan dalam 1 Periode Rekrutmen"
-          compulsory
-          value={inputs?.periodLength}
-          inputMode="decimal"
-          error={errors?.periodLength}
-          onChangeText={(periodLength) =>
-            setInputs({ ...inputs, periodLength })
           }
         />
         <TextInputLabel
@@ -117,7 +127,7 @@ const Calculator = () => {
           }
         />
         <TextInputLabel
-          label="Jumlah Periode"
+          label="Jumlah Bulan"
           compulsory
           value={inputs?.numMonths}
           inputMode="decimal"
@@ -147,7 +157,7 @@ const Calculator = () => {
         projection?.length < 1 ? null : (
           <View style={styles.containerTable}>
             <Text allowFontScaling={false} style={styles.textTableHeader}>
-              Pertumbuhan Seller dan Penjualan / Periode
+              Pertumbuhan Seller dan Penjualan / Bulan
             </Text>
             <View style={styles.containerSpec}>
               <Text
@@ -158,20 +168,30 @@ const Calculator = () => {
               </Text>
               <Text
                 allowFontScaling={false}
-                style={[styles.textSpecHeader, { width: 0.3 * tableWidth }]}
+                style={[styles.textSpecHeader, { width: 0.2 * tableWidth }]}
               >
                 Seller
               </Text>
               <Text
                 allowFontScaling={false}
-                style={[styles.textSpecHeader, { width: 0.5 * tableWidth }]}
+                style={[styles.textSpecHeader, { width: 0.35 * tableWidth }]}
               >
                 Penjualan/Bulan
+              </Text>
+              <Text
+                allowFontScaling={false}
+                style={[styles.textSpecHeader, { width: 0.25 * tableWidth }]}
+              >
+                {`Saldo\nAkumulasi`}
               </Text>
             </View>
 
             {projection.map((item, index) => (
-              <View key={index} style={styles.containerSpec}>
+              <TouchableOpacity
+                onPress={() => showPoints(item)}
+                key={index}
+                style={styles.containerSpec}
+              >
                 <Text
                   allowFontScaling={false}
                   style={[styles.textSpec, { width: 0.2 * tableWidth }]}
@@ -180,7 +200,7 @@ const Calculator = () => {
                 </Text>
                 <Text
                   allowFontScaling={false}
-                  style={[styles.textSpec, { width: 0.3 * tableWidth }]}
+                  style={[styles.textSpec, { width: 0.2 * tableWidth }]}
                 >
                   {item?.numResellers}
                 </Text>
@@ -189,14 +209,26 @@ const Calculator = () => {
                   style={[
                     styles.textSpec,
                     {
-                      width: 0.5 * tableWidth,
-                      fontSize: item?.monthlySales > 1000000000 ? 10 : 12,
+                      width: 0.35 * tableWidth,
+                      fontSize: item?.monthlySales > 1000000000 ? 8 : 10,
                     },
                   ]}
                 >
                   {formatPrice(item?.monthlySales)}
                 </Text>
-              </View>
+                <Text
+                  allowFontScaling={false}
+                  style={[
+                    styles.textSpec,
+                    {
+                      width: 0.25 * tableWidth,
+                      fontSize: item?.balance > 1000000000 ? 8 : 10,
+                    },
+                  ]}
+                >
+                  {formatPrice(item?.balance)}
+                </Text>
+              </TouchableOpacity>
             ))}
           </View>
         )}
@@ -205,6 +237,20 @@ const Calculator = () => {
   );
 };
 
+/*
+
+        <TextInputLabel
+          label="Jumlah Bulan dalam 1 Periode Rekrutmen"
+          compulsory
+          value={inputs?.periodLength}
+          inputMode="decimal"
+          error={errors?.periodLength}
+          onChangeText={(periodLength) =>
+            setInputs({ ...inputs, periodLength })
+          }
+        />
+*/
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -212,10 +258,9 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   containerScroll: {
-    flex: 1,
     backgroundColor: "transparent",
-    marginVertical: 24,
-    marginHorizontal: 12,
+    paddingVertical: 24,
+    paddingHorizontal: 12,
   },
   containerTable: {
     alignSelf: "center",
@@ -243,7 +288,9 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-SemiBold",
   },
   textSpecHeader: {
-    padding: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    height: 40,
     fontFamily: "Poppins-SemiBold",
     fontSize: 12,
     borderStartWidth: 1,
