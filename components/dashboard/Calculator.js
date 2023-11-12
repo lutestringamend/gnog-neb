@@ -170,13 +170,13 @@ const Calculator = () => {
                 allowFontScaling={false}
                 style={[styles.textSpecHeader, { width: 0.2 * tableWidth }]}
               >
-                Seller
+                {`Total Seller\nJaringan`}
               </Text>
               <Text
                 allowFontScaling={false}
                 style={[styles.textSpecHeader, { width: 0.35 * tableWidth }]}
               >
-                Penjualan/Bulan
+                {`Penjualan Jaringan\n/Bulan`}
               </Text>
               <Text
                 allowFontScaling={false}
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "transparent",
     textAlign: "center",
-    fontSize: 14,
+    fontSize: 12,
     padding: 10,
     fontFamily: "Poppins-SemiBold",
   },
