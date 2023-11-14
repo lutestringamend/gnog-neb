@@ -25,6 +25,7 @@ import {
   overhaulReduxCart,
   overhaulReduxTempCart,
   checkNumberEmpty,
+  processPhoneNumberforCheckout,
 } from "../../axios/cart";
 import { callMasterkurir, getKurirData } from "../../axios/courier";
 import { clearHistoryData } from "../../axios/history";
@@ -641,6 +642,7 @@ function Checkout(props) {
           nama_penerima: senderName.final
             ? senderName.final
             : "Daclen Official",
+          nomor_telp: detail_checkout?.nomor_telp ? processPhoneNumberforCheckout(detail_checkout?.nomor_telp) : "",
         },
         user: {
           saldo: (saldo.available - saldo.used).toString(),

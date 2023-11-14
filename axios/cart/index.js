@@ -83,7 +83,7 @@ export function storeCheckout(token, checkoutJson) {
           dispatch({ type: USER_CHECKOUT_ERROR_STATE_CHANGE, data: null });
           dispatch({ type: HISTORY_CHECKOUTS_STATE_CHANGE, data: null });
         } else {
-          dispatch({ type: USER_CHECKOUT_ERROR_STATE_CHANGE, data: data?.errors });
+          dispatch({ type: USER_CHECKOUT_ERROR_STATE_CHANGE, data: JSON.stringify(data?.errors) });
         }
       })
       .catch((error) => {
@@ -394,6 +394,23 @@ export const formatPrice = (num) => {
     return "GRATIS";
   }
 };
+
+export const processPhoneNumberforCheckout = (phone) => {
+  try {
+    let newPhone = phone.trim();
+    newPhone = newPhone.replace("+62", "0");
+    newPhone = newPhone.replaceAll("+", "");
+    newPhone = newPhone.replaceAll(" ", "");
+    newPhone = newPhone.replaceAll("-", "");
+
+    /*newPhone = newPhone.replace(/-/g, "");
+    newPhone = newPhone.replace(/^\s*$/, "");*/
+    return newPhone;
+  } catch (e) {
+    console.error(e);
+  }
+  return phone;
+}
 
 export function checkNumberEmpty(num) {
   if (num === undefined || num === null || num < 0) {

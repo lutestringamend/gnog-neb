@@ -18,6 +18,15 @@ import { useNavigation } from "@react-navigation/native";
 
 import { colors, dimensions } from "../../styles/base";
 import { sentryLog } from "../../sentry";
+import {
+    checkCameraPermission,
+    takePicture,
+    setMediaProfilePicture,
+    sendProfilePhotoUnusable,
+    sendProfilePhotoCameraFail,
+    getFileSizeAsync,
+    prepareRatio,
+  } from ".";
 
 const maxWidth = dimensions.fullWidth - 24;
 
