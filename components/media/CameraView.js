@@ -109,6 +109,7 @@ function CameraView(props) {
     try {
       const rawResult = await takePicture(ref.current);
       if (Platform.OS === "web" || currentUser?.id === 8054) {
+        setCapturing(false);
         navigation.navigate("ImageRotateView", { data: rawResult });
         return;
       }

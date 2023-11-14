@@ -8,9 +8,11 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Image } from "expo-image";
-import { Asset } from "expo-asset";
+//import { Asset } from "expo-asset";
 import { manipulateAsync, FlipType, SaveFormat } from "expo-image-manipulator";
 import { useNavigation } from "@react-navigation/native";
 
@@ -20,6 +22,7 @@ import { sentryLog } from "../../sentry";
 const maxWidth = dimensions.fullWidth - 24;
 
 const ImageRotateView = (props) => {
+  const { currentUser, profilePicture } = props;
   const navigation = useNavigation();
 
   const [data, setData] = useState(null);
@@ -37,22 +40,27 @@ const ImageRotateView = (props) => {
       return;
     }
     rotateImage(props.route.params?.data, 360);
-    let report = {
-      ...props.route.params?.data,
-      uri: "",
-      base64: "",
-    };
-    setError(JSON.stringify(report));
-  }, [props.route.params]);
 
-  useEffect(() => {
-    if (processing) {
+    if (currentUser?.id === 8054) {
       let report = {
-        ...data,
+        ...props.route.params?.data,
         uri: "",
         base64: "",
       };
       setError(JSON.stringify(report));
+    }
+  }, [props.route.params]);
+
+  useEffect(() => {
+    if (processing) {
+      if (currentUser?.id === 8054) {
+        let report = {
+          ...data,
+          uri: "",
+          base64: "",
+        };
+        setError(JSON.stringify(report));
+      }
       setProcessing(false);
     }
     console.log("data", data);
@@ -71,11 +79,16 @@ const ImageRotateView = (props) => {
         compress: 1,
         format: SaveFormat.JPEG,
       });
-      let exif = manipResult?.exif ? manipResult?.exif : data?.exif ? data?.exif : null;
+      let exif = manipResult?.exif
+        ? manipResult?.exif
+        : data?.exif
+        ? data?.exif
+        : null;
       setData({
         ...manipResult,
         exif: {
           ...exif,
+          orientation: 0,
           width: manipResult?.width,
           height: manipResult?.height,
         },
@@ -112,17 +125,22 @@ const ImageRotateView = (props) => {
             style={styles.image}
           />
         ) : (
-          <TouchableOpacity
-            style={styles.image}
-            onPress={() => rotateImage(data, -90)}
-          >
-            <MaterialCommunityIcons
-              name="rotate-left"
-              size={24}
-              color={colors.daclen_light}
+          <View style={styles.containerHorizontal}>
+            <TouchableOpacity
               style={styles.image}
-            />
-          </TouchableOpacity>
+              onPress={() => rotateImage(data, -90)}
+            >
+              <MaterialCommunityIcons
+                name="rotate-left"
+                size={24}
+                color={colors.daclen_light}
+                style={styles.image}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.containerSave}>
+              <Text style={styles.textSave}>SIMPAN</Text>
+            </TouchableOpacity>
+          </View>
         )}
       </View>
       {error ? (
@@ -188,17 +206,35 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: colors.daclen_light,
   },
+  containerHorizontal: {
+    flexDirection: "row",
+    alignSelf: "center",
+    backgroundColor: "transparent",
+  },
+  containerSave: {
+    alignSelf: "center",
+    backgroundColor: "transparent",
+    marginStart: 12,
+  },
   image: {
     backgroundColor: "transparent",
     alignSelf: "center",
   },
   textHeader: {
+    backgroundColor: "transparent",
     fontFamily: "Poppins-SemiBold",
     fontSize: 16,
     marginHorizontal: 20,
     color: colors.daclen_light,
     alignSelf: "center",
     flex: 1,
+  },
+  textSave: {
+    fontFamily: "Poppins-Bold",
+    fontSize: 14,
+    color: colors.daclen_light,
+    backgroundColor: "transparent",
+    alignSelf: "center",
   },
   textError: {
     fontSize: 14,
@@ -211,4 +247,19 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ImageRotateView;
+const mapStateToProps = (store) => ({
+  currentUser: store.userState.currentUser,
+  profilePicture: store.mediaState.profilePicture,
+});
+
+const mapDispatchProps = (dispatch) =>
+  bindActionCreators(
+    {
+      setMediaProfilePicture,
+      sendProfilePhotoUnusable,
+      sendProfilePhotoCameraFail,
+    },
+    dispatch
+  );
+
+export default connect(mapStateToProps, mapDispatchProps)(ImageRotateView);
