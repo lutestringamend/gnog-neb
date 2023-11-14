@@ -108,10 +108,7 @@ function CameraView(props) {
     setCapturing(true);
     try {
       const rawResult = await takePicture(ref.current);
-      const uri = rawResult?.uri ? rawResult?.uri : null;
-      console.log("CameraView snap", { rawResult, key });
-
-      /*const rotate = await manipulateAsync(rawResult?.uri, [
+      const rotate = await manipulateAsync(rawResult?.uri, [
         {
           rotate: rawResult?.exif
             ? rawResult?.exif?.orientation
@@ -120,7 +117,8 @@ function CameraView(props) {
             : 0,
         },
       ]);
-      const uri = Platform.OS === "ios" ? rawResult?.uri : rotate?.uri;*/
+      const uri = Platform.OS === "ios" ? rawResult?.uri : rotate?.uri;
+      console.log("CameraView snap", { rawResult, key });
 
       if (key === "profilePicture") {
         if (uri === null || uri === undefined) {
