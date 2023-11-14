@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -19,24 +20,25 @@ import { useNavigation } from "@react-navigation/native";
 import { colors, dimensions } from "../../styles/base";
 import { sentryLog } from "../../sentry";
 import {
-    checkCameraPermission,
-    takePicture,
-    setMediaProfilePicture,
-    sendProfilePhotoUnusable,
-    sendProfilePhotoCameraFail,
-    getFileSizeAsync,
-    prepareRatio,
-  } from ".";
+  setMediaProfilePicture,
+  sendProfilePhotoUnusable,
+  sendProfilePhotoCameraFail,
+  getFileSizeAsync,
+  prepareRatio,
+} from ".";
+import { MAXIMUM_FILE_SIZE_IN_BYTES } from "./constants";
 
 const maxWidth = dimensions.fullWidth - 24;
 
 const ImageRotateView = (props) => {
   const { currentUser, profilePicture } = props;
+  const { key } = props.route.params;
   const navigation = useNavigation();
 
   const [data, setData] = useState(null);
   const [disabled, setDisabled] = useState(true);
   const [processing, setProcessing] = useState(false);
+  const [flipping, setFlipping] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -50,7 +52,7 @@ const ImageRotateView = (props) => {
     }
     rotateImage(props.route.params?.data, 360);
 
-    if (currentUser?.id === 8054) {
+    if (Platform.OS === "web") {
       let report = {
         ...props.route.params?.data,
         uri: "",
@@ -62,7 +64,7 @@ const ImageRotateView = (props) => {
 
   useEffect(() => {
     if (processing) {
-      if (currentUser?.id === 8054) {
+      if (Platform.OS === "web") {
         let report = {
           ...data,
           uri: "",
@@ -71,6 +73,9 @@ const ImageRotateView = (props) => {
         setError(JSON.stringify(report));
       }
       setProcessing(false);
+    }
+    if (flipping) {
+      setFlipping(false);
     }
     console.log("data", data);
   }, [data]);
@@ -104,21 +109,78 @@ const ImageRotateView = (props) => {
       });
     } catch (e) {
       onImageError(e);
+      setProcessing(false);
     }
+  };
+
+  const flipImage = async (data) => {
+    setFlipping(true);
+    try {
+      const manipResult = await manipulateAsync(
+        data?.uri,
+        [{ flip: FlipType.Horizontal }],
+        {
+          compress: 1,
+          format: SaveFormat.JPEG,
+        }
+      );
+      let exif = manipResult?.exif
+        ? manipResult?.exif
+        : data?.exif
+        ? data?.exif
+        : null;
+      setData({
+        ...manipResult,
+        exif: {
+          ...exif,
+          orientation: 0,
+          width: manipResult?.width,
+          height: manipResult?.height,
+        },
+      });
+    } catch (e) {
+      onImageError(e);
+      setFlipping(false);
+    }
+  };
+
+  const saveImage = async () => {
+    if (key === "profilePicture") {
+      if (data === null || data?.uri === undefined || data?.uri === null) {
+        props.sendProfilePhotoCameraFail("");
+      } else {
+        let fileInfoSize =
+          Platform.OS === "web" ? null : await getFileSizeAsync(data?.uri);
+        if (
+          Platform.OS !== "web" &&
+          (fileInfoSize === undefined || fileInfoSize === null)
+        ) {
+          props.sendProfilePhotoUnusable(false);
+        } else if (
+          Platform.OS !== "web" &&
+          fileInfoSize >= MAXIMUM_FILE_SIZE_IN_BYTES
+        ) {
+          props.sendProfilePhotoUnusable(true);
+        } else {
+          props.setMediaProfilePicture(data?.uri, currentUser?.id);
+        }
+      }
+    }
+    navigation.pop(2);
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.containerHeader}>
         <TouchableOpacity
-          style={styles.image}
+          style={styles.arrow}
           onPress={() => navigation.goBack()}
         >
           <MaterialCommunityIcons
             name="arrow-left"
             size={24}
             color={colors.daclen_light}
-            style={styles.image}
+            style={styles.icon}
           />
         </TouchableOpacity>
         <Text allowFontScaling={false} style={styles.textHeader}>
@@ -127,26 +189,51 @@ const ImageRotateView = (props) => {
         {data === null ||
         data?.uri === undefined ||
         data?.uri === null ||
-        disabled ? null : processing ? (
-          <ActivityIndicator
-            size="small"
-            color={colors.daclen_light}
-            style={styles.image}
-          />
-        ) : (
+        disabled ? null : (
           <View style={styles.containerHorizontal}>
             <TouchableOpacity
-              style={styles.image}
+              style={styles.containerIcon}
               onPress={() => rotateImage(data, -90)}
             >
-              <MaterialCommunityIcons
-                name="rotate-left"
-                size={24}
-                color={colors.daclen_light}
-                style={styles.image}
-              />
+              {processing ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.daclen_light}
+                  style={styles.icon}
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="rotate-left"
+                  size={24}
+                  color={colors.daclen_light}
+                  style={styles.icon}
+                />
+              )}
             </TouchableOpacity>
-            <TouchableOpacity style={styles.containerSave}>
+            <TouchableOpacity
+              style={styles.containerIcon}
+              onPress={() => flipImage(data)}
+            >
+              {flipping ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.daclen_light}
+                  style={styles.icon}
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="flip-horizontal"
+                  size={24}
+                  color={colors.daclen_light}
+                  style={styles.icon}
+                />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => saveImage()}
+              disabled={processing || flipping}
+              style={styles.containerSave}
+            >
               <Text style={styles.textSave}>SIMPAN</Text>
             </TouchableOpacity>
           </View>
@@ -165,7 +252,7 @@ const ImageRotateView = (props) => {
           <ActivityIndicator
             size="large"
             color={colors.daclen_gray}
-            style={styles.image}
+            style={styles.icon}
           />
         ) : (
           <Image
@@ -223,9 +310,23 @@ const styles = StyleSheet.create({
   containerSave: {
     alignSelf: "center",
     backgroundColor: "transparent",
-    marginStart: 12,
+  },
+  containerIcon: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
+    marginEnd: 20,
   },
   image: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
+  },
+  icon: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
+    width: 24,
+    height: 24,
+  },
+  arrow: {
     backgroundColor: "transparent",
     alignSelf: "center",
   },

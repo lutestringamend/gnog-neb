@@ -108,12 +108,10 @@ function CameraView(props) {
     setCapturing(true);
     try {
       const rawResult = await takePicture(ref.current);
-      if (Platform.OS === "web" || currentUser?.id === 8054) {
-        setCapturing(false);
-        navigation.navigate("ImageRotateView", { data: rawResult });
-        return;
-      }
-      const rotate = await manipulateAsync(rawResult?.uri, [
+      const uri = rawResult?.uri ? rawResult?.uri : null;
+      console.log("CameraView snap", { rawResult, key });
+
+      /*const rotate = await manipulateAsync(rawResult?.uri, [
         {
           rotate: rawResult?.exif
             ? rawResult?.exif?.orientation
@@ -122,8 +120,7 @@ function CameraView(props) {
             : 0,
         },
       ]);
-      const uri = Platform.OS === "ios" ? rawResult?.uri : rotate?.uri;
-      console.log("CameraView snap", { rawResult, uri, key });
+      const uri = Platform.OS === "ios" ? rawResult?.uri : rotate?.uri;*/
 
       if (key === "profilePicture") {
         if (uri === null || uri === undefined) {
@@ -157,7 +154,14 @@ function CameraView(props) {
             return;
           }
         }
-        props.setMediaProfilePicture(uri, currentUser?.id);
+
+        setCapturing(false);
+        navigation.navigate("ImageRotateView", { key, data: rawResult });
+        //props.setMediaProfilePicture(uri, currentUser?.id);
+      } else if (Platform.OS === "web" || currentUser?.id === 8054) {
+        setCapturing(false);
+        navigation.navigate("ImageRotateView", { key, data: rawResult });
+        return;
       }
     } catch (e) {
       console.error(e);
