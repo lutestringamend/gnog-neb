@@ -20,7 +20,7 @@ const tableWidth = dimensions.fullWidth - 24;
 
 const defaultInputs = {
   numResellerPerMonth: "3",
-  salesPerMonth: MIN_MONTHLY_SALES,
+  salesPerMonth: MIN_MONTHLY_SALES.toString(),
   periodLength: "1",
   numMonths: "12",
   salesCommission: "0.1",
