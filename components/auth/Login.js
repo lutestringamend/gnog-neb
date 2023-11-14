@@ -549,13 +549,13 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
-    backgroundColor: colors.white,
+    backgroundColor: colors.daclen_black,
   },
   scrollView: {
     flex: 1,
     width: "100%",
     height: "100%",
-    backgroundColor: "transparent",
+    backgroundColor: colors.white,
   },
   containerFull: {
     flex: 1,

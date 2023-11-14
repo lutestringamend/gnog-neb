@@ -64,6 +64,7 @@ import LocationPin from "./components/address/LocationPin";
 
 import EditProfileScreen from "./components/profile/EditProfile";
 import CameraView from "./components/media/CameraView";
+import ImageRotateView from "./components/media/ImageRotateView";
 import ImageViewer from "./components/imageviewer/ImageViewer";
 import MultipleImageView from "./components/imageviewer/MultipleImageView";
 import MultipleImageSave from "./components/imageviewer/MultipleImageSave";
@@ -312,6 +313,11 @@ export default function App() {
               <Stack.Screen
                 name="CameraView"
                 component={CameraView}
+                options={{ ...defaultOptions, headerShown: false }}
+              />
+               <Stack.Screen
+                name="ImageRotateView"
+                component={ImageRotateView}
                 options={{ ...defaultOptions, headerShown: false }}
               />
               <Stack.Screen

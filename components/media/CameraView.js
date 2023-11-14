@@ -38,6 +38,7 @@ import {
 //const { height, width } = Dimensions.get("window");
 
 function CameraView(props) {
+  const { currentUser } = props;
   const [type, setType] = useState(CameraType.back);
   const [ready, setReady] = useState(false);
   const [capturing, setCapturing] = useState(false);
@@ -70,7 +71,7 @@ function CameraView(props) {
         const cameraAnalysis = await prepareRatio(ref.current);
         setRatio(cameraAnalysis?.ratio);
         setImagePadding(cameraAnalysis?.imagePadding);
-        if (props.currentUser?.id === 8054) {
+        if (currentUser?.id === 8054) {
           ToastAndroid.show(JSON.stringify(cameraAnalysis), ToastAndroid.LONG);
         }
         setLoadingText(null);
@@ -85,7 +86,7 @@ function CameraView(props) {
     } else {
       setLoadingText(null);
     }
-  }, [ready, props.currentUser]);
+  }, [ready, currentUser]);
 
   const startRecheckingPermissions = async () => {
     console.log("startRecheckingPermissions");
@@ -107,6 +108,10 @@ function CameraView(props) {
     setCapturing(true);
     try {
       const rawResult = await takePicture(ref.current);
+      if (Platform.OS === "web" || currentUser?.id === 8054) {
+        navigation.navigate("ImageRotateView", { data: rawResult });
+        return;
+      }
       const rotate = await manipulateAsync(rawResult?.uri, [
         {
           rotate: rawResult?.exif
@@ -133,7 +138,7 @@ function CameraView(props) {
         if (Platform.OS !== "web") {
           let fileInfoSize = await getFileSizeAsync(uri);
 
-          if (Platform.OS === "android" && props.currentUser?.id === 8054) {
+          if (Platform.OS === "android" && currentUser?.id === 8054) {
             ToastAndroid.show(
               `cameraview uri ${uri}\nsize ${fileInfoSize.toString()}`,
               ToastAndroid.LONG
@@ -151,7 +156,7 @@ function CameraView(props) {
             return;
           }
         }
-        props.setMediaProfilePicture(uri, props.currentUser?.id);
+        props.setMediaProfilePicture(uri, currentUser?.id);
       }
     } catch (e) {
       console.error(e);
@@ -277,7 +282,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignContent: "center",
     alignItems: "center",
-    backgroundColor: "#000000",
+    backgroundColor: colors.black,
   },
   containerPermission: {
     flex: 1,
