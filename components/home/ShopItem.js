@@ -41,10 +41,10 @@ const ShopItem = (props) => {
         >
           <Image
             key={id}
-            style={styles.image}
+            style={[styles.image, index > 9 ? styles.imageBundle : null]}
             source={foto_url}
             onClick={() => openProduct()}
-            contentFit="cover"
+            contentFit={index > 9 ? "contain" : "cover"}
             placeholder={blurhash}
             transition={50}
           />
@@ -146,11 +146,15 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   image: {
-    width: 72,
-    height: 80,
+    width: 68,
+    height: 76,
     marginVertical: 10,
     alignSelf: "center",
     backgroundColor: "transparent",
+  },
+  imageBundle: {
+    width: 90,
+    height: 100,
   },
   textPrice: {
     textAlign: "right",

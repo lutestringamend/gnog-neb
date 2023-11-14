@@ -64,11 +64,11 @@ const Calculator = () => {
     if (
       isNaN(inputs.numMonths) ||
       inputs.numMonths < 1 ||
-      inputs.numMonths > 12
+      inputs.numMonths > 60
     ) {
       newErrors = {
         ...newErrors,
-        numMonths: "Minimal 1 bulan, maksimal 12 bulan",
+        numMonths: "Minimal 1 bulan, maksimal 60 bulan",
       };
       allowed = false;
     } else {
@@ -91,7 +91,7 @@ const Calculator = () => {
 
   const showPoints = (item) => {
     if (!(item === undefined || item === null)) {
-      let text = `PPN: ${item?.ppn}\nPenjualan: ${item?.sales}\nKomisi Penjualan: ${item?.salesCommission}\nBV: ${item?.bv}\nPV: ${item?.pv}\nHPV: ${item?.hpv}\nRPV ${item?.pv}`;
+      let text = `PPN: ${formatPrice(item?.ppn)}\nPenjualan: ${formatPrice(item?.sales)}\nKomisi Penjualan: ${formatPrice(item?.salesCommission)}\nBV: ${item?.bv}\nPV: ${item?.pv}\nHPV: ${item?.hpv}\nRPV ${item?.pv}`;
       if (Platform.OS === "android") {
         ToastAndroid.show(text, ToastAndroid.LONG);
       } else {
@@ -170,17 +170,17 @@ const Calculator = () => {
                 allowFontScaling={false}
                 style={[styles.textSpecHeader, { width: 0.2 * tableWidth }]}
               >
-                {`Total Seller\nJaringan`}
-              </Text>
-              <Text
-                allowFontScaling={false}
-                style={[styles.textSpecHeader, { width: 0.35 * tableWidth }]}
-              >
-                {`Penjualan Jaringan\n/Bulan`}
+                {`Total Seller`}
               </Text>
               <Text
                 allowFontScaling={false}
                 style={[styles.textSpecHeader, { width: 0.25 * tableWidth }]}
+              >
+                {`Saldo`}
+              </Text>
+              <Text
+                allowFontScaling={false}
+                style={[styles.textSpecHeader, { width: 0.35 * tableWidth }]}
               >
                 {`Saldo\nAkumulasi`}
               </Text>
@@ -200,21 +200,11 @@ const Calculator = () => {
                 </Text>
                 <Text
                   allowFontScaling={false}
-                  style={[styles.textSpec, { width: 0.2 * tableWidth }]}
+                  style={[styles.textSpec, { 
+                    width: 0.2 * tableWidth, 
+                  }]}
                 >
-                  {item?.numResellers}
-                </Text>
-                <Text
-                  allowFontScaling={false}
-                  style={[
-                    styles.textSpec,
-                    {
-                      width: 0.35 * tableWidth,
-                      fontSize: item?.monthlySales > 1000000000 ? 8 : 10,
-                    },
-                  ]}
-                >
-                  {formatPrice(item?.monthlySales)}
+                  {item?.numResellers > 10000000 ? "> 10 juta" : item?.numResellers}
                 </Text>
                 <Text
                   allowFontScaling={false}
@@ -227,6 +217,19 @@ const Calculator = () => {
                   ]}
                 >
                   {formatPrice(item?.balance)}
+                </Text>
+                <Text
+                  allowFontScaling={false}
+                  style={[
+                    styles.textSpec,
+                    {
+                      width: 0.35 * tableWidth,
+                      fontSize: item?.balance > 1000000000 ? 8 : 10,
+                      fontFamily: (index + 1) % 12 === 0 ? "Poppins-Bold" : "Poppins",
+                    },
+                  ]}
+                >
+                  {formatPrice(item?.balanceAccumulation)}
                 </Text>
               </TouchableOpacity>
             ))}

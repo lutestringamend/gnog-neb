@@ -9,6 +9,7 @@ import {
   PRODUCT_SEARCH_FILTER_STATE_CHANGE,
   CLEAR_PRODUCT_DATA,
   PRODUCT_FETCH_ERROR_STATE_CHANGE,
+  PRODUCTS_DATA_INCREMENT_STATE_CHANGE,
 } from "../../redux/constants";
 import { getObjectAsync, setObjectAsync } from "../../components/asyncstorage";
 import { ASYNC_PRODUCTS_ARRAY_KEY } from "../../components/asyncstorage/constants";
@@ -21,12 +22,13 @@ export function clearProductData() {
   };
 }
 
-export function getProductData(storageProducts, paginationIndex) {
+export function getProductData(storageProducts, paginationIndex, page) {
   return (dispatch) => {
     try {
-      Axios.get(productfetchlink)
+      const url = productfetchlink + (page === undefined || page === null ? "" : `?page=${page}`);
+      Axios.get(url)
       .then((response) => {
-        console.log("getProductData response", response?.data);
+        console.log("getProductData response", url, response?.data);
         const products = response?.data?.data;
         if (
           products === undefined ||
@@ -39,8 +41,13 @@ export function getProductData(storageProducts, paginationIndex) {
           readStorageProductData(dispatch, storageProducts, paginationIndex, null);
         } else {
           dispatch({ type: PRODUCT_FETCH_ERROR_STATE_CHANGE, data: null });
-          console.log(`saving all product data to async storage with ${products?.length} items`);
-          setObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY, products);
+          if (!(page=== undefined || page === null)) {
+            dispatch({ type: PRODUCTS_DATA_INCREMENT_STATE_CHANGE, data: products });
+            return;
+          }
+
+          /*console.log(`saving all product data to async storage with ${products?.length} items`);
+          setObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY, products);*/
 
           if (products?.length <= productpaginationnumber) {
             dispatch({

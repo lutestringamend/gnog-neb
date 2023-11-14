@@ -250,6 +250,11 @@ function Main(props) {
         readStorageProducts();
       } else {
         props.clearCartError();
+        if (props.products?.length < 11) {
+          props.getProductData(null, 0, 2);
+        } else {
+          setObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY, props.products);
+        }
         //console.log("redux products", props.products);
       }
     }, [props.products]);

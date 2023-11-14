@@ -16,7 +16,8 @@ export const createFixedMonthlyProjections = (numMembers, periodLength, salesPer
             let pv = Math.round(bv / PV_CONSTANT);
             let hpv = (numResellers + 1) * pv;
             let rpv = Math.pow(numMembers, i - 1) * pv;
-            let balance = i*(salesCommission + recruitmentBonus);
+            let balance = salesCommission + recruitmentBonus;
+            let balanceAccumulation = i * (salesCommission + recruitmentBonus);
             result.push({
                 month: periodLength > 1 ? `${(periodLength * (i - 1)) + 1}-${i * periodLength}` : i.toString(),
                 numResellers,
@@ -29,7 +30,8 @@ export const createFixedMonthlyProjections = (numMembers, periodLength, salesPer
                 hpv,
                 rpv,
                 recruitmentBonus,
-                balance
+                balance,
+                balanceAccumulation,
             });
         }
         return result;

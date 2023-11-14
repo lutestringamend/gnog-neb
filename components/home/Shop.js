@@ -416,6 +416,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     backgroundColor: "transparent",
+    marginBottom: 20,
   },
   containerHeader: {
     marginTop: 20,

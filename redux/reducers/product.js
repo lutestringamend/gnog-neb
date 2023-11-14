@@ -1,6 +1,7 @@
 import {
   PRODUCTS_DATA_STATE_CHANGE,
   PRODUCT_ITEM_DATA_STATE_CHANGE,
+  PRODUCTS_DATA_INCREMENT_STATE_CHANGE,
   CLEAR_PRODUCT_DATA,
   PRODUCT_MAX_INDEX_STATE_CHANGE,
   PRODUCT_SEARCH_FILTER_STATE_CHANGE,
@@ -22,7 +23,12 @@ export const product = (state = initialState, action) => {
         ...state,
         products: action.products,
       };
-    case PRODUCT_FETCH_ERROR_STATE_CHANGE:
+    case PRODUCTS_DATA_INCREMENT_STATE_CHANGE:
+      return {
+        ...state,
+        products: [...state.products].concat(action.data),
+      };  
+  case PRODUCT_FETCH_ERROR_STATE_CHANGE:
       return {
         ...state,
         productError: action.data,
