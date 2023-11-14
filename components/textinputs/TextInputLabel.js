@@ -23,6 +23,7 @@ const TextInputLabel = (props) => {
     inputMode,
     value,
     error,
+    notes,
     placeholder,
     maxCharacter,
     disabled,
@@ -154,7 +155,7 @@ const TextInputLabel = (props) => {
         ) : null}
       </View>
 
-      {error || maxCharacter ? (
+      {notes || error || maxCharacter ? (
         <View
           style={[
             styles.containerHorizontal,
@@ -172,7 +173,14 @@ const TextInputLabel = (props) => {
             >
               {error}
             </Text>
-          ) : null}
+          ) : notes ? 
+          <Text
+              allowFontScaling={false}
+              style={[styles.text, { flex: 1 }]}
+            >
+              {notes}
+            </Text>
+          : null}
 
           {maxCharacter ? (
             <Text

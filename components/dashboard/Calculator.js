@@ -12,14 +12,15 @@ import {
 
 import { colors, dimensions } from "../../styles/base";
 import TextInputLabel from "../textinputs/TextInputLabel";
-import { formatPrice } from "../../axios/cart";
+import { checkNumberEmpty, formatPrice } from "../../axios/cart";
 import { createFixedMonthlyProjections } from ".";
+import { MIN_MONTHLY_SALES, SIMULATOR_DISCLAIMER } from "./constants";
 
 const tableWidth = dimensions.fullWidth - 24;
 
 const defaultInputs = {
   numResellerPerMonth: "3",
-  salesPerMonth: "2000000",
+  salesPerMonth: MIN_MONTHLY_SALES,
   periodLength: "1",
   numMonths: "12",
   salesCommission: "0.1",
@@ -46,11 +47,18 @@ const Calculator = () => {
     } else {
       newErrors = { ...newErrors, numResellerPerMonth: null };
     }
-    if (isNaN(inputs.salesPerMonth) || inputs.salesPerMonth < 0) {
-      setErrors({
-        ...errors,
-        salesPerMonth: "Tidak boleh lebih kecil dari Rp 0",
-      });
+    if (
+      inputs.salesPerMonth === null ||
+      inputs.salesPerMonth === "" ||
+      isNaN(inputs.salesPerMonth) ||
+      parseInt(inputs.salesPerMonth) < MIN_MONTHLY_SALES
+    ) {
+      newErrors = {
+        ...newErrors,
+        salesPerMonth: `Tidak boleh lebih kecil dari ${formatPrice(
+          MIN_MONTHLY_SALES
+        )}`,
+      };
       allowed = false;
     } else {
       newErrors = { ...newErrors, salesPerMonth: null };
@@ -89,9 +97,27 @@ const Calculator = () => {
     setProjection(result);
   };
 
+  const changeSales = (e) => {
+    try {
+      if (!(isNaN(e) || parseInt(e))) {
+        setInputs({
+          ...inputs,
+          salesPerMonth: e,
+          salesPerMonthDisplay: formatPrice(e),
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const showPoints = (item) => {
     if (!(item === undefined || item === null)) {
-      let text = `PPN: ${formatPrice(item?.ppn)}\nPenjualan: ${formatPrice(item?.sales)}\nKomisi Penjualan: ${formatPrice(item?.salesCommission)}\nBV: ${item?.bv}\nPV: ${item?.pv}\nHPV: ${item?.hpv}\nRPV ${item?.pv}`;
+      let text = `PPN: ${formatPrice(item?.ppn)}\nPenjualan: ${formatPrice(
+        item?.sales
+      )}\nKomisi Penjualan: ${formatPrice(item?.salesCommission)}\nBV: ${
+        item?.bv
+      }\nPV: ${item?.pv}\nHPV: ${item?.hpv}\nRPV ${item?.pv}`;
       if (Platform.OS === "android") {
         ToastAndroid.show(text, ToastAndroid.LONG);
       } else {
@@ -120,6 +146,11 @@ const Calculator = () => {
           label="Total Penjualan per Bulan"
           compulsory
           value={inputs?.salesPerMonth}
+          notes={
+            checkNumberEmpty(inputs?.salesPerMonth) >= MIN_MONTHLY_SALES
+              ? formatPrice(inputs?.salesPerMonth)
+              : null
+          }
           inputMode="decimal"
           error={errors?.salesPerMonth}
           onChangeText={(salesPerMonth) =>
@@ -155,6 +186,12 @@ const Calculator = () => {
         {projection === null ||
         projection?.length === undefined ||
         projection?.length < 1 ? null : (
+          <Text style={styles.textDisclaimer}>{SIMULATOR_DISCLAIMER}</Text>
+        )}
+
+        {projection === null ||
+        projection?.length === undefined ||
+        projection?.length < 1 ? null : (
           <View style={styles.containerTable}>
             <Text allowFontScaling={false} style={styles.textTableHeader}>
               Pertumbuhan Seller dan Penjualan / Bulan
@@ -166,7 +203,7 @@ const Calculator = () => {
               >
                 Bulan
               </Text>
-              
+
               <Text
                 allowFontScaling={false}
                 style={[styles.textSpecHeader, { width: 0.4 * tableWidth }]}
@@ -185,7 +222,16 @@ const Calculator = () => {
               <TouchableOpacity
                 onPress={() => showPoints(item)}
                 key={index}
-                style={[styles.containerSpec, { backgroundColor: (index + 1) % 12 === 0 ? colors.daclen_lightgrey : "transparent", borderEndWidth: (index + 1) % 12 === 0 ? 1 : 0}]}
+                style={[
+                  styles.containerSpec,
+                  {
+                    backgroundColor:
+                      (index + 1) % 12 === 0
+                        ? colors.daclen_lightgrey
+                        : "transparent",
+                    borderEndWidth: (index + 1) % 12 === 0 ? 1 : 0,
+                  },
+                ]}
               >
                 <Text
                   allowFontScaling={false}
@@ -193,7 +239,7 @@ const Calculator = () => {
                 >
                   {item?.month}
                 </Text>
-                
+
                 <Text
                   allowFontScaling={false}
                   style={[
@@ -213,7 +259,8 @@ const Calculator = () => {
                     {
                       width: 0.4 * tableWidth,
                       fontSize: item?.balance > 1000000000 ? 10 : 12,
-                      fontFamily: (index + 1) % 12 === 0 ? "Poppins-Bold" : "Poppins",
+                      fontFamily:
+                        (index + 1) % 12 === 0 ? "Poppins-Bold" : "Poppins",
                     },
                   ]}
                 >
@@ -317,6 +364,17 @@ const styles = StyleSheet.create({
     textAlignVertical: "center",
     borderColor: colors.daclen_gray,
     color: colors.daclen_black,
+  },
+  textDisclaimer: {
+    color: colors.daclen_light,
+    textAlignVertical: "center",
+    fontSize: 14,
+    marginVertical: 20,
+    width: tableWidth,
+    fontFamily: "Poppins-SemiBold",
+    padding: 12,
+    backgroundColor: colors.daclen_black,
+    borderRadius: 8,
   },
   button: {
     alignItems: "center",

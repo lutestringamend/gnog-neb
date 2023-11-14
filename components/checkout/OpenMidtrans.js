@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   textUrl: {
     color: colors.daclen_blue,
     textAlign: "center",
-    fontFamily: "Poppins", fontSize: 12,
+    fontSize: 12,
     marginVertical: 20,
     marginHorizontal: 10,
     fontFamily: "Poppins-Bold",
