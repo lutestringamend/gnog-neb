@@ -107,18 +107,19 @@ function CameraView(props) {
   const snap = async () => {
     setCapturing(true);
     try {
-      const rawResult = await takePicture(ref.current);
-      const rotate = await manipulateAsync(rawResult?.uri, [
+      const data = await takePicture(ref.current);
+      /*const rotate = await manipulateAsync(data?.uri, [
         {
-          rotate: rawResult?.exif
-            ? rawResult?.exif?.orientation
-              ? rawResult?.exif?.orientation
+          rotate: data?.exif
+            ? data?.exif?.orientation
+              ? data?.exif?.orientation
               : 0
             : 0,
         },
       ]);
-      const uri = Platform.OS === "ios" ? rawResult?.uri : rotate?.uri;
-      console.log("CameraView snap", { rawResult, key });
+      const uri = Platform.OS === "ios" ? data?.uri : rotate?.uri;*/
+      const uri = data?.uri;
+      console.log("CameraView snap", key, data);
 
       if (key === "profilePicture") {
         if (uri === null || uri === undefined) {
@@ -153,14 +154,18 @@ function CameraView(props) {
           }
         }
 
-        setCapturing(false);
-        navigation.navigate("ImageRotateView", { key, data: rawResult });
+        /*  setCapturing(false);
+        console.log("going imagerotate", key, data);
+        navigation.navigate("ImageRotateView", { key, data: data });
+        return;
         //props.setMediaProfilePicture(uri, currentUser?.id);
       } else if (Platform.OS === "web" || currentUser?.id === 8054) {
+        navigation.navigate("ImageRotateView", { key, data: data });
         setCapturing(false);
-        navigation.navigate("ImageRotateView", { key, data: rawResult });
-        return;
+        return;*/
       }
+      setCapturing(false);
+      navigation.navigate("ImageRotateView", { key, data });
     } catch (e) {
       console.error(e);
       if (Platform.OS === "android") {
@@ -169,8 +174,8 @@ function CameraView(props) {
       if (key === "profilePicture") {
         props.sendProfilePhotoCameraFail(e?.message);
       }
+      navigation.goBack();
     }
-    navigation.goBack();
   };
 
   return (
