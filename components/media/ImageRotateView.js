@@ -52,26 +52,26 @@ const ImageRotateView = (props) => {
     }
     rotateImage(props.route.params?.data, 360);
 
-    if (Platform.OS === "web") {
+    /*if (Platform.OS === "web") {
       let report = {
         ...props.route.params?.data,
         uri: "",
         base64: "",
       };
       setError(JSON.stringify(report));
-    }
+    }*/
   }, [props.route.params]);
 
   useEffect(() => {
     if (processing) {
-      if (Platform.OS === "web") {
+      /*if (Platform.OS === "web") {
         let report = {
           ...data,
           uri: "",
           base64: "",
         };
         setError(JSON.stringify(report));
-      }
+      }*/
       setProcessing(false);
     }
     if (flipping) {

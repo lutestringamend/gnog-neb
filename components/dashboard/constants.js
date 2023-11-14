@@ -5,6 +5,11 @@ export const PPN_VALUE = 1.1/0.1
 export const SALES_COMMISSION = 0.1
 export const PV_CONSTANT = 50000
 
+export const LEVEL_A_COMMISSION = 0.05;
+export const LEVEL_B_COMMISSION = 0.02;
+export const LEVEL_C_COMMISSION = 0.03;
+export const LEVEL_D_COMMISSION = 0.04;
+
 export const dashboardbuttonsdefaultwidth = 160;
 export const dashboardbuttonsdefaultheight = 72;
 export const dashboardbuttonsdefaultpaddingvertical = 12;

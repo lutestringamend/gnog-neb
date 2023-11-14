@@ -408,7 +408,7 @@ export default function App() {
               <Stack.Screen
                 name="Calculator"
                 component={Calculator}
-                options={{ ...defaultOptions, title: "Simulasi Poin & Saldo" }}
+                options={{ ...defaultOptions, title: "Simulasi Saldo" }}
               />
             </Stack.Navigator>
           </NavigationContainer>

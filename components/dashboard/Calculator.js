@@ -19,7 +19,7 @@ const tableWidth = dimensions.fullWidth - 24;
 
 const defaultInputs = {
   numResellerPerMonth: "3",
-  salesPerMonth: "3000000",
+  salesPerMonth: "2000000",
   periodLength: "1",
   numMonths: "12",
   salesCommission: "0.1",
@@ -166,21 +166,16 @@ const Calculator = () => {
               >
                 Bulan
               </Text>
+              
               <Text
                 allowFontScaling={false}
-                style={[styles.textSpecHeader, { width: 0.2 * tableWidth }]}
-              >
-                {`Total Seller`}
-              </Text>
-              <Text
-                allowFontScaling={false}
-                style={[styles.textSpecHeader, { width: 0.25 * tableWidth }]}
+                style={[styles.textSpecHeader, { width: 0.4 * tableWidth }]}
               >
                 {`Saldo`}
               </Text>
               <Text
                 allowFontScaling={false}
-                style={[styles.textSpecHeader, { width: 0.35 * tableWidth }]}
+                style={[styles.textSpecHeader, { width: 0.4 * tableWidth }]}
               >
                 {`Saldo\nAkumulasi`}
               </Text>
@@ -190,7 +185,7 @@ const Calculator = () => {
               <TouchableOpacity
                 onPress={() => showPoints(item)}
                 key={index}
-                style={styles.containerSpec}
+                style={[styles.containerSpec, { backgroundColor: (index + 1) % 12 === 0 ? colors.daclen_lightgrey : "transparent", borderEndWidth: (index + 1) % 12 === 0 ? 1 : 0}]}
               >
                 <Text
                   allowFontScaling={false}
@@ -198,21 +193,14 @@ const Calculator = () => {
                 >
                   {item?.month}
                 </Text>
-                <Text
-                  allowFontScaling={false}
-                  style={[styles.textSpec, { 
-                    width: 0.2 * tableWidth, 
-                  }]}
-                >
-                  {item?.numResellers > 10000000 ? "> 10 juta" : item?.numResellers}
-                </Text>
+                
                 <Text
                   allowFontScaling={false}
                   style={[
                     styles.textSpec,
                     {
-                      width: 0.25 * tableWidth,
-                      fontSize: item?.balance > 1000000000 ? 8 : 10,
+                      width: 0.4 * tableWidth,
+                      fontSize: item?.balance > 1000000000 ? 10 : 12,
                     },
                   ]}
                 >
@@ -223,8 +211,8 @@ const Calculator = () => {
                   style={[
                     styles.textSpec,
                     {
-                      width: 0.35 * tableWidth,
-                      fontSize: item?.balance > 1000000000 ? 8 : 10,
+                      width: 0.4 * tableWidth,
+                      fontSize: item?.balance > 1000000000 ? 10 : 12,
                       fontFamily: (index + 1) % 12 === 0 ? "Poppins-Bold" : "Poppins",
                     },
                   ]}
@@ -241,6 +229,22 @@ const Calculator = () => {
 };
 
 /*
+
+<Text
+                allowFontScaling={false}
+                style={[styles.textSpecHeader, { width: 0.2 * tableWidth }]}
+              >
+                {`Total Seller`}
+              </Text>
+
+<Text
+                  allowFontScaling={false}
+                  style={[styles.textSpec, { 
+                    width: 0.2 * tableWidth, 
+                  }]}
+                >
+                  {item?.numResellers > 10000000 ? "> 10 juta" : item?.numResellers}
+                </Text>
 
         <TextInputLabel
           label="Jumlah Bulan dalam 1 Periode Rekrutmen"

@@ -53,7 +53,7 @@ const Header = (props) => {
 
   function openAbout() {
     if (currentUser?.id === 8054) {
-      navigation.navigate("CameraView");
+      navigation.navigate("Calculator");
     } else {
       navigation.navigate("About");
     }

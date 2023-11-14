@@ -209,9 +209,9 @@ const DashboardButtons = ({ userId, username }) => {
         </View>
         <View style={[styles.containerVertical, { marginStart: 10 }]}>
           <DashButton
-            text={`SHARE\nREFERRAL`}
-            icon="account-group"
-            onPress={() => shareURL()}
+            text={`SIMULASI\nSALDO`}
+            icon="calculator"
+            onPress={() => navigation.navigate("Calculator")}
           />
           <DashButton
             text={`PENJELASAN\nBISNIS`}

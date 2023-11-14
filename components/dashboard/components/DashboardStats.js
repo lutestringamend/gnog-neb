@@ -138,15 +138,14 @@ export default function DashboardStats(props) {
             } Point`}</Text>
           </View>}
           
-          <TouchableOpacity
+          <View
             style={styles.button}
-            onPress={() => openLaporanPoint()}
           >
             <Text
               allowFontScaling={false}
               style={styles.textButton}
             >{`Laporan\nPoint`}</Text>
-          </TouchableOpacity>
+          </View>
         </TouchableOpacity>
 
         <View style={styles.containerHorizontal}>
