@@ -95,7 +95,7 @@ export const printCheckoutInvoice = async (token, checkout_id) => {
         }
       }
     );
-      console.log("printCheckoutInvoice response", response);
+      //console.log("printCheckoutInvoice response", response);
     data = response?.data;
   } catch (e) {
     console.error(e);

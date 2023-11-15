@@ -29,6 +29,7 @@ import {
 } from "../../axios/history";
 import { formatPrice, printCheckoutInvoice } from "../../axios/cart";
 import { checkoutsubtotalcommissionpercentage } from "../main/constants";
+import { createInvoicePDF } from "../../axios/pdf";
 
 function CheckoutItem(props) {
   const { checkout, token, userCheckout } = props;
@@ -119,6 +120,10 @@ function CheckoutItem(props) {
       setError(response?.error ? response?.error : "Gagal mendapatkan invoice");
     } else {
       setError(null);
+      const invoicing = await createInvoicePDF(response?.data, checkout?.invoice);
+      if (invoicing === null || invoicing?.session === undefined || invoicing?.session === null || invoicing?.session !== "success") {
+        setError(invoicing?.error ? invoicing?.error : "Gagal mencetak invoice");
+      }
     }
   };
 
