@@ -354,9 +354,9 @@ function Main(props) {
       //console.log("Main redux PIN", profilePIN);
     }, [profilePIN]);
 
-    useEffect(() => {
+    /*useEffect(() => {
       console.log("redux user profilePicture", props?.profilePicture);
-    }, [props?.profilePicture]);
+    }, [props?.profilePicture]);*/
 
     useEffect(() => {
       if (addressId === null) {
@@ -391,6 +391,7 @@ function Main(props) {
       const storageCurrentUser = await readStorageCurrentUser();
       const key = await deriveUserKey(storageToken);
       const deviceToken = await getObjectAsync(ASYNC_DEVICE_TOKEN_KEY);
+      console.log("deviceToken", deviceToken);
       try {
         if (
           storageToken === undefined ||

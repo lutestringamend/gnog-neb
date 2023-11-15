@@ -14,7 +14,13 @@ import { colors, dimensions } from "../../styles/base";
 import TextInputLabel from "../textinputs/TextInputLabel";
 import { checkNumberEmpty, formatPrice } from "../../axios/cart";
 import { createFixedMonthlyProjections } from ".";
-import { MIN_MONTHLY_SALES, SIMULATOR_DISCLAIMER } from "./constants";
+import {
+  LEVEL_LABELS,
+  MAX_MEMBERS_RECRUITED,
+  MAX_MONTHLY_SALES,
+  MIN_MONTHLY_SALES,
+  SIMULATOR_DISCLAIMER,
+} from "./constants";
 
 const tableWidth = dimensions.fullWidth - 24;
 
@@ -41,8 +47,15 @@ const Calculator = () => {
   useEffect(() => {
     let allowed = true;
     let newErrors = { ...errors };
-    if (isNaN(inputs.numResellerPerMonth) || inputs.numResellerPerMonth < 1) {
-      newErrors = { ...newErrors, numResellerPerMonth: "Minimal 1 Reseller" };
+    if (
+      isNaN(inputs.numResellerPerMonth) ||
+      inputs.numResellerPerMonth < 1 ||
+      inputs.numResellerPerMonth > MAX_MEMBERS_RECRUITED
+    ) {
+      newErrors = {
+        ...newErrors,
+        numResellerPerMonth: `Minimal 1 Reseller, maksimal ${MAX_MEMBERS_RECRUITED} Reseller`,
+      };
       allowed = false;
     } else {
       newErrors = { ...newErrors, numResellerPerMonth: null };
@@ -51,13 +64,14 @@ const Calculator = () => {
       inputs.salesPerMonth === null ||
       inputs.salesPerMonth === "" ||
       isNaN(inputs.salesPerMonth) ||
-      parseInt(inputs.salesPerMonth) < MIN_MONTHLY_SALES
+      parseInt(inputs.salesPerMonth) < MIN_MONTHLY_SALES ||
+      parseInt(inputs.salesPerMonth) > MAX_MONTHLY_SALES
     ) {
       newErrors = {
         ...newErrors,
         salesPerMonth: `Tidak boleh lebih kecil dari ${formatPrice(
           MIN_MONTHLY_SALES
-        )}`,
+        )} dan lebih besar dari ${formatPrice(MAX_MONTHLY_SALES)}`,
       };
       allowed = false;
     } else {
@@ -237,7 +251,9 @@ const Calculator = () => {
                   allowFontScaling={false}
                   style={[styles.textSpec, { width: 0.2 * tableWidth }]}
                 >
-                  {item?.month}
+                  {`${item?.month}${
+                    item?.level > 0 ? " - " + LEVEL_LABELS[item?.level] : ""
+                  }`}
                 </Text>
 
                 <Text

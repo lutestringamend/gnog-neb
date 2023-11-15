@@ -13,7 +13,12 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import packageJson from "../../package.json";
-import { userLogout, setNewToken, clearUserData } from "../../axios/user";
+import {
+  userLogout,
+  setNewToken,
+  clearUserData,
+  serverLogout,
+} from "../../axios/user";
 import {
   aboutapp,
   aboutappicon,
@@ -48,6 +53,8 @@ import { sentryLog } from "../../sentry";
 import { useNavigation } from "@react-navigation/native";
 import { websyaratketentuan } from "../../axios/constants";
 
+const appVersion = `Versi ${packageJson?.version}`;
+
 export const userLogOut = async (props, username) => {
   try {
     await userLogout(username);
@@ -61,7 +68,8 @@ export const userLogOut = async (props, username) => {
 function Profile(props) {
   const { currentUser, token, profilePicture } = props;
   const [loggingOut, setLoggingOut] = useState(false);
-  const appVersion = `Versi ${packageJson?.version}`;
+  const [error, setError] = useState(null);
+
   const rbSheet = useRef();
   const navigation = useNavigation();
 
@@ -105,7 +113,13 @@ function Profile(props) {
 
   function openDaclenCare() {
     let template = adminWAnonusertemplate;
-    if (!(currentUser?.name === undefined || currentUser?.name === null || currentUser?.name === "")) {
+    if (
+      !(
+        currentUser?.name === undefined ||
+        currentUser?.name === null ||
+        currentUser?.name === ""
+      )
+    ) {
       template = adminWAtemplate.replace("#I#", currentUser?.name);
     }
     console.log("openDaclenCare", template);
@@ -118,7 +132,15 @@ function Profile(props) {
 
   const proceedLogout = async () => {
     setLoggingOut(true);
-    await userLogOut(props, currentUser?.name);
+    setError(null);
+    const check = await serverLogout(token);
+    if (check?.session === "success") {
+      await userLogOut(props, currentUser?.name);
+    } else {
+      rbSheet.current.close();
+      setError("Gagal Logout.");
+      setLoggingOut(false);
+    }
   };
 
   /*
@@ -134,15 +156,26 @@ function Profile(props) {
   return (
     <SafeAreaView style={styles.container}>
       <MainHeader icon="arrow-left" title="Setting Pengguna" />
+      {error ? (
+        <Text allowFontScaling={false} style={styles.textError}>
+          {error}
+        </Text>
+      ) : null}
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.containerVertical}
       >
-        <Header token={token} currentUser={currentUser} profilePicture={profilePicture} thickness={3} />
+        <Header
+          token={token}
+          currentUser={currentUser}
+          profilePicture={profilePicture}
+          thickness={3}
+        />
 
         {currentUser === null || currentUser?.id === undefined ? null : (
           <View>
-            {currentUser?.bank_set === undefined || !currentUser?.bank_set ? null : (
+            {currentUser?.bank_set === undefined ||
+            !currentUser?.bank_set ? null : (
               <ProfileMenuItem
                 text={addressmenu}
                 icon={addressmenuicon}
@@ -204,7 +237,9 @@ function Profile(props) {
             style={styles.button}
             onPress={() => rbSheet.current.open()}
           >
-            <Text allowFontScaling={false} style={styles.textButton}>Logout</Text>
+            <Text allowFontScaling={false} style={styles.textButton}>
+              Logout
+            </Text>
           </TouchableOpacity>
         )}
       </ScrollView>
@@ -255,6 +290,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Poppins-SemiBold",
     color: colors.white,
+  },
+  textError: {
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
+    color: colors.white,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: colors.daclen_danger,
+    textAlign: "center",
   },
 });
 

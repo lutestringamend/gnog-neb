@@ -32,6 +32,7 @@ import {
   TEMP_DEV_DEVICE_TOKEN,
   monthNamesShort,
   userlogincheck,
+  userlogout,
 } from "../constants";
 import { checkNumberEmpty, getKeranjang } from "../cart";
 import { initialState } from "../../redux/reducers/user";
@@ -89,6 +90,7 @@ import {
   setTokenAsync,
 } from "../../components/asyncstorage";
 import {
+  ASYNC_DEVICE_TOKEN_KEY,
   ASYNC_HISTORY_CHECKOUT_KEY,
   ASYNC_HISTORY_DELIVERY_KEY,
   ASYNC_MEDIA_TUTORIAL_VIDEOS_KEY,
@@ -723,8 +725,7 @@ export function validateOTP(id, token, otp) {
     };
 
     const url = getotp + "/" + id.toString() + validateotp;
-    console.log("validateOTP " + url + " with params and header");
-    console.log({ config, params });
+    console.log("validateOTP", url, params);
 
     Axioss.post(url, params, config)
       .then((response) => {
@@ -1210,6 +1211,48 @@ export function changePassword(authData, id, token) {
   };
 }
 
+export const serverLogout = async (token) => {
+  const device_token = await getObjectAsync(ASYNC_DEVICE_TOKEN_KEY);
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  };
+  const params = {
+    device_name: Platform.OS,
+    device_token: device_token ? device_token : TEMP_DEV_DEVICE_TOKEN,
+  };
+  console.log("serverLogout", params);
+
+  let session = null;
+  let error = null;
+
+  try {
+    const result = await Axioss.post(userlogout, params, config)
+      .catch((error) => {
+        console.error(error);
+        sentryLog(error);
+        return {
+          session,
+          error: error.toString(),
+        }
+      });
+    if (result === null || result?.data === undefined || result?.data?.session === undefined || result?.data?.session !== "success") {
+      error = JSON.stringify(error);
+    } else {
+      session = result?.data?.session;
+    }
+  } catch (e) {
+    console.error(e);
+    error = e.toString();
+  }
+  return {
+    session,
+    error,
+  };
+}
+
 export function register(authData, deviceToken) {
   return (dispatch) => {
     dispatch({ type: USER_AUTH_ERROR_STATE_CHANGE, data: null });
@@ -1224,7 +1267,11 @@ export function register(authData, deviceToken) {
     let isDevUser = isUserDevServer(authData?.name);
     const newServerUrl = isDevUser ? devhttp : mainhttp;
     let url = `${newServerUrl}${userregister}`;
-    console.log("register", url);
+    console.log("register", {
+      ...params,
+      password: null,
+      confirmPassword: null,
+    });
 
     Axios.post(url, params)
       .then(async (response) => {
@@ -1311,7 +1358,10 @@ export function login(email, password, resetPIN, deviceToken) {
     if (email === "jasonlimanjaya" && Platform.OS === "android") {
       ToastAndroid.show(JSON.stringify(params), ToastAndroid.LONG);
     }
-    //console.log("login", params);
+    console.log("login", {
+      ...params,
+      password: null,
+    });
 
     Axios.post(url, params)
       .then(async (response) => {
@@ -1589,7 +1639,10 @@ export function setNewToken(token, storageCurrentUser, key, deviceToken) {
         },
         deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN
       );
-      //console.log("setNewToken login", params);
+      console.log("setNewToken login", {
+        ...params,
+        password: null,
+      });
 
       Axioss.post(loginlink, params)
         .then((response) => {
@@ -1654,6 +1707,7 @@ export const deriveUserKey = async (token) => {
 
 export const getAuthDeviceInfo = (params, deviceToken) => {
   let deviceInfo = getDeviceInfo();
+  //console.log("deviceinfo", deviceInfo);
   return {
     ...params,
     android_device_token: Platform.OS === "android" ? deviceToken : null,
@@ -1664,7 +1718,6 @@ export const getAuthDeviceInfo = (params, deviceToken) => {
         ? "SAFARI"
         : null,
     device_info: JSON.stringify(deviceInfo),
-    device_model: `${deviceInfo?.model}_${deviceInfo?.versionRelease}`,
   };
 };
 

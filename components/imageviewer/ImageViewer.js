@@ -6,7 +6,6 @@ import {
   StyleSheet,
   Text,
   Platform,
-  ScrollView,
   ImageBackground,
   TouchableOpacity,
   Dimensions,
@@ -36,7 +35,6 @@ import ImageLargeWatermarkModel from "../media/ImageLargeWatermarkModel";
 import {
   STARTER_KIT_FLYER_MENGAJAK_TAG,
   STARTER_KIT_FLYER_PRODUK_TAG,
-  imageviewerportraitheightmargin,
   videoplayerportraitiosheight,
   videoplayerportraitpanelandroidheight,
 } from "../mediakit/constants";
@@ -49,6 +47,12 @@ const defaultSliderItems = {
   prevThumbnail: null,
   nextThumbnail: null,
 };
+
+const marginTop = 48;
+const panelHeight =
+  Platform.OS === "ios"
+    ? videoplayerportraitiosheight
+    : videoplayerportraitpanelandroidheight;
 
 const ImageViewer = (props) => {
   const {
@@ -76,7 +80,7 @@ const ImageViewer = (props) => {
       ? height
       : Math.ceil((height * resizedImgWidth) / width);
 
-  const projectedImageHeight = screenHeight - imageviewerportraitheightmargin;
+  const projectedImageHeight = screenHeight - marginTop - panelHeight;
   const projectedImageWidth = Math.round(
     (width * projectedImageHeight) / height
   );
@@ -102,7 +106,7 @@ const ImageViewer = (props) => {
     : width > height
     ? height / ratio
     : portraitImageHeight;
-  const pdfRatio = resizedImgWidth / productPhotoWidth;
+  //const pdfRatio = resizedImgWidth / productPhotoWidth;
   const fontSize = font?.size?.ukuran ? font?.size?.ukuran : 48;
 
   //const [productPhotoHeight, setProductPhotoHeight] = useState(0);
@@ -174,14 +178,26 @@ const ImageViewer = (props) => {
   }, [transformedImage]);
 
   useEffect(() => {
-    if (jenis_foto !== STARTER_KIT_FLYER_PRODUK_TAG || mediaKitPhotos === null || mediaKitPhotos[title] === undefined || mediaKitPhotos[title] === null || photoIndex === undefined || photoIndex === null) {
+    if (
+      jenis_foto !== STARTER_KIT_FLYER_PRODUK_TAG ||
+      mediaKitPhotos === null ||
+      mediaKitPhotos[title] === undefined ||
+      mediaKitPhotos[title] === null ||
+      photoIndex === undefined ||
+      photoIndex === null
+    ) {
       return;
     }
     setSliderItemsAccordingly(photoIndex, mediaKitPhotos[title]);
   }, [mediaKitPhotos]);
 
   useEffect(() => {
-    if (jenis_foto !== STARTER_KIT_FLYER_MENGAJAK_TAG || flyerMengajak === null || photoIndex === undefined || photoIndex === null) {
+    if (
+      jenis_foto !== STARTER_KIT_FLYER_MENGAJAK_TAG ||
+      flyerMengajak === null ||
+      photoIndex === undefined ||
+      photoIndex === null
+    ) {
       return;
     }
     setSliderItemsAccordingly(photoIndex, flyerMengajak);
@@ -200,8 +216,8 @@ const ImageViewer = (props) => {
     if (!(photos[index + 1] === undefined || photos[index + 1] === null)) {
       nextThumbnail = photos[photoIndex + 1]?.thumbnail;
     }
-    setSliderItems({prevThumbnail, nextThumbnail});
-  }
+    setSliderItems({ prevThumbnail, nextThumbnail });
+  };
 
   const transformImage = async () => {
     if (Platform.OS === "web") {
@@ -553,27 +569,43 @@ const ImageViewer = (props) => {
         </Text>
       ) : null}
 
-      <ScrollView contentContainerStyle={styles.scrollView}>
-        <View style={styles.containerInside}>
-          {error === null ? null : (
-            <ActivityIndicator
-              size={24}
-              color={
-                loading ? colors.daclen_lightgrey_button : colors.daclen_light
-              }
-              style={styles.spinnerMain}
-            />
-          )}
+      <View
+        style={[
+          styles.containerInside,
+          {
+            height: productPhotoHeight,
+          },
+        ]}
+      >
+        {error === null ? null : (
+          <ActivityIndicator
+            size={24}
+            color={
+              loading ? colors.daclen_lightgrey_button : colors.daclen_light
+            }
+            style={styles.spinnerMain}
+          />
+        )}
 
-          {watermarkData === null ||
-          watermarkData === undefined ||
-          disableWatermark ? (
-            <ReactNativeZoomableView
-              maxZoom={2}
-              minZoom={0.5}
-              zoomStep={0.5}
-              initialZoom={1}
-              bindToBorders={true}
+        {watermarkData === null ||
+        watermarkData === undefined ||
+        disableWatermark ? (
+          <ReactNativeZoomableView
+            maxZoom={2}
+            minZoom={0.5}
+            zoomStep={0.5}
+            initialZoom={1}
+            bindToBorders={true}
+            style={[
+              styles.imageNormal,
+              {
+                width: productPhotoWidth,
+                height: productPhotoHeight,
+              },
+            ]}
+          >
+            <Image
+              source={uri}
               style={[
                 styles.imageNormal,
                 {
@@ -581,151 +613,142 @@ const ImageViewer = (props) => {
                   height: productPhotoHeight,
                 },
               ]}
-            >
-              <Image
-                source={uri}
-                style={[
-                  styles.imageNormal,
-                  {
-                    width: productPhotoWidth,
-                    height: productPhotoHeight,
-                  },
-                ]}
-                contentFit="contain"
-                placeholder={null}
-                transition={0}
-                onError={(e) => onError(e)}
-              />
-            </ReactNativeZoomableView>
-          ) : (
-            <ReactNativeZoomableView
-              maxZoom={2}
-              minZoom={0.5}
-              zoomStep={0.5}
-              initialZoom={1}
-              bindToBorders={true}
-              style={[
-                styles.containerImagePreview,
-                { width: productPhotoWidth, height: productPhotoHeight },
-              ]}
-            >
-              <ImageLargeWatermarkModel
-                width={width}
-                height={height}
-                displayWidth={productPhotoWidth}
-                displayHeight={productPhotoHeight}
-                uri={uri}
-                link_x={link_x}
-                link_y={link_y}
-                text_x={text_x}
-                text_y={text_y}
-                fontSize={fontSize}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  start: 0,
-                  zIndex: 4,
-                }}
-                watermarkData={watermarkData}
-                jenis_foto={jenis_foto}
-                username={currentUser?.name}
-              />
-            </ReactNativeZoomableView>
-          )}
-        </View>
-        {id === undefined ||
-        id === null ||
-        watermarkData === undefined ||
-        watermarkData === null ||
-        disableWatermark ? null : (
-          <View
+              contentFit="contain"
+              placeholder={null}
+              transition={0}
+              onError={(e) => onError(e)}
+            />
+          </ReactNativeZoomableView>
+        ) : (
+          <ReactNativeZoomableView
+            maxZoom={2}
+            minZoom={0.5}
+            zoomStep={0.5}
+            initialZoom={1}
+            bindToBorders={true}
             style={[
-              styles.containerHorizontal,
-              {
-                width: screenWidth,
-                height:
-                  Platform.OS === "ios"
-                    ? videoplayerportraitiosheight
-                    : videoplayerportraitpanelandroidheight,
-                backgroundColor: "transparent",
-              },
+              styles.containerImagePreview,
+              { width: productPhotoWidth, height: productPhotoHeight },
             ]}
           >
-            <TouchableOpacity
-              onPress={() => startDownload()}
-              style={[
-                styles.button,
-                {
-                  backgroundColor:
-                    loading || transformedImage === null
-                      ? colors.daclen_lightgrey_button
-                      : colors.daclen_light,
-                },
-              ]}
-              disabled={
-                loading || transformedImage === null || downloadUri !== null
-              }
-            >
-              {loading || transformedImage === null ? (
-                <ActivityIndicator
-                  size="small"
-                  color={colors.daclen_black}
-                  style={{ alignSelf: "center" }}
-                />
-              ) : (
-                <MaterialCommunityIcons
-                  name={downloadUri === null ? "file-download" : "check-bold"}
-                  size={18}
-                  color={colors.daclen_black}
-                />
-              )}
-
-              <Text allowFontScaling={false} style={styles.textButton}>
-                {downloadUri === null ? "Download" : "Tersimpan"}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() =>
-                Platform.OS === "ios" ? shareJPGApple() : shareJPGAndroid()
-              }
-              style={[
-                styles.button,
-                {
-                  backgroundColor:
-                    loading || sharing || transformedImage === null
-                      ? colors.daclen_lightgrey_button
-                      : colors.daclen_light,
-                },
-              ]}
-              disabled={loading || sharing || transformedImage === null}
-            >
-              {loading || sharing ? (
-                <ActivityIndicator
-                  size="small"
-                  color={colors.daclen_black}
-                  style={{ alignSelf: "center" }}
-                />
-              ) : (
-                <MaterialCommunityIcons
-                  name="share-variant"
-                  size={18}
-                  color={colors.daclen_black}
-                />
-              )}
-
-              <Text allowFontScaling={false} style={styles.textButton}>
-                Share
-              </Text>
-            </TouchableOpacity>
-          </View>
+            <ImageLargeWatermarkModel
+              width={width}
+              height={height}
+              displayWidth={productPhotoWidth}
+              displayHeight={productPhotoHeight}
+              uri={uri}
+              link_x={link_x}
+              link_y={link_y}
+              text_x={text_x}
+              text_y={text_y}
+              fontSize={fontSize}
+              style={{
+                position: "absolute",
+                top: 0,
+                start: 0,
+                zIndex: 4,
+              }}
+              watermarkData={watermarkData}
+              jenis_foto={jenis_foto}
+              username={currentUser?.name}
+            />
+          </ReactNativeZoomableView>
         )}
-      </ScrollView>
+      </View>
+      {id === undefined ||
+      id === null ||
+      watermarkData === undefined ||
+      watermarkData === null ||
+      disableWatermark ? null : (
+        <View
+          style={[
+            styles.containerHorizontal,
+            {
+              width: screenWidth,
+              height: panelHeight,
+              backgroundColor: "transparent",
+            },
+          ]}
+        >
+          <TouchableOpacity
+            onPress={() => startDownload()}
+            style={[
+              styles.button,
+              {
+                backgroundColor:
+                  loading || transformedImage === null
+                    ? colors.daclen_lightgrey_button
+                    : colors.daclen_light,
+              },
+            ]}
+            disabled={
+              loading || transformedImage === null || downloadUri !== null
+            }
+          >
+            {loading || transformedImage === null ? (
+              <ActivityIndicator
+                size="small"
+                color={colors.daclen_black}
+                style={{ alignSelf: "center" }}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name={downloadUri === null ? "file-download" : "check-bold"}
+                size={18}
+                color={colors.daclen_black}
+              />
+            )}
+
+            <Text allowFontScaling={false} style={styles.textButton}>
+              {downloadUri === null ? "Download" : "Tersimpan"}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() =>
+              Platform.OS === "ios" ? shareJPGApple() : shareJPGAndroid()
+            }
+            style={[
+              styles.button,
+              {
+                backgroundColor:
+                  loading || sharing || transformedImage === null
+                    ? colors.daclen_lightgrey_button
+                    : colors.daclen_light,
+              },
+            ]}
+            disabled={loading || sharing || transformedImage === null}
+          >
+            {loading || sharing ? (
+              <ActivityIndicator
+                size="small"
+                color={colors.daclen_black}
+                style={{ alignSelf: "center" }}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name="share-variant"
+                size={18}
+                color={colors.daclen_black}
+              />
+            )}
+
+            <Text allowFontScaling={false} style={styles.textButton}>
+              Share
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
 
 /*
+
+<ScrollView contentContainerStyle={styles.scrollView}>
+        
+      </ScrollView>
+
 
               onZoomAfter={(e, gestureState, z) => console.log("onZoomAfter", e, gestureState, z)}
 
@@ -785,9 +808,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   containerInside: {
-    flex: 1,
     zIndex: 3,
-    marginTop: 32,
+    marginTop,
     width: "100%",
     backgroundColor: "transparent",
     justifyContent: "center",

@@ -62,7 +62,7 @@ function PickAddress(props) {
         loadStorageAddresses();
         return;
       }
-      console.log("redux user addresses", addresses);
+      //console.log("redux user addresses", addresses);
     }, [addresses]);
 
     useEffect(() => {

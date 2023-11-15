@@ -1,7 +1,6 @@
 import Axios from "../index";
 
 import { productfetchlink, showproduct } from "../constants/index";
-
 import {
   PRODUCTS_DATA_STATE_CHANGE,
   PRODUCT_ITEM_DATA_STATE_CHANGE,
@@ -11,8 +10,6 @@ import {
   PRODUCT_FETCH_ERROR_STATE_CHANGE,
   PRODUCTS_DATA_INCREMENT_STATE_CHANGE,
 } from "../../redux/constants";
-import { getObjectAsync, setObjectAsync } from "../../components/asyncstorage";
-import { ASYNC_PRODUCTS_ARRAY_KEY } from "../../components/asyncstorage/constants";
 import { productpaginationnumber } from "../constants/index";
 import { sentryLog } from "../../sentry";
 
@@ -28,7 +25,7 @@ export function getProductData(storageProducts, paginationIndex, page) {
       const url = productfetchlink + (page === undefined || page === null ? "" : `?page=${page}`);
       Axios.get(url)
       .then((response) => {
-        console.log("getProductData response", url, response?.data);
+        //console.log("getProductData response", url, response?.data);
         const products = response?.data?.data;
         if (
           products === undefined ||

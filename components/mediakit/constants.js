@@ -112,19 +112,6 @@ export const vwmarkdebuguserid = 1;
 
 export const imageviewerportraitheightmargin = 240;
 
-export const videoplayerportraitpanelandroidheight = 200;
-export const videoplayerportraitiosheight = 240;
+export const videoplayerportraitpanelandroidheight = 100;
+export const videoplayerportraitiosheight = 120;
 export const videoplayermargintop = 24;
-
-export const tempvideoarray = [
-  {
-    uri: "https://daclen.com/mp4/source.mp4",
-    thumbnail: "https://daclen.com/mp4/source_tb.jpg",
-    width: 480,
-    height: 270,
-    title: "Tara Laptop Backpack",
-  },
-];
-
-export const tempmediakitvideouri = "https://daclen.com/mp4/source.mp4";
-export const tempmediakitvideothumbnail = "https://daclen.com/img/produk/1681188120.png";

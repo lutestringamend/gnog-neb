@@ -158,9 +158,10 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-SemiBold",
   },
   text: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins", 
+    fontSize: 12,
     color: colors.daclen_gray,
     textAlign: "center",
-    marginHorizontal: 10,
+    marginHorizontal: 20,
   },
 });
