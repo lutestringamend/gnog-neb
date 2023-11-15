@@ -8,6 +8,7 @@ import {
   storecheckout,
   localisationID,
   defaultcurrency,
+  printcheckoutinvoice,
 } from "../constants";
 import {
   USER_CART_STATE_CHANGE,
@@ -61,6 +62,53 @@ export function capitalizeFirstLetter(string) {
   }
 }
 
+export const printCheckoutInvoice = async (token, checkout_id) => {
+  if (
+    token === undefined ||
+    token === null ||
+    checkout_id === undefined ||
+    checkout_id === null
+  ) {
+    return null;
+  }
+
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  };
+  const url = `${printcheckoutinvoice}${checkout_id}`;
+  console.log("printCheckoutInvoice", url);
+
+  let data = null;
+  let error = null;
+
+  try {
+    const response = await Axios.get(url, config).catch(
+      (error) => {
+        console.log(error);
+        sentryLog(error);
+        return {
+          data,
+          error: error.toString(),
+        }
+      }
+    );
+      console.log("printCheckoutInvoice response", response);
+    data = response?.data;
+  } catch (e) {
+    console.error(e);
+    sentryLog(e);
+    error = e.toString();
+  }
+
+  return {
+    data,
+    error,
+  };
+};
+
 export function storeCheckout(token, checkoutJson) {
   return (dispatch) => {
     const config = {
@@ -83,7 +131,10 @@ export function storeCheckout(token, checkoutJson) {
           dispatch({ type: USER_CHECKOUT_ERROR_STATE_CHANGE, data: null });
           dispatch({ type: HISTORY_CHECKOUTS_STATE_CHANGE, data: null });
         } else {
-          dispatch({ type: USER_CHECKOUT_ERROR_STATE_CHANGE, data: JSON.stringify(data?.errors) });
+          dispatch({
+            type: USER_CHECKOUT_ERROR_STATE_CHANGE,
+            data: JSON.stringify(data?.errors),
+          });
         }
       })
       .catch((error) => {
@@ -381,7 +432,7 @@ export const calculateSaldoAvailable = (saldo, totalPrice) => {
     console.error(e);
     return checkNumberEmpty(saldo);
   }
-}
+};
 
 export const formatPrice = (num) => {
   if (checkNumberEmpty(num) > 0) {
@@ -410,7 +461,7 @@ export const processPhoneNumberforCheckout = (phone) => {
     console.error(e);
   }
   return phone;
-}
+};
 
 export function checkNumberEmpty(num) {
   if (num === undefined || num === null || num < 0) {

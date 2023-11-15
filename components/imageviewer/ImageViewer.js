@@ -578,6 +578,7 @@ const ImageViewer = (props) => {
             ? { flex: 1 }
             : {
                 height: productPhotoHeight,
+                marginTop,
               },
         ]}
       >
@@ -603,8 +604,8 @@ const ImageViewer = (props) => {
             style={[
               styles.imageNormal,
               {
-                width: productPhotoWidth,
-                height: productPhotoHeight,
+                width: screenWidth,
+                height: screenHeight,
               },
             ]}
           >
@@ -632,7 +633,7 @@ const ImageViewer = (props) => {
             bindToBorders={true}
             style={[
               styles.containerImagePreview,
-              { width: productPhotoWidth, height: productPhotoHeight },
+              { width: screenWidth, height: productPhotoHeight, },
             ]}
           >
             <ImageLargeWatermarkModel
@@ -649,7 +650,8 @@ const ImageViewer = (props) => {
               style={{
                 position: "absolute",
                 top: 0,
-                start: 0,
+                start: (screenWidth  - productPhotoWidth) / 2,
+                end: (screenWidth  - productPhotoWidth) / 2,
                 zIndex: 4,
               }}
               watermarkData={watermarkData}
@@ -813,7 +815,6 @@ const styles = StyleSheet.create({
   },
   containerInside: {
     zIndex: 3,
-    marginTop,
     width: "100%",
     backgroundColor: "transparent",
     justifyContent: "center",

@@ -1,6 +1,12 @@
 import Axios from "../index";
 
-import { mediakitkategori, mediakitphoto, mediakitvideo, tokoonlineurlshort, tutorialvideo } from "../constants";
+import {
+  mediakitkategori,
+  mediakitphoto,
+  mediakitvideo,
+  tokoonlineurlshort,
+  tutorialvideo,
+} from "../constants";
 import {
   MEDIA_KIT_CLEAR_DATA,
   MEDIA_KIT_PHOTOS_STATE_CHANGE,
@@ -16,7 +22,13 @@ import {
   MEDIA_KIT_TUTORIALS_STATE_CHANGE,
 } from "../../redux/constants";
 import { sentryLog } from "../../sentry";
-import { DefaultSelected, STARTER_KIT_FLYER_MENGAJAK_TAG, STARTER_KIT_FLYER_PRODUK_TAG, STARTER_KIT_VIDEO_MENGAJAK_TAG, STARTER_KIT_VIDEO_PRODUK_TAG } from "../../components/mediakit/constants";
+import {
+  DefaultSelected,
+  STARTER_KIT_FLYER_MENGAJAK_TAG,
+  STARTER_KIT_FLYER_PRODUK_TAG,
+  STARTER_KIT_VIDEO_MENGAJAK_TAG,
+  STARTER_KIT_VIDEO_PRODUK_TAG,
+} from "../../components/mediakit/constants";
 
 export function clearMediaKitData() {
   return (dispatch) => {
@@ -49,10 +61,15 @@ export function updateReduxMediaKitPhotosError(data) {
 export function updateReduxMediaKitPhotosMultipleSave(data) {
   return (dispatch) => {
     console.log("updateReduxMediaKitPhotosMultipleSave", data);
-    dispatch({ type: MEDIA_KIT_PHOTOS_MULTIPLE_SAVE_STATE_CHANGE, data: data ? data : {
-      success: false,
-      error: null,
-    } });
+    dispatch({
+      type: MEDIA_KIT_PHOTOS_MULTIPLE_SAVE_STATE_CHANGE,
+      data: data
+        ? data
+        : {
+            success: false,
+            error: null,
+          },
+    });
   };
 }
 
@@ -134,8 +151,8 @@ export const filterPhotoProps = (item) => {
     height: item?.height,
     text_y: item?.text_y,
     link_y: item?.link_y,
-  }
-}
+  };
+};
 
 export function setWatermarkDatafromCurrentUser(currentUser, isOriginal) {
   let name = currentUser?.name ? currentUser?.name : "";
@@ -143,16 +160,28 @@ export function setWatermarkDatafromCurrentUser(currentUser, isOriginal) {
   let url = currentUser?.name
     ? `${tokoonlineurlshort}${currentUser?.name}`
     : "";
-  
-  if (!(currentUser?.detail_user === undefined || currentUser?.detail_user === null || isOriginal)) {
-    name = currentUser?.detail_user?.wm_nama ? currentUser?.detail_user?.wm_nama : currentUser?.detail_user?.nama_depan ? currentUser?.detail_user?.nama_depan : name;
-    phone = currentUser?.detail_user?.wm_nomor_telepon ? currentUser?.detail_user?.wm_nomor_telepon : phone;
+
+  if (
+    !(
+      currentUser?.detail_user === undefined ||
+      currentUser?.detail_user === null ||
+      isOriginal
+    )
+  ) {
+    name = currentUser?.detail_user?.wm_nama
+      ? currentUser?.detail_user?.wm_nama
+      : currentUser?.detail_user?.nama_depan
+      ? currentUser?.detail_user?.nama_depan
+      : name;
+    phone = currentUser?.detail_user?.wm_nomor_telepon
+      ? currentUser?.detail_user?.wm_nomor_telepon
+      : phone;
   }
 
   return {
     name,
     phone,
-    url
+    url,
   };
 }
 
@@ -165,14 +194,14 @@ export const getVideoProductData = (item, products) => {
     item?.produk === undefined ||
     item?.produk === null
   ) {
-    return checkVideoFileName(item);;
+    return checkVideoFileName(item);
   }
 
   try {
     if (typeof item?.produk === "string") {
       const data = products.find(({ slug }) => slug === item?.produk);
       if (data === undefined) {
-        return checkVideoFileName(item);;
+        return checkVideoFileName(item);
       }
       let nama = item?.nama;
       if (nama.includes("/") || nama.toLowerCase().includes("mp4")) {
@@ -184,14 +213,18 @@ export const getVideoProductData = (item, products) => {
         product_name: data?.nama,
         produk_id: data?.id,
         produk: data?.slug,
-        foto: data?.thumbnail ? data?.thumbnail : data?.foto ? data?.foto : null,
+        foto: data?.thumbnail
+          ? data?.thumbnail
+          : data?.foto
+          ? data?.foto
+          : null,
       };
     } else if (
       item?.produk?.id === undefined ||
       item?.produk?.slug === undefined ||
       item?.produk?.foto === undefined
     ) {
-      return checkVideoFileName(item);;
+      return checkVideoFileName(item);
     } else {
       let nama = item?.nama;
       if (nama.includes("/") || nama.toLowerCase().includes("mp4")) {
@@ -248,7 +281,7 @@ export function getTutorialVideos(token) {
             dispatch({ type: MEDIA_KIT_TUTORIALS_STATE_CHANGE, data: [] });
             return;
           }
-          
+
           dispatch({ type: MEDIA_KIT_TUTORIALS_STATE_CHANGE, data });
         } catch (e) {
           sentryLog(e);
@@ -266,7 +299,6 @@ export function getTutorialVideos(token) {
         });
       });
   };
-
 }
 
 export function getMediaKitVideos(token, products) {
@@ -287,7 +319,10 @@ export function getMediaKitVideos(token, products) {
           console.log("getMediaKitVideos response", data);
           if (data === null || data?.length === undefined || data?.length < 1) {
             dispatch({ type: MEDIA_KIT_VIDEOS_STATE_CHANGE, data: [] });
-            dispatch({ type: MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE, data: [] });
+            dispatch({
+              type: MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE,
+              data: [],
+            });
             return;
           }
           let newData = {};
@@ -296,7 +331,18 @@ export function getMediaKitVideos(token, products) {
             if (data[i]?.jenis === STARTER_KIT_VIDEO_MENGAJAK_TAG) {
               newMengajakData = data[i]?.videos;
               //newMengajakData.push(data[i]);
-            } else if (data[i]?.jenis === STARTER_KIT_VIDEO_PRODUK_TAG && !(data[i]?.nama === undefined || data[i]?.nama === null || data[i]?.nama === "") && !(data[i]?.videos === undefined || data[i]?.videos?.length === undefined)) {
+            } else if (
+              data[i]?.jenis === STARTER_KIT_VIDEO_PRODUK_TAG &&
+              !(
+                data[i]?.nama === undefined ||
+                data[i]?.nama === null ||
+                data[i]?.nama === ""
+              ) &&
+              !(
+                data[i]?.videos === undefined ||
+                data[i]?.videos?.length === undefined
+              )
+            ) {
               newData[data[i]?.nama] = data[i]?.videos;
             }
 
@@ -326,7 +372,10 @@ export function getMediaKitVideos(token, products) {
           }
           console.log("post video produk - mengajak", newData, newMengajakData);
           dispatch({ type: MEDIA_KIT_VIDEOS_STATE_CHANGE, data: newData });
-          dispatch({ type: MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE, data: newMengajakData });
+          dispatch({
+            type: MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE,
+            data: newMengajakData,
+          });
         } catch (e) {
           sentryLog(e);
           dispatch({
@@ -343,7 +392,6 @@ export function getMediaKitVideos(token, products) {
         });
       });
   };
-
 }
 
 export const getMediaKitKategori = async (token) => {
@@ -360,59 +408,81 @@ export const getMediaKitKategori = async (token) => {
     },
   };
 
-    try {
-      const response = await Axios.get(mediakitkategori, config)
-      .catch((error) => {
+  try {
+    const response = await Axios.get(mediakitkategori, config).catch(
+      (error) => {
         console.error(error);
         sentryLog(error);
         return {
           result: null,
           error: error.toString(),
-        }
-      });
+        };
+      }
+    );
 
-      const responseData = response.data?.data;
-      console.log("getMediaKitKategori response", responseData);
-      if (responseData === undefined || responseData === null || responseData?.length === undefined || responseData?.length < 1) {
-        return {
+    const responseData = response.data?.data;
+    console.log("getMediaKitKategori response", responseData);
+    if (
+      responseData === undefined ||
+      responseData === null ||
+      responseData?.length === undefined ||
+      responseData?.length < 1
+    ) {
+      return {
         result: {},
         error: null,
-      }
-      } else {
-        let data = {};
-        let mengajakArray = [];
-        let othersArray = [];
-        for (let photo of responseData) {
-          if (!(photo?.fotos === undefined || photo?.fotos?.length === undefined || photo?.fotos?.length < 1)) {
-            if (photo?.jenis.toLowerCase() === STARTER_KIT_FLYER_MENGAJAK_TAG) {
-              if (!(photo?.fotos === undefined || photo?.fotos?.length === undefined || photo?.fotos?.length < 1)) {
-                mengajakArray = photo?.fotos;
-              }
-            } else if (photo?.jenis.toLowerCase() === STARTER_KIT_FLYER_PRODUK_TAG && !(photo?.nama === undefined ||
-              photo?.nama === null ||
-              photo?.nama === "")) {
-              data[photo?.nama] = photo?.fotos;
-            } else {
-              othersArray.concat(photo, othersArray);
+      };
+    } else {
+      let data = {};
+      let mengajakArray = [];
+      let othersArray = [];
+      for (let photo of responseData) {
+        if (
+          !(
+            photo?.fotos === undefined ||
+            photo?.fotos?.length === undefined ||
+            photo?.fotos?.length < 1
+          )
+        ) {
+          if (photo?.jenis.toLowerCase() === STARTER_KIT_FLYER_MENGAJAK_TAG) {
+            if (
+              !(
+                photo?.fotos === undefined ||
+                photo?.fotos?.length === undefined ||
+                photo?.fotos?.length < 1
+              )
+            ) {
+              mengajakArray = photo?.fotos;
             }
+          } else if (
+            photo?.jenis.toLowerCase() === STARTER_KIT_FLYER_PRODUK_TAG &&
+            !(
+              photo?.nama === undefined ||
+              photo?.nama === null ||
+              photo?.nama === ""
+            )
+          ) {
+            data[photo?.nama] = photo?.fotos;
+          } else {
+            othersArray.concat(photo, othersArray);
           }
-          
-        } 
-        return {
-          result: data,
-          mengajakArray,
-          error: null,
         }
       }
-    } catch (e) {
-      console.error(e);
-      sentryLog(e);
       return {
-        result: null,
-        error: e.toString(),
-      }
+        result: data,
+        mengajakArray,
+        error: null,
+      };
     }
-}
+  } catch (e) {
+    console.error(e);
+    sentryLog(e);
+    return {
+      result: null,
+      error: e.toString(),
+    };
+  }
+};
 
 export const getMediaKitPhotos = async (token) => {
   if (token === undefined || token === null) {
@@ -428,59 +498,63 @@ export const getMediaKitPhotos = async (token) => {
     },
   };
 
-    try {
-      const response = await Axios.get(mediakitphoto, config)
-      .catch((error) => {
-        console.error(error);
-        sentryLog(error);
-        return {
-          result: null,
-          error: error.toString(),
-        }
-      });
-
-      const responseData = response.data?.data;
-      //console.log("getMediaKitPhotos response", responseData);
-      if (responseData === undefined || responseData === null || responseData?.length === undefined || responseData?.length < 1) {
-        return {
-        result: {},
-        error: null,
-      }
-      } else {
-        let data = {};
-        let mengajakArray = [];
-        let othersArray = [];
-        for (let photo of responseData) {
-          if (photo?.jenis_foto !== STARTER_KIT_FLYER_PRODUK_TAG) {
-            mengajakArray.unshift(photo);
-          } else if (
-            photo?.kategori === undefined ||
-            photo?.kategori?.length === undefined ||
-            photo?.kategori?.length === undefined ||
-            photo?.kategori?.length < 1 ||
-            photo?.kategori[0] === undefined ||
-            photo?.kategori[0]?.nama === undefined
-          ) {
-            othersArray.unshift(photo);
-          } else {
-            let category = photo?.kategori[0]?.nama;
-            let theArray = data[category] ? data[category] : [];
-            theArray.unshift(photo);
-            data[category] = theArray;
-          }
-        } 
-        return {
-          result: data,
-          mengajakArray,
-          error: null,
-        }
-      }
-    } catch (e) {
-      console.error(e);
-      sentryLog(e);
+  try {
+    const response = await Axios.get(mediakitphoto, config).catch((error) => {
+      console.error(error);
+      sentryLog(error);
       return {
         result: null,
-        error: e.toString(),
+        error: error.toString(),
+      };
+    });
+
+    const responseData = response.data?.data;
+    //console.log("getMediaKitPhotos response", responseData);
+    if (
+      responseData === undefined ||
+      responseData === null ||
+      responseData?.length === undefined ||
+      responseData?.length < 1
+    ) {
+      return {
+        result: {},
+        error: null,
+      };
+    } else {
+      let data = {};
+      let mengajakArray = [];
+      let othersArray = [];
+      for (let photo of responseData) {
+        if (photo?.jenis_foto !== STARTER_KIT_FLYER_PRODUK_TAG) {
+          mengajakArray.unshift(photo);
+        } else if (
+          photo?.kategori === undefined ||
+          photo?.kategori?.length === undefined ||
+          photo?.kategori?.length === undefined ||
+          photo?.kategori?.length < 1 ||
+          photo?.kategori[0] === undefined ||
+          photo?.kategori[0]?.nama === undefined
+        ) {
+          othersArray.unshift(photo);
+        } else {
+          let category = photo?.kategori[0]?.nama;
+          let theArray = data[category] ? data[category] : [];
+          theArray.unshift(photo);
+          data[category] = theArray;
+        }
       }
+      return {
+        result: data,
+        mengajakArray,
+        error: null,
+      };
     }
-}
+  } catch (e) {
+    console.error(e);
+    sentryLog(e);
+    return {
+      result: null,
+      error: e.toString(),
+    };
+  }
+};

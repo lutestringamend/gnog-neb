@@ -124,7 +124,7 @@ export default function DashboardStats(props) {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={() => navigation.navigate("Calculator")} style={styles.containerHorizontal}>
+        <View style={styles.containerHorizontal}>
           {mockData?.point === 0 ? <View style={styles.containerVertical} />  : <View style={styles.containerVertical}>
             <Text allowFontScaling={false} style={styles.text}>
               Akumulasi Poin
@@ -138,15 +138,16 @@ export default function DashboardStats(props) {
             } Point`}</Text>
           </View>}
           
-          <View
+          <TouchableOpacity
             style={styles.button}
+            onPress={() => navigation.navigate("PointReportScreen")}
           >
             <Text
               allowFontScaling={false}
               style={styles.textButton}
             >{`Laporan\nPoint`}</Text>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.containerHorizontal}>
           <View style={styles.containerVertical}>

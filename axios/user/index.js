@@ -471,7 +471,10 @@ export function getLaporanSaldo(id, token) {
         try {
           let newTotal = 0;
           for (let d of data) {
-            if (d?.status.toLowerCase() === "saldo masuk" && checkNumberEmpty(d?.total_saldo) >= checkNumberEmpty(d?.saldo)) {
+            if (
+              d?.status.toLowerCase() === "saldo masuk" &&
+              checkNumberEmpty(d?.total_saldo) >= checkNumberEmpty(d?.saldo)
+            ) {
               newTotal += checkNumberEmpty(d?.saldo);
             }
           }
@@ -535,7 +538,9 @@ export function convertInvoiceNumbertoRegDate(inv) {
 export function convertInvoiceNumbertoJoinDate(inv) {
   try {
     let date = new Date(convertInvoiceNumbertoRegDate(inv));
-    return `${date.getDate()} ${monthNamesShort[date.getMonth()]} ${date.getFullYear()}`
+    return `${date.getDate()} ${
+      monthNamesShort[date.getMonth()]
+    } ${date.getFullYear()}`;
   } catch (e) {
     console.error(e);
     return null;
@@ -622,7 +627,10 @@ export const checkSaldoMutationType = (item) => {
   try {
     if (item?.status === saldokeluartag || checkNumberEmpty(item?.saldo) < 0) {
       return -1;
-    } else if (item?.status === saldomasuktag || checkNumberEmpty(item?.saldo) > 0) {
+    } else if (
+      item?.status === saldomasuktag ||
+      checkNumberEmpty(item?.saldo) > 0
+    ) {
       return 1;
     } else {
       return 0;
@@ -631,7 +639,7 @@ export const checkSaldoMutationType = (item) => {
     console.error(e);
   }
   return null;
-}
+};
 
 export const getHPV = async (id, token) => {
   if (
@@ -1229,16 +1237,22 @@ export const serverLogout = async (token) => {
   let error = null;
 
   try {
-    const result = await Axioss.post(userlogout, params, config)
-      .catch((error) => {
+    const result = await Axioss.post(userlogout, params, config).catch(
+      (error) => {
         console.error(error);
         sentryLog(error);
         return {
           session,
           error: error.toString(),
-        }
-      });
-    if (result === null || result?.data === undefined || result?.data?.session === undefined || result?.data?.session !== "success") {
+        };
+      }
+    );
+    if (
+      result === null ||
+      result?.data === undefined ||
+      result?.data?.session === undefined ||
+      result?.data?.session !== "success"
+    ) {
       error = JSON.stringify(error);
     } else {
       session = result?.data?.session;
@@ -1251,7 +1265,7 @@ export const serverLogout = async (token) => {
     session,
     error,
   };
-}
+};
 
 export function register(authData, deviceToken) {
   return (dispatch) => {
@@ -1319,18 +1333,21 @@ export async function loginCheck(email) {
     error: null,
   };
   try {
-    const response = await Axioss.post(userlogincheck, params)
-      .catch((error) => {
+    const response = await Axioss.post(userlogincheck, params).catch(
+      (error) => {
         console.error(error);
         sentryLog(error);
         result["error"] = error.toString();
-      });
+      }
+    );
     const data = response?.data;
     console.log("loginCheck", email, data);
     if (!(data?.user_id === undefined || data?.user_id === null)) {
       result["userId"] = data?.user_id;
-    } else if (!(data?.errors?.auth[0] === undefined || data?.errors?.auth[0] === null)) {
-      result ["error"] = data?.errors?.auth[0];
+    } else if (
+      !(data?.errors?.auth[0] === undefined || data?.errors?.auth[0] === null)
+    ) {
+      result["error"] = data?.errors?.auth[0];
     }
   } catch (e) {
     console.error(e);
@@ -1502,13 +1519,13 @@ export const fetchHPVfromUserCurrent = async (dispatch, token, currentUser) => {
       currentUser?.batas_rekrut === undefined ||
       currentUser?.batas_rekrut === null ||
       currentUser?.batas_rekrut === ""
-    ) { 
+    ) {
       dispatch({ type: USER_STATE_CHANGE, data: currentUser });
       setObjectAsync(ASYNC_USER_CURRENTUSER_KEY, currentUser);
     } else {
       console.log("overhaulReduxHPV", result?.result);
       dispatch({ type: USER_HPV_STATE_CHANGE, data: result?.result });
-      
+
       let deadlineTime = new Date(currentUser?.batas_rekrut).getTime();
       let total_rekrutmen = 0;
       for (let h of result?.result?.data?.children[0]?.children) {

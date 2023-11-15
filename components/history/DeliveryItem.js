@@ -220,7 +220,8 @@ const styles = StyleSheet.create({
     color: colors.daclen_gray,
   },
   textUid: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins", 
+    fontSize: 12,
     marginVertical: 20,
     color: colors.daclen_gray,
     textAlign: "center",

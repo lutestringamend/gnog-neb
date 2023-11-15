@@ -7,10 +7,11 @@ import {
   ActivityIndicator,
   ScrollView,
   RefreshControl,
+  TouchableOpacity,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useNavigation } from "@react-navigation/native";
-
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
@@ -18,7 +19,7 @@ import CartItem from "../cart/CartItem";
 import CartDetails from "../cart/CartDetails";
 import CartAction from "../cart/CartAction";
 import Separator from "../profile/Separator";
-import { colors, dimensions } from "../../styles/base";
+import { colors } from "../../styles/base";
 
 import {
   getCheckoutItem,
@@ -26,7 +27,7 @@ import {
   clearUserCheckoutData,
   confirmCheckout,
 } from "../../axios/history";
-import { formatPrice } from "../../axios/cart";
+import { formatPrice, printCheckoutInvoice } from "../../axios/cart";
 import { checkoutsubtotalcommissionpercentage } from "../main/constants";
 
 function CheckoutItem(props) {
@@ -34,6 +35,7 @@ function CheckoutItem(props) {
   const [snapToken, setSnapToken] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingSnap, setLoadingSnap] = useState(null);
+  const [error, setError] = useState(null);
 
   const navigation = useNavigation();
 
@@ -111,8 +113,22 @@ function CheckoutItem(props) {
     setLoadingSnap(false);
   };
 
+  const downloadInvoice = async () => {
+    const response = await printCheckoutInvoice(token, checkout?.id);
+    if (response === null || response?.data === undefined || response?.data === null) {
+      setError(response?.error ? response?.error : "Gagal mendapatkan invoice");
+    } else {
+      setError(null);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      {error ? (
+        <Text allowFontScaling={false} style={styles.textError}>
+          {error}
+        </Text>
+      ) : null}
       <ScrollView
         style={styles.scrollView}
         refreshControl={
@@ -134,20 +150,50 @@ function CheckoutItem(props) {
           <View style={styles.container}>
             <View style={styles.containerHeader}>
               <View style={styles.containerDescVertical}>
-                <Text style={[styles.textTitle, { marginTop: 0 }]}>
-                  Nomor Invoice
+                <View style={styles.containerHorizontal}>
+                  <View style={styles.containerInvoiceDetails}>
+                    <Text
+                      allowFontScaling={false}
+                      style={[styles.textTitle, { marginTop: 0 }]}
+                    >
+                      Nomor Invoice
+                    </Text>
+                    <Text allowFontScaling={false} styles={styles.textInvoice}>
+                      {checkout?.invoice}
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => downloadInvoice()}
+                    style={styles.button}
+                  >
+                    <MaterialCommunityIcons
+                      name="printer"
+                      size={16}
+                      color={colors.daclen_light}
+                      style={styles.icon}
+                    />
+                    <Text style={styles.textButton}>Download Invoice</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <Text allowFontScaling={false} style={styles.textTitle}>
+                  Info Penerima
                 </Text>
-                <Text styles={styles.textInvoice}>{checkout?.invoice}</Text>
-                <Text style={styles.textTitle}>Info Penerima</Text>
-                <Text styles={styles.textEntry}>
+                <Text allowFontScaling={false} styles={styles.textEntry}>
                   {`${checkout.detail_checkout?.nama_lengkap}\n${checkout.detail_checkout?.email}\n${checkout.detail_checkout?.nomor_telp}`}
                 </Text>
 
-                <Text style={styles.textTitle}>Kurir Pengiriman</Text>
-                <Text styles={styles.textEntry}>{checkout.kurir?.nama}</Text>
+                <Text allowFontScaling={false} style={styles.textTitle}>
+                  Kurir Pengiriman
+                </Text>
+                <Text allowFontScaling={false} styles={styles.textEntry}>
+                  {checkout.kurir?.nama}
+                </Text>
 
-                <Text style={styles.textTitle}>Alamat Pengiriman</Text>
-                <Text styles={styles.textEntry}>
+                <Text allowFontScaling={false} style={styles.textTitle}>
+                  Alamat Pengiriman
+                </Text>
+                <Text allowFontScaling={false} styles={styles.textEntry}>
                   {checkout.detail_checkout?.alamat_lengkap}
                 </Text>
               </View>
@@ -155,7 +201,9 @@ function CheckoutItem(props) {
             <Separator thickness={5} />
             <View style={styles.containerFlatlist}>
               {checkout.keranjang?.produk?.length < 1 ? (
-                <Text style={styles.textUid}>Tidak ada Checkout</Text>
+                <Text allowFontScaling={false} style={styles.textUid}>
+                  Tidak ada Checkout
+                </Text>
               ) : (
                 <FlashList
                   estimatedItemSize={10}
@@ -215,17 +263,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     width: "100%",
-    backgroundColor: "white",
+    backgroundColor: colors.white,
   },
   scrollView: {
     flex: 1,
     width: "100%",
     height: "100%",
-    backgroundColor: "white",
+    backgroundColor: "transparent",
   },
   containerHeader: {
     padding: 10,
-    backgroundColor: "white",
+    backgroundColor: "transparent",
     marginBottom: 20,
   },
   containerDescVertical: {
@@ -238,8 +286,18 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginVertical: 5,
   },
+  containerHorizontal: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  containerInvoiceDetails: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
+    flex: 1,
+  },
   containerFlatlist: {
     justifyContent: "flex-start",
+    backgroundColor: "transparent",
   },
   containerItem: {
     flex: 1,
@@ -252,28 +310,59 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 5,
   },
+  button: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: colors.daclen_green,
+    borderRadius: 6,
+    alignItems: "center",
+    flexDirection: "row",
+    elevation: 2,
+  },
+  textButton: {
+    alignSelf: "center",
+    marginStart: 10,
+    color: colors.daclen_light,
+    fontSize: 12,
+    fontFamily: "Poppins-SemiBold",
+  },
   textTitle: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-SemiBold",
     fontSize: 12,
     color: colors.daclen_blue,
     marginTop: 12,
     marginBottom: 4,
   },
   textInvoice: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     fontSize: 10,
     color: colors.daclen_black,
     marginBottom: 4,
   },
   textEntry: {
+    fontFamily: "Poppins",
     fontSize: 10,
     color: colors.daclen_gray,
   },
   textUid: {
+    fontFamily: "Poppins",
     fontSize: 12,
     marginVertical: 20,
     color: colors.daclen_gray,
     textAlign: "center",
+  },
+  textError: {
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
+    color: colors.white,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: colors.daclen_danger,
+    textAlign: "center",
+  },
+  icon: {
+    alignSelf: "center",
+    backgroundColor: "transparent",
   },
 });
 
