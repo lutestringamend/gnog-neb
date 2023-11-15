@@ -8,42 +8,43 @@ export const createInvoicePDF = async (data, invoice_no) => {
   let error = null;
 
   try {
-    const permissions =
+    /*const permissions =
       await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
     if (permissions.granted) {
-      const base64 = await FileSystem.readAsStringAsync(data, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
-        permissions.directoryUri,
-        `${invoice_no}.pdf`,
-        "application/pdf"
-      ).catch((e) => {
-        console.error(e);
-        setDownloadUri(null);
-        setSuccess(false);
-        if (e?.code === "ERR_FILESYSTEM_CANNOT_CREATE_FILE") {
-          error =
-            "Tidak bisa menyimpan file di folder sistem. Mohon pilih folder lain.";
-        } else {
-          error =
-            base64.substring(0, 64) +
-            "\ncreateFileAsync catch\n" +
-            e.toString();
-        }
-      });
-      const fileWriting = await FileSystem.writeAsStringAsync(safUri, base64, {
-        encoding: FileSystem.EncodingType.Base64,
-      }).catch((e) => {
-        console.error(e);
-        error = "\nwriteAsStringAsync catch\n" + e.toString();
-      });
-
-      const fileSharing = await shareAsync(safUri, sharingOptionsPDF);
-      session = "success";
+      
     } else {
       error = "Anda tidak memberikan izin untuk mengakses penyimpanan";
-    }
+    }*/
+    const base64 = await FileSystem.readAsStringAsync(data, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
+      permissions.directoryUri,
+      `${invoice_no}.pdf`,
+      "application/pdf"
+    ).catch((e) => {
+      console.error(e);
+      setDownloadUri(null);
+      setSuccess(false);
+      if (e?.code === "ERR_FILESYSTEM_CANNOT_CREATE_FILE") {
+        error =
+          "Tidak bisa menyimpan file di folder sistem. Mohon pilih folder lain.";
+      } else {
+        error =
+          base64.substring(0, 64) +
+          "\ncreateFileAsync catch\n" +
+          e.toString();
+      }
+    });
+    const fileWriting = await FileSystem.writeAsStringAsync(safUri, base64, {
+      encoding: FileSystem.EncodingType.Base64,
+    }).catch((e) => {
+      console.error(e);
+      error = "\nwriteAsStringAsync catch\n" + e.toString();
+    });
+
+    const fileSharing = await shareAsync(safUri, sharingOptionsPDF);
+    session = "success";
   } catch (err) {
     console.error(err);
     error = err.toString();
