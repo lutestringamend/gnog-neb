@@ -243,7 +243,7 @@ export const createFixedMonthlyProjections = (
 export const calculateResellerGrowth = (numMembers, numMonth) => {
   try {
     //console.log(`${numMembers + 1} to the power of ${numMonth} - 1`, (Math.pow(numMembers+1, numMonth)) - 1);
-    return (numMembers * (Math.pow(4, numMonth) - 1)) / 3;
+    return (Math.pow(numMembers + 1, numMonth) - 1);
   } catch (e) {
     console.error(e);
   }
