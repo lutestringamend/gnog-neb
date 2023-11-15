@@ -572,9 +572,13 @@ const ImageViewer = (props) => {
       <View
         style={[
           styles.containerInside,
-          {
-            height: productPhotoHeight,
-          },
+          watermarkData === null ||
+          watermarkData === undefined ||
+          disableWatermark
+            ? { flex: 1 }
+            : {
+                height: productPhotoHeight,
+              },
         ]}
       >
         {error === null ? null : (
