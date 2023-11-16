@@ -104,9 +104,8 @@ function Main(props) {
       if (Platform.OS == "web") {
         setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, "WEB_DEV_TOKEN");
         return;
-      /*} else if (Platform.OS == "ios") {
-        setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, "DEV_IOS_TOKEN");
-        return;*/
+      } else {
+        setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, null);
       }
 
       try {
@@ -131,6 +130,8 @@ function Main(props) {
           if (enabled) {
             if (Platform.OS === "android") {
               await initializeAndroidNotificationChannels();
+            } else if (Platform.OS === "ios") {
+              await messaging().registerDeviceForRemoteMessages();
             }
             console.log("Authorization status:", authStatus);
           } else {
@@ -204,7 +205,7 @@ function Main(props) {
       } catch (e) {
         console.error(e);
         setError(e.toString());
-        setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, "EXPO_GO_DEV_TOKEN");
+        setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, "ERROR_DEV_TOKEN");
         /*if (Platform.OS === "android") {
           ToastAndroid.show(e.toString(), ToastAndroid.LONG);
         }*/
