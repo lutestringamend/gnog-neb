@@ -52,11 +52,7 @@ const Header = (props) => {
   }
 
   function openAbout() {
-    if (currentUser?.id === 8054) {
-      navigation.navigate("History");
-    } else {
-      navigation.navigate("About");
-    }
+    navigation.navigate("About");
   }
 
   function openProfile() {

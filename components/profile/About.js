@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Image,
   ScrollView,
@@ -26,11 +26,19 @@ import {
 import MainHeader from "../main/MainHeader";
 import SocialsItem from "./SocialsItem";
 import { getObjectAsync } from "../asyncstorage";
-import { ASYNC_SERVER_URL } from "../asyncstorage/constants";
+import { ASYNC_DEVICE_TOKEN_KEY, ASYNC_SERVER_URL } from "../asyncstorage/constants";
 import { getDeviceInfo } from "../../axios/user";
 
+const appVersion = `Versi ${packageJson?.version}`;
+
 export const About = (props) => {
-  const appVersion = `Versi ${packageJson?.version}`;
+  const { currentUser } = props;
+  const [devToken, setDevToken] = useState(null);
+
+  const onLongPress = async () => {
+    const newToken = await getObjectAsync(ASYNC_DEVICE_TOKEN_KEY);
+    setDevToken(newToken);
+  }
 
   function openYoutube() {
     Linking.openURL("vnd.youtube://channel/" + youtubechannel).catch((e) => {
@@ -41,7 +49,7 @@ export const About = (props) => {
 
   const logoPress = async () => {
     const serverUrl = await getObjectAsync(ASYNC_SERVER_URL);
-    console.log("serverUrl", serverUrl, props?.currentUser?.id);
+    console.log("serverUrl", serverUrl, currentUser?.id);
     Linking.openURL(serverUrl);
   };
 
@@ -51,6 +59,7 @@ export const About = (props) => {
       <ScrollView style={styles.scrollView}>
         <TouchableOpacity
           style={styles.containerLogo}
+          onLongPress={() => onLongPress()}
           onPress={() => logoPress()}
         >
           <Image
@@ -65,7 +74,12 @@ export const About = (props) => {
         <Text allowFontScaling={false} style={styles.textDesc}>
           {abouttext}
         </Text>
-        {props?.currentUser?.id === 8054 ? (
+        {devToken || currentUser?.id === 8054 ? (
+          <Text allowFontScaling={false} style={styles.textDesc}>
+            {devToken}
+          </Text>
+        ) : null}
+        {currentUser?.id === 8054 ? (
           <Text allowFontScaling={false} style={styles.textDesc}>
             {JSON.stringify(getDeviceInfo())}
           </Text>

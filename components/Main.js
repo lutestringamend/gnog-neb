@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Platform, SafeAreaView, StyleSheet, AppState } from "react-native";
+import { Platform, SafeAreaView, StyleSheet, AppState, PermissionsAndroid } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
@@ -23,6 +23,7 @@ import {
   updateReduxUserAddresses,
   deriveUserKey,
   userLogout,
+  getDeviceInfo,
 } from "../axios/user";
 import {
   clearMediaKitData,
@@ -103,9 +104,9 @@ function Main(props) {
       if (Platform.OS == "web") {
         setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, "WEB_DEV_TOKEN");
         return;
-      } else if (Platform.OS == "ios") {
+      /*} else if (Platform.OS == "ios") {
         setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, "DEV_IOS_TOKEN");
-        return;
+        return;*/
       }
 
       try {
@@ -118,11 +119,22 @@ function Main(props) {
             authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
             authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
+          try {
+            if (Platform.OS === "android" && getDeviceInfo().versionSdk > 32) {
+              const extraStatus = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+            }
+          } catch (err) {
+            console.log(err);
+            sentryLog(err);
+          }
+
           if (enabled) {
             if (Platform.OS === "android") {
               await initializeAndroidNotificationChannels();
             }
             console.log("Authorization status:", authStatus);
+          } else {
+            addError("Notification not authorized on this device");
           }
         };
 
