@@ -50,6 +50,12 @@ export const sharingOptionsPDF = {
   mimeType: "application/pdf",
 };
 
+export const sharingOptionsInvoicePDF = {
+  UTI: ".pdf",
+  dialogTitle: "Share Invoice Daclen",
+  mimeType: "application/pdf",
+};
+
 export const takePictureOptions = {
   quality: CAMERA_COMPRESSION_QUALITY,
   base64: true,

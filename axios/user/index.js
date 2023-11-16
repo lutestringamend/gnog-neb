@@ -1722,18 +1722,12 @@ export const deriveUserKey = async (token) => {
   return null;
 };
 
-export const getAuthDeviceInfo = (params, deviceToken) => {
+export const getAuthDeviceInfo = (params, device_token) => {
   let deviceInfo = getDeviceInfo();
   //console.log("deviceinfo", deviceInfo);
   return {
     ...params,
-    android_device_token: Platform.OS === "android" ? deviceToken : null,
-    ios_device_token:
-      Platform.OS === "ios"
-        ? deviceToken
-        : Platform.OS === "web"
-        ? "SAFARI"
-        : null,
+    device_token: device_token ? device_token : "DEV_DEVICE_TOKEN",
     device_info: JSON.stringify(deviceInfo),
   };
 };

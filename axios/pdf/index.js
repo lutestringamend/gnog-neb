@@ -1,25 +1,77 @@
 import Axios from "axios";
 import * as FileSystem from "expo-file-system";
+import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
-import { sharingOptionsPDF } from "../../components/media/constants";
+import { sharingOptionsInvoicePDF } from "../../components/media/constants";
+import { sentryLog } from "../../sentry";
+import { getInvoiceFileName } from "../cart";
 
-export const createInvoicePDF = async (data, invoice_no) => {
+export const createInvoicePDF = async (html, invoice_no) => {
   let session = null;
   let error = null;
 
   try {
-    /*const permissions =
-      await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
-    if (permissions.granted) {
-      
-    } else {
-      error = "Anda tidak memberikan izin untuk mengakses penyimpanan";
-    }*/
-    const base64 = await FileSystem.readAsStringAsync(data, {
-      encoding: FileSystem.EncodingType.Base64,
+    console.log("createInvoicePDF", html);
+    const result = await Print.printToFileAsync({
+      html,
+      width: 595,
+      height: 842,
+      orientation: Print.Orientation.portrait,
     });
+    console.log("print result", result);
+    if (result?.uri) {
+      await shareAsync(result?.uri, sharingOptionsInvoicePDF);
+      session = "success"
+    } 
+  } catch (e) {
+    console.error(e);
+    sentryLog(e);
+    error = e.toString();
+  } 
+
+
+  /*
+const blob = new Blob([data], {
+      type: 'application/pdf'
+    });
+    console.log("blob", blob);
+
+    const fr = new FileReader();
+    console.log("documentDirectory", FileSystem.documentDirectory);
+    fr.onload = async () => {
+      try {
+        const fileUri = `${FileSystem.documentDirectory}/${getInvoiceFileName(invoice_no)}`;
+        await FileSystem.writeAsStringAsync(fileUri, fr.result.split(',')[1], { encoding: FileSystem.EncodingType.Base64 });
+        shareAsync(fileUri, sharingOptionsPDF);
+        session = "success";
+      } catch (err) {
+        console.error(err);
+        error = err.toString();
+      }
+    };
+   
+    fr.readAsDataURL(blob);
+  */
+  
+
+  /*try {
+    const permissions =
+      await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+    
+    if (permissions?.granted !== true || permissions?.directoryUri === null || permissions?.directoryUri === "") {
+      return {
+        session,
+        error: "Anda tidak memberikan izin untuk mengakses penyimpanan",
+      }
+    }
+    console.log("directoryUri", permissions?.directoryUri);
+    const base64 = await FileSystem.readAsStringAsync(data, {
+      encoding: FileSystem.EncodingType.UTF8,
+    });
+
+    
     const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
-      permissions.directoryUri,
+      permissions?.directoryUri,
       `${invoice_no}.pdf`,
       "application/pdf"
     ).catch((e) => {
@@ -48,7 +100,7 @@ export const createInvoicePDF = async (data, invoice_no) => {
   } catch (err) {
     console.error(err);
     error = err.toString();
-  }
+  }*/
   return {
     session,
     error,

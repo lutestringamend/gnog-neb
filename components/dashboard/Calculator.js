@@ -213,9 +213,15 @@ const Calculator = () => {
             <View style={styles.containerSpec}>
               <Text
                 allowFontScaling={false}
-                style={[styles.textSpecHeader, { width: 0.2 * tableWidth }]}
+                style={[styles.textSpecHeader, { width: 0.1 * tableWidth }]}
               >
-                Bulan
+                Bln
+              </Text>
+              <Text
+                allowFontScaling={false}
+                style={[styles.textSpecHeader, { width: 0.1 * tableWidth }]}
+              >
+                Lvl
               </Text>
 
               <Text
@@ -249,11 +255,17 @@ const Calculator = () => {
               >
                 <Text
                   allowFontScaling={false}
-                  style={[styles.textSpec, { width: 0.2 * tableWidth }]}
+                  style={[styles.textSpec, { width: 0.1 * tableWidth }]}
                 >
-                  {`${item?.month}${
-                    item?.level > 0 ? " - " + LEVEL_LABELS[item?.level] : ""
-                  }`}
+                  {item?.month}
+                </Text>
+                <Text
+                  allowFontScaling={false}
+                  style={[styles.textSpec, { width: 0.1 * tableWidth }]}
+                >
+                  {
+                    item?.level > 0 ? LEVEL_LABELS[item?.level] : ""
+                  }
                 </Text>
 
                 <Text
@@ -365,7 +377,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     borderStartWidth: 1,
     backgroundColor: "transparent",
-    textAlign: "center",
     textAlignVertical: "center",
     borderColor: colors.daclen_gray,
     color: colors.daclen_graydark,
@@ -374,9 +385,9 @@ const styles = StyleSheet.create({
     padding: 8,
     fontSize: 12,
     fontFamily: "Poppins",
+    height: "100%",
     borderStartWidth: 1,
     backgroundColor: "transparent",
-    textAlign: "center",
     textAlignVertical: "center",
     borderColor: colors.daclen_gray,
     color: colors.daclen_black,

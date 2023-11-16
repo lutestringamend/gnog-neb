@@ -36,6 +36,7 @@ function CheckoutItem(props) {
   const [snapToken, setSnapToken] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingSnap, setLoadingSnap] = useState(null);
+  const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
 
   const navigation = useNavigation();
@@ -116,13 +117,32 @@ function CheckoutItem(props) {
 
   const downloadInvoice = async () => {
     const response = await printCheckoutInvoice(token, checkout?.id);
-    if (response === null || response?.data === undefined || response?.data === null) {
+    if (
+      response === null ||
+      response?.data === undefined ||
+      response?.data === null
+    ) {
+      setSuccess(false);
       setError(response?.error ? response?.error : "Gagal mendapatkan invoice");
     } else {
       setError(null);
-      const invoicing = await createInvoicePDF(response?.data, checkout?.invoice);
-      if (invoicing === null || invoicing?.session === undefined || invoicing?.session === null || invoicing?.session !== "success") {
-        setError(invoicing?.error ? invoicing?.error : "Gagal mencetak invoice");
+      const invoicing = await createInvoicePDF(
+        response?.data,
+        checkout?.invoice
+      );
+      if (
+        invoicing === null ||
+        invoicing?.session === undefined ||
+        invoicing?.session === null ||
+        invoicing?.session !== "success"
+      ) {
+        setSuccess(false);
+        setError(
+          invoicing?.error ? invoicing?.error : "Gagal mencetak invoice"
+        );
+      } else {
+        setSuccess(true);
+        setError("Invoice siap untuk dibagikan");
       }
     }
   };
@@ -130,7 +150,7 @@ function CheckoutItem(props) {
   return (
     <SafeAreaView style={styles.container}>
       {error ? (
-        <Text allowFontScaling={false} style={styles.textError}>
+        <Text allowFontScaling={false} style={[styles.textError, { backgroundColor: success ? colors.daclen_green : colors.daclen_danger }]}>
           {error}
         </Text>
       ) : null}
@@ -177,7 +197,7 @@ function CheckoutItem(props) {
                       color={colors.daclen_light}
                       style={styles.icon}
                     />
-                    <Text style={styles.textButton}>Download Invoice</Text>
+                    <Text style={styles.textButton}>Download</Text>
                   </TouchableOpacity>
                 </View>
 

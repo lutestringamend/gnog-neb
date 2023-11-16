@@ -21,6 +21,7 @@ import {
   USER_TEMP_CART_NEW_ITEM_CHANGE,
   USER_CHECKOUT_ERROR_STATE_CHANGE,
 } from "../../redux/constants";
+import { invoicefileheader } from "../../components/history/constants";
 
 export function clearCartError() {
   return (dispatch) => {
@@ -62,6 +63,16 @@ export function capitalizeFirstLetter(string) {
   }
 }
 
+export const getInvoiceFileName = (invoice_no) => {
+  try {
+    let invoice = invoice_no.replaceAll("/", "_");
+    return `${invoicefileheader}-${invoice}.pdf`;
+  } catch (e) {
+    console.error(e);
+  }
+  return `${invoicefileheader}.pdf`;
+}
+
 export const printCheckoutInvoice = async (token, checkout_id) => {
   if (
     token === undefined ||
@@ -95,8 +106,8 @@ export const printCheckoutInvoice = async (token, checkout_id) => {
         }
       }
     );
-      //console.log("printCheckoutInvoice response", response);
     data = response?.data;
+    console.log("printCheckoutInvoice response", response);
   } catch (e) {
     console.error(e);
     sentryLog(e);
