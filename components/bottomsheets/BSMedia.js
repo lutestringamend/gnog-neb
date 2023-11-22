@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -9,6 +9,7 @@ import {
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import * as ImagePicker from 'expo-image-picker';
 
 import {
   pickImage,
@@ -32,7 +33,16 @@ import {
 import { sentryLog } from "../../sentry";
 
 function BSMedia(props) {
+  const { currentUser, profilePicture } = props;
   const navigation = useNavigation();
+  const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
+
+  useEffect(() => {
+    if (status?.status !== "granted" || status?.granted !== true) {
+      requestPermission();
+    }
+    console.log("medialibrary permission", status);
+  }, [status]);
 
   function openCamera() {
     props?.closeThis();
@@ -72,7 +82,7 @@ function BSMedia(props) {
               return;
             }
           }
-          props.setMediaProfilePicture(uri, props.currentUser?.id);
+          props.setMediaProfilePicture(uri, currentUser?.id);
         }
       }
     } catch (e) {
@@ -85,7 +95,7 @@ function BSMedia(props) {
   return (
     <View style={styles.container}>
       <View style={styles.containerHorizontal}>
-        <Text allowFontScaling={false} style={styles.textTitle}>{props?.title}</Text>
+        <Text allowFontScaling={false} style={styles.textTitle}>{currentUser?.id === 8054 ? JSON.stringify(status) : props?.title}</Text>
         <TouchableOpacity
           style={styles.icon}
           onPress={() => props?.closeThis()}
