@@ -15,6 +15,7 @@ import {
 import { Image } from "expo-image";
 import { connect } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import { isAvailableAsync } from "expo-sharing";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import ViewShot from "react-native-view-shot";
@@ -52,11 +53,11 @@ import {
 const defaultFlyers = [null, null, null];
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
-const paddingTop = 32;
+const paddingTop = 0;
 
-const previewHeight = screenHeight * 0.8;
+const previewHeight = screenHeight;
 const photoWidth = screenWidth - 20;
-const photoHeight = previewHeight - paddingTop - 20;
+const photoHeight = previewHeight - paddingTop;
 const panelHeight = screenHeight - previewHeight;
 
 const marginTop = 48;
@@ -71,10 +72,16 @@ const FlyerSliderView = (props) => {
   const refScroll = useRef();
   const imageRef = useRef();
 
+  const [sharingAvailability, setSharingAvailability] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [transformedImage, setTransformedImage] = useState(null);
+  const [downloadUri, setDownloadUri] = useState(null);
+  const [lock, setLock] = useState(false);
+
+  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
 
   const [data, setData] = useState({
     index: 0,
@@ -89,6 +96,25 @@ const FlyerSliderView = (props) => {
   const [flyers, setFlyers] = useState(defaultFlyers);
 
   useEffect(() => {
+    const checkSharing = async () => {
+      const result = await isAvailableAsync();
+      if (!result && Platform.OS === "android") {
+        ToastAndroid.show(
+          "Perangkat tidak mengizinkan sharing file",
+          ToastAndroid.LONG,
+        );
+      }
+      console.log("sharingAvailability", result);
+      setSharingAvailability(result);
+    };
+    checkSharing();
+  }, []);
+
+  useEffect(() => {
+    console.log("MediaLibrary permissionResponse", permissionResponse);
+  }, [permissionResponse]);
+
+  useEffect(() => {
     if (
       props.route.params?.index === undefined ||
       props.route.params?.index === null ||
@@ -98,7 +124,7 @@ const FlyerSliderView = (props) => {
       navigation.goBack();
       return;
     }
-    setData({
+    let newData = {
       index: props.route.params?.index ? props.route.params?.index : 0,
       type: props.route.params?.type
         ? props.route.params?.type
@@ -106,8 +132,23 @@ const FlyerSliderView = (props) => {
       product: props.route.params?.product
         ? props.route.params?.product
         : "Audra",
-    });
-    console.log("route params", props.route.params);
+    };
+    setData(newData);
+
+    let newLength = 0;
+    try {
+      if (newData?.type === STARTER_KIT_FLYER_PRODUK_TAG) {
+        newLength = mediaKitPhotos[newData?.product]?.length;
+      } else if (newData?.type === STARTER_KIT_FLYER_MENGAJAK_TAG) {
+        newLength = flyerMengajak?.length;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setLimit(newLength - 1);
+    setTransformedImage(newLength > 0 ? Array(newLength).fill(null) : null);
+    setDownloadUri(newLength > 0 ? Array(newLength).fill(null) : null);
+    console.log("route params", props.route.params, newLength);
   }, [props.route.params]);
 
   useEffect(() => {
@@ -159,11 +200,18 @@ const FlyerSliderView = (props) => {
       console.error(e);
       setFlyers(defaultFlyers);
     }
+    if (error) {
+      setError(null);
+    }
   }, [data]);
 
   useEffect(() => {
-    console.log("flyers", flyers);
-  }, [flyers]);
+    console.log("transformedImage", transformedImage);
+  }, [transformedImage]);
+
+  useEffect(() => {
+    console.log("downloadUri", downloadUri);
+  }, [downloadUri]);
 
   const handleScroll = (event) => {
     let x = event.nativeEvent.contentOffset.x;
@@ -176,10 +224,12 @@ const FlyerSliderView = (props) => {
     }
     if (x < 1) {
       setData((data) => ({ ...data, index: data?.index - 1 }));
+      setLock(false);
       return;
     }
     if (x >= screenWidth * 2) {
       setData((data) => ({ ...data, index: data?.index + 1 }));
+      setLock(false);
       return;
     }
     setScrollPosition({
@@ -190,6 +240,7 @@ const FlyerSliderView = (props) => {
 
   const goPrev = async () => {
     try {
+      setLock(true);
       refScroll.current.scrollTo({ animated: true, x: 0, y: 0 });
     } catch (e) {
       console.error(e);
@@ -198,14 +249,152 @@ const FlyerSliderView = (props) => {
 
   const goNext = () => {
     try {
-      refScroll.current.scrollTo({ animated: true, x: screenWidth * 2, y: 0 });
+      setLock(true);
+      refScroll.current.scrollTo({
+        animated: true,
+        x: screenWidth * 2,
+        y: 0,
+      });
     } catch (e) {
       console.error(e);
     }
   };
 
-  const transformImage = () => {
-    console.log("transformImage");
+  const transformImage = async () => {
+    if (
+      Platform.OS === "web" ||
+      transformedImage === null ||
+      !(
+        transformedImage[data?.index] === undefined ||
+        transformedImage[data?.index] === null
+      )
+    ) {
+      //setError("ViewShot not available on Web");
+      return;
+    }
+    setLoading(true);
+    try {
+      imageRef.current
+        .capture()
+        .then((uri) => {
+          console.log(`index ${data?.index} captured`);
+          let newImages = [];
+          for (let i = 0; i < transformedImage?.length; i++) {
+            if (i === data?.index) {
+              newImages.push(uri);
+            } else {
+              newImages.push(transformedImage[i]);
+            }
+          }
+          setTransformedImage(newImages);
+          setLoading(false);
+        })
+        .catch((err) => {
+          creatingErrorLogDebug(err);
+          setLoading(false);
+        });
+    } catch (e) {
+      creatingErrorLogDebug(e);
+    }
+    setLoading(false);
+  };
+
+  const startDownload = async () => {
+    if (
+      !(
+        loading ||
+        transformedImage === null ||
+        transformedImage[data?.index] === null
+      )
+    ) {
+      setError(null);
+      setLoading(true);
+      saveIos(transformedImage[data?.index]);
+    }
+  };
+
+  const saveIos = async (uri) => {
+    try {
+      if (
+        !(
+          permissionResponse?.status === "granted" &&
+          permissionResponse?.granted
+        )
+      ) {
+        const request = await requestPermission();
+        console.log("requestPermission", request);
+      }
+      console.log("saveToLibraryAsync", uri);
+      const result = await MediaLibrary.saveToLibraryAsync(uri);
+      console.log("savetoLibraryAsync result", data?.index, result);
+      if (result === null) {
+        setError("Gagal menyimpan foto");
+        setSuccess(false);
+      } else {
+        setError(`Foto tersimpan di Galeri Foto`);
+        let newUris = [];
+        for (let i = 0; i < downloadUri?.length; i++) {
+          if (i === data?.index) {
+            newUris.push(result ? JSON.stringify(result) : null);
+          } else {
+            newUris.push(downloadUri[i]);
+          }
+        }
+        setDownloadUri(newUris);
+        setSuccess(true);
+      }
+    } catch (e) {
+      console.error(e);
+      setError(e.toString());
+      setSuccess(false);
+    }
+    setLoading(false);
+  };
+
+  const shareJPGApple = async () => {
+    const fileName = `daclen_foto_${
+      flyers[1]?.id ? flyers[1]?.id.toString() : ""
+    }.jpg`;
+    try {
+      const newUri = await FileSystem.getContentUriAsync(
+        transformedImage[data?.index],
+      );
+      const imageProc = await ImageManipulator.manipulateAsync(newUri);
+      let uri = `${FileSystem.documentDirectory}/${fileName}`;
+      await FileSystem.copyAsync({
+        from: imageProc?.uri ? imageProc?.uri : newUri,
+        to: uri,
+      });
+      setSharing(true);
+      await sharePhotoAsync(imageProc?.uri);
+      setSharing(false);
+    } catch (error) {
+      creatingErrorLogDebug(error);
+      shareJPGAndroid();
+    }
+  };
+
+  const shareJPGAndroid = async () => {
+    setSharing(true);
+    //const newUri = await FileSystem.getContentUriAsync(transformedImage);
+    await sharePhotoAsync(transformedImage[data?.index]);
+    setSharing(false);
+  };
+
+  const sharePhotoAsync = async (uri) => {
+    if (!sharingAvailability) {
+      setError("Perangkat tidak mengizinkan untuk membagikan file");
+      return;
+    }
+
+    try {
+      setSharing(true);
+      await shareAsync(uri, sharingOptionsJPEG);
+      setSharing(false);
+    } catch (e) {
+      console.error(e);
+      setError(e?.message);
+    }
   };
 
   const onError = (e) => {
@@ -217,12 +406,15 @@ const FlyerSliderView = (props) => {
     );
   };
 
+  const creatingErrorLogDebug = (e) => {
+    setSuccess(false);
+    setError(e.toString());
+    setLoading(false);
+    //sentryLog(e);
+  };
+
   /*
-<ImageBackground
-        source={require("../../assets/profilbg.png")}
-        style={styles.background}
-        resizeMode="cover"
-      />
+
   */
 
   return (
@@ -231,7 +423,8 @@ const FlyerSliderView = (props) => {
       flyers[1]?.foto === undefined ||
       flyers[1]?.foto === null ||
       watermarkData === undefined ||
-      watermarkData === null ? null : (
+      watermarkData === null ||
+      transformedImage === null ? null : (
         <ViewShot
           ref={imageRef}
           options={{
@@ -311,6 +504,12 @@ const FlyerSliderView = (props) => {
         </ViewShot>
       )}
 
+      <ImageBackground
+        source={require("../../assets/profilbg.png")}
+        style={styles.background}
+        resizeMode="cover"
+      />
+
       {error ? (
         <Text
           allowFontScaling={false}
@@ -327,6 +526,7 @@ const FlyerSliderView = (props) => {
         ref={refScroll}
         onScroll={handleScroll}
         scrollEventThrottle={16}
+        scrollEnabled={!loading || lock}
         horizontal
         showsHorizontalScrollIndicator={false}
         pagingEnabled
@@ -433,9 +633,102 @@ const FlyerSliderView = (props) => {
           ) : null}
         </View>
       </ScrollView>
-      <View style={styles.containerPanel}></View>
+      <View style={styles.containerPanel}>
+        <TouchableOpacity
+          onPress={() => startDownload()}
+          style={[
+            styles.button,
+            {
+              backgroundColor:
+                loading ||
+                transformedImage === null ||
+                transformedImage[data?.index] === null
+                  ? colors.daclen_lightgrey_button
+                  : colors.daclen_light,
+            },
+          ]}
+          disabled={
+            loading ||
+            transformedImage === null ||
+            transformedImage[data?.index] === null ||
+            !(downloadUri === null || downloadUri[data?.index] === null)
+          }
+        >
+          {loading ||
+          transformedImage === null ||
+          transformedImage[data?.index] === null ? (
+            <ActivityIndicator
+              size="small"
+              color={colors.daclen_black}
+              style={{ alignSelf: "center" }}
+            />
+          ) : (
+            <MaterialCommunityIcons
+              name={
+                downloadUri === null || downloadUri[data?.index] === null
+                  ? "file-download"
+                  : "check-bold"
+              }
+              size={18}
+              color={colors.daclen_black}
+            />
+          )}
+
+          <Text allowFontScaling={false} style={styles.textButton}>
+            {downloadUri === null || downloadUri[data?.index] === null
+              ? "Download"
+              : "Tersimpan"}{" "}{data?.index}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() =>
+            Platform.OS === "ios" ? shareJPGApple() : shareJPGAndroid()
+          }
+          style={[
+            styles.button,
+            {
+              backgroundColor:
+                loading ||
+                sharing ||
+                transformedImage === null ||
+                transformedImage[data?.index] === null
+                  ? colors.daclen_lightgrey_button
+                  : colors.daclen_light,
+            },
+          ]}
+          disabled={
+            loading ||
+            sharing ||
+            transformedImage === null ||
+            transformedImage[data?.index] === null
+          }
+        >
+          {sharing ? (
+            <ActivityIndicator
+              size="small"
+              color={colors.daclen_black}
+              style={{ alignSelf: "center" }}
+            />
+          ) : (
+            <MaterialCommunityIcons
+              name="share-variant"
+              size={18}
+              color={colors.daclen_black}
+            />
+          )}
+
+          <Text allowFontScaling={false} style={styles.textButton}>
+            Share{" "}{data?.index}
+          </Text>
+        </TouchableOpacity>
+      </View>
       {data?.index < 1 ? null : (
-        <TouchableOpacity style={styles.containerPrev} onPress={() => goPrev()}>
+        <TouchableOpacity
+          style={styles.containerPrev}
+          disabled={loading}
+          onPress={() => goPrev()}
+        >
           <MaterialCommunityIcons
             name="arrow-left-drop-circle"
             size={32}
@@ -446,7 +739,11 @@ const FlyerSliderView = (props) => {
       )}
 
       {data?.index >= limit ? null : (
-        <TouchableOpacity style={styles.containerNext} onPress={() => goNext()}>
+        <TouchableOpacity
+          style={styles.containerNext}
+          disabled={loading}
+          onPress={() => goNext()}
+        >
           <MaterialCommunityIcons
             name="arrow-right-drop-circle"
             size={32}
@@ -482,7 +779,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     start: 12,
-    top: (previewHeight - 32) / 2,
+    top: previewHeight / 2 - 60,
     backgroundColor: "transparent",
   },
   containerNext: {
@@ -492,7 +789,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     start: screenWidth - 44,
-    top: (previewHeight - 32) / 2,
+    top: previewHeight / 2 - 60,
     backgroundColor: "transparent",
   },
   containerScroll: {
@@ -502,25 +799,49 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   containerInside: {
-    paddingTop,
     width: screenWidth * 3,
     height: previewHeight,
     backgroundColor: "transparent",
+    paddingTop,
   },
   containerPhoto: {
     backgroundColor: "transparent",
     width: screenWidth,
     height: previewHeight - paddingTop,
+    top: -60,
     justifyContent: "center",
     alignItems: "center",
   },
   containerPanel: {
-    zIndex: 3,
+    zIndex: 4,
+    start: 0,
+    end: 0,
+    top: photoHeight * 0.8,
+    position: "absolute",
     width: screenWidth,
-    height: panelHeight,
+    flexDirection: "row",
     backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
+  },
+  button: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    width: 60,
+    height: 40,
+    paddingVertical: 10,
+    borderRadius: 6,
+    marginHorizontal: 10,
+    backgroundColor: colors.daclen_light,
+  },
+  textButton: {
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
+    marginStart: 10,
+    color: colors.daclen_black,
   },
   background: {
     position: "absolute",
