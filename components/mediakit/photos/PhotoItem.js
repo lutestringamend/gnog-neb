@@ -54,7 +54,6 @@ const PhotoItem = (props) => {
           },
         ]}
         source={item?.thumbnail ? item?.thumbnail : null}
-        onClick={() => openSegmentScreen()}
         contentFit="cover"
         placeholder={blurhash}
         transition={0}
@@ -74,6 +73,8 @@ const PhotoItem = (props) => {
     </TouchableOpacity>
   );
 };
+
+//onClick={() => openSegmentScreen()}
 
 const styles = StyleSheet.create({
   containerImage: {

@@ -70,8 +70,8 @@ function ImageLargeWatermarkModel(props) {
             },
           ]}
           contentFit="contain"
-          placeholder={blurhash}
-          transition={100}
+          placeholder={null}
+          transition={0}
         />
       )}
 

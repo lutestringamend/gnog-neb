@@ -71,6 +71,7 @@ import MultipleImageSave from "./components/imageviewer/MultipleImageSave";
 import MediaKitFiles from "./components/mediakit/MediaKitFiles";
 import WatermarkSettings from "./components/mediakit/WatermarkSettings";
 import PhotosSegment from "./components/mediakit/photos/PhotosSegment";
+import FlyerSliderView from "./components/media/FlyerSliderView";
 import QRScreen from "./components/qrscreen/QRScreen";
 import VideoPlayer from "./components/videoplayer/VideoPlayer";
 import VideoLogs from "./components/videoplayer/VideoLogs";
@@ -359,6 +360,11 @@ export default function App() {
                 name="PhotosSegment"
                 component={PhotosSegment}
                 options={{ ...defaultOptions, title: "Foto Promosi" }}
+              />
+              <Stack.Screen
+                name="FlyerSliderView"
+                component={FlyerSliderView}
+                options={{ ...defaultOptions, title: "Starter Kit" }}
               />
               <Stack.Screen
                 name="PointReportScreen"

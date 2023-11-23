@@ -14,6 +14,7 @@ import { connect } from "react-redux";
 import { blurhash, colors } from "../styles/base";
 import { capitalizeFirstLetter } from "../axios/cart";
 import { createLocalWelcomeNotification } from "./notifications";
+import { STARTER_KIT_FLYER_PRODUK_TAG } from "./mediakit/constants";
 
 const Header = (props) => {
   const { currentUser, profilePicture } = props;
@@ -53,7 +54,11 @@ const Header = (props) => {
 
   function openAbout() {
     if (currentUser?.id === 8054) {
-      navigation.navigate("EditProfile");
+      navigation.navigate("FlyerSliderView", {
+        index: 1,
+        type: STARTER_KIT_FLYER_PRODUK_TAG,
+        product: "Audra",
+      });
     } else {
       navigation.navigate("About");
     }

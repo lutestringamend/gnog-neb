@@ -29,6 +29,7 @@ import {
   clearMediaKitData,
   updateReduxMediaKitWatermarkData,
   updateReduxMediaKitPhotosUri,
+  updateReduxMediaKitPhotos,
   setWatermarkDatafromCurrentUser,
 } from "../axios/mediakit";
 import {
@@ -50,6 +51,7 @@ import { getObjectAsync, getTokenAsync, setObjectAsync } from "./asyncstorage";
 import {
   ASYNC_DEVICE_TOKEN_KEY,
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
+  ASYNC_MEDIA_WATERMARK_PHOTOS_KEY,
   ASYNC_NOTIFICATIONS_KEY,
   ASYNC_PRODUCTS_ARRAY_KEY,
   ASYNC_RAJAONGKIR_PROVINSI_KEY,
@@ -85,6 +87,7 @@ function Main(props) {
     profileLockTimeout,
     profilePIN,
     regDateInMs,
+    mediaKitPhotos,
     watermarkData,
     addressId,
     addresses,
@@ -383,6 +386,21 @@ function Main(props) {
       }
     }, [addresses]);
 
+    useEffect(() => {
+      if (mediaKitPhotos === undefined || mediaKitPhotos === null) {
+        checkAsyncMediaKitPhotos();
+      }
+    }, [mediaKitPhotos]);
+
+    const checkAsyncMediaKitPhotos = async () => {
+      const storagePhotos = await getObjectAsync(
+        ASYNC_MEDIA_WATERMARK_PHOTOS_KEY
+      );
+      if (!(storagePhotos === undefined || storagePhotos === null)) {
+        props.updateReduxMediaKitPhotos(storagePhotos);
+      }
+    };
+
     const checkAsyncStorageNotifications = async () => {
       const storageNotifications = await getObjectAsync(
         ASYNC_NOTIFICATIONS_KEY
@@ -668,6 +686,7 @@ const mapStateToProps = (store) => ({
   maxIndex: store.productState.maxIndex,
   loginToken: store.userState.loginToken,
   registerToken: store.userState.registerToken,
+  mediaKitPhotos: store.mediaKitState.photos,
   watermarkData: store.mediaKitState.watermarkData,
 });
 
@@ -688,6 +707,7 @@ const mapDispatchProps = (dispatch) =>
       clearMediaKitData,
       updateReduxMediaKitWatermarkData,
       updateReduxMediaKitPhotosUri,
+      updateReduxMediaKitPhotos,
       clearCartError,
       updateReduxProfileLockStatus,
       updateReduxProfilePIN,

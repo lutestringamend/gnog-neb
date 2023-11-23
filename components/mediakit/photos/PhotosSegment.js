@@ -45,6 +45,10 @@ const PhotosSegment = (props) => {
   }, [props.route.params]);
 
   useEffect(() => {
+    console.log("photos", photos);
+  }, [photos]);
+
+  useEffect(() => {
     checkSavedUri();
   }, [photosUri]);
 

@@ -463,16 +463,18 @@ export const getFileSizeAsync = async (uri) => {
 
 export const pickImage = async () => {
   try {
-    let { status } = await checkStoragePermission();
+    /*let { status } = await checkStoragePermission();
     if (status === "denied") {
       return IMAGE_PICKER_NO_PERMISSION;
     } else if (status === "undetermined") {
-      console.log("reattempt requestMediaLibraryPermissionAsync");
+      
+    }*/
+
+    console.log("reattempt requestMediaLibraryPermissionAsync");
       let newRequest = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (newRequest?.status !== "granted") {
         return IMAGE_PICKER_NO_PERMISSION;
       }
-    }
 
     let data = null;
     let result = null;
@@ -480,12 +482,12 @@ export const pickImage = async () => {
       result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [1, 1],
+        aspect: [4, 3],
         quality: PICKER_COMPRESSION_QUALITY,
         allowsMultipleSelection: false,
         presentationStyle:
           ImagePicker.UIImagePickerPresentationStyle.OVER_FULL_SCREEN,
-      });
+      }).catch((err) => console.error(err));
     } catch (e) {
       console.error(e);
       return IMAGE_PICKER_ERROR;
