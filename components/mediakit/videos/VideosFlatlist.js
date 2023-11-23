@@ -102,7 +102,7 @@ const VideosFlatlist = (props) => {
                 contentFit="cover"
                 placeholder={blurhash}
                 transition={0}
-                cachePolicy="memory-disk"
+                cachepolicy="memory-disk"
               />
             </View>
 
