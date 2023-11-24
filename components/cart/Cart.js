@@ -222,14 +222,13 @@ function Cart(props) {
           currentUser?.status_member === "supervisor"
         }
       >
-        {currentUser?.level === "spv" ||
-        currentUser?.status_member === "supervisor" ? null : loading ? (
+        {(token !== null && currentUser === null) || loading ? (
           <ActivityIndicator
             size="small"
             color={colors.daclen_gray}
-            style={{ alignSelf: "center" }}
           />
-        ) : (
+        ) : currentUser?.level === "spv" ||
+        currentUser?.status_member === "supervisor" ? null : (
           <Text allowFontScaling={false} style={styles.textButton}>
             {token === null
               ? `Login/Register`

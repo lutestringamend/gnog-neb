@@ -11,20 +11,15 @@ import { useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
 
-import { blurhash, colors } from "../styles/base";
+import { colors } from "../styles/base";
 import { capitalizeFirstLetter } from "../axios/cart";
 import { createLocalWelcomeNotification } from "./notifications";
-import { STARTER_KIT_FLYER_PRODUK_TAG } from "./mediakit/constants";
 
 const Header = (props) => {
-  const { currentUser, profilePicture } = props;
+  const { token, currentUser, profilePicture } = props;
   const navigation = useNavigation();
 
-  if (
-    currentUser === null ||
-    currentUser?.name === undefined ||
-    currentUser?.name === null
-  ) {
+  if (token === null && currentUser === null) {
     return (
       <View
         style={[
@@ -58,7 +53,6 @@ const Header = (props) => {
     } else {
       navigation.navigate("About");
     }
-    
   }
 
   function openProfile() {
@@ -74,66 +68,82 @@ const Header = (props) => {
 
   return (
     <View style={[styles.container, { height: 72 }]}>
-      <TouchableOpacity style={styles.containerImage} onPress={() => openProfile()}>
-        <Image
-          key="userImage"
-          style={styles.image}
-          source={
-            profilePicture
-              ? profilePicture
-              : require("../assets/user.png")
-          }
-          alt={currentUser?.name}
-          placeholder={Platform.OS === "ios" ? null : require("../assets/user.png")}
-          contentFit={Platform.OS === "ios" && profilePicture === null ? "contain" : "cover"}
-          transition={0}
-        />
-      </TouchableOpacity>
-      <View style={styles.containerText}>
-        <Text allowFontScaling={false} style={styles.text}>
-          Welcome!
-        </Text>
-        <Text allowFontScaling={false} style={styles.textName}>
-          {currentUser?.detail_user?.nama_lengkap
-            ? currentUser?.detail_user?.nama_lengkap
-            : currentUser?.name}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text}>{`${
-          currentUser?.status
-            ? capitalizeFirstLetter(currentUser?.status)
-            : "Reseller"
-        } Daclen`}</Text>
-      </View>
+      {currentUser?.name === undefined || currentUser?.name === null ? null : (
+        <TouchableOpacity
+          style={styles.containerImage}
+          onPress={() => openProfile()}
+        >
+          <Image
+            key="userImage"
+            style={styles.image}
+            source={
+              profilePicture ? profilePicture : require("../assets/user.png")
+            }
+            alt={currentUser?.name}
+            placeholder={
+              Platform.OS === "ios" ? null : require("../assets/user.png")
+            }
+            contentFit={
+              Platform.OS === "ios" && profilePicture === null
+                ? "contain"
+                : "cover"
+            }
+            transition={0}
+          />
+        </TouchableOpacity>
+      )}
+
+      {currentUser?.name === undefined || currentUser?.name === null ? null : (
+        <View style={styles.containerText}>
+          <Text allowFontScaling={false} style={styles.text}>
+            Welcome!
+          </Text>
+          <Text allowFontScaling={false} style={styles.textName}>
+            {currentUser?.detail_user?.nama_lengkap
+              ? currentUser?.detail_user?.nama_lengkap
+              : currentUser?.name}
+          </Text>
+          <Text allowFontScaling={false} style={styles.text}>{`${
+            currentUser?.status
+              ? capitalizeFirstLetter(currentUser?.status)
+              : "Reseller"
+          } Daclen`}</Text>
+        </View>
+      )}
 
       <View style={styles.containerUser}>
-      <TouchableOpacity onPress={() => openAbout()}>
+        <TouchableOpacity onPress={() => openAbout()}>
           <Image
             source={require("../assets/splashsmall.png")}
             style={styles.imageLogo}
             contentFit="contain"
           />
-          </TouchableOpacity>
+        </TouchableOpacity>
         <View style={styles.containerHorizontal}>
-        <Text
-            allowFontScaling={false}
-            style={[
-              styles.text,
-              { marginTop: 4, alignSelf: "flex-end", textAlign: "right" },
-            ]}
+          {currentUser?.name === undefined ||
+          currentUser?.name === null ? null : (
+            <Text
+              allowFontScaling={false}
+              style={[styles.text, { alignSelf: "center", textAlign: "right" }]}
+            >
+              {`id referral anda:\n${
+                currentUser?.name === undefined || currentUser?.name === null
+                  ? ""
+                  : currentUser?.name
+              }`}
+            </Text>
+          )}
+          <TouchableOpacity
+            style={styles.bell}
+            onPress={() => openNotifications()}
           >
-            {`id referral anda:\n${currentUser?.name}`}
-          </Text>
-          <TouchableOpacity style={styles.bell} onPress={() => openNotifications()}>
-          <MaterialCommunityIcons
+            <MaterialCommunityIcons
               name="bell"
               size={20}
               color={colors.daclen_light}
             />
           </TouchableOpacity>
-          
         </View>
-        
-          
       </View>
     </View>
   );
@@ -149,6 +159,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "transparent",
+    height: 30,
   },
   containerLogoSmall: {
     marginHorizontal: 12,
@@ -224,6 +235,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (store) => ({
+  token: store.userState.token,
   currentUser: store.userState.currentUser,
   profilePicture: store.userState.profilePicture,
 });

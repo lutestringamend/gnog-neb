@@ -420,7 +420,7 @@ const ImageViewer = (props) => {
         console.log("requestPermission", request);
       }
       const result = await MediaLibrary.saveToLibraryAsync(uri);
-      console.log("savetoLibraryAsync result", result);
+      console.log("savetoLibraryAsync result", uri, result);
       setError(`Foto tersimpan di Galeri Foto`);
       setDownloadUri(JSON.stringify(result));
       setSuccess(true);

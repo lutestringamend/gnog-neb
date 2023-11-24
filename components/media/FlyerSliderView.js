@@ -352,22 +352,21 @@ const FlyerSliderView = (props) => {
       console.log("saveToLibraryAsync", uri, imageProc?.uri);
       const result = await MediaLibrary.saveToLibraryAsync(imageProc?.uri);
       console.log("savetoLibraryAsync result", data?.index, result);
-      if (result === null) {
+      /*if (result === null) {
         setError("Gagal menyimpan foto");
         setSuccess(false);
-      } else {
-        setError(`Foto tersimpan di Galeri Foto`);
-        let newUris = [];
-        for (let i = 0; i < downloadUri?.length; i++) {
-          if (i === data?.index) {
-            newUris.push(result ? JSON.stringify(result) : null);
-          } else {
-            newUris.push(downloadUri[i]);
-          }
+      }*/
+      setError(`Foto tersimpan di Galeri Foto`);
+      let newUris = [];
+      for (let i = 0; i < downloadUri?.length; i++) {
+        if (i === data?.index) {
+          newUris.push(result ? JSON.stringify(result) : null);
+        } else {
+          newUris.push(downloadUri[i]);
         }
-        setDownloadUri(newUris);
-        setSuccess(true);
       }
+      setDownloadUri(newUris);
+      setSuccess(true);
     } catch (e) {
       console.error(e);
       setError(e.toString());
@@ -851,7 +850,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     start: 12,
-    top: previewHeight / 3 - 60,
+    top: screenHeight * 0.4 + 16,
     backgroundColor: "transparent",
   },
   containerNext: {
@@ -861,7 +860,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     start: screenWidth - 44,
-    top: previewHeight / 3 - 60,
+    top: screenHeight * 0.4 + 16,
     backgroundColor: "transparent",
   },
   containerScroll: {

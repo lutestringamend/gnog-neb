@@ -130,9 +130,9 @@ const WatermarkPhotos = (props) => {
       /*try {
         navigation.navigate("ImageViewer", {
           disableWatermark: false,
-          title,
+          title: product,
           jenis_foto,
-          photoIndex,
+          photoIndex: index,
           id: item?.id,
           uri: item?.foto,
           thumbnail: item?.thumbnail,

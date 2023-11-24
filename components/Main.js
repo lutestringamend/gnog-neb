@@ -1,5 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Platform, SafeAreaView, StyleSheet, AppState, PermissionsAndroid } from "react-native";
+import {
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  AppState,
+  PermissionsAndroid,
+} from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
@@ -123,7 +129,9 @@ function Main(props) {
 
           try {
             if (Platform.OS === "android" && getDeviceInfo().versionSdk > 32) {
-              const extraStatus = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+              const extraStatus = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+              );
             }
           } catch (err) {
             console.log(err);
@@ -161,7 +169,7 @@ function Main(props) {
             if (remoteMessage) {
               console.log(
                 "Notification caused app to open from quit state:",
-                remoteMessage.notification
+                remoteMessage.notification,
               );
             }
           });
@@ -171,11 +179,11 @@ function Main(props) {
             props,
             remoteMessage,
             isAdmin,
-            currentUser?.id
+            currentUser?.id,
           );
           console.log(
             "Notification caused app to open from background state:",
-            remoteMessage.notification
+            remoteMessage.notification,
           );
           //navigation.navigate(remoteMessage.data.type);
         });
@@ -186,7 +194,7 @@ function Main(props) {
             props,
             remoteMessage,
             isAdmin,
-            currentUser?.id
+            currentUser?.id,
           );
           console.log("Message handled in the background!", remoteMessage);
         });
@@ -196,7 +204,7 @@ function Main(props) {
             props,
             remoteMessage,
             isAdmin,
-            currentUser?.id
+            currentUser?.id,
           );
           console.log("FCM message", remoteMessage);
           /*if (Platform.OS === "android") {
@@ -220,11 +228,11 @@ function Main(props) {
         try {
           console.log(
             "lastNotificationResponse",
-            lastNotificationResponse?.notification?.request?.content?.data
+            lastNotificationResponse?.notification?.request?.content?.data,
           );
           openScreenFromNotification(
             navigationRef.current,
-            lastNotificationResponse?.notification?.request?.content?.data
+            lastNotificationResponse?.notification?.request?.content?.data,
           );
         } catch (e) {
           console.error(e);
@@ -327,7 +335,7 @@ function Main(props) {
       try {
         const theAppState = AppState.addEventListener(
           "change",
-          handleAppStateChange
+          handleAppStateChange,
         );
         return () => theAppState.remove();
       } catch (e) {
@@ -405,7 +413,7 @@ function Main(props) {
 
     const checkAsyncStorageNotifications = async () => {
       const storageNotifications = await getObjectAsync(
-        ASYNC_NOTIFICATIONS_KEY
+        ASYNC_NOTIFICATIONS_KEY,
       );
       if (
         storageNotifications === undefined ||
@@ -455,7 +463,7 @@ function Main(props) {
 
     const checkWelcomeNotif = async () => {
       const welcomeNotification = await getObjectAsync(
-        ASYNC_WELCOME_NOTIFICATION_KEY
+        ASYNC_WELCOME_NOTIFICATION_KEY,
       );
       if (
         welcomeNotification === undefined ||
@@ -482,7 +490,7 @@ function Main(props) {
     const readStorageCurrentUser = async () => {
       try {
         const storageCurrentUser = await getObjectAsync(
-          ASYNC_USER_CURRENTUSER_KEY
+          ASYNC_USER_CURRENTUSER_KEY,
         );
         if (
           storageCurrentUser === undefined ||
@@ -528,7 +536,8 @@ function Main(props) {
       if (
         token === null ||
         currentUser === null ||
-        regDateInMs === null || regDateInMs <= 0
+        regDateInMs === null ||
+        regDateInMs <= 0
       ) {
         clearTimeout(timeoutHandle.current);
         return;
@@ -561,7 +570,7 @@ function Main(props) {
 
     const checkRajaOngkirProvinsi = async () => {
       const storageProvinsi = await getObjectAsync(
-        ASYNC_RAJAONGKIR_PROVINSI_KEY
+        ASYNC_RAJAONGKIR_PROVINSI_KEY,
       );
       if (storageProvinsi === undefined || storageProvinsi === null) {
         fetchRajaOngkir(token, "provinsi");
@@ -570,7 +579,7 @@ function Main(props) {
 
     const checkStorageAddressId = async () => {
       const storageAddressId = await getObjectAsync(
-        ASYNC_USER_PROFILE_ADDRESS_ID_KEY
+        ASYNC_USER_PROFILE_ADDRESS_ID_KEY,
       );
       if (
         storageAddressId === undefined ||
@@ -716,7 +725,7 @@ const mapDispatchProps = (dispatch) =>
       updateReduxUserAddressId,
       updateReduxUserAddresses,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchProps)(Main);
