@@ -32,6 +32,7 @@ import { sharingOptionsJPEG } from "../media/constants";
 import ImageLargeWatermarkModel from "../media/ImageLargeWatermarkModel";
 import {
   STARTER_KIT_FLYER_MENGAJAK,
+  STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE,
   STARTER_KIT_FLYER_MENGAJAK_TAG,
   STARTER_KIT_FLYER_PRODUK,
   STARTER_KIT_FLYER_PRODUK_TAG,
@@ -65,6 +66,7 @@ const FlyerSliderView = (props) => {
   const [scrollInit, setScrollInit] = useState(false);
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [enableButtons, setEnableButtons] = useState(false);
   const [error, setError] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -147,12 +149,18 @@ const FlyerSliderView = (props) => {
       return;
     }
 
+    props.navigation.setOptions({
+      title:
+        data?.type === STARTER_KIT_FLYER_MENGAJAK_TAG
+          ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE
+          : data?.product
+            ? data?.product
+            : "Starter Kit",
+    });
+
     try {
       if (data?.type === STARTER_KIT_FLYER_PRODUK_TAG) {
         //console.log("mediakitPhotos", mediaKitPhotos);
-        props.navigation.setOptions({
-          title: data?.product ? data?.product : STARTER_KIT_FLYER_PRODUK,
-        });
         let array = mediaKitPhotos[data?.product];
         let limit = array?.length - 1;
         if (data?.index < 1) {
@@ -168,7 +176,6 @@ const FlyerSliderView = (props) => {
         }
         setLimit(limit);
       } else if (data?.type === STARTER_KIT_FLYER_MENGAJAK_TAG) {
-        props.navigation.setOptions({ title: STARTER_KIT_FLYER_MENGAJAK });
         let limit = flyerMengajak?.length - 1;
         if (data?.index < 1) {
           setFlyers(["", flyerMengajak[0], flyerMengajak[1]]);
@@ -206,6 +213,7 @@ const FlyerSliderView = (props) => {
     ) {
       return;
     }
+    setEnableButtons(false);
     refScroll.current.scrollTo({
       animated: true,
       x: screenWidth * data?.index,
@@ -311,7 +319,7 @@ const FlyerSliderView = (props) => {
             }
           }
           setTransformedImage(newImages);
-
+          setEnableButtons(true);
           setLoading(false);
         })
         .catch((err) => {
@@ -321,8 +329,8 @@ const FlyerSliderView = (props) => {
     } catch (e) {
       console.error(e);
       //creatingErrorLogDebug(e);
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const startDownload = async () => {
@@ -564,7 +572,8 @@ const FlyerSliderView = (props) => {
             height:
               flyers[1] === null ||
               flyers[1]?.height === undefined ||
-              flyers[1]?.height === null
+              flyers[1]?.height === null ||
+              screenAR <= limitAR
                 ? previewHeight
                 : calculateFlyerDisplayHeight(
                     flyers[1]?.width,
@@ -645,10 +654,7 @@ const FlyerSliderView = (props) => {
               styles.button,
               {
                 backgroundColor:
-                  loading ||
-                  downloading ||
-                  transformedImage === null ||
-                  transformedImage[data?.index] === null
+                  loading || downloading || !enableButtons
                     ? colors.daclen_lightgrey_button
                     : colors.daclen_light,
               },
@@ -656,8 +662,7 @@ const FlyerSliderView = (props) => {
             disabled={
               loading ||
               downloading ||
-              transformedImage === null ||
-              transformedImage[data?.index] === null ||
+              !enableButtons ||
               !(downloadUri === null || downloadUri[data?.index] === null)
             }
           >
@@ -694,20 +699,12 @@ const FlyerSliderView = (props) => {
               styles.button,
               {
                 backgroundColor:
-                  loading ||
-                  sharing ||
-                  transformedImage === null ||
-                  transformedImage[data?.index] === null
+                  loading || sharing || !enableButtons
                     ? colors.daclen_lightgrey_button
                     : colors.daclen_light,
               },
             ]}
-            disabled={
-              loading ||
-              sharing ||
-              transformedImage === null ||
-              transformedImage[data?.index] === null
-            }
+            disabled={loading || sharing || !enableButtons}
           >
             {sharing ? (
               <ActivityIndicator

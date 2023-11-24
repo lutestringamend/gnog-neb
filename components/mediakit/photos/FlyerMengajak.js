@@ -141,7 +141,7 @@ const FlyerMengajak = (props) => {
     navigation.navigate("FlyerSliderView", {
       index,
       type: STARTER_KIT_FLYER_MENGAJAK_TAG,
-      product: null,
+      product: STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE,
     });
     /*navigation.navigate("ImageViewer", {
       disableWatermark: false,
