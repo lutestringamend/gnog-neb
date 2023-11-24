@@ -13,7 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import { colors, staticDimensions } from "../../../styles/base";
 import PhotoItem from "./PhotoItem";
-import { STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE } from "../constants";
+import { STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE, STARTER_KIT_FLYER_MENGAJAK_TAG } from "../constants";
 
 const FlyerMengajak = (props) => {
   const {
@@ -109,7 +109,7 @@ const FlyerMengajak = (props) => {
     }
   };
 
-  const onPress = (item, title) => {
+  const onPress = (item, index) => {
     try {
       if (
         !(
@@ -127,7 +127,7 @@ const FlyerMengajak = (props) => {
     } catch (e) {
       console.error(e);
     }
-    openPhoto(item, title);
+    openPhoto(index);
   };
 
   function refreshPage() {
@@ -137,8 +137,13 @@ const FlyerMengajak = (props) => {
     props?.refreshPage();
   }
 
-  function openPhoto(item) {
-    navigation.navigate("ImageViewer", {
+  function openPhoto(index) {
+    navigation.navigate("FlyerSliderView", {
+      index,
+      type: STARTER_KIT_FLYER_MENGAJAK_TAG,
+      product: null,
+    });
+    /*navigation.navigate("ImageViewer", {
       disableWatermark: false,
       title: STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE,
       jenis_foto,
@@ -158,7 +163,7 @@ const FlyerMengajak = (props) => {
       fontSize: item?.font ? item?.font?.ukuran : 48,
       watermarkData,
       sharingAvailability,
-    });
+    });*/
   }
 
   return (
@@ -231,7 +236,7 @@ const FlyerMengajak = (props) => {
               imageStyle={styles.photoImage}
               selectMode={selectMode}
               onLongPress={() => onLongPress(item)}
-              onPress={() => onPress(item)}
+              onPress={() => onPress(item, index)}
             />
           )}
         />

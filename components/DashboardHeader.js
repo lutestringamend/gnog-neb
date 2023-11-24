@@ -54,11 +54,7 @@ const Header = (props) => {
 
   function openAbout() {
     if (currentUser?.id === 8054) {
-      navigation.navigate("FlyerSliderView", {
-        index: 1,
-        type: STARTER_KIT_FLYER_PRODUK_TAG,
-        product: "Audra",
-      });
+      navigation.navigate("EditProfile");
     } else {
       navigation.navigate("About");
     }

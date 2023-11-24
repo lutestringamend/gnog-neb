@@ -386,6 +386,8 @@ function Main(props) {
       }
     }, [addresses]);
 
+    /*
+    DEV
     useEffect(() => {
       if (mediaKitPhotos === undefined || mediaKitPhotos === null) {
         checkAsyncMediaKitPhotos();
@@ -399,7 +401,7 @@ function Main(props) {
       if (!(storagePhotos === undefined || storagePhotos === null)) {
         props.updateReduxMediaKitPhotos(storagePhotos);
       }
-    };
+    };*/
 
     const checkAsyncStorageNotifications = async () => {
       const storageNotifications = await getObjectAsync(

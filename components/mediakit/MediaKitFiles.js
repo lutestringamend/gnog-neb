@@ -162,6 +162,10 @@ function MediaKitFiles(props) {
     }
   }, [mediaKitPhotos]);
 
+  /*useEffect(() => {
+    console.log("flyerMengajak", flyerMengajak);
+  }, [flyerMengajak]);*/
+
   useEffect(() => {
     /*if (mediaKitVideos === null || mediaKitVideos?.length === undefined) {
       return;
@@ -171,9 +175,9 @@ function MediaKitFiles(props) {
     }
   }, [mediaKitVideos]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     console.log("flyer selection", selection);
-  }, [selection]);
+  }, [selection]);*/
 
   useEffect(() => {
     if (photoError === null) {

@@ -121,8 +121,13 @@ const WatermarkPhotos = (props) => {
       openPhoto(item, title, photoIndex);
     };
 
-    function openPhoto(item, title, photoIndex) {
-      try {
+    function openPhoto(item, product, index) {
+      navigation.navigate("FlyerSliderView", {
+        index,
+        type: jenis_foto,
+        product,
+      });
+      /*try {
         navigation.navigate("ImageViewer", {
           disableWatermark: false,
           title,
@@ -147,7 +152,7 @@ const WatermarkPhotos = (props) => {
         });
       } catch (e) {
         console.error(e);
-      }
+      }*/
     }
 
     return (

@@ -38,40 +38,25 @@ const PhotosSegment = (props) => {
 
   useEffect(() => {
     props.navigation.setOptions({
-      title: jenis_foto === STARTER_KIT_FLYER_MENGAJAK_TAG ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE : STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE,
+      title: jenis_foto === STARTER_KIT_FLYER_MENGAJAK_TAG ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE : `Flyer ${title}`,
       headerShown: true,
     });
     //console.log("PhotosSegment params", props.route.params);
   }, [props.route.params]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     console.log("photos", photos);
-  }, [photos]);
+  }, [photos]);*/
 
   useEffect(() => {
     checkSavedUri();
   }, [photosUri]);
 
-  function openPhoto(item) {
-    navigation.navigate("ImageViewer", {
-      disableWatermark: false,
-      title: `Foto ${item?.id.toString()}`,
-      jenis_foto,
-      id: item?.id,
-      uri: item?.foto,
-      thumbnail: item?.thumbnail,
-      isSquare: false,
-      width: item?.width,
-      height: item?.height,
-      text_align: item?.text_align,
-      text_x: item?.text_x,
-      text_y: item?.text_y,
-      link_x: item?.link_x,
-      link_y: item?.link_y,
-      font: item?.font,
-      fontFamily: "Poppins", fontSize: item?.font ? item?.font?.ukuran : 48,
-      watermarkData,
-      sharingAvailability,
+  function openPhoto(index) {
+    navigation.navigate("FlyerSliderView", {
+      index,
+      type: jenis_foto,
+      product: title,
     });
   }
 
@@ -210,7 +195,7 @@ const PhotosSegment = (props) => {
             renderItem={({ item, index }) => item?.jenis_foto === jenis_foto ? (
               <TouchableHighlight
                 key={index}
-                onPress={() => openPhoto(item)}
+                onPress={() => openPhoto(index)}
                 underlayColor={colors.daclen_orange}
                 style={styles.containerImage}
               >

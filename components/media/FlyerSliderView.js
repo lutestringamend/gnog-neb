@@ -19,30 +19,22 @@ import { isAvailableAsync } from "expo-sharing";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import ViewShot from "react-native-view-shot";
-import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
+//import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
 import * as FileSystem from "expo-file-system";
-import * as Print from "expo-print";
+//import * as Print from "expo-print";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as MediaLibrary from "expo-media-library";
 import { shareAsync } from "expo-sharing";
 
 import { colors, staticDimensions } from "../../styles/base";
 import { sentryLog } from "../../sentry";
-import { sharingOptionsJPEG, sharingOptionsPDF } from "../media/constants";
-import {
-  multiplephotoshtml,
-  multiplephotosimgtagcustomwidthheight,
-  pdfpageheight,
-  pdfpagewidth,
-} from "./constants";
+import { sharingOptionsJPEG } from "../media/constants";
 import ImageLargeWatermarkModel from "../media/ImageLargeWatermarkModel";
 import {
   STARTER_KIT_FLYER_MENGAJAK,
   STARTER_KIT_FLYER_MENGAJAK_TAG,
   STARTER_KIT_FLYER_PRODUK,
   STARTER_KIT_FLYER_PRODUK_TAG,
-  videoplayerportraitiosheight,
-  videoplayerportraitpanelandroidheight,
 } from "../mediakit/constants";
 import {
   calculateFlyerDisplayHeight,
@@ -53,33 +45,28 @@ import {
 const defaultFlyers = [null, null, null];
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
-const paddingTop = 0;
+const paddingTop = 20;
+const photoMarginHorizontal = 10;
 
 const previewHeight = screenHeight;
-const photoWidth = screenWidth - 20;
+const photoWidth = screenWidth - 2 * photoMarginHorizontal;
 const photoHeight = previewHeight - paddingTop;
-const panelHeight = screenHeight - previewHeight;
-
-const marginTop = 48;
-/*const panelHeight =
-  Platform.OS === "ios"
-    ? videoplayerportraitiosheight
-    : videoplayerportraitpanelandroidheight;*/
 
 const FlyerSliderView = (props) => {
   const { currentUser, watermarkData, mediaKitPhotos, flyerMengajak } = props;
+  let initIndex = props.route.params?.index ? props.route.params?.index : 0;
   const navigation = useNavigation();
   const refScroll = useRef();
   const imageRef = useRef();
 
   const [sharingAvailability, setSharingAvailability] = useState(null);
+  const [scrollInit, setScrollInit] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [success, setSuccess] = useState(false);
   const [transformedImage, setTransformedImage] = useState(null);
   const [downloadUri, setDownloadUri] = useState(null);
-  const [lock, setLock] = useState(false);
 
   const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
 
@@ -90,7 +77,7 @@ const FlyerSliderView = (props) => {
   });
   const [limit, setLimit] = useState(2);
   const [scrollPosition, setScrollPosition] = useState({
-    x: screenWidth,
+    x: 0,
     y: 0,
   });
   const [flyers, setFlyers] = useState(defaultFlyers);
@@ -116,16 +103,17 @@ const FlyerSliderView = (props) => {
 
   useEffect(() => {
     if (
-      props.route.params?.index === undefined ||
-      props.route.params?.index === null ||
       props.route.params?.type === undefined ||
       props.route.params?.type === null
     ) {
+      console.log("route params", props.route.params);
       navigation.goBack();
       return;
     }
+    setScrollInit(false);
+
     let newData = {
-      index: props.route.params?.index ? props.route.params?.index : 0,
+      index: 0,
       type: props.route.params?.type
         ? props.route.params?.type
         : STARTER_KIT_FLYER_PRODUK_TAG,
@@ -148,13 +136,14 @@ const FlyerSliderView = (props) => {
     setLimit(newLength - 1);
     setTransformedImage(newLength > 0 ? Array(newLength).fill(null) : null);
     setDownloadUri(newLength > 0 ? Array(newLength).fill(null) : null);
-    console.log("route params", props.route.params, newLength);
+    //console.log("route params", props.route.params, newLength);
   }, [props.route.params]);
 
   useEffect(() => {
     if (data?.type === null) {
       return;
     }
+
     try {
       if (data?.type === STARTER_KIT_FLYER_PRODUK_TAG) {
         //console.log("mediakitPhotos", mediaKitPhotos);
@@ -195,7 +184,6 @@ const FlyerSliderView = (props) => {
         }
         setLimit(limit);
       }
-      refScroll.current.scrollTo({ animated: false, x: screenWidth, y: 0 });
     } catch (e) {
       console.error(e);
       setFlyers(defaultFlyers);
@@ -206,58 +194,82 @@ const FlyerSliderView = (props) => {
   }, [data]);
 
   useEffect(() => {
-    console.log("transformedImage", transformedImage);
-  }, [transformedImage]);
+    /*if (limit < 1 || transformedImage === null) {
+        return;
+    }*/
+    if (
+      scrollPosition?.x >= screenWidth * data?.index &&
+      scrollPosition?.x < screenWidth * (data?.index + 1)
+    ) {
+      return;
+    }
+    refScroll.current.scrollTo({
+      animated: true,
+      x: screenWidth * data?.index,
+      y: 0,
+    });
+    //console.log("scrolling to", data?.index, data?.index * screenWidth);
+  }, [data?.index]);
 
-  useEffect(() => {
-    console.log("downloadUri", downloadUri);
-  }, [downloadUri]);
+  /*useEffect(() => {
+    if (
+      transformedImage === null ||
+      transformedImage?.length === undefined ||
+      transformedImage?.length < 1
+    ) {
+      return;
+    }
+
+    let checkArray = [];
+    for (let i = 0; i < transformedImage?.length; i++) {
+      if (transformedImage[i] === null) {
+        checkArray.push(0);
+      } else {
+        checkArray.push(1);
+      }
+    }
+    console.log("transformedImage", checkArray);
+  }, [transformedImage,]);*/
+
+  /*useEffect(() => {
+    console.log("scrollPosition", scrollPosition);
+  }, [scrollPosition]);*/
+
+  const onScrollLayout = () => {
+    if (!scrollInit) {
+      refScroll.current.scrollTo({
+        animated: false,
+        x: screenWidth * initIndex,
+        y: 0,
+      });
+      console.log("scrolling Init to", initIndex);
+      setData({ ...data, index: initIndex });
+      setScrollInit(true);
+    }
+  };
 
   const handleScroll = (event) => {
     let x = event.nativeEvent.contentOffset.x;
-    if (
-      (data?.index < 1 && x < screenWidth) ||
-      (data?.index >= limit && x > screenWidth)
-    ) {
-      refScroll.current.scrollTo({ animated: true, x: screenWidth, y: 0 });
-      return;
-    }
-    if (x < 1) {
-      setData((data) => ({ ...data, index: data?.index - 1 }));
-      setLock(false);
-      return;
-    }
-    if (x >= screenWidth * 2) {
-      setData((data) => ({ ...data, index: data?.index + 1 }));
-      setLock(false);
-      return;
-    }
     setScrollPosition({
       x,
       y: event.nativeEvent.contentOffset.y,
     });
   };
 
-  const goPrev = async () => {
-    try {
-      setLock(true);
-      refScroll.current.scrollTo({ animated: true, x: 0, y: 0 });
-    } catch (e) {
-      console.error(e);
+  const onMomentumScrollEnd = () => {
+    let newIndex = Math.floor(scrollPosition?.x / screenWidth);
+    if (newIndex !== data?.index) {
+      setData({ ...data, index: newIndex });
     }
+    console.log("onMomentumScrollEnd", scrollPosition?.x, newIndex);
+  };
+
+  const goPrev = async () => {
+    setData({ ...data, index: data?.index - 1 });
   };
 
   const goNext = () => {
-    try {
-      setLock(true);
-      refScroll.current.scrollTo({
-        animated: true,
-        x: screenWidth * 2,
-        y: 0,
-      });
-    } catch (e) {
-      console.error(e);
-    }
+    setData({ ...data, index: data?.index + 1 });
   };
 
   const transformImage = async () => {
@@ -280,13 +292,20 @@ const FlyerSliderView = (props) => {
           console.log(`index ${data?.index} captured`);
           let newImages = [];
           for (let i = 0; i < transformedImage?.length; i++) {
+            /*
+            if (Math.abs(i - data?.index) > 1) {
+              newImages.push(null);
+            } else 
+            */
             if (i === data?.index) {
               newImages.push(uri);
             } else {
-              newImages.push(transformedImage[i]);
+              //newImages.push(transformedImage[i]);
+              newImages.push(null);
             }
           }
           setTransformedImage(newImages);
+
           setLoading(false);
         })
         .catch((err) => {
@@ -413,10 +432,6 @@ const FlyerSliderView = (props) => {
     //sentryLog(e);
   };
 
-  /*
-
-  */
-
   return (
     <SafeAreaView style={styles.container}>
       {flyers[1] === null ||
@@ -424,7 +439,8 @@ const FlyerSliderView = (props) => {
       flyers[1]?.foto === null ||
       watermarkData === undefined ||
       watermarkData === null ||
-      transformedImage === null ? null : (
+      transformedImage === null ||
+      !scrollInit ? null : (
         <ViewShot
           ref={imageRef}
           options={{
@@ -525,48 +541,219 @@ const FlyerSliderView = (props) => {
       <ScrollView
         ref={refScroll}
         onScroll={handleScroll}
+        onLayout={() => onScrollLayout()}
         scrollEventThrottle={16}
-        scrollEnabled={!loading || lock}
+        scrollEnabled={!loading}
         horizontal
-        showsHorizontalScrollIndicator={false}
         pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onMomentumScrollEnd={() => onMomentumScrollEnd()}
         style={styles.containerScroll}
-        contentContainerStyle={styles.containerInside}
+        contentContainerStyle={[
+          styles.containerInside,
+          {
+            width: limit < 1 ? screenWidth * 20 : screenWidth * (limit + 1),
+            height:
+              flyers[1] === null ||
+              flyers[1]?.height === undefined ||
+              flyers[1]?.height === null
+                ? previewHeight
+                : calculateFlyerDisplayHeight(
+                    flyers[1]?.width,
+                    flyers[1]?.height,
+                    photoWidth,
+                    photoHeight,
+                  ),
+          },
+        ]}
       >
-        <View style={styles.containerPhoto}>
-          {flyers[0] ? (
-            <ImageLargeWatermarkModel
-              width={flyers[0]?.width}
-              height={flyers[0]?.height}
-              displayWidth={calculateFlyerDisplayWidth(
-                flyers[0]?.width,
-                flyers[0]?.height,
-                photoWidth,
-                photoHeight,
-              )}
-              displayHeight={calculateFlyerDisplayHeight(
-                flyers[0]?.width,
-                flyers[0]?.height,
-                photoWidth,
-                photoHeight,
-              )}
-              uri={flyers[0]?.foto}
-              link_x={flyers[0]?.link_x}
-              link_y={flyers[0]?.link_y}
-              text_x={flyers[0]?.text_x}
-              text_y={flyers[0]?.text_y}
-              fontSize={
-                flyers[0]?.font?.size?.ukuran
-                  ? flyers[0]?.font?.size?.ukuran
-                  : 48
-              }
-              watermarkData={watermarkData}
-              jenis_foto={data?.type}
-              username={currentUser?.name}
-            />
-          ) : null}
+        {transformedImage === null ||
+        transformedImage?.length === undefined ||
+        transformedImage?.length < 1
+          ? null
+          : transformedImage.map((item, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.containerPhoto,
+                  {
+                    height: calculateFlyerDisplayHeight(
+                      flyers[index - data?.index + 1]?.width,
+                      flyers[index - data?.index + 1]?.height,
+                      photoWidth,
+                      photoHeight,
+                    ),
+                  },
+                ]}
+              >
+                <ActivityIndicator
+                  size="small"
+                  color={colors.daclen_gray}
+                  style={styles.spinnerPhoto}
+                />
+                {Math.abs(data?.index - index) < 2 ? (
+                  <ImageLargeWatermarkModel
+                    style={styles.previewPhoto}
+                    width={flyers[index - data?.index + 1]?.width}
+                    height={flyers[index - data?.index + 1]?.height}
+                    displayWidth={calculateFlyerDisplayWidth(
+                      flyers[index - data?.index + 1]?.width,
+                      flyers[index - data?.index + 1]?.height,
+                      photoWidth,
+                      photoHeight,
+                    )}
+                    displayHeight={calculateFlyerDisplayHeight(
+                      flyers[index - data?.index + 1]?.width,
+                      flyers[index - data?.index + 1]?.height,
+                      photoWidth,
+                      photoHeight,
+                    )}
+                    uri={flyers[index - data?.index + 1]?.foto}
+                    link_x={flyers[index - data?.index + 1]?.link_x}
+                    link_y={flyers[index - data?.index + 1]?.link_y}
+                    text_x={flyers[index - data?.index + 1]?.text_x}
+                    text_y={flyers[index - data?.index + 1]?.text_y}
+                    fontSize={
+                      flyers[index - data?.index + 1]?.font?.size?.ukuran
+                        ? flyers[index - data?.index + 1]?.font?.size?.ukuran
+                        : 48
+                    }
+                    watermarkData={watermarkData}
+                    jenis_foto={data?.type}
+                    username={currentUser?.name}
+                  />
+                ) : null}
+              </View>
+            ))}
+      </ScrollView>
+      {scrollInit ? (
+        <View style={styles.containerPanel}>
+          <TouchableOpacity
+            onPress={() => startDownload()}
+            style={[
+              styles.button,
+              {
+                backgroundColor:
+                  loading ||
+                  transformedImage === null ||
+                  transformedImage[data?.index] === null
+                    ? colors.daclen_lightgrey_button
+                    : colors.daclen_light,
+              },
+            ]}
+            disabled={
+              loading ||
+              transformedImage === null ||
+              transformedImage[data?.index] === null ||
+              !(downloadUri === null || downloadUri[data?.index] === null)
+            }
+          >
+            {loading ||
+            transformedImage === null ||
+            transformedImage[data?.index] === null ? (
+              <ActivityIndicator
+                size="small"
+                color={colors.daclen_black}
+                style={{ alignSelf: "center" }}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name={
+                  downloadUri === null || downloadUri[data?.index] === null
+                    ? "file-download"
+                    : "check-bold"
+                }
+                size={18}
+                color={colors.daclen_black}
+              />
+            )}
+
+            <Text allowFontScaling={false} style={styles.textButton}>
+              {downloadUri === null || downloadUri[data?.index] === null
+                ? "Download"
+                : "Tersimpan"}{" "}
+              {data?.index}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() =>
+              Platform.OS === "ios" ? shareJPGApple() : shareJPGAndroid()
+            }
+            style={[
+              styles.button,
+              {
+                backgroundColor:
+                  loading ||
+                  sharing ||
+                  transformedImage === null ||
+                  transformedImage[data?.index] === null
+                    ? colors.daclen_lightgrey_button
+                    : colors.daclen_light,
+              },
+            ]}
+            disabled={
+              loading ||
+              sharing ||
+              transformedImage === null ||
+              transformedImage[data?.index] === null
+            }
+          >
+            {sharing ? (
+              <ActivityIndicator
+                size="small"
+                color={colors.daclen_black}
+                style={{ alignSelf: "center" }}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name="share-variant"
+                size={18}
+                color={colors.daclen_black}
+              />
+            )}
+
+            <Text allowFontScaling={false} style={styles.textButton}>
+              Share {data?.index}
+            </Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.containerPhoto}>
+      ) : null}
+
+      {data?.index < 1 || !scrollInit || loading ? null : (
+        <TouchableOpacity
+          style={styles.containerPrev}
+          disabled={loading}
+          onPress={() => goPrev()}
+        >
+          <MaterialCommunityIcons
+            name="arrow-left-drop-circle"
+            size={32}
+            color={colors.daclen_gray}
+            style={styles.arrow}
+          />
+        </TouchableOpacity>
+      )}
+
+      {data?.index >= limit || !scrollInit || loading ? null : (
+        <TouchableOpacity
+          style={styles.containerNext}
+          disabled={loading}
+          onPress={() => goNext()}
+        >
+          <MaterialCommunityIcons
+            name="arrow-right-drop-circle"
+            size={32}
+            color={colors.daclen_gray}
+            style={styles.arrow}
+          />
+        </TouchableOpacity>
+      )}
+    </SafeAreaView>
+  );
+};
+/*
+<View style={styles.containerPhoto}>
           {flyers[1] ? (
             <ImageLargeWatermarkModel
               width={flyers[1]?.width}
@@ -632,129 +819,7 @@ const FlyerSliderView = (props) => {
             />
           ) : null}
         </View>
-      </ScrollView>
-      <View style={styles.containerPanel}>
-        <TouchableOpacity
-          onPress={() => startDownload()}
-          style={[
-            styles.button,
-            {
-              backgroundColor:
-                loading ||
-                transformedImage === null ||
-                transformedImage[data?.index] === null
-                  ? colors.daclen_lightgrey_button
-                  : colors.daclen_light,
-            },
-          ]}
-          disabled={
-            loading ||
-            transformedImage === null ||
-            transformedImage[data?.index] === null ||
-            !(downloadUri === null || downloadUri[data?.index] === null)
-          }
-        >
-          {loading ||
-          transformedImage === null ||
-          transformedImage[data?.index] === null ? (
-            <ActivityIndicator
-              size="small"
-              color={colors.daclen_black}
-              style={{ alignSelf: "center" }}
-            />
-          ) : (
-            <MaterialCommunityIcons
-              name={
-                downloadUri === null || downloadUri[data?.index] === null
-                  ? "file-download"
-                  : "check-bold"
-              }
-              size={18}
-              color={colors.daclen_black}
-            />
-          )}
-
-          <Text allowFontScaling={false} style={styles.textButton}>
-            {downloadUri === null || downloadUri[data?.index] === null
-              ? "Download"
-              : "Tersimpan"}{" "}{data?.index}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() =>
-            Platform.OS === "ios" ? shareJPGApple() : shareJPGAndroid()
-          }
-          style={[
-            styles.button,
-            {
-              backgroundColor:
-                loading ||
-                sharing ||
-                transformedImage === null ||
-                transformedImage[data?.index] === null
-                  ? colors.daclen_lightgrey_button
-                  : colors.daclen_light,
-            },
-          ]}
-          disabled={
-            loading ||
-            sharing ||
-            transformedImage === null ||
-            transformedImage[data?.index] === null
-          }
-        >
-          {sharing ? (
-            <ActivityIndicator
-              size="small"
-              color={colors.daclen_black}
-              style={{ alignSelf: "center" }}
-            />
-          ) : (
-            <MaterialCommunityIcons
-              name="share-variant"
-              size={18}
-              color={colors.daclen_black}
-            />
-          )}
-
-          <Text allowFontScaling={false} style={styles.textButton}>
-            Share{" "}{data?.index}
-          </Text>
-        </TouchableOpacity>
-      </View>
-      {data?.index < 1 ? null : (
-        <TouchableOpacity
-          style={styles.containerPrev}
-          disabled={loading}
-          onPress={() => goPrev()}
-        >
-          <MaterialCommunityIcons
-            name="arrow-left-drop-circle"
-            size={32}
-            color={colors.daclen_gray}
-            style={styles.arrow}
-          />
-        </TouchableOpacity>
-      )}
-
-      {data?.index >= limit ? null : (
-        <TouchableOpacity
-          style={styles.containerNext}
-          disabled={loading}
-          onPress={() => goNext()}
-        >
-          <MaterialCommunityIcons
-            name="arrow-right-drop-circle"
-            size={32}
-            color={colors.daclen_gray}
-            style={styles.arrow}
-          />
-        </TouchableOpacity>
-      )}
-    </SafeAreaView>
-  );
-};
+*/
 
 const styles = StyleSheet.create({
   container: {
@@ -807,8 +872,7 @@ const styles = StyleSheet.create({
   containerPhoto: {
     backgroundColor: "transparent",
     width: screenWidth,
-    height: previewHeight - paddingTop,
-    top: -60,
+    top: paddingTop,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -874,6 +938,18 @@ const styles = StyleSheet.create({
     zIndex: 4,
   },
   arrow: {
+    backgroundColor: "transparent",
+  },
+  previewPhoto: {
+    zIndex: 10,
+    backgroundColor: "transparent",
+    position: "absolute",
+    top: 0,
+    start: photoMarginHorizontal,
+    end: photoMarginHorizontal,
+  },
+  spinnerPhoto: {
+    zIndex: 2,
     backgroundColor: "transparent",
   },
 });
