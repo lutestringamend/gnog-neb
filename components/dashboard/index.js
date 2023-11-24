@@ -18,8 +18,8 @@ export const createFixedMonthlyProjections = (
 ) => {
   try {
     let fiboArray = [];
-    let fiboArray2 = [];
-    let fiboArray3 = [];
+    /*let fiboArray2 = [];
+    let fiboArray3 = [];*/
     let fiboNum = 1;
     for (let a = 0; a < numMonths; a++) {
       if (a < 1) {
@@ -30,7 +30,7 @@ export const createFixedMonthlyProjections = (
       }
     }
 
-    for (let a = 0; a < numMonths; a++) {
+    /*for (let a = 0; a < numMonths; a++) {
       if (a < 1) {
         fiboArray2.push(1);
       } else {
@@ -52,8 +52,7 @@ export const createFixedMonthlyProjections = (
         }
         fiboArray3.push(fiboNum);
       }
-    }
-    //console.log("fiboArray", fiboArray, fiboArray2, fiboArray3);
+    }*/
 
     let recruitmentBonus = numMembers * RECRUITMENT_BONUS_VALUE;
     let ppn = Math.floor(salesPerMonth / PPN_VALUE);
@@ -71,7 +70,6 @@ export const createFixedMonthlyProjections = (
       let hpv = (numResellers + 1) * pv;
       let rpv = [Math.pow(numMembers, i - 1) * pv];
 
-      //let balanceAccumulation = i * (salesCommission + recruitmentBonus);
       result.push({
         month:
           periodLength > 1
@@ -97,18 +95,18 @@ export const createFixedMonthlyProjections = (
       let balance = salesCommission + recruitmentBonus;
       let childMember = numMembers * (j + 1);
       let grandChildMember = 0;
-      let greatGrandMember = 0;
-      let greatGreatMember = 0;
+      /*let greatGrandMember = 0;
+      let greatGreatMember = 0;*/
 
       if (j > 0) {
         grandChildMember = Math.pow(numMembers, 2) * fiboArray[j - 1];
       }
-      if (j > 1) {
+      /*if (j > 1) {
         greatGrandMember = Math.pow(numMembers, 3) * fiboArray2[j - 2];
       }
       if (j > 2) {
         greatGreatMember = Math.pow(numMembers, 4) * fiboArray3[j - 3];
-      }
+      }*/
 
       let levelA = 0;
       let levelB = 0;
@@ -209,8 +207,6 @@ export const createFixedMonthlyProjections = (
         ...result[j],
         childMember,
         grandChildMember,
-        greatGrandMember,
-        greatGreatMember,
         rpv,
         level,
         levelA,

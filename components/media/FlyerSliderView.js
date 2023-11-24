@@ -64,6 +64,7 @@ const FlyerSliderView = (props) => {
   const [sharingAvailability, setSharingAvailability] = useState(null);
   const [scrollInit, setScrollInit] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -318,7 +319,8 @@ const FlyerSliderView = (props) => {
           setLoading(false);
         });
     } catch (e) {
-      creatingErrorLogDebug(e);
+      console.error(e);
+      //creatingErrorLogDebug(e);
     }
     setLoading(false);
   };
@@ -332,7 +334,7 @@ const FlyerSliderView = (props) => {
       )
     ) {
       setError(null);
-      setLoading(true);
+      setDownloading(true);
       saveIos(transformedImage[data?.index]);
     }
   };
@@ -372,7 +374,7 @@ const FlyerSliderView = (props) => {
       setError(e.toString());
       setSuccess(false);
     }
-    setLoading(false);
+    setDownloading(false);
   };
 
   const shareJPGApple = async () => {
@@ -584,12 +586,14 @@ const FlyerSliderView = (props) => {
                   styles.containerPhoto,
                   {
                     width: screenWidth,
-                    height: calculateFlyerDisplayHeight(
-                      flyers[index - data?.index + 1]?.width,
-                      flyers[index - data?.index + 1]?.height,
-                      photoWidth,
-                      photoHeight,
-                    ),
+                    height:
+                      calculateFlyerDisplayHeight(
+                        flyers[index - data?.index + 1]?.width,
+                        flyers[index - data?.index + 1]?.height,
+                        photoWidth,
+                        photoHeight,
+                      ) +
+                      2 * paddingTop,
                   },
                 ]}
               >
@@ -642,6 +646,7 @@ const FlyerSliderView = (props) => {
               {
                 backgroundColor:
                   loading ||
+                  downloading ||
                   transformedImage === null ||
                   transformedImage[data?.index] === null
                     ? colors.daclen_lightgrey_button
@@ -650,14 +655,13 @@ const FlyerSliderView = (props) => {
             ]}
             disabled={
               loading ||
+              downloading ||
               transformedImage === null ||
               transformedImage[data?.index] === null ||
               !(downloadUri === null || downloadUri[data?.index] === null)
             }
           >
-            {loading ||
-            transformedImage === null ||
-            transformedImage[data?.index] === null ? (
+            {downloading ? (
               <ActivityIndicator
                 size="small"
                 color={colors.daclen_black}
@@ -850,7 +854,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     start: 12,
-    top: screenHeight * 0.4 + 16,
+    top: screenHeight * 0.3 + 16,
     backgroundColor: "transparent",
   },
   containerNext: {
@@ -860,7 +864,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     start: screenWidth - 44,
-    top: screenHeight * 0.4 + 16,
+    top: screenHeight * 0.3 + 16,
     backgroundColor: "transparent",
   },
   containerScroll: {
