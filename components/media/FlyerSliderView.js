@@ -266,12 +266,18 @@ const FlyerSliderView = (props) => {
     });
   };
 
+  const onMomentumScrollBegin = () => {
+    setEnableButtons(false);
+  }
+
   const onMomentumScrollEnd = () => {
     let newIndex = Math.floor(scrollPosition?.x / screenWidth);
-    if (newIndex !== data?.index) {
+    if (newIndex === data?.index) {
+      setEnableButtons(true);
+    } else {
       setData({ ...data, index: newIndex });
     }
-    console.log("onMomentumScrollEnd", scrollPosition?.x, newIndex);
+    //console.log("onMomentumScrollEnd", scrollPosition?.x, newIndex);
   };
 
   const goPrev = async () => {
@@ -561,6 +567,7 @@ const FlyerSliderView = (props) => {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
+        onMomentumScrollBegin={() => onMomentumScrollBegin()}
         onMomentumScrollEnd={() => onMomentumScrollEnd()}
         style={styles.containerScroll}
         contentContainerStyle={[
