@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  Animated,
   SafeAreaView,
   View,
   StyleSheet,
@@ -26,7 +25,7 @@ import * as ImageManipulator from "expo-image-manipulator";
 import * as MediaLibrary from "expo-media-library";
 import { shareAsync } from "expo-sharing";
 
-import { colors, staticDimensions } from "../../styles/base";
+import { colors } from "../../styles/base";
 import { sentryLog } from "../../sentry";
 import { sharingOptionsJPEG } from "../media/constants";
 import ImageLargeWatermarkModel from "../media/ImageLargeWatermarkModel";
@@ -613,7 +612,7 @@ const FlyerSliderView = (props) => {
                 />
                 {Math.abs(data?.index - index) < 2 ? (
                   <ImageLargeWatermarkModel
-                    style={[styles.previewPhoto, { opacity: loading ? 0 : 1 }]}
+                    style={[styles.previewPhoto, { opacity: loading ? 0.5 : 1 }]}
                     width={flyers[index - data?.index + 1]?.width}
                     height={flyers[index - data?.index + 1]?.height}
                     displayWidth={calculateFlyerDisplayWidth(
@@ -851,7 +850,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     start: 12,
-    top: screenHeight * 0.3 + 16,
+    top: screenHeight * (screenAR < limitAR ? 0.3 : 0.5) + 16,
     backgroundColor: "transparent",
   },
   containerNext: {
@@ -861,7 +860,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     start: screenWidth - 44,
-    top: screenHeight * 0.3 + 16,
+    top: screenHeight * (screenAR < limitAR ? 0.3 : 0.5) + 16,
     backgroundColor: "transparent",
   },
   containerScroll: {
