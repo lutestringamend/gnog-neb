@@ -45,10 +45,12 @@ import {
 const defaultFlyers = [null, null, null];
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
+const screenAR = screenWidth / screenHeight;
+const limitAR = 9 / 16;
 const paddingTop = 20;
 const photoMarginHorizontal = 10;
 
-const previewHeight = screenHeight;
+const previewHeight = screenAR >= limitAR ? 0.75 * screenHeight : screenHeight;
 const photoWidth = screenWidth - 2 * photoMarginHorizontal;
 const photoHeight = previewHeight - paddingTop;
 
@@ -282,6 +284,9 @@ const FlyerSliderView = (props) => {
       )
     ) {
       //setError("ViewShot not available on Web");
+      if (loading) {
+        setLoading(false);
+      }
       return;
     }
     setLoading(true);
@@ -343,8 +348,9 @@ const FlyerSliderView = (props) => {
         const request = await requestPermission();
         console.log("requestPermission", request);
       }
-      console.log("saveToLibraryAsync", uri);
-      const result = await MediaLibrary.saveToLibraryAsync(uri);
+      const imageProc = await ImageManipulator.manipulateAsync(uri);
+      console.log("saveToLibraryAsync", uri, imageProc?.uri);
+      const result = await MediaLibrary.saveToLibraryAsync(imageProc?.uri);
       console.log("savetoLibraryAsync result", data?.index, result);
       if (result === null) {
         setError("Gagal menyimpan foto");
@@ -552,6 +558,7 @@ const FlyerSliderView = (props) => {
         contentContainerStyle={[
           styles.containerInside,
           {
+            opacity: scrollInit ? 1 : 0,
             width: limit < 1 ? screenWidth * 20 : screenWidth * (limit + 1),
             height:
               flyers[1] === null ||
@@ -577,6 +584,7 @@ const FlyerSliderView = (props) => {
                 style={[
                   styles.containerPhoto,
                   {
+                    width: screenWidth,
                     height: calculateFlyerDisplayHeight(
                       flyers[index - data?.index + 1]?.width,
                       flyers[index - data?.index + 1]?.height,
@@ -587,7 +595,7 @@ const FlyerSliderView = (props) => {
                 ]}
               >
                 <ActivityIndicator
-                  size="small"
+                  size={24}
                   color={colors.daclen_gray}
                   style={styles.spinnerPhoto}
                 />
@@ -671,8 +679,7 @@ const FlyerSliderView = (props) => {
             <Text allowFontScaling={false} style={styles.textButton}>
               {downloadUri === null || downloadUri[data?.index] === null
                 ? "Download"
-                : "Tersimpan"}{" "}
-              {data?.index}
+                : "Tersimpan"}
             </Text>
           </TouchableOpacity>
 
@@ -714,7 +721,7 @@ const FlyerSliderView = (props) => {
             )}
 
             <Text allowFontScaling={false} style={styles.textButton}>
-              Share {data?.index}
+              Share
             </Text>
           </TouchableOpacity>
         </View>
@@ -871,7 +878,6 @@ const styles = StyleSheet.create({
   },
   containerPhoto: {
     backgroundColor: "transparent",
-    width: screenWidth,
     top: paddingTop,
     justifyContent: "center",
     alignItems: "center",
@@ -880,7 +886,7 @@ const styles = StyleSheet.create({
     zIndex: 4,
     start: 0,
     end: 0,
-    top: photoHeight * 0.8,
+    top: screenHeight * 0.8,
     position: "absolute",
     width: screenWidth,
     flexDirection: "row",
@@ -943,14 +949,14 @@ const styles = StyleSheet.create({
   previewPhoto: {
     zIndex: 10,
     backgroundColor: "transparent",
-    position: "absolute",
-    top: 0,
-    start: photoMarginHorizontal,
-    end: photoMarginHorizontal,
   },
   spinnerPhoto: {
     zIndex: 2,
     backgroundColor: "transparent",
+    position: "absolute",
+    top: photoHeight / 3 - 24,
+    start: (screenWidth - 24) / 2,
+    end: (screenWidth - 24) / 2,
   },
 });
 
