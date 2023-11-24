@@ -601,7 +601,7 @@ const FlyerSliderView = (props) => {
                 />
                 {Math.abs(data?.index - index) < 2 ? (
                   <ImageLargeWatermarkModel
-                    style={styles.previewPhoto}
+                    style={[styles.previewPhoto, { opacity: loading ? 0 : 1 }]}
                     width={flyers[index - data?.index + 1]?.width}
                     height={flyers[index - data?.index + 1]?.height}
                     displayWidth={calculateFlyerDisplayWidth(
@@ -851,7 +851,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     start: 12,
-    top: previewHeight / 2 - 60,
+    top: previewHeight / 3 - 60,
     backgroundColor: "transparent",
   },
   containerNext: {
@@ -861,7 +861,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     start: screenWidth - 44,
-    top: previewHeight / 2 - 60,
+    top: previewHeight / 3 - 60,
     backgroundColor: "transparent",
   },
   containerScroll: {
