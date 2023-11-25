@@ -44,9 +44,9 @@ const PhotosSegment = (props) => {
     //console.log("PhotosSegment params", props.route.params);
   }, [props.route.params]);
 
-  /*useEffect(() => {
+  useEffect(() => {
     console.log("photos", photos);
-  }, [photos]);*/
+  }, [photos]);
 
   useEffect(() => {
     checkSavedUri();
@@ -192,7 +192,7 @@ const PhotosSegment = (props) => {
             horizontal={false}
             numColumns={3}
             data={photos}
-            renderItem={({ item, index }) => item?.jenis_foto === jenis_foto ? (
+            renderItem={({ item, index }) => item?.jenis_foto?.toLowerCase() === jenis_foto.toLowerCase() ? (
               <TouchableHighlight
                 key={index}
                 onPress={() => openPhoto(index)}
@@ -203,8 +203,8 @@ const PhotosSegment = (props) => {
                   style={styles.imageList}
                   source={item?.thumbnail ? item?.thumbnail : item?.foto}
                   contentFit="cover"
-                  placeholder={blurhash}
-                  transition={100}
+                  placeholder={null}
+                  transition={0}
                 />
               </TouchableHighlight>
             ) : null}
