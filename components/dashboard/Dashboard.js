@@ -46,7 +46,12 @@ import DashboardUpgrade from "./components/DashboardUpgrade";
 import DashboardTimer from "./components/DashboardTimer";
 import { checkNumberEmpty } from "../../axios";
 import { convertDateISOStringtoDisplayDate } from "../../axios/profile";
-import { APRINDA_ID, APRINDA_MOCK, VIOLETTA_ID, VIOLETTA_MOCK } from "../../axios/constants/mockup";
+import {
+  APRINDA_ID,
+  APRINDA_MOCK,
+  VIOLETTA_ID,
+  VIOLETTA_MOCK,
+} from "../../axios/constants/mockup";
 
 const defaultTotalRekrutmen = {
   showHPV: 0,
@@ -179,7 +184,15 @@ const Dashboard = (props) => {
   }, [profileLock]);
 
   useEffect(() => {
-    if (saldoAkumulasi === null && !(token === null || currentUser === null || currentUser?.id === undefined || currentUser?.id === null)) {
+    if (
+      saldoAkumulasi === null &&
+      !(
+        token === null ||
+        currentUser === null ||
+        currentUser?.id === undefined ||
+        currentUser?.id === null
+      )
+    ) {
       props.getLaporanSaldo(currentUser?.id, token);
     }
   }, [saldoAkumulasi]);
@@ -224,8 +237,12 @@ const Dashboard = (props) => {
       currentUser === null ||
       currentUser?.id === undefined ||
       currentUser?.id === null ||
-      currentUser?.status === undefined ||
-      currentUser?.status === null
+      currentUser?.status_member === undefined ||
+      currentUser?.status_member === null ||
+      currentUser?.join_date === undefined ||
+      currentUser?.join_date === null ||
+      currentUser?.target_rekrutmen_latest === undefined ||
+      currentUser?.target_rekrutmen_latest === null
     ) {
       return;
     }
@@ -347,8 +364,12 @@ const Dashboard = (props) => {
         currentUser?.id === undefined ||
         currentUser?.name === undefined ? (
           <DashboardLogout />
-        ) : (currentUser?.status === undefined ||
-            currentUser?.status === null) &&
+        ) : (currentUser?.status_member === undefined ||
+            currentUser?.status_member === null ||
+            currentUser?.join_date === undefined ||
+            currentUser?.join_date === null ||
+            currentUser?.target_rekrutmen_latest === undefined ||
+            currentUser?.target_rekrutmen_latest === null) &&
           !(
             currentUser?.level === "spv" ||
             currentUser?.status_member === "supervisor"
@@ -371,7 +392,11 @@ const Dashboard = (props) => {
               currentUser={currentUser}
               profilePicture={profilePicture}
               mockData={mockData}
-              saldoAkumulasi={currentUser?.total_komisi_user ? currentUser?.total_komisi_user : saldoAkumulasi}
+              saldoAkumulasi={
+                currentUser?.total_komisi_user
+                  ? currentUser?.total_komisi_user
+                  : saldoAkumulasi
+              }
               refreshSaldo={() => props.getLaporanSaldo(currentUser?.id, token)}
             />
             <DashboardStats
@@ -415,7 +440,11 @@ const Dashboard = (props) => {
           recruitmentTimer={recruitmentTimer}
           showTimerModal={showTimerModal}
           setShowTimerModal={setShowTimerModal}
-          join_date={convertDateISOStringtoDisplayDate(currentUser?.join_date, true, null)}
+          join_date={convertDateISOStringtoDisplayDate(
+            currentUser?.join_date,
+            true,
+            null
+          )}
           regDateInMs={regDateInMs}
           countdownColor={
             currentUser?.countdownColor ? currentUser?.countdownColor : null

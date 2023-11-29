@@ -13,7 +13,7 @@ import {
 import { colors, dimensions } from "../../styles/base";
 import TextInputLabel from "../textinputs/TextInputLabel";
 import { checkNumberEmpty, formatPrice } from "../../axios/cart";
-import { createFixedMonthlyProjections } from ".";
+import { createFixedMonthlyProjections, createVueFixedMonthlyProjections } from ".";
 import {
   LEVEL_LABELS,
   MAX_MEMBERS_RECRUITED,
@@ -102,6 +102,17 @@ const Calculator = () => {
 
   const makeProjections = () => {
     let result = createFixedMonthlyProjections(
+      parseInt(inputs?.numResellerPerMonth),
+      parseInt(inputs?.periodLength),
+      parseInt(inputs?.salesPerMonth),
+      parseInt(inputs?.numMonths)
+    );
+    console.log(result);
+    setProjection(result);
+  };
+
+  const makeProjectionsVUE = () => {
+    let result = createVueFixedMonthlyProjections(
       parseInt(inputs?.numResellerPerMonth),
       parseInt(inputs?.periodLength),
       parseInt(inputs?.salesPerMonth),
@@ -257,14 +268,14 @@ const Calculator = () => {
                   allowFontScaling={false}
                   style={[styles.textSpec, { width: 0.1 * tableWidth }]}
                 >
-                  {item?.month}
+                  {item?.bulan}
                 </Text>
                 <Text
                   allowFontScaling={false}
                   style={[styles.textSpec, { width: 0.1 * tableWidth }]}
                 >
                   {
-                    item?.level > 0 ? LEVEL_LABELS[item?.level] : ""
+                    item?.levelName
                   }
                 </Text>
 
@@ -278,7 +289,7 @@ const Calculator = () => {
                     },
                   ]}
                 >
-                  {formatPrice(item?.balance)}
+                  {formatPrice(item?.saldo)}
                 </Text>
                 <Text
                   allowFontScaling={false}
@@ -292,7 +303,7 @@ const Calculator = () => {
                     },
                   ]}
                 >
-                  {formatPrice(item?.balanceAccumulation)}
+                  {formatPrice(item?.saldo_akumulasi)}
                 </Text>
               </TouchableOpacity>
             ))}

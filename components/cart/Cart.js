@@ -223,18 +223,20 @@ function Cart(props) {
         }
       >
         {(token !== null && currentUser === null) || loading ? (
-          <ActivityIndicator
-            size="small"
-            color={colors.daclen_gray}
-          />
+          <ActivityIndicator size="small" color={colors.daclen_gray} />
         ) : currentUser?.level === "spv" ||
-        currentUser?.status_member === "supervisor" ? null : (
+          currentUser?.status_member === "supervisor" ? null : (
           <Text allowFontScaling={false} style={styles.textButton}>
             {token === null
               ? `Login/Register`
               : currentUser?.isActive
               ? `Masukkan Keranjang`
-              : currentUser?.status === null
+              : currentUser?.status_member === undefined ||
+                currentUser?.status_member === null ||
+                currentUser?.join_date === undefined ||
+                currentUser?.join_date === null ||
+                currentUser?.target_rekrutmen_latest === undefined ||
+                currentUser?.target_rekrutmen_latest === null
               ? "Bergabung"
               : "Verifikasi No HP"}
           </Text>

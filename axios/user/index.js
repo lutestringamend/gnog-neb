@@ -1447,9 +1447,14 @@ export const getCurrentUser = (token, storageCurrentUser) => {
         } else {
           //console.log("user current response", data);
           if (
-            data?.status !== null &&
-            (data?.target_rekrutmen === undefined ||
-              data?.target_rekrutmen === null)
+            !(
+              data?.status_member === undefined ||
+              data?.status_member === null ||
+              data?.join_date === undefined ||
+              data?.join_date === null ||
+              data?.target_rekrutmen_latest === undefined ||
+              data?.target_rekrutmen_latest === null
+            )
           ) {
             fetchHPVfromUserCurrent(dispatch, token, data);
           } else {
