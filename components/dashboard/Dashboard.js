@@ -52,6 +52,7 @@ import {
   VIOLETTA_ID,
   VIOLETTA_MOCK,
 } from "../../axios/constants/mockup";
+import { recruitmenttarget } from "../../axios/constants";
 
 const defaultTotalRekrutmen = {
   showHPV: 0,
@@ -453,8 +454,8 @@ const Dashboard = (props) => {
             currentUser?.target_rekrutmen_latest
               ? currentUser?.target_rekrutmen_latest?.target_reseller
                 ? currentUser?.target_rekrutmen_latest?.target_reseller
-                : currentUser?.target_rekrutmen
-              : currentUser?.target_rekrutmen
+                : recruitmenttarget
+              : recruitmenttarget
           }
           target_rekrutmen_latest={currentUser?.target_rekrutmen_latest}
           total_rekrutmen={total_rekrutmen}

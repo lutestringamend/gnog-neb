@@ -46,7 +46,7 @@ import {
   USER_SALDO_AKUMULASI_STATE_CHANGE,
 } from "../constants";
 
-import { mainhttp } from "../../axios/constants";
+import { mainhttp, recruitmenttarget } from "../../axios/constants";
 import { determineCountdownColor } from "../../axios/user";
 
 export const initialState = {
@@ -116,7 +116,7 @@ export const user = (state = initialState, action) => {
           ...action.data,
           countdownColor: determineCountdownColor(
             action.data?.batas_rekrut,
-            action.data?.target_rekrutmen
+            action.data?.target_rekrutmen_latest ? action.data?.target_rekrutmen_latest ? action.data?.target_rekrutmen_latest?.target_reseller : recruitmenttarget : recruitmenttarget
           ),
           bank_set: !(
             checkEmpty(action.data?.detail_user?.bank?.id) === "" ||

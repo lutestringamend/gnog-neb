@@ -222,7 +222,9 @@ const DashboardTimer = (props) => {
     }
   }, [recruitmentTimer]);
 
-  //useEffect(() => {}, [digits]);
+  /*useEffect(() => {
+    console.log("timer target_rekrutmen", target_rekrutmen);
+  }, [target_rekrutmen]);*/
 
   const freezeCountdown = () => {
     if (
