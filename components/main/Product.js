@@ -26,7 +26,7 @@ import BSProductBenefit from "../bottomsheets/BSProductBenefit";*/
 import { openCheckout } from "./CheckoutScreen";
 import { colors, staticDimensions } from "../../styles/base";
 import { ASYNC_MEDIA_WATERMARK_PHOTOS_KEY } from "../asyncstorage/constants";
-import { checkNumberEmpty, alterKeranjang } from "../../axios/cart";
+import { checkNumberEmpty, alterKeranjang, clearKeranjang } from "../../axios/cart";
 
 function Product(props) {
   const [product, setProduct] = useState(null);
@@ -428,6 +428,7 @@ const mapDispatchProps = (dispatch) =>
     {
       showProduct,
       alterKeranjang,
+      clearKeranjang,
     },
     dispatch
   );

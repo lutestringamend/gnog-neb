@@ -192,7 +192,7 @@ const PhotosSegment = (props) => {
             horizontal={false}
             numColumns={3}
             data={photos}
-            renderItem={({ item, index }) => item?.jenis_foto?.toLowerCase() === jenis_foto.toLowerCase() ? (
+            renderItem={({ item, index }) => item ? item?.jenis_foto ? item?.jenis_foto?.toLowerCase() === jenis_foto.toLowerCase() ? (
               <TouchableHighlight
                 key={index}
                 onPress={() => openPhoto(index)}
@@ -207,7 +207,7 @@ const PhotosSegment = (props) => {
                   transition={0}
                 />
               </TouchableHighlight>
-            ) : null}
+            ) : null : null : null}
           />
         </Suspense>
       </SafeAreaView>
