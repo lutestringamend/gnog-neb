@@ -91,13 +91,15 @@ const WatermarkPhotos = (props) => {
 
     const onPress = (item, title, photoIndex) => {
       try {
-        const found = selected.find(({ id }) => id === item?.id);
-        if (found === undefined || found === null) {
-          setSelected(true, item);
-          return;
-        } else if (selectMode) {
-          deselectItem(item);
-          return;
+        if (selectMode) {
+          const found = selected.find(({ id }) => id === item?.id);
+          if (found === undefined || found === null) {
+            setSelected(true, item);
+            return;
+          } else if (selectMode) {
+            deselectItem(item);
+            return;
+          }
         }
       } catch (e) {
         console.error(e);

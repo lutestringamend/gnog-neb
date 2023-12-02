@@ -31,7 +31,6 @@ import {
   updateReduxMediaKitFlyerMengajak,
   updateReduxMediaKitVideosMengajak,
   updateReduxMediaKitPhotosMultipleSave,
-  filterPhotoProps,
   updateReduxMediaKitFlyerSelection,
 } from "../../axios/mediakit";
 import { overwriteWatermarkVideos } from "../media";
@@ -161,9 +160,9 @@ function MediaKitFiles(props) {
     }
   }, [mediaKitPhotos]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     console.log("selectMode", selectMode);
-  }, [selectMode]);
+  }, [selectMode]);*/
 
   useEffect(() => {
     /*if (mediaKitVideos === null || mediaKitVideos?.length === undefined) {
@@ -203,7 +202,7 @@ function MediaKitFiles(props) {
         setSelectMode(true);
       }
     }
-    console.log("redux flyerSelection", flyerSelection);
+    //console.log("redux flyerSelection", flyerSelection);
   }, [flyerSelection]);
 
   useEffect(() => {
@@ -393,152 +392,164 @@ function MediaKitFiles(props) {
 
         <Header />
 
-        <View style={styles.containerNav}>
-          {activeTab === STARTER_KIT_HOME ? (
-            <TouchableOpacity
-              style={[
-                styles.containerRefresh,
-                {
-                  backgroundColor:
-                    photoLoading || videoLoading
-                      ? colors.daclen_gray
-                      : colors.daclen_bg_highlighted,
-                  borderTopStartRadius: 6,
-                  borderBottomStartRadius: 6,
-                },
-              ]}
-              disabled={photoLoading || videoLoading}
-              onPress={() =>
-                navigation.navigate("WatermarkSettings", {
-                  urlTitle:
-                    activeTab === STARTER_KIT_FLYER_PRODUK
-                      ? STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE
-                      : activeTab === STARTER_KIT_FLYER_MENGAJAK
-                        ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE
-                        : activeTab === STARTER_KIT_VIDEO_PRODUK
-                          ? STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE
-                          : activeTab === STARTER_KIT_VIDEO_MENGAJAK
-                            ? STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE
-                            : null,
-                  urlEndpoint:
-                    activeTab === STARTER_KIT_FLYER_PRODUK ||
-                    activeTab === STARTER_KIT_VIDEO_PRODUK
-                      ? tokoonlineurlshort
-                      : personalwebsiteurlshort,
-                })
-              }
-            >
-              <Text style={styles.textRefresh}>SETTING WATERMARK</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={[
-                styles.containerRefresh,
-                {
-                  backgroundColor:
-                    photoLoading || videoLoading
-                      ? colors.daclen_gray
-                      : colors.daclen_bg_highlighted,
-                  borderTopStartRadius: 6,
-                  borderBottomStartRadius: 6,
-                },
-              ]}
-              disabled={photoLoading || videoLoading}
-              onPress={() => onBackPress()}
-            >
-              <Text style={styles.textRefresh}>BACK</Text>
-            </TouchableOpacity>
-          )}
-
-          {(activeTab === STARTER_KIT_FLYER_MENGAJAK &&
-            !(
-              flyerMengajak?.length === undefined || flyerMengajak?.length < 1
-            )) ||
-          (activeTab === STARTER_KIT_FLYER_PRODUK &&
-            !(photoKeys?.length === undefined || photoKeys?.length < 1)) ? (
-            <TouchableOpacity
-              style={[
-                styles.containerRefresh,
-                {
-                  backgroundColor:
-                    photoLoading ||
-                    videoLoading ||
-                    (selectMode &&
-                      (activeTab === STARTER_KIT_FLYER_PRODUK ||
-                        activeTab === STARTER_KIT_FLYER_MENGAJAK) &&
-                      (flyerSelection?.length === undefined ||
-                        flyerSelection?.length < 1))
-                      ? colors.daclen_gray
-                      : colors.daclen_blue,
-                },
-              ]}
-              onPress={() => onSelectPress()}
-              disabled={
-                photoLoading ||
-                videoLoading ||
-                (selectMode &&
-                  (activeTab === STARTER_KIT_FLYER_PRODUK ||
-                    activeTab === STARTER_KIT_FLYER_MENGAJAK) &&
-                  (flyerSelection?.length === undefined ||
-                    flyerSelection?.length < 1))
-              }
-            >
-              <Text style={styles.textRefresh}>
-                {selectMode ? "SIMPAN FILE" : "PILIH FILE"}
-              </Text>
-            </TouchableOpacity>
-          ) : null}
-
-          <TouchableOpacity
-            style={styles.containerRefresh}
-            disabled={photoLoading || videoLoading}
-            onPress={() => refreshContent()}
-          >
-            {photoLoading || videoLoading ? (
-              <ActivityIndicator
-                size="small"
-                color={colors.daclen_light}
-                style={{
-                  alignSelf: "center",
-                  marginVertical: 10,
-                  marginHorizontal: 12,
-                }}
-              />
-            ) : (
-              <MaterialCommunityIcons
-                name="refresh"
-                size={24}
-                color={colors.daclen_light}
-                style={styles.refresh}
-              />
-            )}
-          </TouchableOpacity>
-        </View>
-
-        {selectMode ? (
+        <View style={styles.containerPanel}>
           <View style={styles.containerSelection}>
-            <Text allowFontScaling={false} style={styles.textSelection}>
-              {`${
-                flyerSelection ? checkNumberEmpty(flyerSelection?.length) : "0"
-              } / ${FLYER_SELECTION_LIMIT} Flyer dipilih`}
-            </Text>
+            <View style={styles.containerText}>
+              <Text allowFontScaling={false} style={styles.textSelection}>
+                {selectMode
+                  ? `${
+                      flyerSelection
+                        ? checkNumberEmpty(flyerSelection?.length)
+                        : "0"
+                    } / ${FLYER_SELECTION_LIMIT} Flyer dipilih`
+                  : ""}
+              </Text>
+
+              {selectMode ? (
+                <TouchableOpacity
+                  onPress={() => clearSelection()}
+                  style={styles.cancel}
+                >
+                  <MaterialCommunityIcons
+                    name="close"
+                    size={18}
+                    color={colors.daclen_orange}
+                  />
+                </TouchableOpacity>
+              ) : null}
+            </View>
+          </View>
+
+          <View style={styles.containerNav}>
+            {activeTab === STARTER_KIT_HOME ? (
+              <TouchableOpacity
+                style={[
+                  styles.containerRefresh,
+                  {
+                    backgroundColor:
+                      photoLoading || videoLoading
+                        ? colors.daclen_gray
+                        : colors.daclen_bg_highlighted,
+                    borderTopStartRadius: 6,
+                    borderBottomStartRadius: 6,
+                  },
+                ]}
+                disabled={photoLoading || videoLoading}
+                onPress={() =>
+                  navigation.navigate("WatermarkSettings", {
+                    urlTitle:
+                      activeTab === STARTER_KIT_FLYER_PRODUK
+                        ? STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE
+                        : activeTab === STARTER_KIT_FLYER_MENGAJAK
+                          ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE
+                          : activeTab === STARTER_KIT_VIDEO_PRODUK
+                            ? STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE
+                            : activeTab === STARTER_KIT_VIDEO_MENGAJAK
+                              ? STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE
+                              : null,
+                    urlEndpoint:
+                      activeTab === STARTER_KIT_FLYER_PRODUK ||
+                      activeTab === STARTER_KIT_VIDEO_PRODUK
+                        ? tokoonlineurlshort
+                        : personalwebsiteurlshort,
+                  })
+                }
+              >
+                <Text style={styles.textRefresh}>SETTING WATERMARK</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={[
+                  styles.containerRefresh,
+                  {
+                    backgroundColor:
+                      photoLoading || videoLoading
+                        ? colors.daclen_gray
+                        : colors.daclen_bg_highlighted,
+                    borderTopStartRadius: 6,
+                    borderBottomStartRadius: 6,
+                  },
+                ]}
+                disabled={photoLoading || videoLoading}
+                onPress={() => onBackPress()}
+              >
+                <MaterialCommunityIcons
+                  name="chevron-left"
+                  size={24}
+                  color={colors.daclen_light}
+                  style={styles.refresh}
+                />
+              </TouchableOpacity>
+            )}
+
+            {(activeTab === STARTER_KIT_FLYER_MENGAJAK &&
+              !(
+                flyerMengajak?.length === undefined || flyerMengajak?.length < 1
+              )) ||
+            (activeTab === STARTER_KIT_FLYER_PRODUK &&
+              !(photoKeys?.length === undefined || photoKeys?.length < 1)) ? (
+              <TouchableOpacity
+                style={[
+                  styles.containerRefresh,
+                  {
+                    backgroundColor:
+                      photoLoading ||
+                      videoLoading ||
+                      (selectMode &&
+                        (activeTab === STARTER_KIT_FLYER_PRODUK ||
+                          activeTab === STARTER_KIT_FLYER_MENGAJAK) &&
+                        (flyerSelection?.length === undefined ||
+                          flyerSelection?.length < 1))
+                        ? colors.daclen_gray
+                        : colors.daclen_blue,
+                  },
+                ]}
+                onPress={() => onSelectPress()}
+                disabled={
+                  photoLoading ||
+                  videoLoading ||
+                  (selectMode &&
+                    (activeTab === STARTER_KIT_FLYER_PRODUK ||
+                      activeTab === STARTER_KIT_FLYER_MENGAJAK) &&
+                    (flyerSelection?.length === undefined ||
+                      flyerSelection?.length < 1))
+                }
+              >
+                <MaterialCommunityIcons
+                  name={selectMode ? "content-save-all" : "select-multiple"}
+                  size={24}
+                  color={colors.daclen_light}
+                  style={[styles.refresh, { marginHorizontal: 16 }]}
+                />
+              </TouchableOpacity>
+            ) : null}
 
             <TouchableOpacity
-              onPress={() => clearSelection()}
-              style={styles.button}
+              style={styles.containerRefresh}
+              disabled={photoLoading || videoLoading}
+              onPress={() => refreshContent()}
             >
-              <MaterialCommunityIcons
-                name="close"
-                size={14}
-                color={colors.daclen_black}
-              />
-
-              <Text allowFontScaling={false} style={styles.textButton}>
-                Clear
-              </Text>
+              {photoLoading || videoLoading ? (
+                <ActivityIndicator
+                  size="small"
+                  color={colors.daclen_light}
+                  style={{
+                    alignSelf: "center",
+                    marginVertical: 10,
+                    marginHorizontal: 12,
+                  }}
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="refresh"
+                  size={24}
+                  color={colors.daclen_light}
+                  style={styles.refresh}
+                />
+              )}
             </TouchableOpacity>
           </View>
-        ) : null}
+        </View>
 
         <View style={styles.scrollView}>
           {token === null ||
@@ -675,11 +686,23 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: colors.daclen_graydark,
   },
+  containerPanel: {
+    marginTop: 12,
+    zIndex: 10,
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  containerText: {
+    backgroundColor: "transparent",
+    marginStart: 10,
+    flex: 1,
+    alignSelf: "flex-end",
+    flexDirection: "row",
+    alignItems: "center",
+  },
   containerNav: {
     flexDirection: "row",
-    alignSelf: "flex-end",
-    marginVertical: 12,
-    zIndex: 10,
     elevation: 4,
     backgroundColor: colors.daclen_bg,
     borderColor: colors.daclen_light,
@@ -707,25 +730,15 @@ const styles = StyleSheet.create({
   },
   containerSelection: {
     marginHorizontal: 10,
-    marginTop: 12,
+    marginVertical: 12,
     backgroundColor: "transparent",
     flexDirection: "row",
     alignItems: "center",
   },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+  cancel: {
+    backgroundColor: "transparent",
     alignSelf: "center",
-    marginStart: 12,
-    height: 30,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: colors.daclen_gray,
-    backgroundColor: colors.daclen_light,
-    alignSelf: "center",
-    elevation: 4,
+    marginStart: 10,
   },
   textButton: {
     fontSize: 14,
@@ -756,6 +769,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     alignSelf: "center",
     marginHorizontal: 8,
+    marginVertical: 12,
   },
   textRefresh: {
     backgroundColor: "transparent",
@@ -780,10 +794,9 @@ const styles = StyleSheet.create({
   },
   textSelection: {
     fontFamily: "Poppins-SemiBold",
-    fontSize: 14,
+    fontSize: 12,
     color: colors.daclen_orange,
-    textAlignVertical: "center",
-    marginVertical: 6,
+    backgroundColor: "transparent",
     alignSelf: "center",
   },
 });

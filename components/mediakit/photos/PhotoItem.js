@@ -6,7 +6,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { blurhash, colors } from "../../../styles/base";
 
 const PhotoItem = (props) => {
-  const { item, index, selected, style, selectMode, imageStyle } = props;
+  const { item, index, selected, style, selectMode, imageStyle, imageWidth } = props;
 
   function onLongPress() {
     if (props?.onLongPress === undefined || props?.onLongPress === null) {
@@ -35,8 +35,8 @@ const PhotoItem = (props) => {
           imageStyle
             ? imageStyle
             : {
-                width: 94,
-                height: 125,
+                width: imageWidth ? imageWidth : 94,
+                height: imageWidth ? 125 * imageWidth / 94 : 125,
                 alignSelf: "flex-start",
               },
         ]}

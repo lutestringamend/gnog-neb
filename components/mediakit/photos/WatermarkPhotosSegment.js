@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -20,22 +20,7 @@ const WatermarkPhotosSegment = (props) => {
   const { title, photos, index, isLast, navigation, selected, selectMode } =
     props;
   //const [arraySize, setArraySize] = useState(null);
-
   const { width } = Dimensions.get("window");
-
-  /*useEffect(() => {
-    if (photos?.length === undefined || photos?.length < 1) {
-      setArraySize(null);
-      return;
-    }
-    let newSize = 0;
-    for (let p of photos) {
-      if (p?.jenis_foto === jenis_foto) {
-        newSize++;
-      }
-    }
-    setArraySize(newSize);
-  }, [photos]);*/
 
   function openSegmentScreen() {
     navigation.navigate("PhotosSegment", {

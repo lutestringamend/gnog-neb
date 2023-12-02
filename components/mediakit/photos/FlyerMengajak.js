@@ -11,12 +11,20 @@ import {
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, staticDimensions } from "../../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../../styles/base";
 import PhotoItem from "./PhotoItem";
 import {
   STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE,
   STARTER_KIT_FLYER_MENGAJAK_TAG,
+  FLYER_MENGAJAK_PAGINATION_LIMIT,
 } from "../constants";
+
+const screenAR = dimensions.fullWidth / dimensions.fullHeight;
+const limitAR = 9 / 16;
+const numColumns = screenAR >= limitAR ? 4 : 3;
+const itemLimit = FLYER_MENGAJAK_PAGINATION_LIMIT * numColumns;
+const width = (dimensions.fullWidth - (numColumns + 1) * 20) / numColumns;
+const height = (4 * width) / 3;
 
 const FlyerMengajak = (props) => {
   const { photos, refreshing, photosMultipleSave, selectMode, selected } =
@@ -25,6 +33,45 @@ const FlyerMengajak = (props) => {
 
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
+  const [paginated, setPaginated] = useState([]);
+  const [page, setPage] = useState(null);
+  const [maxPage, setMaxPage] = useState(0);
+
+  useEffect(() => {
+    if (photos?.length === undefined || photos?.length < 1) {
+      setPaginated([]);
+      setMaxPage(0);
+    }
+    let newMaxPage = Math.ceil(photos?.length / itemLimit) - 1;
+    setPage(0);
+    setMaxPage(newMaxPage);
+    console.log("FlyerMengajak photos", photos, newMaxPage);
+  }, [photos]);
+
+  useEffect(() => {
+    if (
+      photos?.length === undefined ||
+      photos?.length < 1 ||
+      page === null ||
+      page < 0
+    ) {
+      return;
+    }
+    let newPaginated = [];
+    let maxPhotoIndex =
+      (page + 1) * itemLimit < photos?.length
+        ? (page + 1) * itemLimit
+        : photos?.length - 1;
+    for (let i = page * itemLimit; i < maxPhotoIndex; i++) {
+      newPaginated.push(photos[i]);
+    }
+    setPaginated(newPaginated);
+  }, [page]);
+
+  useEffect(() => {
+    console.log("paginated", paginated);
+  }),
+    [paginated];
 
   useEffect(() => {
     if (photosMultipleSave?.success !== success) {
@@ -40,10 +87,6 @@ const FlyerMengajak = (props) => {
     }
     //console.log("redux photosMultipleSave", photosMultipleSave);
   }, [photosMultipleSave]);
-
-  useEffect(() => {
-    console.log("FlyerMengajak photos", photos);
-  }, [photos]);
 
   function setSelected(isAdd, e) {
     if (props?.setSelected === undefined || props?.setSelected === null) {
@@ -83,13 +126,15 @@ const FlyerMengajak = (props) => {
 
   const onPress = (item, index) => {
     try {
-      const found = selected.find(({ id }) => id === item?.id);
-      if (found === undefined || found === null) {
-        setSelected(true, item);
-        return;
-      } else if (selectMode) {
-        deselectItem(item);
-        return;
+      if (selectMode) {
+        const found = selected.find(({ id }) => id === item?.id);
+        if (found === undefined || found === null) {
+          setSelected(true, item);
+          return;
+        } else if (selectMode) {
+          deselectItem(item);
+          return;
+        }
       }
     } catch (e) {
       console.error(e);
@@ -173,46 +218,103 @@ const FlyerMengajak = (props) => {
           Tidak ada Flyer Mengajak tersedia.
         </Text>
       ) : (
-        <FlatList
-          estimatedItemSize={20}
-          horizontal={false}
-          numColumns={3}
-          data={photos}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={() => refreshPage()}
-            />
-          }
-          contentContainerStyle={styles.containerFlatlist}
-          renderItem={({ item, index }) => (
-            <PhotoItem
-              selected={
-                selected.find(({ id }) => item?.id === id) ? true : false
-              }
-              navigation={navigation}
-              item={item}
-              index={index}
+        <View style={styles.containerFlatlist}>
+          <FlatList
+            horizontal={false}
+            numColumns={numColumns}
+            data={paginated}
+            scrollEnabled
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => refreshPage()}
+              />
+            }
+            renderItem={({ item, index }) => (
+              <PhotoItem
+                selected={
+                  selected.find(({ id }) => item?.id === id) ? true : false
+                }
+                navigation={navigation}
+                item={item}
+                index={index}
+                style={[
+                  styles.containerImage,
+                  {
+                    flex: 1 / numColumns,
+                    width,
+                    height,
+                    marginHorizontal: 10,
+                    marginBottom:
+                      photos?.length > 3 &&
+                      index >= Math.floor(photos?.length / 3) * 3
+                        ? staticDimensions.pageBottomPadding
+                        : 20,
+                  },
+                ]}
+                imageStyle={styles.photoImage}
+                selectMode={selectMode}
+                onLongPress={() => onLongPress(item)}
+                onPress={() => onPress(item, index)}
+              />
+            )}
+          />
+          <View style={styles.containerPagination}>
+            <TouchableOpacity
+              style={[styles.containerArrow, { opacity: page < 1 ? 0 : 1 }]}
+              disabled={page < 1}
+              onPress={() => setPage(0)}
+            >
+              <MaterialCommunityIcons
+                name="chevron-double-left"
+                size={24}
+                color={colors.daclen_light}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.containerArrow, { opacity: page < 1 ? 0 : 1 }]}
+              disabled={page < 1}
+              onPress={() => setPage((page) => page - 1)}
+            >
+              <MaterialCommunityIcons
+                name="chevron-left"
+                size={24}
+                color={colors.daclen_light}
+              />
+            </TouchableOpacity>
+            <Text allowFontScaling={false} style={styles.textPageNumber}>
+              {`${page + 1} / ${maxPage + 1}`}
+            </Text>
+            <TouchableOpacity
               style={[
-                styles.containerImage,
-                {
-                  flex: 1,
-                  aspectRatio: 3 / 4,
-                  marginHorizontal: 10,
-                  marginBottom:
-                    photos?.length > 3 &&
-                    index >= Math.floor(photos?.length / 3) * 3
-                      ? staticDimensions.pageBottomPadding
-                      : 20,
-                },
+                styles.containerArrow,
+                { opacity: page >= maxPage ? 0 : 1 },
               ]}
-              imageStyle={styles.photoImage}
-              selectMode={selectMode}
-              onLongPress={() => onLongPress(item)}
-              onPress={() => onPress(item, index)}
-            />
-          )}
-        />
+              disabled={page >= maxPage}
+              onPress={() => setPage((page) => page + 1)}
+            >
+              <MaterialCommunityIcons
+                name="chevron-right"
+                size={24}
+                color={colors.daclen_light}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.containerArrow,
+                { opacity: page >= maxPage ? 0 : 1 },
+              ]}
+              disabled={page >= maxPage}
+              onPress={() => setPage(maxPage)}
+            >
+              <MaterialCommunityIcons
+                name="chevron-double-right"
+                size={24}
+                color={colors.daclen_light}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
       )}
     </View>
   );
@@ -268,8 +370,20 @@ const styles = StyleSheet.create({
   containerFlatlist: {
     flex: 1,
     backgroundColor: "transparent",
-    marginTop: 20,
+    marginVertical: 20,
     marginHorizontal: 10,
+  },
+  containerPagination: {
+    backgroundColor: "transparent",
+    alignSelf: "flex-end",
+    marginTop: 12,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  containerArrow: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
+    marginStart: 6,
   },
   containerButton: {
     position: "absolute",
@@ -283,7 +397,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   containerImage: {
-    flex: 1 / 3,
+    flex: 1 / numColumns,
     backgroundColor: "transparent",
     marginHorizontal: 10,
   },
@@ -314,10 +428,17 @@ const styles = StyleSheet.create({
     textAlign: "center",
     alignSelf: "center",
   },
-  photoImage: {
-    flex: 1,
-    aspectRatio: 3 / 4,
+  textPageNumber: {
+    marginHorizontal: 2,
     alignSelf: "center",
+    backgroundColor: "transparent",
+    color: colors.daclen_light,
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
+  },
+  photoImage: {
+    width,
+    height,
   },
   imageList: {
     flex: 1,

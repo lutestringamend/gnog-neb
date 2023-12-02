@@ -10,6 +10,7 @@ export const DefaultSelected = {
 }
 
 export const FLYER_SELECTION_LIMIT = 10;
+export const FLYER_MENGAJAK_PAGINATION_LIMIT = 3;
 
 export const STARTER_KIT_HOME = "STARTER_KIT_HOME";
 export const STARTER_KIT_DEFAULT_FONT_SIZE = 14;
