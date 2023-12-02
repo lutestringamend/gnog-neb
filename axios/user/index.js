@@ -1446,6 +1446,19 @@ export const getCurrentUser = (token, storageCurrentUser) => {
           readStorageCurrentUser(dispatch, storageCurrentUser, null);
         } else {
           //console.log("user current response", data);
+          try {
+            let level = data?.level.toLowerCase();
+            if (level.includes("admin")) {
+              userLogout();
+              dispatch({ type: USER_TOKEN_STATE_CHANGE, token: null });
+              dispatch({ type: USER_STATE_CHANGE, data: null }); 
+              dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
+              dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });
+            }
+
+          } catch (e) {
+            console.error(e);
+          }
           if (
             !(
               data?.status_member === undefined ||

@@ -10,12 +10,7 @@ import {
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import RenderHTML from "react-native-render-html";
-import {
-  colors,
-  staticDimensions,
-  dimensions,
-  blurhash,
-} from "../../styles/base";
+import { colors, staticDimensions, dimensions } from "../../styles/base";
 
 function BlogItem(props) {
   const [content, setContent] = useState("");
@@ -34,52 +29,66 @@ function BlogItem(props) {
     navigation.navigate("Blog", { id });
   }
 
+  if (props?.id === undefined || props?.id === null) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
-      {props?.id !== null && props?.id !== undefined ? (
-        <ScrollView style={styles.containerItem}>
-          <TouchableOpacity
-            onPress={() => openItem(props?.id)}
-            disabled={props?.isi !== undefined && props?.isi !== null}
-          >
+      <ScrollView style={styles.containerItem}>
+        <TouchableOpacity
+          onPress={() => openItem(props?.id)}
+          disabled={props?.isi !== undefined && props?.isi !== null}
+        >
+          <View style={styles.containerImage}>
+            <ActivityIndicator
+              size="small"
+              color={colors.daclen_gray}
+              style={{ alignSelf: "center", zIndex: 0 }}
+            />
             <Image
               style={styles.image}
               source={props?.foto_url}
               onClick={() => openItem(props?.id)}
               contentFit="cover"
               placeholder={null}
-              transition={0}
+              transition={100}
               cachepolicy="memory-disk"
             />
+          </View>
 
-            <View style={styles.containerDescVertical}>
-              <View style={styles.containerDescHorizontal}>
-                {props?.tag_blog?.length > 0
-                  ? props?.tag_blog.map(({ nama }) => (
-                      <Text allowFontScaling={false} key={nama} style={styles.textCategory}>{nama}</Text>
-                    ))
-                  : null}
-              </View>
-              <Text allowFontScaling={false} style={styles.textDate}>{props?.created_at}</Text>
-              <Text allowFontScaling={false} style={styles.textTitle}>{props?.judul}</Text>
-              {content ?  <RenderHTML
+          <View style={styles.containerDescVertical}>
+            <View style={styles.containerDescHorizontal}>
+              {props?.tag_blog?.length > 0
+                ? props?.tag_blog.map(({ nama }) => (
+                    <Text
+                      allowFontScaling={false}
+                      key={nama}
+                      style={styles.textCategory}
+                    >
+                      {nama}
+                    </Text>
+                  ))
+                : null}
+            </View>
+            <Text allowFontScaling={false} style={styles.textDate}>
+              {props?.created_at}
+            </Text>
+            <Text allowFontScaling={false} style={styles.textTitle}>
+              {props?.judul}
+            </Text>
+            {content ? (
+              <RenderHTML
                 style={styles.textDesc}
                 contentWidth={
                   dimensions.fullWidth - staticDimensions.blogTextWidthMargin
                 }
                 source={{ html: content }}
-              /> : null}
-             
-            </View>
-          </TouchableOpacity>
-        </ScrollView>
-      ) : (
-        <ActivityIndicator
-          size="large"
-          color={colors.daclen_orange}
-          style={{ alignSelf: "center", marginVertical: 20 }}
-        />
-      )}
+              />
+            ) : null}
+          </View>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 }
@@ -87,6 +96,13 @@ function BlogItem(props) {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
+  },
+  containerImage: {
+    width: dimensions.fullWidth,
+    height: dimensions.fullWidth / 2,
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
   },
   containerDescVertical: {
     marginVertical: 10,
@@ -115,18 +131,21 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   textDate: {
-    fontFamily: "Poppins", fontSize: 10,
+    fontFamily: "Poppins",
+    fontSize: 10,
     color: colors.daclen_gray,
     marginVertical: 6,
   },
   textDesc: {
     marginVertical: 6,
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins",
+    fontSize: 12,
     marginHorizontal: 10,
     color: colors.daclen_gray,
   },
   textUid: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins",
+    fontSize: 12,
     marginBottom: 12,
     color: colors.daclen_gray,
     marginHorizontal: 20,
@@ -144,8 +163,13 @@ const styles = StyleSheet.create({
     marginEnd: 2,
   },
   image: {
-    width: "100%",
-    aspectRatio: 2 / 1,
+    width: dimensions.fullWidth,
+    height: dimensions.fullWidth / 2,
+    backgroundColor: "transparent",
+    position: "absolute",
+    top: 0,
+    start: 0,
+    end: 0,
   },
 });
 

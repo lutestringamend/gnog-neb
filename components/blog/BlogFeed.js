@@ -9,20 +9,23 @@ import {
   FlatList,
 } from "react-native";
 //import { FlashList } from "@shopify/flash-list";
-
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { getBlog } from "../../axios/blog";
-import { finalblognumber, productpaginationnumber } from "../../axios/constants";
+import {
+  finalblognumber,
+  productpaginationnumber,
+} from "../../axios/constants";
 import MainHeader from "../main/MainHeader";
 import BlogItem from "./BlogItem";
-import { colors } from "../../styles/base";
+import { colors, dimensions } from "../../styles/base";
 
 function BlogFeed(props) {
   const { blogs, pageNumber } = props;
   const [loading, setLoading] = useState(false);
-  const [onEndReachedCalledDuringMomentum, setEndReachedCalledDuringMomentum] = useState(true);
+  const [onEndReachedCalledDuringMomentum, setEndReachedCalledDuringMomentum] =
+    useState(true);
   const [paginationLoading, setPaginationLoading] = useState(false);
 
   useEffect(() => {
@@ -64,11 +67,13 @@ function BlogFeed(props) {
     <SafeAreaView style={styles.container}>
       <MainHeader title="Blog" icon="arrow-left" />
       {loading ? (
-        <ActivityIndicator
-          size="large"
-          color={colors.daclen_orange}
-          style={{ alignSelf: "center", marginVertical: 20 }}
-        />
+        <View style={styles.containerSpinner}>
+          <ActivityIndicator
+            size="large"
+            color={colors.daclen_orange}
+            style={{ alignSelf: "center", marginVertical: 20 }}
+          />
+        </View>
       ) : blogs?.length > 0 ? (
         <View style={styles.containerFlatlist}>
           <FlatList
@@ -83,7 +88,9 @@ function BlogFeed(props) {
                 onRefresh={() => loadData(true)}
               />
             }
-            onMomentumScrollBegin={() => setEndReachedCalledDuringMomentum(false)}
+            onMomentumScrollBegin={() =>
+              setEndReachedCalledDuringMomentum(false)
+            }
             onEndReachedThreshold={0.1}
             onEndReached={() => onEndReached()}
             renderItem={({ item }) => (
@@ -99,7 +106,9 @@ function BlogFeed(props) {
           />
         </View>
       ) : (
-        <Text allowFontScaling={false} style={styles.textUid}>Tidak ada blog tersedia</Text>
+        <Text allowFontScaling={false} style={styles.textUid}>
+          Tidak ada blog tersedia
+        </Text>
       )}
       {paginationLoading ? (
         <ActivityIndicator
@@ -116,11 +125,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
+    backgroundColor: colors.white,
   },
   containerFlatlist: {
     flex: 1,
     width: "100%",
     backgroundColor: "transparent",
+  },
+  containerSpinner: {
+    flex: 1,
+    width: "100%",
+    height: dimensions.fullHeight,
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
   },
   activityControl: {
     alignSelf: "center",
@@ -141,7 +159,7 @@ const mapDispatchProps = (dispatch) =>
     {
       getBlog,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchProps)(BlogFeed);

@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, ActivityIndicator, SafeAreaView } from "react-native";
-
+import {
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  SafeAreaView,
+} from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { showBlog } from "../../axios/blog";
-
 import BlogItem from "./BlogItem";
-import { colors } from "../../styles/base";
+import { colors, dimensions } from "../../styles/base";
 
-function Blog(props, { navigation }) {
+function Blog(props) {
   const { blogItems } = props;
   const [blog, setBlog] = useState({});
   const [loading, setLoading] = useState(false);
@@ -63,11 +66,13 @@ function Blog(props, { navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       {loading ? (
-        <ActivityIndicator
-        size="large"
-        color={colors.daclen_orange}
-        style={{ alignSelf: "center", marginVertical: 20 }}
-      />
+        <View style={styles.containerSpinner}>
+          <ActivityIndicator
+            size="large"
+            color={colors.daclen_orange}
+            style={{ alignSelf: "center", marginVertical: 20 }}
+          />
+        </View>
       ) : (
         <BlogItem
           id={blog?.id}
@@ -85,8 +90,18 @@ function Blog(props, { navigation }) {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     width: "100%",
+    backgroundColor: colors.white,
     justifyContent: "flex-start",
+  },
+  containerSpinner: {
+    flex: 1,
+    width: "100%",
+    height: dimensions.fullHeight,
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
@@ -99,7 +114,7 @@ const mapDispatchProps = (dispatch) =>
     {
       showBlog,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchProps)(Blog);

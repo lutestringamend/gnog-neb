@@ -566,7 +566,10 @@ function MediaKitFiles(props) {
             currentUser?.nomor_telp_verified_at === null ? (
               <Text
                 allowFontScaling={false}
-                style={[styles.textSelection, { color: colors.daclen_light }]}
+                style={[
+                  styles.textSelection,
+                  { color: colors.daclen_light, marginVertical: 20 },
+                ]}
               >
                 Mohon Verifikasi Nomor HP terlebih dahulu
               </Text>
