@@ -16,6 +16,7 @@ import {
     vwmarkdefaultsourceheight,
     vwmarkdefaultsourcewidth,
   } from "../constants";
+import { checkVideoFileName } from "../../../axios/mediakit";
 
 const VideosFlatlist = (props) => {
   const { videos, refreshing, showTitle, userId, jenis_video, style, title } = props;
@@ -28,7 +29,8 @@ const VideosFlatlist = (props) => {
     props?.refreshPage();
   }
 
-  function openVideo(item) {
+  function openVideo(e) {
+    let item = checkVideoFileName(e);
     navigation.navigate("VideoPlayerScreen", {
       userId,
       videoId: item?.id ? item?.id : item?.video,

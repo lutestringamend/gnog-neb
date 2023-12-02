@@ -190,6 +190,7 @@ function VideoPlayer(props) {
     }
 
     let logs = {
+      uri,
       jenis_video,
       videoId,
       width,

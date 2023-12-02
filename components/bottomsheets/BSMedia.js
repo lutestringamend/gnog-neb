@@ -95,7 +95,7 @@ function BSMedia(props) {
   return (
     <View style={styles.container}>
       <View style={styles.containerHorizontal}>
-        <Text allowFontScaling={false} style={styles.textTitle}>{currentUser?.id === 8054 ? JSON.stringify(status) : props?.title}</Text>
+        <Text allowFontScaling={false} style={styles.textTitle}>{props?.title}</Text>
         <TouchableOpacity
           style={styles.icon}
           onPress={() => props?.closeThis()}
@@ -120,7 +120,7 @@ function BSMedia(props) {
           <Text allowFontScaling={false} style={styles.textButton}>Foto dari Kamera</Text>
         </TouchableOpacity>
 
-        {status?.status !== "granted" || status?.granted !== true ? null : <TouchableOpacity
+        {status?.status !== "granted" || status?.granted !== true || Platform.OS === "ios" ? null : <TouchableOpacity
             onPress={() => openImagePicker()}
             style={[
               styles.button,
