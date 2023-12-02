@@ -40,7 +40,9 @@ const WatermarkPhotos = (props) => {
 
     useEffect(() => {
       if (photosMultipleSave?.success !== success) {
-        setSuccess(photosMultipleSave?.success ? photosMultipleSave?.success : false);
+        setSuccess(
+          photosMultipleSave?.success ? photosMultipleSave?.success : false,
+        );
       }
       if (photosMultipleSave?.error !== error) {
         setError(photosMultipleSave?.error ? photosMultipleSave?.error : null);
@@ -51,34 +53,24 @@ const WatermarkPhotos = (props) => {
       //console.log("redux photosMultipleSave", photosMultipleSave);
     }, [photosMultipleSave]);
 
-    useEffect(() => {
-      if ((selected?.urls?.length === undefined || selected?.urls?.length < 1) && Object.keys(selected?.ids)?.length > 0) {
-        clearSelection();
-      }
-      props?.setSelectMode(!(selected?.urls?.length === undefined || selected?.urls?.length < 1 || props?.setSelectMode === undefined || props?.setSelectMode === null));
-    }, [selected]);
-
-    function setSelected (isAdd, e) {
+    function setSelected(isAdd, e) {
       if (props?.setSelected === undefined || props?.setSelected === null) {
         return;
       }
       props?.setSelected(isAdd, e);
     }
 
-    const clearSelection = () => {
-      clearError();
-      setSelected(true, null);
-      if (!(props?.setSelectMode === undefined || props?.setSelectMode === null)) {
-        props?.setSelectMode(false);
-      }
-    };
-
     const clearError = () => {
-      if (!(props?.clearMultipleSave === undefined || props?.clearMultipleSave === null)) {
+      if (
+        !(
+          props?.clearMultipleSave === undefined ||
+          props?.clearMultipleSave === null
+        )
+      ) {
         props?.clearMultipleSave();
       }
       setError(null);
-    }
+    };
 
     const deselectItem = (item) => {
       setSelected(false, item);
@@ -86,11 +78,8 @@ const WatermarkPhotos = (props) => {
 
     const onLongPress = (item) => {
       try {
-        if (
-          selected.ids[item?.id] === undefined ||
-          selected.ids[item?.id] === null ||
-          !selected.ids[item?.id]
-        ) {
+        const found = selected.find(({ id }) => id === item?.id);
+        if (found === undefined || found === null) {
           setSelected(true, item);
         } else {
           deselectItem(item);
@@ -102,17 +91,12 @@ const WatermarkPhotos = (props) => {
 
     const onPress = (item, title, photoIndex) => {
       try {
-        if (
-          !(
-            selected.ids[item?.id] === undefined ||
-            selected.ids[item?.id] === null ||
-            !selected.ids[item?.id]
-          )
-        ) {
-          deselectItem(item);
+        const found = selected.find(({ id }) => id === item?.id);
+        if (found === undefined || found === null) {
+          setSelected(true, item);
           return;
         } else if (selectMode) {
-          setSelected(true, item);
+          deselectItem(item);
           return;
         }
       } catch (e) {
@@ -171,10 +155,7 @@ const WatermarkPhotos = (props) => {
             <Text allowFontScaling={false} style={styles.textError}>
               {error}
             </Text>
-            <TouchableOpacity
-              onPress={() => clearError()}
-              style={styles.close}
-            >
+            <TouchableOpacity onPress={() => clearError()} style={styles.close}>
               <MaterialCommunityIcons
                 name="close"
                 size={20}
@@ -226,7 +207,9 @@ const WatermarkPhotos = (props) => {
                     navigation={navigation}
                     selected={selected}
                     selectMode={selectMode}
-                    onPress={(e, title, photoIndex) => onPress(e, title, photoIndex)}
+                    onPress={(e, title, photoIndex) =>
+                      onPress(e, title, photoIndex)
+                    }
                     onLongPress={(e) => onLongPress(e)}
                   />
                 )}

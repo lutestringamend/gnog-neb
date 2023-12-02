@@ -20,6 +20,7 @@ import {
   MEDIA_KIT_PHOTOS_MULTIPLE_SAVE_STATE_CHANGE,
   MEDIA_KIT_FLYER_PRODUK_SELECTED_STATE_CHANGE,
   MEDIA_KIT_TUTORIALS_STATE_CHANGE,
+  MEDIA_KIT_FLYER_SELECTION_STATE_CHANGE,
 } from "../../redux/constants";
 import { sentryLog } from "../../sentry";
 import {
@@ -55,6 +56,13 @@ export function updateReduxMediaKitPhotosError(data) {
   return (dispatch) => {
     console.log("updateReduxMediaKitPhotosError", data);
     dispatch({ type: MEDIA_KIT_PHOTOS_ERROR_STATE_CHANGE, data });
+  };
+}
+
+export function updateReduxMediaKitFlyerSelection(data) {
+  return (dispatch) => {
+    console.log("updateReduxMediaKitFlyerSelection", data);
+    dispatch({ type: MEDIA_KIT_FLYER_SELECTION_STATE_CHANGE, data });
   };
 }
 

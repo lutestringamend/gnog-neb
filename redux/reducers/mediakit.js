@@ -15,12 +15,14 @@ import {
   MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE,
   MEDIA_KIT_PHOTOS_MULTIPLE_SAVE_STATE_CHANGE,
   MEDIA_KIT_TUTORIALS_STATE_CHANGE,
+  MEDIA_KIT_FLYER_SELECTION_STATE_CHANGE,
 } from "../constants";
 
 const initialState = {
   photos: null,
   photosUri: [],
   flyerMengajak: null,
+  flyerSelection: [],
   videos: null,
   videosUri: [],
   videosMengajak: null,
@@ -68,6 +70,11 @@ export const mediakit = (state = initialState, action) => {
       return {
         ...state,
         flyerMengajak: action.data,
+    };
+    case MEDIA_KIT_FLYER_SELECTION_STATE_CHANGE:
+      return {
+        ...state,
+        flyerSelection: action.data,
     };
     case MEDIA_KIT_PHOTOS_MULTIPLE_SAVE_STATE_CHANGE:
       return {

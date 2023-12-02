@@ -32,6 +32,7 @@ import {
   updateReduxMediaKitVideosMengajak,
   updateReduxMediaKitPhotosMultipleSave,
   filterPhotoProps,
+  updateReduxMediaKitFlyerSelection,
 } from "../../axios/mediakit";
 import { overwriteWatermarkVideos } from "../media";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
@@ -70,6 +71,7 @@ import {
   personalwebsiteurlshort,
   tokoonlineurlshort,
 } from "../../axios/constants";
+import { checkNumberEmpty } from "../../axios/cart";
 
 const defaultModal = {
   visible: false,
@@ -87,10 +89,6 @@ function MediaKitFiles(props) {
   const [photoKeys, setPhotoKeys] = useState([]);
   const [modal, setModal] = useState(defaultModal);
   const [selectMode, setSelectMode] = useState(false);
-  const [selection, setSelection] = useState({
-    flyerProduk: DefaultSelected,
-    flyerMengajak: DefaultSelected,
-  });
 
   const {
     token,
@@ -99,6 +97,7 @@ function MediaKitFiles(props) {
     watermarkData,
     mediaKitPhotos,
     flyerMengajak,
+    flyerSelection,
     mediaKitVideos,
     products,
     photosMultipleSave,
@@ -109,14 +108,14 @@ function MediaKitFiles(props) {
     useCallback(() => {
       const backHandler = BackHandler.addEventListener(
         "hardwareBackPress",
-        onBackPress
+        onBackPress,
       );
       console.log("MediaKitFiles visible, BackHandler active", activeTab);
       return () => {
         console.log("MediaKitFiles is not visible");
         backHandler.remove();
       };
-    }, [activeTab])
+    }, [activeTab]),
   );
 
   useEffect(() => {
@@ -125,7 +124,7 @@ function MediaKitFiles(props) {
       if (!result && Platform.OS === "android") {
         ToastAndroid.show(
           "Perangkat tidak mengizinkan sharing file",
-          ToastAndroid.LONG
+          ToastAndroid.LONG,
         );
       }
       console.log("sharingAvailability", result);
@@ -162,9 +161,9 @@ function MediaKitFiles(props) {
     }
   }, [mediaKitPhotos]);
 
-  /*useEffect(() => {
-    console.log("flyerMengajak", flyerMengajak);
-  }, [flyerMengajak]);*/
+  useEffect(() => {
+    console.log("selectMode", selectMode);
+  }, [selectMode]);
 
   useEffect(() => {
     /*if (mediaKitVideos === null || mediaKitVideos?.length === undefined) {
@@ -175,9 +174,37 @@ function MediaKitFiles(props) {
     }
   }, [mediaKitVideos]);
 
-  /*useEffect(() => {
-    console.log("flyer selection", selection);
-  }, [selection]);*/
+  useEffect(() => {
+    if (!(flyerSelection?.length === undefined || flyerMengajak?.length < 1)) {
+      props.updateReduxMediaKitFlyerSelection([]);
+    }
+    if (
+      !(
+        activeTab === STARTER_KIT_FLYER_PRODUK ||
+        activeTab === STARTER_KIT_FLYER_MENGAJAK
+      ) &&
+      selectMode
+    ) {
+      setSelectMode(false);
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (
+      flyerSelection === null ||
+      flyerSelection?.length === undefined ||
+      flyerSelection?.length < 1
+    ) {
+      if (selectMode) {
+        setSelectMode(false);
+      }
+    } else {
+      if (!selectMode) {
+        setSelectMode(true);
+      }
+    }
+    console.log("redux flyerSelection", flyerSelection);
+  }, [flyerSelection]);
 
   useEffect(() => {
     if (photoError === null) {
@@ -190,45 +217,6 @@ function MediaKitFiles(props) {
       setPhotoLoading(false);
     }
   }, [photoError]);
-
-  useEffect(() => {
-    if (!selectMode) {
-      if (
-        activeTab === STARTER_KIT_FLYER_PRODUK &&
-        selection.flyerProduk !== DefaultSelected
-      ) {
-        setSelection({
-          ...selection,
-          flyerProduk: {
-            ids: {},
-            urls: [],
-          },
-        });
-      } else if (
-        activeTab === STARTER_KIT_FLYER_MENGAJAK &&
-        selection.flyerMengajak !== DefaultSelected
-      ) {
-        setSelection({
-          ...selection,
-          flyerMengajak: {
-            ids: {},
-            urls: [],
-          },
-        });
-      } else {
-        setSelection({
-          flyerProduk: {
-            ids: {},
-            urls: [],
-          },
-          flyerMengajak: {
-            ids: {},
-            urls: [],
-          },
-        });
-      }
-    }
-  }, [selectMode]);
 
   useEffect(() => {
     if (photosMultipleSave?.error !== null && selectMode) {
@@ -274,7 +262,7 @@ function MediaKitFiles(props) {
       result?.mengajakArray?.length === undefined
     ) {
       const storageFlyers = await getObjectAsync(
-        ASYNC_MEDIA_FLYER_MENGAJAK_KEY
+        ASYNC_MEDIA_FLYER_MENGAJAK_KEY,
       );
       if (storageFlyers === undefined || storageFlyers === null) {
         props.updateReduxMediaKitFlyerMengajak([]);
@@ -285,14 +273,14 @@ function MediaKitFiles(props) {
       props.updateReduxMediaKitFlyerMengajak(result?.mengajakArray);
       await setObjectAsync(
         ASYNC_MEDIA_FLYER_MENGAJAK_KEY,
-        result?.mengajakArray
+        result?.mengajakArray,
       );
     }
   };
 
   const checkStorageMediaKitPhotos = async () => {
     const storagePhotos = await getObjectAsync(
-      ASYNC_MEDIA_WATERMARK_PHOTOS_KEY
+      ASYNC_MEDIA_WATERMARK_PHOTOS_KEY,
     );
     if (storagePhotos === undefined || storagePhotos === null) {
       //props.clearMediaKitPhotosError();
@@ -316,7 +304,10 @@ function MediaKitFiles(props) {
   };
 
   const refreshContent = () => {
-    if (activeTab === STARTER_KIT_VIDEO_PRODUK || activeTab === STARTER_KIT_VIDEO_MENGAJAK) {
+    if (
+      activeTab === STARTER_KIT_VIDEO_PRODUK ||
+      activeTab === STARTER_KIT_VIDEO_MENGAJAK
+    ) {
       refreshVideos();
     } else {
       refreshPhotos();
@@ -337,77 +328,27 @@ function MediaKitFiles(props) {
 
   const setSelected = (isAdd, item) => {
     try {
-      if (item === null) {
-        if (activeTab === STARTER_KIT_FLYER_PRODUK) {
-          setSelection({
-            ...selection,
-            flyerProduk: DefaultSelected,
-          });
-        } else if (activeTab === STARTER_KIT_FLYER_MENGAJAK) {
-          setSelection({
-            ...selection,
-            flyerMengajak: DefaultSelected,
-          });
-        }
-        return;
-      }
-
-      const selected =
-        activeTab === STARTER_KIT_FLYER_PRODUK
-          ? selection.flyerProduk
-          : selection.flyerMengajak;
-      let ids = selected?.ids;
-      let urls = [];
-
-      if (isAdd) {
-        if (selected?.urls?.length >= FLYER_SELECTION_LIMIT) {
-          return;
-        }
-        ids[item?.id] = true;
-
-        let isFound = false;
-        if (
-          !(selected?.urls?.length === undefined || selected?.urls?.length < 1)
-        ) {
-          for (let i = 0; i < selected?.urls?.length; i++) {
-            if (selected?.urls[i]?.id === item?.id) {
-              isFound = true;
-            }
-            urls.push(selected?.urls[i]);
-          }
-        }
-        if (!isFound) {
-          urls.push(filterPhotoProps(item));
+      if (flyerSelection?.length === undefined || flyerSelection?.length < 1) {
+        if (isAdd) {
+          props.updateReduxMediaKitFlyerSelection([item]);
         }
       } else {
-        ids[item?.id] = false;
-        if (
-          !(selected?.urls?.length === undefined || selected?.urls?.length < 1)
-        ) {
-          for (let i = 0; i < selected?.urls?.length; i++) {
-            if (selected?.urls[i]?.id !== item?.id) {
-              urls.push(selected?.urls[i]);
+        const found = flyerSelection.find(({ id }) => id === item?.id);
+        if (found === undefined || found === null) {
+          if (isAdd && flyerSelection?.length < FLYER_SELECTION_LIMIT) {
+            let newArray = [...flyerSelection];
+            newArray.push(item);
+            props.updateReduxMediaKitFlyerSelection(newArray);
+          }
+        } else if (!isAdd) {
+          let newArray = [];
+          for (let f of flyerSelection) {
+            if (f?.id !== item?.id) {
+              newArray.push(f);
             }
           }
+          props.updateReduxMediaKitFlyerSelection(newArray);
         }
-      }
-
-      if (activeTab === STARTER_KIT_FLYER_PRODUK) {
-        setSelection({
-          ...selection,
-          flyerProduk: {
-            ids,
-            urls,
-          },
-        });
-      } else if (activeTab === STARTER_KIT_FLYER_MENGAJAK) {
-        setSelection({
-          ...selection,
-          flyerMengajak: {
-            ids,
-            urls,
-          },
-        });
       }
     } catch (e) {
       console.error(e);
@@ -422,27 +363,16 @@ function MediaKitFiles(props) {
     }
   };
 
-  /*const clearSelection = () => {
-    if (
-      (activeTab === STARTER_KIT_FLYER_PRODUK &&
-        (selection.flyerProduk.urls?.length === undefined ||
-          selection.flyerProduk.urls?.length < 1)) ||
-      (activeTab === STARTER_KIT_FLYER_MENGAJAK &&
-        (selection.flyerMengajak.urls?.length === undefined ||
-          selection.flyerMengajak.urls?.length < 1))
-    ) {
-      setSelectMode(false);
-    } else {
-      setSelected(true, null);
-    }
-  };*/
+  const clearSelection = () => {
+    props.updateReduxMediaKitFlyerSelection([]);
+    setSelectMode(false);
+  };
 
   const openMultipleImageSave = () => {
+    props.updateReduxMediaKitFlyerSelection([]);
+    setSelectMode(false);
     navigation.navigate("MultipleImageSave", {
-      photos:
-        activeTab === STARTER_KIT_FLYER_PRODUK
-          ? selection?.flyerProduk?.urls
-          : selection?.flyerMengajak?.urls,
+      photos: flyerSelection,
       sharingAvailability,
       jenis_foto:
         activeTab === STARTER_KIT_FLYER_PRODUK
@@ -484,12 +414,12 @@ function MediaKitFiles(props) {
                     activeTab === STARTER_KIT_FLYER_PRODUK
                       ? STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE
                       : activeTab === STARTER_KIT_FLYER_MENGAJAK
-                      ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE
-                      : activeTab === STARTER_KIT_VIDEO_PRODUK
-                      ? STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE
-                      : activeTab === STARTER_KIT_VIDEO_MENGAJAK
-                      ? STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE
-                      : null,
+                        ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE
+                        : activeTab === STARTER_KIT_VIDEO_PRODUK
+                          ? STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE
+                          : activeTab === STARTER_KIT_VIDEO_MENGAJAK
+                            ? STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE
+                            : null,
                   urlEndpoint:
                     activeTab === STARTER_KIT_FLYER_PRODUK ||
                     activeTab === STARTER_KIT_VIDEO_PRODUK
@@ -534,12 +464,10 @@ function MediaKitFiles(props) {
                     photoLoading ||
                     videoLoading ||
                     (selectMode &&
-                      ((activeTab === STARTER_KIT_FLYER_PRODUK &&
-                        (selection.flyerProduk.urls?.length === undefined ||
-                          selection.flyerProduk.urls?.length < 1)) ||
-                        (activeTab === STARTER_KIT_FLYER_MENGAJAK &&
-                          (selection.flyerMengajak.urls?.length === undefined ||
-                            selection.flyerMengajak.urls?.length < 1))))
+                      (activeTab === STARTER_KIT_FLYER_PRODUK ||
+                        activeTab === STARTER_KIT_FLYER_MENGAJAK) &&
+                      (flyerSelection?.length === undefined ||
+                        flyerSelection?.length < 1))
                       ? colors.daclen_gray
                       : colors.daclen_blue,
                 },
@@ -549,12 +477,10 @@ function MediaKitFiles(props) {
                 photoLoading ||
                 videoLoading ||
                 (selectMode &&
-                  ((activeTab === STARTER_KIT_FLYER_PRODUK &&
-                    (selection.flyerProduk.urls?.length === undefined ||
-                      selection.flyerProduk.urls?.length < 1)) ||
-                    (activeTab === STARTER_KIT_FLYER_MENGAJAK &&
-                      (selection.flyerMengajak.urls?.length === undefined ||
-                        selection.flyerMengajak.urls?.length < 1))))
+                  (activeTab === STARTER_KIT_FLYER_PRODUK ||
+                    activeTab === STARTER_KIT_FLYER_MENGAJAK) &&
+                  (flyerSelection?.length === undefined ||
+                    flyerSelection?.length < 1))
               }
             >
               <Text style={styles.textRefresh}>
@@ -593,14 +519,12 @@ function MediaKitFiles(props) {
           <View style={styles.containerSelection}>
             <Text allowFontScaling={false} style={styles.textSelection}>
               {`${
-                activeTab === STARTER_KIT_FLYER_PRODUK
-                  ? selection.flyerProduk.urls?.length
-                  : selection.flyerMengajak.urls?.length
+                flyerSelection ? checkNumberEmpty(flyerSelection?.length) : "0"
               } / ${FLYER_SELECTION_LIMIT} Flyer dipilih`}
             </Text>
 
             <TouchableOpacity
-              onPress={() => setSelectMode(false)}
+              onPress={() => clearSelection()}
               style={styles.button}
             >
               <MaterialCommunityIcons
@@ -642,13 +566,18 @@ function MediaKitFiles(props) {
               color={colors.daclen_orange}
               style={styles.spinner}
             />
-          ) : activeTab === STARTER_KIT_VIDEO_PRODUK || activeTab === STARTER_KIT_VIDEO_MENGAJAK ? (
+          ) : activeTab === STARTER_KIT_VIDEO_PRODUK ||
+            activeTab === STARTER_KIT_VIDEO_MENGAJAK ? (
             <WatermarkVideos
               watermarkData={watermarkData}
               userId={currentUser?.id}
               token={token}
               loading={videoLoading}
-              jenis_video={activeTab === STARTER_KIT_VIDEO_MENGAJAK ? STARTER_KIT_VIDEO_MENGAJAK_TAG : STARTER_KIT_VIDEO_PRODUK_TAG}
+              jenis_video={
+                activeTab === STARTER_KIT_VIDEO_MENGAJAK
+                  ? STARTER_KIT_VIDEO_MENGAJAK_TAG
+                  : STARTER_KIT_VIDEO_PRODUK_TAG
+              }
               refreshPage={() => refreshVideos()}
             />
           ) : activeTab === STARTER_KIT_FLYER_PRODUK ? (
@@ -667,8 +596,7 @@ function MediaKitFiles(props) {
               }
               refreshPage={() => refreshPhotos()}
               selectMode={selectMode}
-              setSelectMode={(e) => setSelectMode(e)}
-              selected={selection.flyerProduk}
+              selected={flyerSelection}
               setSelected={(isAdd, e) => setSelected(isAdd, e)}
             />
           ) : activeTab === STARTER_KIT_FLYER_MENGAJAK ? (
@@ -686,8 +614,7 @@ function MediaKitFiles(props) {
               }
               refreshPage={() => refreshPhotos()}
               selectMode={selectMode}
-              setSelectMode={(e) => setSelectMode(e)}
-              selected={selection.flyerMengajak}
+              selected={flyerSelection}
               setSelected={(isAdd, e) => setSelected(isAdd, e)}
             />
           ) : (
@@ -869,6 +796,7 @@ const mapStateToProps = (store) => ({
   mediaKitPhotos: store.mediaKitState.photos,
   mediaKitVideos: store.mediaKitState.videos,
   flyerMengajak: store.mediaKitState.flyerMengajak,
+  flyerSelection: store.mediaKitState.flyerSelection,
   videosMengajak: store.mediaKitState.videosMengajak,
   photoError: store.mediaKitState.photoError,
   photosMultipleSave: store.mediaKitState.photosMultipleSave,
@@ -889,8 +817,9 @@ const mapDispatchProps = (dispatch) =>
       updateReduxMediaKitFlyerMengajak,
       updateReduxMediaKitVideosMengajak,
       updateReduxMediaKitPhotosMultipleSave,
+      updateReduxMediaKitFlyerSelection,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchProps)(MediaKitFiles);

@@ -6,28 +6,21 @@ import {
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
+  FlatList,
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors, staticDimensions } from "../../../styles/base";
 import PhotoItem from "./PhotoItem";
-import { STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE, STARTER_KIT_FLYER_MENGAJAK_TAG } from "../constants";
+import {
+  STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE,
+  STARTER_KIT_FLYER_MENGAJAK_TAG,
+} from "../constants";
 
 const FlyerMengajak = (props) => {
-  const {
-    photos,
-    refreshing,
-    showTitle,
-    jenis_foto,
-    watermarkData,
-    sharingAvailability,
-    photosMultipleSave,
-    userId,
-    selectMode,
-    selected,
-  } = props;
+  const { photos, refreshing, photosMultipleSave, selectMode, selected } =
+    props;
   const navigation = useNavigation();
 
   const [success, setSuccess] = useState(false);
@@ -36,7 +29,7 @@ const FlyerMengajak = (props) => {
   useEffect(() => {
     if (photosMultipleSave?.success !== success) {
       setSuccess(
-        photosMultipleSave?.success ? photosMultipleSave?.success : false
+        photosMultipleSave?.success ? photosMultipleSave?.success : false,
       );
     }
     if (photosMultipleSave?.error !== error) {
@@ -52,30 +45,12 @@ const FlyerMengajak = (props) => {
     console.log("FlyerMengajak photos", photos);
   }, [photos]);
 
-  useEffect(() => {
-    if (
-      (selected?.urls?.length === undefined || selected?.urls?.length < 1) &&
-      Object.keys(selected?.ids)?.length > 0
-    ) {
-      clearSelection();
-    }
-    props?.setSelectMode(!(selected?.urls?.length === undefined || selected?.urls?.length < 1 || props?.setSelectMode === undefined || props?.setSelectMode === null));
-  }, [selected]);
-
-  function setSelected (isAdd, e) {
+  function setSelected(isAdd, e) {
     if (props?.setSelected === undefined || props?.setSelected === null) {
       return;
     }
     props?.setSelected(isAdd, e);
   }
-
-  const clearSelection = () => {
-    clearError();
-    setSelected(true, null);
-    if (!(props?.setSelectMode === undefined || props?.setSelectMode === null)) {
-      props?.setSelectMode(false);
-    }
-  };
 
   const clearError = () => {
     if (
@@ -95,11 +70,8 @@ const FlyerMengajak = (props) => {
 
   const onLongPress = (item) => {
     try {
-      if (
-        selected.ids[item?.id] === undefined ||
-        selected.ids[item?.id] === null ||
-        !selected.ids[item?.id]
-      ) {
+      const found = selected.find(({ id }) => id === item?.id);
+      if (found === undefined || found === null) {
         setSelected(true, item);
       } else {
         deselectItem(item);
@@ -111,17 +83,12 @@ const FlyerMengajak = (props) => {
 
   const onPress = (item, index) => {
     try {
-      if (
-        !(
-          selected.ids[item?.id] === undefined ||
-          selected.ids[item?.id] === null ||
-          !selected.ids[item?.id]
-        )
-      ) {
-        deselectItem(item);
+      const found = selected.find(({ id }) => id === item?.id);
+      if (found === undefined || found === null) {
+        setSelected(true, item);
         return;
       } else if (selectMode) {
-        setSelected(true, item);
+        deselectItem(item);
         return;
       }
     } catch (e) {
@@ -169,31 +136,28 @@ const FlyerMengajak = (props) => {
   return (
     <View style={styles.container}>
       {error ? (
-          <View
-            style={[
-              styles.containerError,
-              {
-                backgroundColor: success
-                  ? colors.daclen_green
-                  : colors.daclen_danger,
-              },
-            ]}
-          >
-            <Text allowFontScaling={false} style={styles.textError}>
-              {error}
-            </Text>
-            <TouchableOpacity
-              onPress={() => clearError()}
-              style={styles.close}
-            >
-              <MaterialCommunityIcons
-                name="close"
-                size={20}
-                color={colors.daclen_light}
-              />
-            </TouchableOpacity>
-          </View>
-        ) : null}
+        <View
+          style={[
+            styles.containerError,
+            {
+              backgroundColor: success
+                ? colors.daclen_green
+                : colors.daclen_danger,
+            },
+          ]}
+        >
+          <Text allowFontScaling={false} style={styles.textError}>
+            {error}
+          </Text>
+          <TouchableOpacity onPress={() => clearError()} style={styles.close}>
+            <MaterialCommunityIcons
+              name="close"
+              size={20}
+              color={colors.daclen_light}
+            />
+          </TouchableOpacity>
+        </View>
+      ) : null}
       {photos === null || refreshing ? (
         <View style={styles.containerSpinner}>
           <ActivityIndicator
@@ -209,7 +173,7 @@ const FlyerMengajak = (props) => {
           Tidak ada Flyer Mengajak tersedia.
         </Text>
       ) : (
-        <FlashList
+        <FlatList
           estimatedItemSize={20}
           horizontal={false}
           numColumns={3}
@@ -223,16 +187,25 @@ const FlyerMengajak = (props) => {
           contentContainerStyle={styles.containerFlatlist}
           renderItem={({ item, index }) => (
             <PhotoItem
-              selected={selected}
+              selected={
+                selected.find(({ id }) => item?.id === id) ? true : false
+              }
               navigation={navigation}
               item={item}
               index={index}
-              style={[styles.containerImage, {
-                flex: 1,
-                aspectRatio: 3 / 4,
-                marginHorizontal: 10,
-                marginBottom: photos?.length > 3 && index >= Math.floor(photos?.length / 3) * 3 ? staticDimensions.pageBottomPadding : 20,
-              }]}
+              style={[
+                styles.containerImage,
+                {
+                  flex: 1,
+                  aspectRatio: 3 / 4,
+                  marginHorizontal: 10,
+                  marginBottom:
+                    photos?.length > 3 &&
+                    index >= Math.floor(photos?.length / 3) * 3
+                      ? staticDimensions.pageBottomPadding
+                      : 20,
+                },
+              ]}
               imageStyle={styles.photoImage}
               selectMode={selectMode}
               onLongPress={() => onLongPress(item)}

@@ -17,7 +17,8 @@ import { colors, blurhash, staticDimensions } from "../../../styles/base";
 import PhotoItem from "./PhotoItem";
 
 const WatermarkPhotosSegment = (props) => {
-  const { title, photos, index, isLast, navigation, selected, selectMode } = props;
+  const { title, photos, index, isLast, navigation, selected, selectMode } =
+    props;
   //const [arraySize, setArraySize] = useState(null);
 
   const { width } = Dimensions.get("window");
@@ -97,7 +98,9 @@ const WatermarkPhotosSegment = (props) => {
             contentContainerStyle={styles.containerFlatlist}
             renderItem={({ item, index }) => (
               <PhotoItem
-                selected={selected}
+                selected={
+                  selected.find(({ id }) => item?.id === id) ? true : false
+                }
                 navigation={navigation}
                 item={item}
                 index={index}

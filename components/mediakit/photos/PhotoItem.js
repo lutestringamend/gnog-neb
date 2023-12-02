@@ -7,21 +7,6 @@ import { blurhash, colors } from "../../../styles/base";
 
 const PhotoItem = (props) => {
   const { item, index, selected, style, selectMode, imageStyle } = props;
-  const [active, setActive] = useState(false);
-
-  useEffect(() => {
-    if (
-      selected?.ids[item?.id] === undefined ||
-      selected?.ids[item?.id] === null ||
-      !selected?.ids[item?.id]
-    ) {
-      setActive(false);
-    } else {
-      //console.log(`photo ${item?.id} active true`);
-      setActive(true);
-    }
-    //console.log("selected changed", item?.id, selected?.ids[item?.id]);
-  }, [selected]);
 
   function onLongPress() {
     if (props?.onLongPress === undefined || props?.onLongPress === null) {
@@ -47,11 +32,13 @@ const PhotoItem = (props) => {
       <Image
         style={[
           styles.image,
-          imageStyle ? imageStyle : {
-            width: 94,
-            height: 125,
-            alignSelf: "flex-start",
-          },
+          imageStyle
+            ? imageStyle
+            : {
+                width: 94,
+                height: 125,
+                alignSelf: "flex-start",
+              },
         ]}
         source={item?.thumbnail ? item?.thumbnail : null}
         contentFit="cover"
@@ -63,7 +50,7 @@ const PhotoItem = (props) => {
       {selectMode ? (
         <View style={styles.containerSelected}>
           <MaterialCommunityIcons
-            name={active ? "check-circle" : "checkbox-blank-circle-outline"}
+            name={selected ? "check-circle" : "checkbox-blank-circle-outline"}
             size={24}
             color={colors.daclen_light}
             style={styles.check}
