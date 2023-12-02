@@ -272,7 +272,7 @@ const FlyerMengajak = (props) => {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.containerArrow, { opacity: page < 1 ? 0 : 1 }]}
+              style={[styles.containerArrow, { opacity: page < 1 ? 0 : 1, marginEnd: 6 }]}
               disabled={page < 1}
               onPress={() => setPage((page) => page - 1)}
             >

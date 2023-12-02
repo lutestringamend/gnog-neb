@@ -695,8 +695,6 @@ const styles = StyleSheet.create({
   },
   containerText: {
     backgroundColor: "transparent",
-    marginStart: 10,
-    flex: 1,
     alignSelf: "flex-end",
     flexDirection: "row",
     alignItems: "center",
@@ -729,11 +727,12 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   containerSelection: {
-    marginHorizontal: 10,
+    marginStart: 20,
+    marginEnd: 10,
+    flex: 1,
     marginVertical: 12,
     backgroundColor: "transparent",
     flexDirection: "row",
-    alignItems: "center",
   },
   cancel: {
     backgroundColor: "transparent",

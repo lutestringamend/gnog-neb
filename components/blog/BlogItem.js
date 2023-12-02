@@ -47,8 +47,9 @@ function BlogItem(props) {
               source={props?.foto_url}
               onClick={() => openItem(props?.id)}
               contentFit="cover"
-              placeholder={blurhash}
-              transition={100}
+              placeholder={null}
+              transition={0}
+              cachepolicy="memory-disk"
             />
 
             <View style={styles.containerDescVertical}>
@@ -61,13 +62,14 @@ function BlogItem(props) {
               </View>
               <Text allowFontScaling={false} style={styles.textDate}>{props?.created_at}</Text>
               <Text allowFontScaling={false} style={styles.textTitle}>{props?.judul}</Text>
-              <RenderHTML
+              {content ?  <RenderHTML
                 style={styles.textDesc}
                 contentWidth={
                   dimensions.fullWidth - staticDimensions.blogTextWidthMargin
                 }
                 source={{ html: content }}
-              />
+              /> : null}
+             
             </View>
           </TouchableOpacity>
         </ScrollView>
