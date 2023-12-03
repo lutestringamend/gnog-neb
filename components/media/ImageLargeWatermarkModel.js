@@ -55,6 +55,7 @@ function ImageLargeWatermarkModel(props) {
         {
           width: displayWidth ? displayWidth : width,
           height: displayHeight ? displayHeight : height,
+          overflow: "visible",
         },
         style ? style : null,
       ]}
@@ -67,6 +68,7 @@ function ImageLargeWatermarkModel(props) {
             {
               width: displayWidth ? displayWidth : width,
               height: displayHeight ? displayHeight : height,
+              overflow: "visible",
             },
           ]}
           contentFit="contain"

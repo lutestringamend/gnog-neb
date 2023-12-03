@@ -92,7 +92,7 @@ const FlyerSliderView = (props) => {
       if (!result && Platform.OS === "android") {
         ToastAndroid.show(
           "Perangkat tidak mengizinkan sharing file",
-          ToastAndroid.LONG,
+          ToastAndroid.LONG
         );
       }
       console.log("sharingAvailability", result);
@@ -153,8 +153,8 @@ const FlyerSliderView = (props) => {
         data?.type === STARTER_KIT_FLYER_MENGAJAK_TAG
           ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE
           : data?.product
-            ? data?.product
-            : "Starter Kit",
+          ? data?.product
+          : "Starter Kit",
     });
 
     try {
@@ -268,7 +268,7 @@ const FlyerSliderView = (props) => {
 
   const onMomentumScrollBegin = () => {
     setEnableButtons(false);
-  }
+  };
 
   const onMomentumScrollEnd = () => {
     let newIndex = Math.floor(scrollPosition?.x / screenWidth);
@@ -396,7 +396,7 @@ const FlyerSliderView = (props) => {
     }.jpg`;
     try {
       const newUri = await FileSystem.getContentUriAsync(
-        transformedImage[data?.index],
+        transformedImage[data?.index]
       );
       const imageProc = await ImageManipulator.manipulateAsync(newUri);
       let uri = `${FileSystem.documentDirectory}/${fileName}`;
@@ -441,7 +441,7 @@ const FlyerSliderView = (props) => {
     setError(
       `Foto tidak bisa diunduh, cek koneksi Internet${
         currentUser?.id === 8054 && Platform.OS !== "web" ? `\n${e?.error}` : ""
-      }`,
+      }`
     );
   };
 
@@ -477,11 +477,11 @@ const FlyerSliderView = (props) => {
             {
               width: calculateResizedImageDimensions(
                 flyers[1]?.width,
-                flyers[1]?.height,
+                flyers[1]?.height
               ).width,
               height: calculateResizedImageDimensions(
                 flyers[1]?.width,
-                flyers[1]?.height,
+                flyers[1]?.height
               ).height,
             },
           ]}
@@ -494,11 +494,11 @@ const FlyerSliderView = (props) => {
               {
                 width: calculateResizedImageDimensions(
                   flyers[1]?.width,
-                  flyers[1]?.height,
+                  flyers[1]?.height
                 ).width,
                 height: calculateResizedImageDimensions(
                   flyers[1]?.width,
-                  flyers[1]?.height,
+                  flyers[1]?.height
                 ).height,
                 zIndex: 2,
               },
@@ -516,13 +516,13 @@ const FlyerSliderView = (props) => {
             displayWidth={
               calculateResizedImageDimensions(
                 flyers[1]?.width,
-                flyers[1]?.height,
+                flyers[1]?.height
               ).width
             }
             displayHeight={
               calculateResizedImageDimensions(
                 flyers[1]?.width,
-                flyers[1]?.height,
+                flyers[1]?.height
               ).height
             }
             uri={null}
@@ -585,7 +585,7 @@ const FlyerSliderView = (props) => {
                     flyers[1]?.width,
                     flyers[1]?.height,
                     photoWidth,
-                    photoHeight,
+                    photoHeight
                   ),
           },
         ]}
@@ -606,7 +606,7 @@ const FlyerSliderView = (props) => {
                         flyers[index - data?.index + 1]?.width,
                         flyers[index - data?.index + 1]?.height,
                         photoWidth,
-                        photoHeight,
+                        photoHeight
                       ) +
                       (screenAR >= limitAR ? 4 : 2) * paddingTop,
                     zIndex: 60,
@@ -621,20 +621,33 @@ const FlyerSliderView = (props) => {
                 />
                 {Math.abs(data?.index - index) < 2 ? (
                   <ImageLargeWatermarkModel
-                    style={[styles.previewPhoto, { opacity: loading ? 0.5 : 1 }]}
+                    style={[
+                      styles.previewPhoto,
+                      {
+                        opacity: loading ? 0.5 : 1,
+                        height:
+                          calculateFlyerDisplayHeight(
+                            flyers[index - data?.index + 1]?.width,
+                            flyers[index - data?.index + 1]?.height,
+                            photoWidth,
+                            photoHeight
+                          ) + (screenAR >= limitAR ? 40 : 0),
+                        zIndex: 12,
+                      },
+                    ]}
                     width={flyers[index - data?.index + 1]?.width}
                     height={flyers[index - data?.index + 1]?.height}
                     displayWidth={calculateFlyerDisplayWidth(
                       flyers[index - data?.index + 1]?.width,
                       flyers[index - data?.index + 1]?.height,
                       photoWidth,
-                      photoHeight,
+                      photoHeight
                     )}
                     displayHeight={calculateFlyerDisplayHeight(
                       flyers[index - data?.index + 1]?.width,
                       flyers[index - data?.index + 1]?.height,
                       photoWidth,
-                      photoHeight,
+                      photoHeight
                     )}
                     uri={flyers[index - data?.index + 1]?.foto}
                     link_x={flyers[index - data?.index + 1]?.link_x}
@@ -859,7 +872,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     start: 12,
-    top: screenHeight * (screenAR < limitAR ? 0.3 : 0.5) + 16,
+    top: screenHeight * (screenAR < limitAR ? 0.3 : 0.4) + 16,
     backgroundColor: "transparent",
   },
   containerNext: {
@@ -869,7 +882,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     start: screenWidth - 44,
-    top: screenHeight * (screenAR < limitAR ? 0.3 : 0.5) + 16,
+    top: screenHeight * (screenAR < limitAR ? 0.3 : 0.4) + 16,
     backgroundColor: "transparent",
   },
   containerScroll: {
