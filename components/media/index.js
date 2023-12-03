@@ -1,5 +1,6 @@
 import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
+import * as MediaLibrary from "expo-media-library";
 import { Dimensions, Platform } from "react-native";
 import { getInfoAsync } from "expo-file-system";
 
@@ -470,32 +471,37 @@ export const pickImage = async () => {
       
     }*/
 
-    console.log("reattempt requestMediaLibraryPermissionAsync");
+    /*console.log("reattempt requestMediaLibraryPermissionAsync");
       let newRequest = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (newRequest?.status !== "granted") {
         return IMAGE_PICKER_NO_PERMISSION;
-      }
+      }*/
 
     let data = null;
     let result = null;
+    //presentationStyle:ImagePicker.UIImagePickerPresentationStyle.OVER_FULL_SCREEN,
     try {
+      const permission = await MediaLibrary.getPermissionsAsync();
+      console.log("medialibrary permission", permission);
+      if (!permission?.granted || permission?.status !== "granted") {
+        await MediaLibrary.requestPermissionsAsync(false);
+      }
+
       result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [4, 3],
-        quality: PICKER_COMPRESSION_QUALITY,
-        allowsMultipleSelection: false,
-        presentationStyle:
-          ImagePicker.UIImagePickerPresentationStyle.OVER_FULL_SCREEN,
-      }).catch((err) => console.error(err));
+        aspect: [4, 4],
+        quality: 0.5,
+        selectionLimit: 1,
+      });
     } catch (e) {
       console.error(e);
       return IMAGE_PICKER_ERROR;
     }
 
-    if (result === null || result?.cancelled) {
+    if (result === null || result?.canceled) {
       return null;
-    } else if (!result.cancelled) {
+    } else if (!result.canceled) {
       console.log("result", result);
       data = processExpoImagePickerUri(result?.uri ? result : result.assets[0]);
       /*if (Platform.OS === "ios") {
