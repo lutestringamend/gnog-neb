@@ -50,7 +50,7 @@ const limitAR = 9 / 16;
 const paddingTop = 20;
 const photoMarginHorizontal = 10;
 
-const previewHeight = screenAR >= limitAR ? 0.75 * screenHeight : screenHeight;
+const previewHeight = screenAR >= limitAR ? 0.7 * screenHeight : screenHeight;
 const photoWidth = screenWidth - 2 * photoMarginHorizontal;
 const photoHeight = previewHeight - paddingTop;
 
@@ -608,7 +608,9 @@ const FlyerSliderView = (props) => {
                         photoWidth,
                         photoHeight,
                       ) +
-                      2 * paddingTop,
+                      (screenAR >= limitAR ? 4 : 2) * paddingTop,
+                    zIndex: 60,
+                    overflow: "visible",
                   },
                 ]}
               >
