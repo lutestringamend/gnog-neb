@@ -30,10 +30,8 @@ import { sentryLog } from "../../sentry";
 import { sharingOptionsJPEG } from "../media/constants";
 import ImageLargeWatermarkModel from "../media/ImageLargeWatermarkModel";
 import {
-  STARTER_KIT_FLYER_MENGAJAK,
   STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE,
   STARTER_KIT_FLYER_MENGAJAK_TAG,
-  STARTER_KIT_FLYER_PRODUK,
   STARTER_KIT_FLYER_PRODUK_TAG,
 } from "../mediakit/constants";
 import {
@@ -92,7 +90,7 @@ const FlyerSliderView = (props) => {
       if (!result && Platform.OS === "android") {
         ToastAndroid.show(
           "Perangkat tidak mengizinkan sharing file",
-          ToastAndroid.LONG
+          ToastAndroid.LONG,
         );
       }
       console.log("sharingAvailability", result);
@@ -101,9 +99,9 @@ const FlyerSliderView = (props) => {
     checkSharing();
   }, []);
 
-  useEffect(() => {
+  /*useEffect(() => {
     console.log("MediaLibrary permissionResponse", permissionResponse);
-  }, [permissionResponse]);
+  }, [permissionResponse]);*/
 
   useEffect(() => {
     if (
@@ -141,6 +139,7 @@ const FlyerSliderView = (props) => {
     setTransformedImage(newLength > 0 ? Array(newLength).fill(null) : null);
     setDownloadUri(newLength > 0 ? Array(newLength).fill(null) : null);
     //console.log("route params", props.route.params, newLength);
+    console.log("screen AR limit AR", screenAR, limitAR);
   }, [props.route.params]);
 
   useEffect(() => {
@@ -153,8 +152,8 @@ const FlyerSliderView = (props) => {
         data?.type === STARTER_KIT_FLYER_MENGAJAK_TAG
           ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE
           : data?.product
-          ? data?.product
-          : "Starter Kit",
+            ? data?.product
+            : "Starter Kit",
     });
 
     try {
@@ -396,7 +395,7 @@ const FlyerSliderView = (props) => {
     }.jpg`;
     try {
       const newUri = await FileSystem.getContentUriAsync(
-        transformedImage[data?.index]
+        transformedImage[data?.index],
       );
       const imageProc = await ImageManipulator.manipulateAsync(newUri);
       let uri = `${FileSystem.documentDirectory}/${fileName}`;
@@ -441,7 +440,7 @@ const FlyerSliderView = (props) => {
     setError(
       `Foto tidak bisa diunduh, cek koneksi Internet${
         currentUser?.id === 8054 && Platform.OS !== "web" ? `\n${e?.error}` : ""
-      }`
+      }`,
     );
   };
 
@@ -449,7 +448,7 @@ const FlyerSliderView = (props) => {
     setSuccess(false);
     setError(e.toString());
     setLoading(false);
-    //sentryLog(e);
+    sentryLog(e);
   };
 
   return (
@@ -477,11 +476,11 @@ const FlyerSliderView = (props) => {
             {
               width: calculateResizedImageDimensions(
                 flyers[1]?.width,
-                flyers[1]?.height
+                flyers[1]?.height,
               ).width,
               height: calculateResizedImageDimensions(
                 flyers[1]?.width,
-                flyers[1]?.height
+                flyers[1]?.height,
               ).height,
             },
           ]}
@@ -494,11 +493,11 @@ const FlyerSliderView = (props) => {
               {
                 width: calculateResizedImageDimensions(
                   flyers[1]?.width,
-                  flyers[1]?.height
+                  flyers[1]?.height,
                 ).width,
                 height: calculateResizedImageDimensions(
                   flyers[1]?.width,
-                  flyers[1]?.height
+                  flyers[1]?.height,
                 ).height,
                 zIndex: 2,
               },
@@ -516,13 +515,13 @@ const FlyerSliderView = (props) => {
             displayWidth={
               calculateResizedImageDimensions(
                 flyers[1]?.width,
-                flyers[1]?.height
+                flyers[1]?.height,
               ).width
             }
             displayHeight={
               calculateResizedImageDimensions(
                 flyers[1]?.width,
-                flyers[1]?.height
+                flyers[1]?.height,
               ).height
             }
             uri={null}
@@ -581,12 +580,7 @@ const FlyerSliderView = (props) => {
               flyers[1]?.height === null ||
               screenAR <= limitAR
                 ? previewHeight
-                : calculateFlyerDisplayHeight(
-                    flyers[1]?.width,
-                    flyers[1]?.height,
-                    photoWidth,
-                    photoHeight
-                  ),
+                : screenHeight * 0.8,
           },
         ]}
       >
@@ -606,7 +600,7 @@ const FlyerSliderView = (props) => {
                         flyers[index - data?.index + 1]?.width,
                         flyers[index - data?.index + 1]?.height,
                         photoWidth,
-                        photoHeight
+                        photoHeight,
                       ) +
                       (screenAR >= limitAR ? 4 : 2) * paddingTop,
                     zIndex: 60,
@@ -625,13 +619,12 @@ const FlyerSliderView = (props) => {
                       styles.previewPhoto,
                       {
                         opacity: loading ? 0.5 : 1,
-                        height:
-                          calculateFlyerDisplayHeight(
-                            flyers[index - data?.index + 1]?.width,
-                            flyers[index - data?.index + 1]?.height,
-                            photoWidth,
-                            photoHeight
-                          ) + (screenAR >= limitAR ? 40 : 0),
+                        height: calculateFlyerDisplayHeight(
+                          flyers[index - data?.index + 1]?.width,
+                          flyers[index - data?.index + 1]?.height,
+                          photoWidth,
+                          photoHeight,
+                        ),
                         zIndex: 12,
                       },
                     ]}
@@ -641,13 +634,13 @@ const FlyerSliderView = (props) => {
                       flyers[index - data?.index + 1]?.width,
                       flyers[index - data?.index + 1]?.height,
                       photoWidth,
-                      photoHeight
+                      photoHeight,
                     )}
                     displayHeight={calculateFlyerDisplayHeight(
                       flyers[index - data?.index + 1]?.width,
                       flyers[index - data?.index + 1]?.height,
                       photoWidth,
-                      photoHeight
+                      photoHeight,
                     )}
                     uri={flyers[index - data?.index + 1]?.foto}
                     link_x={flyers[index - data?.index + 1]?.link_x}
@@ -872,7 +865,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     start: 12,
-    top: screenHeight * (screenAR < limitAR ? 0.3 : 0.4) + 16,
+    top: screenHeight * (screenAR < limitAR ? 0.35 : 0.4) + 16,
     backgroundColor: "transparent",
   },
   containerNext: {
@@ -882,7 +875,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     start: screenWidth - 44,
-    top: screenHeight * (screenAR < limitAR ? 0.3 : 0.4) + 16,
+    top: screenHeight * (screenAR < limitAR ? 0.35 : 0.4) + 16,
     backgroundColor: "transparent",
   },
   containerScroll: {
@@ -907,7 +900,7 @@ const styles = StyleSheet.create({
     zIndex: 4,
     start: 0,
     end: 0,
-    top: screenHeight * 0.8,
+    top: screenHeight * (screenAR > limitAR ? 0.85 : 0.8),
     position: "absolute",
     width: screenWidth,
     flexDirection: "row",
@@ -975,7 +968,7 @@ const styles = StyleSheet.create({
     zIndex: 2,
     backgroundColor: "transparent",
     position: "absolute",
-    top: photoHeight / 3 - 24,
+    top: photoHeight / (screenAR >= limitAR ? 2 : 3) - 24,
     start: (screenWidth - 24) / 2,
     end: (screenWidth - 24) / 2,
   },

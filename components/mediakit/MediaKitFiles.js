@@ -309,6 +309,7 @@ function MediaKitFiles(props) {
     ) {
       refreshVideos();
     } else {
+      clearSelection();
       refreshPhotos();
     }
   };
@@ -741,6 +742,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     alignSelf: "center",
     marginStart: 10,
+    marginBottom: 3,
   },
   textButton: {
     fontSize: 14,

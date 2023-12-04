@@ -926,7 +926,7 @@ export function updateUserPhoto(id, token, uri) {
                       TYPE: type,
                       FORMDATA: JSON.stringify(formData),
                     })
-                  : error?.message,
+                  : "Foto tidak berhasil diupload",
             },
           });
         });
@@ -1372,9 +1372,9 @@ export function login(email, password, resetPIN, deviceToken) {
     let isDevUser = isUserDevServer(email);
     const newServerUrl = isDevUser ? devhttp : mainhttp;
     let url = `${newServerUrl}${loginlink}`;
-    if (email === "jasonlimanjaya" && Platform.OS === "android") {
+    /*if (email === "jasonlimanjaya" && Platform.OS === "android") {
       ToastAndroid.show(JSON.stringify(params), ToastAndroid.LONG);
-    }
+    }*/
     console.log("login", {
       ...params,
       password: null,

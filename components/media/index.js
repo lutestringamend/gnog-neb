@@ -501,7 +501,7 @@ export const pickImage = async () => {
 
     if (result === null || result?.canceled) {
       return null;
-    } else if (!result.canceled) {
+    } else if (!result?.canceled) {
       console.log("result", result);
       data = processExpoImagePickerUri(result?.uri ? result : result.assets[0]);
       /*if (Platform.OS === "ios") {
