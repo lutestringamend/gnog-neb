@@ -25,7 +25,7 @@ import ViewShot from "react-native-view-shot";
 import { isAvailableAsync, shareAsync } from "expo-sharing";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, staticDimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import {
   getFileName,
   setBasicFFMPEGCommand,
@@ -65,6 +65,9 @@ import {
   personalwebsiteurlshort,
   tokoonlineurlshort,
 } from "../../axios/constants";
+
+const screenAR = dimensions.fullWidth / dimensions.fullHeight;
+const limitAR = 9 / 16;
 
 function VideoPlayer(props) {
   const deviceModel = getDeviceInfo().model;
@@ -952,7 +955,7 @@ function VideoPlayer(props) {
                 styles.video,
                 {
                   position: "absolute",
-                  top: videoplayermargintop,
+                  top: screenAR >= limitAR ? videoplayermargintop : 0,
                   start: (screenWidth - videoSize.videoWidth) / 2,
                   end: (screenWidth - videoSize.videoWidth) / 2,
                   width: videoSize.videoWidth,

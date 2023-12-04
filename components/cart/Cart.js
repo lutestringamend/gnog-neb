@@ -223,7 +223,7 @@ function Cart(props) {
         }
       >
         {(token !== null && currentUser === null) || loading ? (
-          <ActivityIndicator size="small" color={colors.daclen_gray} />
+          <ActivityIndicator size="small" color={colors.daclen_gray} style={{ alignSelf: "center", marginBottom: 4 }} />
         ) : currentUser?.level === "spv" ||
           currentUser?.status_member === "supervisor" ? null : (
           <Text allowFontScaling={false} style={styles.textButton}>
