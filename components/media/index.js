@@ -46,6 +46,7 @@ const iPhoneScaleFactorTwo = [
   "iphone 5",
   "iphone 4s",
   "iphone 4",
+  "simulator ios",
 ];
 
 export const intiialPermissions = {
@@ -63,12 +64,14 @@ export function getiOSScaleFactor(model) {
   try {
     for (let i of iPhoneScaleFactorTwo) {
       if (model.toLowerCase() === i) {
+        //console.log("getiOSScaleFactor", model, 2);
         return 2;
       }
     }
   } catch (e) {
     console.error(e);
   }
+  //console.log("getiOSScaleFactor", model, 3);
   return 3;
 }
 
