@@ -21,23 +21,24 @@ import {
 export const receiveNotificationAccordingly = async (
   props,
   remoteMessage,
-  isAdmin,
   currentUserId
 ) => {
+  console.log("receiveNotificationAccordingly", remoteMessage);
   if (
-    remoteMessage?.data === undefined ||
-    remoteMessage?.data?.data === undefined
+    remoteMessage === undefined ||
+    remoteMessage === null ||
+    remoteMessage?.notification === undefined
   ) {
     return;
   }
   let displayAsNotif = true;
   try {
-    const data = JSON.parse(remoteMessage?.data?.data);
+    const data = remoteMessage?.notification; 
     //const { bookingStatus, feedId, objectId, userId, bookingName } = data;
 
     let channelId = NOTIFICATION_DEFAULT_CHANNEL_ID;
 
-    if (!displayAsNotif && !isAdmin) {
+    if (!displayAsNotif) {
       return;
     }
     let timestamp = new Date().toISOString();
@@ -46,7 +47,7 @@ export const receiveNotificationAccordingly = async (
       timestamp,
     }
     let title = data ? data?.title ? data?.title : defaultnotificationtitle : defaultnotificationtitle;
-    let alert = alert ? data?.alert ? data?.alert : defaultnotificationalert : defaultnotificationalert;
+    let body = data ? data?.body ? data?.body : defaultnotificationalert : defaultnotificationalert;
     props.pushNewReduxNotification(notifData);
 
     Notifications.scheduleNotificationAsync({

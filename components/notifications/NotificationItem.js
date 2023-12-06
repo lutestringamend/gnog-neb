@@ -78,9 +78,7 @@ const NotificationItem = ({ data }) => {
               />
               <Text allowFontScaling={false} style={styles.textHeader}>{item?.displayName}</Text>
             </View>
-            {data?.alert ? (
-              <Text allowFontScaling={false} style={styles.textAlert}>{data?.alert}</Text>
-            ) : null}
+            <Text allowFontScaling={false} style={styles.textAlert}>{data?.body ? data?.body : data?.alert}</Text>
             {data?.timestamp ? (
               <Text allowFontScaling={false} style={styles.textUid}>
                 {convertDateISOStringtoDisplayDate(data?.timestamp, true)}

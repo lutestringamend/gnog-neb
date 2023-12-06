@@ -178,7 +178,6 @@ function Main(props) {
           receiveNotificationAccordingly(
             props,
             remoteMessage,
-            isAdmin,
             currentUser?.id,
           );
           console.log(
@@ -193,7 +192,6 @@ function Main(props) {
           receiveNotificationAccordingly(
             props,
             remoteMessage,
-            isAdmin,
             currentUser?.id,
           );
           console.log("Message handled in the background!", remoteMessage);
@@ -203,7 +201,6 @@ function Main(props) {
           receiveNotificationAccordingly(
             props,
             remoteMessage,
-            isAdmin,
             currentUser?.id,
           );
           console.log("FCM message", remoteMessage);
