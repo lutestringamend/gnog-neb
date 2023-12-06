@@ -4599,11 +4599,6 @@ expo-image-loader@~4.1.0:
   resolved "https://registry.yarnpkg.com/expo-image-loader/-/expo-image-loader-4.1.1.tgz#efadbb17de1861106864820194900f336dd641b6"
   integrity sha512-ciEHVokU0f6w0eTxdRxLCio6tskMsjxWIoV92+/ZD37qePUJYMfEphPhu1sruyvMBNR8/j5iyOvPFVGTfO8oxA==
 
-expo-image-loader@~4.4.0:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/expo-image-loader/-/expo-image-loader-4.4.0.tgz#35909516311aa60fa4bf35aa6eb7624d7f7f788d"
-  integrity sha512-dq88tiRB8aB1U+O/oJI7IY4VU9Nu2iDjEwR8QDfLtD4xWd5lNGoyic5Vh7911E1qNJFqNMSVIVzOD5l1SQ3A6g==
-
 expo-image-manipulator@11.1.1:
   version "11.1.1"
   resolved "https://registry.yarnpkg.com/expo-image-manipulator/-/expo-image-manipulator-11.1.1.tgz#bb54df80e98abc9798876e3f70596a5b880168c9"
@@ -4611,12 +4606,12 @@ expo-image-manipulator@11.1.1:
   dependencies:
     expo-image-loader "~4.1.0"
 
-expo-image-picker@^14.5.0:
-  version "14.5.0"
-  resolved "https://registry.yarnpkg.com/expo-image-picker/-/expo-image-picker-14.5.0.tgz#fdc14c74ad338a6a630f8fc5c81e642d6bea343c"
-  integrity sha512-9icvfQuWMdNKufFqu+FxenKcfybz9ior+XYQCIl/q5+mpHPo2tKq8I30vu2BjsOJ0Cfo7V4vMeN7a9F/3ooUfQ==
+expo-image-picker@~14.1.1:
+  version "14.1.1"
+  resolved "https://registry.yarnpkg.com/expo-image-picker/-/expo-image-picker-14.1.1.tgz#181f1348ba6a43df7b87cee4a601d45c79b7c2d7"
+  integrity sha512-SvWtnkLW7jp5Ntvk3lVcRQmhFYja8psmiR7O6P/+7S6f4llt3vaFwb4I3+pUXqJxxpi7BHc2+95qOLf0SFOIag==
   dependencies:
-    expo-image-loader "~4.4.0"
+    expo-image-loader "~4.1.0"
 
 expo-image@^1.5.1:
   version "1.5.1"
@@ -4650,10 +4645,10 @@ expo-manifests@~0.5.0:
   dependencies:
     expo-json-utils "~0.5.0"
 
-expo-media-library@^15.6.0:
-  version "15.6.0"
-  resolved "https://registry.yarnpkg.com/expo-media-library/-/expo-media-library-15.6.0.tgz#32d0b3d1baf2d16ab98c8f3b929a50152df055d6"
-  integrity sha512-SsV+sdPcV9nSmvlCqTfF9rt/3KoWutKvAxk1EFke2BEklcdn9FhupdOFvodW6m3wYkBNdhJaqTRniZHvjYNs8A==
+expo-media-library@~15.2.3:
+  version "15.2.3"
+  resolved "https://registry.yarnpkg.com/expo-media-library/-/expo-media-library-15.2.3.tgz#188f3c77f58b354f0ea6250f6756ac1e1a226291"
+  integrity sha512-Oz8b8Xsvfj7YcutUBtI84NUIqSnt7iCM5HZ5DyKoWKKiDK/+aUuj3RXNQELG8jUw6pQPgEwgbZ1+J8SdH/y9jw==
 
 expo-modules-autolinking@1.2.0:
   version "1.2.0"

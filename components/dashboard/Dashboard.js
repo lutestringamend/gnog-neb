@@ -402,6 +402,7 @@ const Dashboard = (props) => {
             />
             <DashboardStats
               currentUser={currentUser}
+              hpv={hpv}
               regDate={regDate}
               recruitmentTimer={recruitmentTimer}
               mockData={mockData}

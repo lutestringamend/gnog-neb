@@ -1,17 +1,52 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { colors } from "../../../styles/base";
 import { monthNames } from "../../../axios/constants";
-import { formatPrice } from "../../../axios/cart";
+import { checkNumberEmpty, formatPrice } from "../../../axios/cart";
 import { sentryLog } from "../../../sentry";
 import { convertDateISOStringtoDisplayDate } from "../../../axios/profile";
 
 export default function DashboardStats(props) {
-  const { currentUser, recruitmentTimer, mockData } = props;
+  const { currentUser, hpv, recruitmentTimer, mockData } = props;
+  const [resellerCount, setResellerCount] = useState(0);
   const navigation = useNavigation();
+
+  useEffect(() => {
+    if (currentUser === null) {
+      setResellerCount(0);
+      return;
+    }
+
+    try {
+      if (mockData?.reseller) {
+        setResellerCount(mockData?.reseller);
+      } else if (
+        !(
+          hpv === null ||
+          hpv?.data === undefined ||
+          hpv?.data?.children === undefined ||
+          hpv?.data?.children?.length === undefined ||
+          hpv?.data?.children[0] === undefined ||
+          hpv?.data?.children[0]?.children === undefined ||
+          hpv?.data?.children[0]?.children?.length === undefined
+        ) &&
+        checkNumberEmpty(hpv?.data?.children[0]?.children?.length) <
+          checkNumberEmpty(currentUser?.jumlah_reseller)
+      ) {
+        setResellerCount(
+          checkNumberEmpty(hpv?.data?.children[0]?.children?.length),
+        );
+      } else {
+        setResellerCount(checkNumberEmpty(currentUser?.jumlah_reseller));
+      }
+    } catch (e) {
+      console.error(e);
+      setResellerCount(0);
+    }
+  }, [currentUser, hpv, mockData]);
 
   if (
     currentUser === undefined ||
@@ -33,7 +68,7 @@ export default function DashboardStats(props) {
       return;
     }
     props?.showTimerModal();
-    console.log("recruitmentTimer", recruitmentTimer);
+    //console.log("recruitmentTimer", recruitmentTimer);
   }
 
   function openHistory() {
@@ -60,9 +95,11 @@ export default function DashboardStats(props) {
           onPress={() => onDatePress()}
         >
           <Text allowFontScaling={false} style={styles.textHeader}>
-            {mockData?.title ? mockData?.title : `${monthNames[new Date().getMonth()]} ${new Date()
-              .getFullYear()
-              .toString()}`}
+            {mockData?.title
+              ? mockData?.title
+              : `${monthNames[new Date().getMonth()]} ${new Date()
+                  .getFullYear()
+                  .toString()}`}
           </Text>
         </TouchableOpacity>
 
@@ -78,8 +115,8 @@ export default function DashboardStats(props) {
               mockData
                 ? mockData?.numInvoice
                 : currentUser?.jumlah_invoice
-                ? currentUser?.jumlah_invoice
-                : "0"
+                  ? currentUser?.jumlah_invoice
+                  : "0"
             } Invoice`}</Text>
             <Text
               allowFontScaling={false}
@@ -88,8 +125,8 @@ export default function DashboardStats(props) {
               {mockData
                 ? formatPrice(mockData?.transaction)
                 : currentUser?.total_nominal_penjualan
-                ? formatPrice(currentUser?.total_nominal_penjualan)
-                : "Rp 0"}
+                  ? formatPrice(currentUser?.total_nominal_penjualan)
+                  : "Rp 0"}
             </Text>
           </View>
           <TouchableOpacity style={styles.button} onPress={() => openHistory()}>
@@ -109,8 +146,8 @@ export default function DashboardStats(props) {
               mockData
                 ? mockData?.hpv
                 : currentUser?.poin_user?.hpv
-                ? currentUser?.poin_user?.hpv
-                : "0"
+                  ? currentUser?.poin_user?.hpv
+                  : "0"
             } Point`}</Text>
           </View>
           <TouchableOpacity
@@ -125,19 +162,23 @@ export default function DashboardStats(props) {
         </View>
 
         <View style={styles.containerHorizontal}>
-          {mockData?.point === 0 ? <View style={styles.containerVertical} />  : <View style={styles.containerVertical}>
-            <Text allowFontScaling={false} style={styles.text}>
-              Akumulasi Poin
-            </Text>
-            <Text allowFontScaling={false} style={styles.text}>{`${
-              mockData?.point
-                ? mockData?.point
-                : currentUser?.poin_user?.total
-                ? currentUser?.poin_user?.total
-                : "0"
-            } Point`}</Text>
-          </View>}
-          
+          {mockData?.point === 0 ? (
+            <View style={styles.containerVertical} />
+          ) : (
+            <View style={styles.containerVertical}>
+              <Text allowFontScaling={false} style={styles.text}>
+                Akumulasi Poin
+              </Text>
+              <Text allowFontScaling={false} style={styles.text}>{`${
+                mockData?.point
+                  ? mockData?.point
+                  : currentUser?.poin_user?.total
+                    ? currentUser?.poin_user?.total
+                    : "0"
+              } Point`}</Text>
+            </View>
+          )}
+
           <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.navigate("PointReportScreen")}
@@ -161,19 +202,13 @@ export default function DashboardStats(props) {
               mockData?.agen
                 ? mockData?.agen
                 : currentUser?.jumlah_agen
-                ? currentUser?.jumlah_agen
-                : "0"
+                  ? currentUser?.jumlah_agen
+                  : "0"
             } Orang`}</Text>
             <Text
               allowFontScaling={false}
               style={styles.text}
-            >{`Reseller Anda: ${
-              mockData?.reseller
-                ? mockData?.reseller
-                : currentUser?.jumlah_reseller
-                ? currentUser?.jumlah_reseller
-                : "0"
-            } Orang`}</Text>
+            >{`Reseller Anda: ${resellerCount} Orang`}</Text>
           </View>
           <TouchableOpacity
             style={styles.button}

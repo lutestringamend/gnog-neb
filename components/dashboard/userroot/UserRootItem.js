@@ -10,9 +10,13 @@ import {
 import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-import { blurhash, colors } from "../../../styles/base";
+import { colors } from "../../../styles/base";
 import { phonenotverified } from "../constants";
-import { capitalizeFirstLetter, checkNumberEmpty, formatPrice } from "../../../axios/cart";
+import {
+  capitalizeFirstLetter,
+  checkNumberEmpty,
+  formatPrice,
+} from "../../../axios/cart";
 import { checkVerification } from "../UserRoots";
 import { godlevelusername } from "../../../axios/constants";
 
@@ -29,7 +33,6 @@ const UserRootItem = ({
   isNextBranch,
   isSingleChild,
   isVerified,
-  isCurrentVerified,
   hpvArray,
   status,
   onPress,
@@ -108,8 +111,8 @@ const UserRootItem = ({
               isFirstItem && isNextBranch
                 ? "flex-end"
                 : isLastItem
-                ? "flex-start"
-                : "auto",
+                  ? "flex-start"
+                  : "auto",
           }}
         />
       )}
@@ -179,9 +182,20 @@ const UserRootItem = ({
               ]}
               alt={userData?.name ? userData?.name : ""}
               contentFit="contain"
-              placeholder={blurhash}
-              transition={0}
+              placeholder={null}
+              transition={100}
             />
+            {userData?.name === godlevelusername ? null : (
+              <Text allowFontScaling={false} style={styles.textStatus}>
+                {status
+                  ? capitalizeFirstLetter(status)
+                  : userData?.status
+                    ? capitalizeFirstLetter(userData?.status)
+                    : hpvStatus
+                      ? capitalizeFirstLetter(hpvStatus)
+                      : ""}
+              </Text>
+            )}
           </View>
 
           <View style={styles.containerMain}>
@@ -200,30 +214,31 @@ const UserRootItem = ({
             </View>
             <View style={styles.containerValue}>
               <Text allowFontScaling={false} style={styles.text}>
-                {`${isCurrentUser ? "Saya - " : ""}${
-                  status
-                    ? capitalizeFirstLetter(status)
-                    : userData?.status
-                    ? capitalizeFirstLetter(userData?.status)
-                    : hpvStatus
-                    ? capitalizeFirstLetter(hpvStatus)
-                    : ""
-                }${
-                  isCurrentUser || isParent ? "" :
-                  `\nPenjualan: ${checkNumberEmpty(userData?.jumlah_penjualan)} produk\n${checkNumberEmpty(userData?.total_penjualan) > 0 ? formatPrice(checkNumberEmpty(userData?.total_penjualan)) : "Rp 0"}\nRekrutmen: ${checkNumberEmpty(userData?.rekrutmen)}`}`}
+                {`${isCurrentUser ? "Saya\n" : ""}${
+                  isCurrentUser || isParent
+                    ? ""
+                    : `Penjualan: ${checkNumberEmpty(
+                        userData?.jumlah_penjualan,
+                      )} produk\n${
+                        checkNumberEmpty(userData?.total_penjualan) > 0
+                          ? formatPrice(
+                              checkNumberEmpty(userData?.total_penjualan),
+                            )
+                          : "Rp 0"
+                      }\nRekrutmen: ${userData?.target_tercapai ? checkNumberEmpty(userData?.target_tercapai) : checkNumberEmpty(userData?.rekrutmen)} orang`
+                }`}
               </Text>
             </View>
-            {userData?.name === godlevelusername ? null :
-            <View style={styles.containerInfo}>
-            <Text style={styles.textInfo}>Info</Text>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={12}
-              color={colors.daclen_gray}
-            />
-          </View>
-            }
-            
+            {userData?.name === godlevelusername ? null : (
+              <View style={styles.containerInfo}>
+                <Text style={styles.textInfo}>Info</Text>
+                <MaterialCommunityIcons
+                  name="chevron-right"
+                  size={12}
+                  color={colors.daclen_gray}
+                />
+              </View>
+            )}
           </View>
         </TouchableOpacity>
 
@@ -360,6 +375,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     borderBottomEndRadius: 6,
     height: 96,
+    overflow: "hidden",
   },
   textHeader: {
     fontSize: 12,
@@ -382,6 +398,20 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins",
     backgroundColor: "transparent",
     marginEnd: 1,
+  },
+  textStatus: {
+    position: "absolute",
+    zIndex: 6,
+    end: 0,
+    top: 80,
+    height: 20,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    backgroundColor: colors.daclen_blue,
+    color: colors.daclen_light,
+    borderTopStartRadius: 4,
+    fontSize: 10,
+    fontFamily: "Poppins-SemiBold",
   },
   photo: {
     width: 80,

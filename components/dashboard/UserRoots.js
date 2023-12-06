@@ -23,11 +23,15 @@ import {
   updateReduxHPV,
   overhaulReduxUserHpvArray,
   incrementReduxUserHpvArray,
-  convertInvoiceNumbertoRegDate,
 } from "../../axios/user";
 import { devuserroottree } from "./constants";
 import { capitalizeFirstLetter } from "../../axios/cart";
-import { godlevelusername, monthNames, monthNamesShort } from "../../axios/constants";
+import {
+  godlevelusername,
+  monthNames,
+  monthNamesShort,
+} from "../../axios/constants";
+import { checkNumberEmpty } from "../../axios/cart";
 /*import UserRootHeaderItem from "./UserRootHeaderItem";
 import { notverified, userverified } from "./constants";*/
 
@@ -147,7 +151,9 @@ const UserRoots = (props) => {
         props.updateReduxHPV(null);
       }
       setError(
-        result?.error ? result?.error : "Gagal mendapatkan data Agen & Reseller"
+        result?.error
+          ? result?.error
+          : "Gagal mendapatkan data Agen & Reseller",
       );
     } else {
       props.updateReduxHPV(result?.result);
@@ -161,35 +167,47 @@ const UserRoots = (props) => {
 
   const showSelfHPV = async () => {
     let join_date = currentUser?.join_date;
-    try {
+    /*try {
       let joinDate = new Date(join_date);
     } catch (e) {
       console.error(e);
       join_date = convertInvoiceNumbertoRegDate(join_date);
-    }
-    let newSelfData = {
-      id: currentUser?.id,
-      name: currentUser?.name,
-      status: currentUser?.status,
-      email: currentUser?.email,
-      nomor_telp: currentUser?.nomor_telp,
-      join_date,
-      pv: currentUser?.poin_user?.poin,
-      hpv: currentUser?.poin_user?.hpv,
-      poin_user_this_month: currentUser?.poin_user_this_month,
-      total_nominal_penjualan: currentUser?.total_nominal_penjualan,
-    };
-
-    if (!(hpvArray?.length === undefined || hpvArray?.length < 1)) {
-      for (let h of hpvArray) {
-        if (h?.id === currentUser?.id) {
-          newSelfData = { ...newSelfData, ...h };
-          setSelfData(newSelfData);
-          return;
+    }*/
+    try {
+      let hpvData = hpv?.data?.children[0] ? hpv?.data?.children[0] : null;
+      let newSelfData = {
+        id: currentUser?.id,
+        name: currentUser?.name,
+        status: currentUser?.status,
+        email: currentUser?.email,
+        nomor_telp: currentUser?.nomor_telp,
+        children_length: hpv
+          ? hpv?.data?.children[0]?.children?.length
+            ? hpv?.data?.children[0]?.children?.length
+            : null
+          : null,
+        join_date,
+        pv: currentUser?.poin_user?.poin,
+        hpv: currentUser?.poin_user?.hpv,
+        poin_user_this_month: currentUser?.poin_user_this_month,
+        total_nominal_penjualan: currentUser?.total_nominal_penjualan,
+        ...hpvData,
+      };
+      if (!(hpvArray?.length === undefined || hpvArray?.length < 1)) {
+        for (let h of hpvArray) {
+          if (h?.id === currentUser?.id) {
+            newSelfData = { ...newSelfData, ...h };
+            setSelfData(newSelfData);
+            return;
+          }
         }
       }
+      fetchSelfHPV(newSelfData);
+    } catch (e) {
+      console.error(e);
+      setSelfData(null);
     }
-    fetchSelfHPV(newSelfData);
+    
   };
 
   const fetchSelfHPV = async (newSelfData) => {
@@ -281,12 +299,20 @@ const UserRoots = (props) => {
                   ? `${selfData?.distributor_count} Distributor `
                   : ""
               }${selfData?.agen_count ? `${selfData?.agen_count} Agen ` : ""}${
-                selfData?.reseller_count
-                  ? `${selfData?.reseller_count} Reseller`
-                  : ""
-              } -- ${monthNamesShort[new Date().getMonth()]} ${new Date()
-                .getFullYear()
-                .toString()}`}
+                !(
+                  selfData?.children_length === undefined ||
+                  selfData?.children_length === null
+                ) &&
+                checkNumberEmpty(selfData?.children_length) <
+                  checkNumberEmpty(selfData?.reseller_count)
+                  ? checkNumberEmpty(selfData?.children_length)
+                  : selfData?.reseller_count === undefined ||
+                      selfData?.reseller_count === null
+                    ? "0"
+                    : selfData?.reseller_count
+              } Reseller -- ${
+                monthNamesShort[new Date().getMonth()]
+              } ${new Date().getFullYear().toString()}`}
             </Text>
           )}
 
@@ -339,11 +365,11 @@ const UserRoots = (props) => {
               hpv?.data?.name === godlevelusername
                 ? ""
                 : hpv?.data?.status
-                ? capitalizeFirstLetter(hpv?.data?.status)
-                : currentUser?.status == "distributor" ||
-                  currentUser?.status === "agen"
-                ? "Distributor"
-                : "Agen"
+                  ? capitalizeFirstLetter(hpv?.data?.status)
+                  : currentUser?.status == "distributor" ||
+                      currentUser?.status === "agen"
+                    ? "Distributor"
+                    : "Agen"
             }
             isCurrentUser={false}
             isParent={true}
@@ -586,7 +612,7 @@ const mapDispatchProps = (dispatch) =>
       overhaulReduxUserHpvArray,
       incrementReduxUserHpvArray,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchProps)(UserRoots);

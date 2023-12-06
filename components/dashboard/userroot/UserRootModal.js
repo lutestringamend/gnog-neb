@@ -10,6 +10,7 @@ import {
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
 import { blurhash, colors } from "../../../styles/base";
 //import { useNavigation } from "@react-navigation/native";
 //import { phonenotverified, userverified } from "../constants";
@@ -17,6 +18,9 @@ import { convertDateISOStringtoDisplayDate } from "../../../axios/profile";
 import { showHPV } from "../../../axios/user";
 import { godlevelusername } from "../../../axios/constants";
 import { openWhatsapp } from "../../whatsapp/Whatsapp";
+import { capitalizeFirstLetter } from "../../../axios/cart";
+import { checkNumberEmpty } from "../../../axios/cart";
+import { formatPrice } from "../../../axios/cart";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
@@ -111,7 +115,7 @@ const UserRootModal = (props) => {
               width: screenWidth,
               height: screenHeight,
 
-              opacity: 0.95,
+              opacity: 0.98,
             },
           ]}
         >
@@ -141,6 +145,13 @@ const UserRootModal = (props) => {
                 placeholder={blurhash}
                 transition={0}
               />
+              {modal?.data === null ||
+              modal?.data?.status === undefined ||
+              modal?.data?.status === null ? null : (
+                <Text allowFontScaling={false} style={styles.textStatus}>
+                  {capitalizeFirstLetter(modal?.data?.status)}
+                </Text>
+              )}
             </View>
 
             <View style={styles.containerInfo}>
@@ -170,51 +181,88 @@ const UserRootModal = (props) => {
                 </Text>
               ) : (
                 <View style={styles.containerVertical}>
-                  {modal?.data?.name !== godlevelusername && hpvData?.nomor_telp ?
-                    <TouchableOpacity style={styles.containerWhatsapp} onPress={() => openWhatsapp(hpvData?.nomor_telp, null)}>
+                  {modal?.data?.name !== godlevelusername &&
+                  hpvData?.nomor_telp ? (
+                    <TouchableOpacity
+                      style={styles.containerWhatsapp}
+                      onPress={() => openWhatsapp(hpvData?.nomor_telp, null)}
+                    >
                       <MaterialCommunityIcons
                         name="whatsapp"
-                        size={18}
+                        size={14}
                         color={colors.daclen_green}
+                        style={{ alignSelf: "center", marginBottom: 2 }}
                       />
                       <Text style={styles.textWhatsapp}>
                         {`${hpvData?.nomor_telp}`}
                       </Text>
                     </TouchableOpacity>
-                    : null
-                  }
-                  
+                  ) : null}
+
                   {modal?.data?.name === godlevelusername ? null : (
                     <Text allowFontScaling={false} style={styles.text}>
                       {`${
-                        hpvData?.join_date && !modal?.isParent
-                          ? `Join Date: ${convertDateISOStringtoDisplayDate(
-                              hpvData?.join_date,
-                              true
-                            )}`
+                        !(
+                          modal?.data === null ||
+                          modal?.data?.start_date === undefined ||
+                          modal?.data?.start_date === null ||
+                          modal?.isParent
+                        )
+                          ? `Start Date: ${modal?.data?.start_date}\n`
+                          : hpvData?.join_date && !modal?.isParent
+                            ? `Join Date: ${convertDateISOStringtoDisplayDate(
+                                hpvData?.join_date,
+                                true,
+                              )}\n`
+                            : ""
+                      }${
+                        !(
+                          modal?.data === null ||
+                          modal?.data?.end_date === undefined ||
+                          modal?.data?.end_date === null ||
+                          modal?.isParent
+                        )
+                          ? `End Date: ${modal?.data?.end_date}\n`
+                          : ""
+                      }${
+                        !(
+                          modal?.data === null ||
+                          modal?.data?.target_tercapai === undefined ||
+                          modal?.data?.target_tercapai === null ||
+                          modal?.isParent
+                        )
+                          ? `Total rekrutmen 90 hari: ${modal?.data?.target_tercapai} orang\n`
                           : ""
                       }${
                         modal?.isParent
                           ? ""
-                          : `\nPoin Bulan Ini (PV): ${
+                          : `Poin Bulan Ini (PV): ${
                               hpvData?.pv ? hpvData?.pv.toString() : "0"
                             }  RPV: ${
                               hpvData?.rpv ? hpvData?.rpv.toString() : "0"
                             } HPV: ${hpvData?.hpv ? hpvData?.hpv : "0"}${
                               hpvData?.distributor_count
-                                ? `\nJumlah Distributor Aktif:  ${hpvData?.distributor_count}`
+                                ? `\nJumlah Distributor Aktif:  ${hpvData?.distributor_count} orang`
                                 : ""
                             }${
                               hpvData?.agen_count
-                                ? `\nJumlah Agen Aktif:  ${hpvData?.agen_count}`
+                                ? `\nJumlah Agen Aktif:  ${hpvData?.agen_count} orang`
                                 : ""
-                            }${
-                              hpvData?.reseller_count
-                                ? `\nJumlah Reseller Aktif:  ${hpvData?.reseller_count}`
-                                : ""
-                            }\nPenjualan Bulan Ini: ${
+                            }\nJumlah Reseller Aktif:  ${
+                              !(
+                                modal?.data?.children_length === undefined ||
+                                modal?.data?.children_length === null
+                              ) &&
+                              checkNumberEmpty(modal?.data?.children_length) <
+                                checkNumberEmpty(hpvData?.reseller_count)
+                                ? modal?.data?.children_length
+                                : hpvData?.reseller_count === undefined ||
+                                    hpvData?.reseller_count === null
+                                  ? "-"
+                                  : hpvData?.reseller_count
+                            } orang\nPenjualan Bulan Ini: ${
                               hpvData?.total_nominal_penjualan
-                                ? hpvData?.total_nominal_penjualan.toString()
+                                ? formatPrice(hpvData?.total_nominal_penjualan)
                                 : "Rp 0"
                             }
                                 `
@@ -339,7 +387,7 @@ const styles = StyleSheet.create({
   },
   textWhatsapp: {
     marginStart: 4,
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "Poppins-SemiBold",
     flex: 1,
     alignSelf: "center",
@@ -351,6 +399,20 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     marginHorizontal: 10,
     color: colors.daclen_black,
+  },
+  textStatus: {
+    position: "absolute",
+    zIndex: 6,
+    end: 0,
+    top: 160,
+    height: 20,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    backgroundColor: colors.daclen_blue,
+    color: colors.daclen_light,
+    borderTopStartRadius: 4,
+    fontSize: 10,
+    fontFamily: "Poppins-SemiBold",
   },
   spinner: {
     alignSelf: "center",

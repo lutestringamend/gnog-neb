@@ -49,7 +49,7 @@ const Header = (props) => {
 
   function openAbout() {
     if (currentUser?.id === 8054) {
-      navigation.navigate("EditProfile");
+      navigation.navigate("UserRootsScreen");
     } else {
       navigation.navigate("About");
     }
