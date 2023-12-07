@@ -236,11 +236,7 @@ const UserRootModal = (props) => {
                       }${
                         modal?.isParent
                           ? ""
-                          : `Poin Bulan Ini (PV): ${
-                              hpvData?.pv ? hpvData?.pv.toString() : "0"
-                            }  RPV: ${
-                              hpvData?.rpv ? hpvData?.rpv.toString() : "0"
-                            } HPV: ${hpvData?.hpv ? hpvData?.hpv : "0"}${
+                          : `Bonus Level: ${modal?.data?.level ? modal?.data?.level : "-"}${
                               hpvData?.distributor_count
                                 ? `\nJumlah Distributor Aktif:  ${hpvData?.distributor_count} orang`
                                 : ""
@@ -292,6 +288,12 @@ const UserRootModal = (props) => {
 
 /*
 ${hpvData?.email ? `Email: ${hpvData?.email}` : ""}
+
+Poin Bulan Ini (PV): ${
+                              hpvData?.pv ? hpvData?.pv.toString() : "0"
+                            }  RPV: ${
+                              hpvData?.rpv ? hpvData?.rpv.toString() : "0"
+                            } HPV: ${hpvData?.hpv ? hpvData?.hpv : "0"}
 
 
 <Text

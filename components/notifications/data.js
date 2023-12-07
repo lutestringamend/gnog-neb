@@ -11,4 +11,4 @@ const example = {
   sentTime: 1701850534046,
   ttl: 2419200,
 };
-json_encode($send)
+
