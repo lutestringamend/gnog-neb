@@ -356,6 +356,10 @@ export const storePenarikanSaldo = async (token, saldo, userId) => {
     headers: {
       Authorization: `Bearer ${token}`,
       Accept: "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, PATCH, DELETE",
+      "Access-Control-Allow-Headers": "application/json,content-type",
+      "Access-Control-Allow-Credentials": true,
     },
   };
   const params = {

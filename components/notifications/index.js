@@ -95,7 +95,7 @@ export const createLocalWelcomeNotification = (name) => {
           categoryIdentifier: NOTIFICATION_DEFAULT_CHANNEL_ID,
           priority: Notifications.AndroidNotificationPriority.MAX,
           autoDismiss: true,
-          sound: "d.wav",
+          sound: Platform.OS === "android" ? undefined  : "d.wav",
           data,
         },
         trigger: null,
