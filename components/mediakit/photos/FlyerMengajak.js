@@ -61,7 +61,7 @@ const FlyerMengajak = (props) => {
     let maxPhotoIndex =
       (page + 1) * itemLimit < photos?.length
         ? (page + 1) * itemLimit
-        : photos?.length - 1;
+        : photos?.length;
     for (let i = page * itemLimit; i < maxPhotoIndex; i++) {
       newPaginated.push(photos[i]);
     }
@@ -151,7 +151,7 @@ const FlyerMengajak = (props) => {
 
   function openPhoto(index) {
     navigation.navigate("FlyerSliderView", {
-      index,
+      index: page * itemLimit + index,
       type: STARTER_KIT_FLYER_MENGAJAK_TAG,
       product: STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE,
     });
@@ -437,8 +437,9 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-SemiBold",
   },
   photoImage: {
-    width,
-    height,
+    width: width - 2,
+    height: height - 2,
+    borderRadius: 6,
   },
   imageList: {
     flex: 1,

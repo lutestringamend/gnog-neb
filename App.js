@@ -384,7 +384,7 @@ export default function App() {
               <Stack.Screen
                 name="SaldoReportScreen"
                 component={SaldoReport}
-                options={{ ...defaultOptions, title: "Laporan Saldo" }}
+                options={{ ...defaultOptions, headerShown: false }}
               />
               <Stack.Screen
                 name="QRScreen"

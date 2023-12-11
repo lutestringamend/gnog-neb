@@ -42,8 +42,8 @@ const PhotoItem = (props) => {
         ]}
         source={item?.thumbnail ? item?.thumbnail : null}
         contentFit="cover"
-        placeholder={blurhash}
-        transition={0}
+        placeholder={null}
+        transition={100}
         cachepolicy="memory-disk"
       />
 
@@ -65,7 +65,7 @@ const PhotoItem = (props) => {
 
 const styles = StyleSheet.create({
   containerImage: {
-    backgroundColor: "transparent",
+    backgroundColor: colors.daclen_light,
     marginHorizontal: 10,
     borderWidth: 1,
     borderRadius: 6,
@@ -86,11 +86,8 @@ const styles = StyleSheet.create({
   image: {
     alignSelf: "center",
     backgroundColor: colors.daclen_light,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: colors.daclen_lightgrey,
-    marginStart: 0,
     elevation: 4,
+    overflow: "hidden",
   },
   check: {
     position: "absolute",

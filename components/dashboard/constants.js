@@ -35,7 +35,7 @@ export const userroottitle = "USER ROOTS";
 export const saldomasuktag = "Saldo Masuk";
 export const saldokeluartag = "Saldo Keluar";
 
-export const withdrawalhistorytab = "Riwayat Penarikan"
+export const withdrawalhistorytab = "Penarikan"
 export const withdrawalhistoryicon = "cash-refund"
 export const saldohistorytab = "Riwayat Saldo"
 export const saldohistoryicon = "account-cash"

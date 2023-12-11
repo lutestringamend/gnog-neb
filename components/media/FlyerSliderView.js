@@ -54,7 +54,7 @@ const photoHeight = previewHeight - paddingTop;
 
 const FlyerSliderView = (props) => {
   const { currentUser, watermarkData, mediaKitPhotos, flyerMengajak } = props;
-  let initIndex = props.route.params?.index ? props.route.params?.index : 0;
+  const initIndex = props.route.params?.index ? props.route.params?.index : null;
   const navigation = useNavigation();
   const refScroll = useRef();
   const imageRef = useRef();
@@ -73,18 +73,23 @@ const FlyerSliderView = (props) => {
   const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
 
   const [data, setData] = useState({
-    index: 0,
+    index: initIndex,
     type: null,
     product: null,
   });
   const [limit, setLimit] = useState(2);
   const [scrollPosition, setScrollPosition] = useState({
-    x: 0,
+    x: screenWidth * (initIndex ? initIndex : 0),
     y: 0,
   });
   const [flyers, setFlyers] = useState(defaultFlyers);
 
   useEffect(() => {
+    if (initIndex === null) {
+      navigation.goBack();
+      return;
+    }
+
     const checkSharing = async () => {
       const result = await isAvailableAsync();
       if (!result && Platform.OS === "android") {
@@ -115,7 +120,7 @@ const FlyerSliderView = (props) => {
     setScrollInit(false);
 
     let newData = {
-      index: 0,
+      index: initIndex,
       type: props.route.params?.type
         ? props.route.params?.type
         : STARTER_KIT_FLYER_PRODUK_TAG,

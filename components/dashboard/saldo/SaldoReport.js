@@ -42,7 +42,7 @@ import {
 import SaldoHistoryItem from "./SaldoHistoryItem";
 import SaldoWithdrawalItem from "./SaldoWithdrawalItem";
 
-const WithdrawalButton = () => {
+const WithdrawalButton = ({ disabled }) => {
   const navigation = useNavigation();
   function openWithdrawal() {
     navigation.navigate("Withdrawal");
@@ -50,11 +50,23 @@ const WithdrawalButton = () => {
   }
   return (
     <View style={styles.containerButton}>
-      <TouchableOpacity onPress={() => openWithdrawal()} style={styles.button}>
+      <TouchableOpacity
+        onPress={() => openWithdrawal()}
+        style={[
+          styles.button,
+          {
+            backgroundColor: disabled
+              ? colors.daclen_gray
+              : colors.daclen_yellow_new,
+          },
+        ]}
+        disabled={disabled}
+      >
         <MaterialCommunityIcons
           name="cash-refund"
-          size={18}
-          color={colors.daclen_light}
+          size={14}
+          color={colors.daclen_black}
+          style={{ alignSelf: "center" }}
         />
         <Text allowFontScaling={false} style={styles.textButton}>
           Tarik Saldo
@@ -86,11 +98,7 @@ const SaldoReport = (props) => {
     }, []);
 
     useEffect(() => {
-      if (activeTab === withdrawalhistorytab) {
-        refreshRiwayatPenarikanPage();
-      } else if (activeTab === saldohistorytab) {
-        refreshSaldoPage();
-      }
+      refreshPage();
     }, [activeTab, saldo, riwayatSaldo]);
 
     useEffect(() => {
@@ -101,10 +109,12 @@ const SaldoReport = (props) => {
         return;
       }
       setError(authError);
-      checkAsyncStorageSaldo();
+      props.updateReduxUserRiwayatSaldo([]);
+      props.updateReduxUserSaldo([]);
+      //checkAsyncStorageSaldo();
     }, [authError]);
 
-    const checkAsyncStorageSaldo = async () => {
+    /*const checkAsyncStorageSaldo = async () => {
       if (activeTab === withdrawalhistorytab && riwayatSaldo === null) {
         const asyncPenarikan = await getObjectAsync(
           ASYNC_USER_RIWAYAT_PENARIKAN
@@ -119,6 +129,7 @@ const SaldoReport = (props) => {
         } else {
           props.updateReduxUserRiwayatSaldo(asyncPenarikan);
         }
+        
       } else if (activeTab === saldohistorytab && saldo === null) {
         const asyncSaldo = await getObjectAsync(ASYNC_USER_RIWAYAT_SALDO);
         if (
@@ -135,7 +146,7 @@ const SaldoReport = (props) => {
       if (loading) {
         setLoading(false);
       }
-    };
+    };*/
 
     function refreshRiwayatPenarikanPage() {
       if (riwayatSaldo === null) {
@@ -162,21 +173,30 @@ const SaldoReport = (props) => {
 
         setLoading(false);
         setObjectAsync(ASYNC_USER_RIWAYAT_PENARIKAN, riwayatSaldo);
-        console.log("redux riwayatSaldo", riwayatSaldo);
+        console.log("redux riwayatSaldo", riwayatSaldo?.length);
       }
     }
 
     function refreshSaldoPage() {
-      if (saldo === null) {
-        if (!loading && token !== null && currentUser?.id !== undefined) {
-          props.getLaporanSaldo(currentUser?.id, token);
-          setLoading(true);
-        }
+      /*if (saldo === null) {
+        
       } else {
         setLoading(false);
         setObjectAsync(ASYNC_USER_RIWAYAT_SALDO, saldo);
         console.log("redux saldo", saldo);
-      }
+      }*/
+
+      if (loading) {
+        if (saldo !== null) {
+          setLoading(false);
+
+        }
+      } else {
+        if (token !== null && currentUser?.id !== undefined) {
+          props.getLaporanSaldo(currentUser?.id, token);
+          setLoading(true);
+        }
+      }  
     }
 
     function refreshPage() {
@@ -184,11 +204,63 @@ const SaldoReport = (props) => {
         refreshRiwayatPenarikanPage();
       } else if (activeTab === saldohistorytab) {
         refreshSaldoPage();
+        if (saldo !== null) {
+          setObjectAsync(ASYNC_USER_RIWAYAT_SALDO, saldo);
+          console.log("redux saldo", saldo);
+        }
+      }
+    }
+
+    function manualRefresh() {
+      if (loading) {
+        return;
+      }
+      setLoading(true);
+      if (activeTab === withdrawalhistorytab) {
+        props.getRiwayatPenarikanSaldo(currentUser?.id, token);
+      } else if (activeTab === saldohistorytab) {
+        props.getLaporanSaldo(currentUser?.id, token);
       }
     }
 
     return (
       <SafeAreaView style={styles.container}>
+        <View style={styles.containerHeader}>
+          <TouchableOpacity
+            style={styles.arrow}
+            onPress={() => navigation.goBack()}
+          >
+            <MaterialCommunityIcons
+              name="arrow-left"
+              size={24}
+              color={colors.daclen_light}
+              style={styles.icon}
+            />
+          </TouchableOpacity>
+          <Text allowFontScaling={false} style={styles.textHeader}>
+            Saldo
+          </Text>
+          <WithdrawalButton disabled={!allowWithdraw} />
+          <TouchableOpacity
+            style={styles.containerIcon}
+            onPress={() => manualRefresh()}
+          >
+            {loading ? (
+              <ActivityIndicator
+                size={24}
+                color={colors.daclen_light}
+                style={styles.icon}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name="refresh"
+                size={24}
+                color={colors.daclen_light}
+                style={styles.icon}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
         <View style={styles.tabView}>
           <HistoryTabItem
             activeTab={activeTab}
@@ -206,9 +278,7 @@ const SaldoReport = (props) => {
           />
         </View>
         {activeTab === withdrawalhistorytab && allowWithdraw !== null ? (
-          allowWithdraw ? (
-            <WithdrawalButton />
-          ) : (
+          allowWithdraw ? null : (
             <View
               style={[styles.button, { backgroundColor: colors.daclen_gray }]}
             >
@@ -218,7 +288,8 @@ const SaldoReport = (props) => {
                 color={colors.daclen_light}
               />
               <Text style={[styles.textButton, { fontSize: 12, flex: 1 }]}>
-                Tidak bisa menarik saldo selama masih ada penarikan yang diproses
+                Tidak bisa menarik saldo selama masih ada penarikan yang
+                diproses
               </Text>
             </View>
           )
@@ -229,7 +300,7 @@ const SaldoReport = (props) => {
           refreshControl={
             <RefreshControl
               refreshing={loading}
-              onRefresh={() => refreshPage()}
+              onRefresh={() => manualRefresh()}
             />
           }
         >
@@ -319,8 +390,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   containerButton: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
+    marginEnd: 10,
+  },
+  containerHeader: {
+    flexDirection: "row",
+    alignItems: "center",
     width: "100%",
-    backgroundColor: colors.daclen_light,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    backgroundColor: colors.daclen_black,
+    elevation: 4,
+    borderBottomWidth: 1,
+    borderColor: colors.daclen_light,
+  },
+  containerIcon: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
   },
   containerFlatlist: {
     flex: 1,
@@ -333,6 +420,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "transparent",
     margin: 10,
+  },
+  textHeader: {
+    backgroundColor: "transparent",
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 16,
+    marginHorizontal: 20,
+    color: colors.daclen_light,
+    alignSelf: "center",
+    flex: 1,
   },
   textUid: {
     fontFamily: "Poppins",
@@ -351,17 +447,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    width: "100%",
-    paddingVertical: 12,
+    borderRadius: 6,
+    paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: colors.daclen_orange,
   },
   textButton: {
-    fontSize: 16,
-    fontFamily: "Poppins-Bold",
+    fontSize: 12,
+    fontFamily: "Poppins-SemiBold",
     textAlign: "center",
-    marginStart: 10,
-    color: colors.daclen_light,
+    marginStart: 6,
+    color: colors.daclen_black,
   },
 });
 
@@ -382,7 +477,7 @@ const mapDispatchProps = (dispatch) =>
       updateReduxUserRiwayatSaldo,
       clearAuthError,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchProps)(SaldoReport);
