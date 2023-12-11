@@ -189,14 +189,13 @@ const SaldoReport = (props) => {
       if (loading) {
         if (saldo !== null) {
           setLoading(false);
-
         }
       } else {
         if (token !== null && currentUser?.id !== undefined) {
           props.getLaporanSaldo(currentUser?.id, token);
           setLoading(true);
         }
-      }  
+      }
     }
 
     function refreshPage() {
@@ -280,14 +279,22 @@ const SaldoReport = (props) => {
         {activeTab === withdrawalhistorytab && allowWithdraw !== null ? (
           allowWithdraw ? null : (
             <View
-              style={[styles.button, { backgroundColor: colors.daclen_gray }]}
+              style={[
+                styles.button,
+                { backgroundColor: colors.daclen_gray, borderRadius: 0 },
+              ]}
             >
               <MaterialCommunityIcons
                 name="progress-clock"
                 size={18}
                 color={colors.daclen_light}
               />
-              <Text style={[styles.textButton, { fontSize: 12, flex: 1 }]}>
+              <Text
+                style={[
+                  styles.textButton,
+                  { fontSize: 12, flex: 1, color: colors.daclen_light },
+                ]}
+              >
                 Tidak bisa menarik saldo selama masih ada penarikan yang
                 diproses
               </Text>
@@ -304,13 +311,7 @@ const SaldoReport = (props) => {
             />
           }
         >
-          {loading ? (
-            <ActivityIndicator
-              size="large"
-              color={colors.daclen_orange}
-              style={{ alignSelf: "center", marginVertical: 20 }}
-            />
-          ) : error ? (
+          {error ? (
             <ErrorView
               error={`Mohon membuka website Daclen untuk membaca Laporan Saldo${
                 error ? `\n${error}` : ""

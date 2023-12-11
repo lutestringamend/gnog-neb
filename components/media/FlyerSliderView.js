@@ -905,7 +905,7 @@ const styles = StyleSheet.create({
     zIndex: 4,
     start: 0,
     end: 0,
-    top: screenHeight * (screenAR > limitAR ? 0.85 : 0.8),
+    top: screenHeight * (screenAR > limitAR ? 0.85 : 0.82),
     position: "absolute",
     width: screenWidth,
     flexDirection: "row",
