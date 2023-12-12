@@ -54,14 +54,15 @@ export const receiveNotificationAccordingly = async (
       content: {
         title,
         body,
+        on_mobile_open: data ? data?.on_mobile_open ? data?.on_mobile_open : null : null,
         color: defaultnotificationcolor,
         categoryIdentifier: channelId,
         priority:
           channelId === NOTIFICATION_DEFAULT_CHANNEL_ID
-            ? Notifications.AndroidNotificationPriority.MAX
+            ? Notifications.AndroidNotificationPriority.HIGH
             : Notifications.AndroidNotificationPriority.DEFAULT,
         autoDismiss: true,
-        sound: "d.wav",
+        sound: Platform.OS === "android" ? undefined  : "d.wav",
         data,
       },
       trigger: null,
@@ -81,7 +82,8 @@ export const receiveNotificationAccordingly = async (
 export const createLocalWelcomeNotification = (name) => {
   const data = {
     title: `Selamat Datang, ${name ? name : "User"}`,
-    alert: `Miliki bisnis online terpercaya bersama Daclen!`,
+    body: `Miliki bisnis online terpercaya bersama Daclen!`,
+    on_mobile_open: "SaldoReportScreen",
     timestamp: new Date().toISOString(),
   }
 
@@ -90,10 +92,11 @@ export const createLocalWelcomeNotification = (name) => {
       Notifications.scheduleNotificationAsync({
         content: {
           title: data.title,
-          body: data.alert,
+          body: data.body,
+          on_mobile_open: data ? data?.on_mobile_open ? data?.on_mobile_open : null : null,
           color: defaultnotificationcolor,
           categoryIdentifier: NOTIFICATION_DEFAULT_CHANNEL_ID,
-          priority: Notifications.AndroidNotificationPriority.MAX,
+          priority: Notifications.AndroidNotificationPriority.DEFAULT,
           autoDismiss: true,
           sound: Platform.OS === "android" ? undefined  : "d.wav",
           data,
@@ -110,61 +113,10 @@ export const createLocalWelcomeNotification = (name) => {
 }
 
 export const openScreenFromNotification = (navigationRef, data) => {
-  if (navigationRef === undefined || data === undefined || data === null) {
+  if (navigationRef === undefined || navigationRef === null) {
     return;
   }
-  navigationRef.navigate("Main");
-  /*const {
-    activity,
-    bookingStatus,
-    feedId,
-    bookingName,
-    bookingId,
-    displayId,
-    chatTitle,
-    staffId,
-    objectId,
-  } = data;
-  if (
-    activity === "ChatRoomActivity" &&
-    !(bookingId === undefined || bookingId === null)
-  ) {
-    navigationRef.navigate("ChatRoom", {
-      bookingId,
-      bookingName,
-      staffId,
-      staffName: chatTitle,
-      displayId,
-    });
-  } else if (
-    (activity === "HomecareBookingDetail" ||
-      activity === "HomecareBookingPayment") &&
-    !(objectId === undefined || objectId === null)
-  ) {
-    navigationRef.navigate("BookingDetails", {
-      bookingId: objectId,
-      status: bookingStatus,
-      newStatus: bookingStatus,
-      activeTab: activebookings,
-    });
-  } else if (activity === "HomecareBookingHistory") {
-    navigationRef.navigate("Main", {
-      screen: "HistoryTab",
-    });
-  } else if (
-    activity === "FeedItemLoader" &&
-    !(feedId === undefined || feedId === null)
-  ) {
-    navigationRef.navigate("FeedPage", { id: feedId });
-  } else if (activity === "HomecareQuickcare") {
-    navigationRef.navigate("QuickcareBooking", {
-      name: bookingName,
-      displayName: bookingName,
-      isQuickcare: true,
-    });
-  } else {
-    navigationRef.navigate("Notifications");
-  }*/
+  navigationRef.navigate(data ? data : "Main");
 };
 
 export const initializeAndroidNotificationChannels = async () => {

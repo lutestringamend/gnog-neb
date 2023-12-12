@@ -224,12 +224,12 @@ function Main(props) {
       if (lastNotificationResponse) {
         try {
           console.log(
-            "lastNotificationResponse",
-            lastNotificationResponse?.notification?.request?.content?.data,
+            "lastNotificationResponse on_mobile_open",
+            lastNotificationResponse?.notification?.request?.content?.data?.on_mobile_open,
           );
           openScreenFromNotification(
-            navigationRef.current,
-            lastNotificationResponse?.notification?.request?.content?.data,
+            navigationRef,
+            lastNotificationResponse?.notification?.request?.content?.data?.on_mobile_open,
           );
         } catch (e) {
           console.error(e);
