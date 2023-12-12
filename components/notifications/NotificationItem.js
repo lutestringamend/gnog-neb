@@ -19,11 +19,7 @@ const NotificationItem = ({ data }) => {
   const [item, setItem] = useState(null);
 
   useEffect(() => {
-    if (
-      item !== null ||
-      data === undefined ||
-      data === null
-    ) {
+    if (item !== null || data === undefined || data === null) {
       return;
     }
     let displayName = data?.title;
@@ -47,7 +43,16 @@ const NotificationItem = ({ data }) => {
 
   const navigation = useNavigation();
   function onNotifPress() {
-    openScreenFromNotification(navigation, data);
+    if (
+      data === undefined ||
+      data === null ||
+      data?.on_mobile_open === undefined ||
+      data?.on_mobile_open === null ||
+      data?.on_mobile_open === ""
+    ) {
+      return;
+    }
+    openScreenFromNotification(navigation, data?.on_mobile_open);
   }
 
   if (data === undefined || data === null) {
@@ -76,9 +81,13 @@ const NotificationItem = ({ data }) => {
                 contentFit="contain"
                 transition={0}
               />
-              <Text allowFontScaling={false} style={styles.textHeader}>{item?.displayName}</Text>
+              <Text allowFontScaling={false} style={styles.textHeader}>
+                {item?.displayName}
+              </Text>
             </View>
-            <Text allowFontScaling={false} style={styles.textAlert}>{data?.body ? data?.body : data?.alert}</Text>
+            <Text allowFontScaling={false} style={styles.textAlert}>
+              {data?.body ? data?.body : data?.alert ? data?.alert : ""}
+            </Text>
             {data?.timestamp ? (
               <Text allowFontScaling={false} style={styles.textUid}>
                 {convertDateISOStringtoDisplayDate(data?.timestamp, true)}

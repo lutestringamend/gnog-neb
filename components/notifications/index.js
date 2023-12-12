@@ -130,14 +130,11 @@ export const createLocalWelcomeNotification = (name) => {
   }
 };
 
-export const openScreenFromNotification = async (
-  navigationRef,
-  data,
-) => {
+export const openScreenFromNotification = async (navigationRef, data) => {
   if (navigationRef === undefined || navigationRef === null) {
     return;
   }
- 
+
   navigationRef.navigate("Main", {
     openScreen: data ? data : null,
   });
