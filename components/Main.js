@@ -57,7 +57,6 @@ import { getObjectAsync, getTokenAsync, setObjectAsync } from "./asyncstorage";
 import {
   ASYNC_DEVICE_TOKEN_KEY,
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
-  ASYNC_MEDIA_WATERMARK_PHOTOS_KEY,
   ASYNC_NOTIFICATIONS_KEY,
   ASYNC_PRODUCTS_ARRAY_KEY,
   ASYNC_RAJAONGKIR_PROVINSI_KEY,
@@ -93,7 +92,6 @@ function Main(props) {
     profileLockTimeout,
     profilePIN,
     regDateInMs,
-    mediaKitPhotos,
     watermarkData,
     addressId,
     addresses,
@@ -106,6 +104,13 @@ function Main(props) {
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
   const navigationRef = useNavigation();
   const timeoutHandle = useRef();
+
+  useEffect(() => {
+    if (!(props.route.params?.openScreen === undefined || props.route.params?.openScreen === null)) {
+      navigationRef.navigate(props.route.params?.openScreen);
+    }
+    console.log("Main route params", props.route.params);
+  }, [props.route.params]);
 
   try {
     useEffect(() => {
@@ -429,7 +434,7 @@ function Main(props) {
       const storageCurrentUser = await readStorageCurrentUser();
       const key = await deriveUserKey(storageToken);
       const deviceToken = await getObjectAsync(ASYNC_DEVICE_TOKEN_KEY);
-      console.log("deviceToken", deviceToken);
+      //console.log("deviceToken", deviceToken);
       try {
         if (
           storageToken === undefined ||

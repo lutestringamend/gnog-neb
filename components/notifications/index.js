@@ -6,6 +6,8 @@ import * as Clipboard from "expo-clipboard";
 import { getObjectAsync, setObjectAsync } from "../asyncstorage";
 import {
   ASYNC_NOTIFICATIONS_KEY,
+  ASYNC_USER_CURRENTUSER_KEY,
+  ASYNC_USER_TOKEN_KEY,
   ASYNC_WELCOME_NOTIFICATION_KEY,
   EXPO_PUSH_TOKEN,
 } from "../asyncstorage/constants";
@@ -21,7 +23,7 @@ import {
 export const receiveNotificationAccordingly = async (
   props,
   remoteMessage,
-  currentUserId
+  currentUserId,
 ) => {
   console.log("receiveNotificationAccordingly", remoteMessage);
   if (
@@ -33,7 +35,7 @@ export const receiveNotificationAccordingly = async (
   }
   let displayAsNotif = true;
   try {
-    const data = remoteMessage?.notification; 
+    const data = remoteMessage?.notification;
     //const { bookingStatus, feedId, objectId, userId, bookingName } = data;
 
     let channelId = NOTIFICATION_DEFAULT_CHANNEL_ID;
@@ -45,16 +47,28 @@ export const receiveNotificationAccordingly = async (
     let notifData = {
       ...data,
       timestamp,
-    }
-    let title = data ? data?.title ? data?.title : defaultnotificationtitle : defaultnotificationtitle;
-    let body = data ? data?.body ? data?.body : defaultnotificationalert : defaultnotificationalert;
+    };
+    let title = data
+      ? data?.title
+        ? data?.title
+        : defaultnotificationtitle
+      : defaultnotificationtitle;
+    let body = data
+      ? data?.body
+        ? data?.body
+        : defaultnotificationalert
+      : defaultnotificationalert;
     props.pushNewReduxNotification(notifData);
 
     Notifications.scheduleNotificationAsync({
       content: {
         title,
         body,
-        on_mobile_open: data ? data?.on_mobile_open ? data?.on_mobile_open : null : null,
+        on_mobile_open: data
+          ? data?.on_mobile_open
+            ? data?.on_mobile_open
+            : null
+          : null,
         color: defaultnotificationcolor,
         categoryIdentifier: channelId,
         priority:
@@ -62,7 +76,7 @@ export const receiveNotificationAccordingly = async (
             ? Notifications.AndroidNotificationPriority.HIGH
             : Notifications.AndroidNotificationPriority.DEFAULT,
         autoDismiss: true,
-        sound: Platform.OS === "android" ? undefined  : "d.wav",
+        sound: Platform.OS === "android" ? undefined : "d.wav",
         data,
       },
       trigger: null,
@@ -73,7 +87,7 @@ export const receiveNotificationAccordingly = async (
     if (Platform.OS === "android") {
       ToastAndroid.show(
         `${e.toString()}\nnew FCM messageId ${remoteMessage?.messageId}`,
-        ToastAndroid.SHORT
+        ToastAndroid.SHORT,
       );
     }
   }
@@ -85,7 +99,7 @@ export const createLocalWelcomeNotification = (name) => {
     body: `Miliki bisnis online terpercaya bersama Daclen!`,
     on_mobile_open: "SaldoReportScreen",
     timestamp: new Date().toISOString(),
-  }
+  };
 
   try {
     if (Platform.OS !== "web") {
@@ -93,12 +107,16 @@ export const createLocalWelcomeNotification = (name) => {
         content: {
           title: data.title,
           body: data.body,
-          on_mobile_open: data ? data?.on_mobile_open ? data?.on_mobile_open : null : null,
+          on_mobile_open: data
+            ? data?.on_mobile_open
+              ? data?.on_mobile_open
+              : null
+            : null,
           color: defaultnotificationcolor,
           categoryIdentifier: NOTIFICATION_DEFAULT_CHANNEL_ID,
           priority: Notifications.AndroidNotificationPriority.DEFAULT,
           autoDismiss: true,
-          sound: Platform.OS === "android" ? undefined  : "d.wav",
+          sound: Platform.OS === "android" ? undefined : "d.wav",
           data,
         },
         trigger: null,
@@ -110,26 +128,33 @@ export const createLocalWelcomeNotification = (name) => {
     console.error(e);
     sentryLog(e);
   }
-}
+};
 
-export const openScreenFromNotification = (navigationRef, data) => {
+export const openScreenFromNotification = async (
+  navigationRef,
+  data,
+) => {
   if (navigationRef === undefined || navigationRef === null) {
     return;
   }
-  navigationRef.navigate(data ? data : "Main");
+ 
+  navigationRef.navigate("Main", {
+    openScreen: data ? data : null,
+  });
 };
 
 export const initializeAndroidNotificationChannels = async () => {
   if (Platform.OS !== "android") {
     return;
   }
-  await Notifications.setNotificationChannelAsync(NOTIFICATION_DEFAULT_CHANNEL_ID,
+  await Notifications.setNotificationChannelAsync(
+    NOTIFICATION_DEFAULT_CHANNEL_ID,
     {
       name: NOTIFICATION_DEFAULT_CHANNEL_ID,
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: colors.daclen_black,
-    }
+    },
   );
   console.log("android notif channels set");
 };
@@ -210,7 +235,6 @@ export async function registerForPushNotificationsAsync() {
   await Clipboard.setStringAsync(token);
   return token;
 }
-
 
 /*
       <Text>Title: {notification && notification.request.content.title} </Text>

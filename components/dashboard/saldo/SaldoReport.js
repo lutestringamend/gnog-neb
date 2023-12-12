@@ -17,11 +17,14 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import {
+  setNewToken,
+  getCurrentUser,
   getLaporanSaldo,
   getRiwayatPenarikanSaldo,
   updateReduxUserSaldo,
   updateReduxUserRiwayatSaldo,
   clearAuthError,
+  deriveUserKey,
 } from "../../../axios/user";
 import { colors, staticDimensions } from "../../../styles/base";
 import { ErrorView } from "../../webview/WebviewChild";
@@ -34,7 +37,7 @@ import {
   withdrawalhistorytab,
 } from "../constants";
 import { sentryLog } from "../../../sentry";
-import { getObjectAsync, setObjectAsync } from "../../asyncstorage";
+import { setObjectAsync } from "../../asyncstorage";
 import {
   ASYNC_USER_RIWAYAT_PENARIKAN,
   ASYNC_USER_RIWAYAT_SALDO,
@@ -98,8 +101,11 @@ const SaldoReport = (props) => {
     }, []);
 
     useEffect(() => {
+      if (token === undefined || token === null || currentUser === undefined || currentUser === null) {
+        return;
+      }
       refreshPage();
-    }, [activeTab, saldo, riwayatSaldo]);
+    }, [token, currentUser, activeTab, saldo, riwayatSaldo]);
 
     useEffect(() => {
       if (authError === null) {
@@ -472,6 +478,8 @@ const mapStateToProps = (store) => ({
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
+      setNewToken,
+      getCurrentUser,
       getLaporanSaldo,
       getRiwayatPenarikanSaldo,
       updateReduxUserSaldo,

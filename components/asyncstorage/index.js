@@ -77,7 +77,7 @@ export const setObjectAsync = async (key, object) => {
 export const getObjectAsync = async (key) => {
   //console.log(`getObjectAsync ${key}`);
   try {
-    const jsonValue = await AsyncStorage.getItem(key);
+    let jsonValue = await AsyncStorage.getItem(key);
     if (
       jsonValue !== null &&
       jsonValue !== undefined &&
@@ -85,7 +85,11 @@ export const getObjectAsync = async (key) => {
       jsonValue !== "null"
     ) {
       console.log(`asyncstorage ${key} read`);
-      return JSON.parse(jsonValue);
+      if (typeof jsonValue === "string" || jsonValue instanceof String) {
+        return JSON.parse(jsonValue);
+      } else {
+        return jsonValue;
+      }
     }
   } catch (error) {
     console.error(error);
