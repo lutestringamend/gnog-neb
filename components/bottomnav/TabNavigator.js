@@ -11,7 +11,7 @@ import TabBarIcon from "./TabBarIcon";
 const Tab = createMaterialBottomTabNavigator();
 
 export default function TabNavigator(props) {
-  const { isLogin, recruitmentTimer } = props;
+  const { isLogin, isActive, recruitmentTimer } = props;
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -56,12 +56,12 @@ export default function TabNavigator(props) {
           title: "BELANJA",
           tabBarColor: bottomNav.activeColor,
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon title="BELANJA" iconName="shopping" isLogin={isLogin} focused={focused} />
+            <TabBarIcon title="BELANJA" iconName="shopping" isLogin={isLogin && isActive} focused={focused} />
           ),
         }}
       />
 
-      {isLogin ? <Tab.Screen
+      {isLogin && isActive ? <Tab.Screen
           name="MediaKitTab"
           key="MediaKit"
           component={MediaKitFiles}
@@ -74,7 +74,7 @@ export default function TabNavigator(props) {
               <TabBarIcon
                 title={`STARTER KIT`}
                 iconName="file-image"
-                isLogin={isLogin}
+                isLogin={isLogin && isActive}
                 focused={focused}
               />
             ),
@@ -94,7 +94,7 @@ export default function TabNavigator(props) {
             <TabBarIcon
               title="PROFIL"
               iconName="account-circle"
-              isLogin={isLogin}
+              isLogin={isLogin && isActive}
               focused={focused}
             />
           ),

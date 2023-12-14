@@ -325,11 +325,9 @@ const SaldoReport = (props) => {
               onOpenExternalLink={() => onOpenExternalLink()}
             />
           ) : token === null || currentUser?.id === undefined ? (
-            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-              <Text allowFontScaling={false} style={styles.textUid}>
-                Anda harus Login / Register untuk mengecek riwayat saldo
+            <Text allowFontScaling={false} style={styles.textUid}>
+                Sedang mengecek saldo Anda...
               </Text>
-            </TouchableOpacity>
           ) : activeTab === withdrawalhistorytab ? (
             riwayatSaldo?.length === undefined || riwayatSaldo?.length < 1 ? (
               <Text allowFontScaling={false} style={styles.textUid}>

@@ -439,12 +439,12 @@ export function getRiwayatPenarikanSaldo(id, token) {
       },
     };
     const url = riwayatpenarikansaldo + "/" + id.toString();
-    console.log("getRiwayatPenarikanSaldo", url);
+    //console.log("getRiwayatPenarikanSaldo", url);
 
     Axioss.get(url, config)
       .then((response) => {
         const data = response?.data?.data;
-        console.log("getRiwayatPenarikanSaldo response", response);
+        console.log("getRiwayatPenarikanSaldo response", data);
         dispatch({ type: USER_RIWAYAT_SALDO_STATE_CHANGE, data });
       })
       .catch((error) => {
@@ -1538,6 +1538,14 @@ export const fetchHPVfromUserCurrent = async (dispatch, token, currentUser) => {
       result === null ||
       result?.result === undefined ||
       result?.result === null ||
+      result?.result?.data === undefined || 
+      result?.result?.data === null ||
+      result?.result?.data?.children === null ||
+      result?.result?.data?.children?.length === undefined ||
+      result?.result?.data?.children[0] === undefined ||
+      result?.result?.data?.children[0] === null ||
+      result?.result?.data?.children[0]?.children === undefined ||
+      result?.result?.data?.children[0]?.children?.length === undefined ||
       currentUser?.batas_rekrut === undefined ||
       currentUser?.batas_rekrut === null ||
       currentUser?.batas_rekrut === ""

@@ -52,7 +52,7 @@ const NotificationItem = ({ data }) => {
     ) {
       return;
     }
-    openScreenFromNotification(navigation, data?.on_mobile_open);
+    openScreenFromNotification(navigation, data?.on_mobile_open, data?.title);
   }
 
   if (data === undefined || data === null) {

@@ -104,8 +104,6 @@ const Dashboard = (props) => {
       currentUser === null ||
       currentUser?.id === undefined ||
       currentUser?.id === null ||
-      currentUser?.status_member === undefined ||
-      currentUser?.status_member === "premium" ||
       (currentUser?.status !== undefined && currentUser?.status !== null) ||
       currentUser?.level === "spv" ||
       currentUser?.status_member === "supervisor"
@@ -238,8 +236,6 @@ const Dashboard = (props) => {
       currentUser === null ||
       currentUser?.id === undefined ||
       currentUser?.id === null ||
-      currentUser?.status_member === undefined ||
-      currentUser?.status_member === null ||
       currentUser?.join_date === undefined ||
       currentUser?.join_date === null ||
       currentUser?.target_rekrutmen_latest === undefined ||
@@ -365,8 +361,7 @@ const Dashboard = (props) => {
         currentUser?.id === undefined ||
         currentUser?.name === undefined ? (
           <DashboardLogout />
-        ) : (currentUser?.status_member === undefined ||
-            currentUser?.status_member === null ||
+        ) : (
             currentUser?.join_date === undefined ||
             currentUser?.join_date === null ||
             currentUser?.target_rekrutmen_latest === undefined ||

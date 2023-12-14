@@ -465,7 +465,7 @@ const UserRoots = (props) => {
             </View>
           ) : (
             <Text allowFontScaling={false} style={styles.textUid}>
-              User Roots kosong.
+              Jaringan Anda masih kosong
             </Text>
           )}
         </View>

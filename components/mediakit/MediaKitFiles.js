@@ -569,10 +569,10 @@ function MediaKitFiles(props) {
                 allowFontScaling={false}
                 style={[
                   styles.textSelection,
-                  { color: colors.daclen_light, marginVertical: 20 },
+                  { color: colors.daclen_light, marginVertical: 32 },
                 ]}
               >
-                Mohon Verifikasi Nomor HP terlebih dahulu
+                Mohon menyelesaikan proses registrasi terlebih dahulu.
               </Text>
             ) : null
           ) : watermarkData === null ? (

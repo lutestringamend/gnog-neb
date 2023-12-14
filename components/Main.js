@@ -229,12 +229,13 @@ function Main(props) {
       if (lastNotificationResponse) {
         try {
           console.log(
-            "lastNotificationResponse on_mobile_open",
-            lastNotificationResponse?.notification?.request?.content?.data?.on_mobile_open,
+            "lastNotificationResponse data",
+            lastNotificationResponse?.notification?.request?.content?.data,
           );
           openScreenFromNotification(
             navigationRef,
             lastNotificationResponse?.notification?.request?.content?.data?.on_mobile_open,
+            lastNotificationResponse?.notification?.request?.content?.data?.title,
           );
         } catch (e) {
           console.error(e);
@@ -641,6 +642,7 @@ function Main(props) {
                 currentUser?.name === null
               )
             }
+            isActive={currentUser ? currentUser?.isActive ? currentUser?.isActive : false : false}
             recruitmentTimer={recruitmentTimer}
           />
         </SafeAreaView>

@@ -97,7 +97,7 @@ export const createLocalWelcomeNotification = (name) => {
   const data = {
     title: `Selamat Datang, ${name ? name : "User"}`,
     body: `Miliki bisnis online terpercaya bersama Daclen!`,
-    on_mobile_open: "SaldoReportScreen",
+    on_mobile_open: null,
     timestamp: new Date().toISOString(),
   };
 
@@ -130,13 +130,21 @@ export const createLocalWelcomeNotification = (name) => {
   }
 };
 
-export const openScreenFromNotification = async (navigationRef, data) => {
+export const openScreenFromNotification = async (navigationRef, data, title) => {
   if (navigationRef === undefined || navigationRef === null) {
     return;
   }
 
+  let screenByTitle = null;
+  if (!(title === undefined || title === null)) {
+    if (title.toLowerCase() === "info saldo") {
+      screenByTitle = "SaldoReportScreen";
+    }
+  }
+  console.log(data, title, screenByTitle);
+
   navigationRef.navigate("Main", {
-    openScreen: data ? data : null,
+    openScreen: screenByTitle ? screenByTitle : data ? data : null,
   });
 };
 
