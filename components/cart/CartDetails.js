@@ -18,23 +18,24 @@ import { checkoutdefaultsendername } from "../main/constants";
 import { calculateSaldoAvailable, formatPrice } from "../../axios/cart";
 
 export default function CartDetails(props) {
+  const { saldo, allowSaldo } = props;
   const [useSaldo, setUseSaldo] = useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
     if (
-      props?.saldo === undefined ||
-      props?.saldo === null ||
-      props?.saldo?.used === undefined ||
-      props?.saldo?.used === null
+      saldo === undefined ||
+      saldo === null ||
+      saldo?.used === undefined ||
+      saldo?.used === null
     ) {
       return;
     }
-    setUseSaldo(props?.saldo?.used > 0);
-  }, [props?.saldo]);
+    setUseSaldo(saldo?.used > 0);
+  }, [saldo]);
 
   function openAddress() {
-    navigation.navigate("Address", { isCheckout: true });
+    navigation.navigate("LocationPin", { isCheckout: true });
   }
 
   const setSaldo = (value) => {
@@ -43,15 +44,15 @@ export default function CartDetails(props) {
     }
     if (value) {
       props?.setSaldo({
-        ...props?.saldo,
+        ...saldo,
         used:
-          props?.saldo?.available < props?.totalPrice
-            ? props?.saldo?.available
+          saldo?.available < props?.totalPrice
+            ? saldo?.available
             : props?.totalPrice,
       });
     } else {
       props?.setSaldo({
-        ...props?.saldo,
+        ...saldo,
         used: 0,
       });
     }
@@ -74,11 +75,18 @@ export default function CartDetails(props) {
   return (
     <View style={styles.container}>
       <View style={styles.containerEntry}>
-        <Text allowFontScaling={false} style={styles.textEntryHeader}>Subtotal</Text>
-        <Text allowFontScaling={false} style={styles.textEntry}>{`Rp ${props?.subtotal}`}</Text>
+        <Text allowFontScaling={false} style={styles.textEntryHeader}>
+          Subtotal
+        </Text>
+        <Text
+          allowFontScaling={false}
+          style={styles.textEntry}
+        >{`Rp ${props?.subtotal}`}</Text>
       </View>
       <View style={styles.containerEntry}>
-        <Text allowFontScaling={false} style={styles.textEntryHeader}>Berat</Text>
+        <Text allowFontScaling={false} style={styles.textEntryHeader}>
+          Berat
+        </Text>
         <Text allowFontScaling={false} style={styles.textEntry}>
           {props?.berat}
           {" kg"}
@@ -92,8 +100,13 @@ export default function CartDetails(props) {
         }
         style={styles.containerEntry}
       >
-        <Text allowFontScaling={false} style={styles.textEntryHeader}>Nama Pengirim</Text>
-        <Text allowFontScaling={false} style={[styles.textEntry, { color: colors.daclen_blue }]}>
+        <Text allowFontScaling={false} style={styles.textEntryHeader}>
+          Nama Pengirim
+        </Text>
+        <Text
+          allowFontScaling={false}
+          style={[styles.textEntry, { color: colors.daclen_blue }]}
+        >
           {props?.senderName ? props?.senderName : checkoutdefaultsendername}
         </Text>
 
@@ -108,14 +121,20 @@ export default function CartDetails(props) {
       </TouchableOpacity>
 
       <View style={styles.containerEntry}>
-        <Text allowFontScaling={false} style={styles.textEntryHeader}>Pengemasan</Text>
-        <Text allowFontScaling={false} style={styles.textEntry}>Box</Text>
+        <Text allowFontScaling={false} style={styles.textEntryHeader}>
+          Pengemasan
+        </Text>
+        <Text allowFontScaling={false} style={styles.textEntry}>
+          Box
+        </Text>
       </View>
 
       {props?.isCart &&
         (props?.addressComplete ? (
           <View style={styles.containerRadio}>
-            <Text allowFontScaling={false} style={styles.textEntryHeader}>Pengiriman</Text>
+            <Text allowFontScaling={false} style={styles.textEntryHeader}>
+              Pengiriman
+            </Text>
             {props?.courierChoices?.length > 0 && (
               <View style={styles.containerRadioGroup}>
                 <RadioGroup
@@ -138,7 +157,10 @@ export default function CartDetails(props) {
                 ) : (
                   props?.courierSlug !== "" &&
                   props?.courierSlug !== null && (
-                    <Text allowFontScaling={false} style={[styles.textEntry, { marginHorizontal: 0 }]}>
+                    <Text
+                      allowFontScaling={false}
+                      style={[styles.textEntry, { marginHorizontal: 0 }]}
+                    >
                       Tidak ada pengiriman tersedia dari kurir ini
                     </Text>
                   )
@@ -156,21 +178,29 @@ export default function CartDetails(props) {
               onPress={() => openAddress()}
               style={styles.button}
             >
-              <Text allowFontScaling={false} style={styles.textButton}>Lengkapi Alamat Pengiriman</Text>
+              <Text allowFontScaling={false} style={styles.textButton}>
+                Lengkapi Alamat Pengiriman
+              </Text>
             </TouchableOpacity>
           </View>
         ))}
 
       {(!props?.isCart || props?.courierService) && (
         <View style={[styles.containerRadio, { flexDirection: "row" }]}>
-          <Text allowFontScaling={false} style={styles.textEntryHeader}>Biaya Pengiriman</Text>
+          <Text allowFontScaling={false} style={styles.textEntryHeader}>
+            Biaya Pengiriman
+          </Text>
           <View style={styles.containerRadioGroup}>
-            <Text allowFontScaling={false} style={[styles.textEntry, styles.textStrikethrough]}>
+            <Text
+              allowFontScaling={false}
+              style={[styles.textEntry, styles.textStrikethrough]}
+            >
               {originalDeliveryFee > 0
                 ? `${formatPrice(originalDeliveryFee)}`
                 : "GRATIS"}
             </Text>
-            <Text allowFontScaling={false}
+            <Text
+              allowFontScaling={false}
               style={[
                 styles.textEntry,
                 styles.textDiscount,
@@ -189,44 +219,73 @@ export default function CartDetails(props) {
       props?.totalPrice === undefined ||
       props?.totalPrice === null ||
       props?.totalPrice <= 0 ||
-      props?.saldo === null ||
-      props?.saldo?.available === undefined ||
-      props?.saldo?.available === null ? null : (
+      saldo === null ||
+      saldo?.available === undefined ||
+      saldo?.available === null ? null : (
         <View style={styles.containerHorizontal}>
           <MaterialCommunityIcons
             name="cash-refund"
             size={32}
-            color={colors.daclen_blue}
+            color={allowSaldo ? colors.daclen_blue : colors.daclen_gray}
             style={{ alignSelf: "center" }}
           />
           <View style={styles.containerSaldo}>
-            <Text allowFontScaling={false} style={styles.textSaldoHeader}>
-              {`Gunakan Saldo Daclen (${props?.saldo?.available <= 0 ? "Rp 0" : formatPrice(
-                props?.saldo?.available < props?.totalPrice
-                  ? props?.saldo?.available
-                  : props?.totalPrice
-              )})`}
+            <Text
+              allowFontScaling={false}
+              style={[
+                styles.textSaldoHeader,
+                { color: allowSaldo ? colors.daclen_blue : colors.daclen_gray },
+              ]}
+            >
+              {allowSaldo
+                ? `Gunakan Saldo Daclen (${
+                    saldo?.available <= 0
+                      ? "Rp 0"
+                      : formatPrice(
+                          saldo?.available < props?.totalPrice
+                            ? saldo?.available
+                            : props?.totalPrice,
+                        )
+                  })`
+                : "Penarikan Saldo masih diproses"}
             </Text>
-            <Text allowFontScaling={false} style={styles.textSaldo}>{props?.saldo?.available <= 0 ? "Saldo Anda kosong" : `Saldo tersisa ${
-              useSaldo
-                ? calculateSaldoAvailable(
-                    props?.saldo?.available,
-                    props?.totalPrice
-                  ) > 0
-                  ? formatPrice(
-                      calculateSaldoAvailable(
-                        props?.saldo?.available,
-                        props?.totalPrice
-                      )
-                    )
-                  : "Rp 0"
-                : formatPrice(props?.saldo?.available)
-            } `}</Text>
+            <Text
+              allowFontScaling={false}
+              style={[
+                styles.textSaldo,
+                { color: allowSaldo ? colors.daclen_blue : colors.daclen_gray },
+              ]}
+            >
+              {allowSaldo
+                ? saldo?.available <= 0
+                  ? "Saldo Anda kosong"
+                  : `Saldo tersisa ${
+                      useSaldo
+                        ? calculateSaldoAvailable(
+                            saldo?.available,
+                            props?.totalPrice,
+                          ) > 0
+                          ? formatPrice(
+                              calculateSaldoAvailable(
+                                saldo?.available,
+                                props?.totalPrice,
+                              ),
+                            )
+                          : "Rp 0"
+                        : formatPrice(saldo?.available)
+                    } `
+                : "Checkout dengan Saldo tidak bisa digunakan"}
+            </Text>
           </View>
           <Switch
             style={styles.switch}
             onValueChange={(value) => setSaldo(value)}
-            disabled={props?.saldo?.available <= 0 || props?.setSaldo === undefined || props?.setSaldo === null}
+            disabled={
+              saldo?.available <= 0 ||
+              props?.setSaldo === undefined ||
+              props?.setSaldo === null ||
+              !allowSaldo
+            }
             value={useSaldo}
             ios_backgroundColor={colors.daclen_lightgrey}
             trackColor={{
@@ -244,10 +303,16 @@ export default function CartDetails(props) {
       props?.cashback === null ||
       props?.cashback <= 0 ? null : (
         <View style={[styles.containerEntry, { marginVertical: 20 }]}>
-          <Text allowFontScaling={false} style={[styles.textEntryHeader, styles.textCashback]}>
+          <Text
+            allowFontScaling={false}
+            style={[styles.textEntryHeader, styles.textCashback]}
+          >
             Komisi Penjualan
           </Text>
-          <Text allowFontScaling={false} style={[styles.textEntry, styles.textCashback]}>
+          <Text
+            allowFontScaling={false}
+            style={[styles.textEntry, styles.textCashback]}
+          >
             {props?.cashback}
           </Text>
         </View>
@@ -340,13 +405,13 @@ const styles = StyleSheet.create({
   textSaldoHeader: {
     backgroundColor: "transparent",
     color: colors.daclen_black,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     fontSize: 12,
   },
   textSaldo: {
     backgroundColor: "transparent",
     color: colors.daclen_blue,
-    fontFamily: "Poppins-SemiBold",
+    fontFamily: "Poppins",
     fontSize: 12,
     marginTop: 2,
   },

@@ -17,14 +17,13 @@ import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { clearUserData, getCurrentUser } from "../../axios/user";
+import { clearUserData, getCurrentUser, getRiwayatPenarikanSaldo } from "../../axios/user";
 import {
   clearKeranjang,
   formatPrice,
   storeCheckout,
   overhaulReduxCart,
   overhaulReduxTempCart,
-  checkNumberEmpty,
   processPhoneNumberforCheckout,
 } from "../../axios/cart";
 import { callMasterkurir, getKurirData } from "../../axios/courier";
@@ -87,9 +86,9 @@ function Checkout(props) {
   const [saldo, setSaldo] = useState(defaultSaldo);
   const [totalPrice, setTotalPrice] = useState(0);
   const [checkoutJson, setCheckoutJson] = useState(null);
+  const [allowSaldo, setAllowSaldo] = useState(false);
 
   const {
-    products,
     currentUser,
     token,
     currentAddress,
@@ -98,6 +97,7 @@ function Checkout(props) {
     checkoutError,
     addresses,
     addressId,
+    riwayatSaldo,
   } = props;
   const rbDisclaimer = useRef();
   const rbSenderName = useRef();
@@ -128,7 +128,7 @@ function Checkout(props) {
         used: 0,
       });
     }
-
+    props.getRiwayatPenarikanSaldo(currentUser?.id, token);
     props.callMasterkurir(token);
     let newSenderNameChoices = [checkoutdefaultsendernameoption];
     if (!(currentUser?.name === undefined || currentUser?.name === null)) {
@@ -388,6 +388,25 @@ function Checkout(props) {
       createCheckoutJson();
     }
   }, [addressComplete, totalPrice, courierService, packaging]);
+
+  useEffect(() => {
+    try {
+      if (!(riwayatSaldo === null || riwayatSaldo?.length === undefined || riwayatSaldo?.length < 1)) {
+        let allWithdrawalsDone = true;
+        for (let s of riwayatSaldo) {
+          if (s?.status.toLowerCase() === "diproses") {
+            allWithdrawalsDone = false;
+          }
+        }
+        setAllowSaldo(allWithdrawalsDone);
+        console.log("redux riwayatSaldo", riwayatSaldo?.length, allWithdrawalsDone);
+        return;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setAllowSaldo(false);
+  }, [riwayatSaldo]);
 
   useEffect(() => {
     if (checkout !== null) {
@@ -840,6 +859,7 @@ function Checkout(props) {
               addressComplete={addressComplete}
               saldo={saldo}
               setSaldo={setSaldo}
+              allowSaldo={allowSaldo}
               totalPrice={totalPrice}
             />
 
@@ -1004,6 +1024,7 @@ const mapStateToProps = (store) => ({
   couriers: store.userState.couriers,
   checkout: store.userState.checkout,
   checkoutError: store.userState.checkoutError,
+  riwayatSaldo: store.userState.riwayatSaldo,
   addresses: store.userState.addresses,
   addressId: store.userState.addressId,
 });
@@ -1020,6 +1041,7 @@ const mapDispatchProps = (dispatch) =>
       clearHistoryData,
       overhaulReduxCart,
       overhaulReduxTempCart,
+      getRiwayatPenarikanSaldo,
     },
     dispatch
   );
