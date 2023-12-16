@@ -44,6 +44,7 @@ import DashboardVerification from "./components/DashboardVerification";
 import DashboardCreatePIN from "./components/DashboardCreatePIN";
 import DashboardUpgrade from "./components/DashboardUpgrade";
 import DashboardTimer from "./components/DashboardTimer";
+import { updateReduxHomePDFFiles } from "../../axios/home";
 import { checkNumberEmpty } from "../../axios";
 import { convertDateISOStringtoDisplayDate } from "../../axios/profile";
 import {
@@ -53,6 +54,7 @@ import {
   VIOLETTA_MOCK,
 } from "../../axios/constants/mockup";
 import { recruitmenttarget } from "../../axios/constants";
+import { getPDFFiles } from "../../axios/pdf";
 
 const defaultTotalRekrutmen = {
   showHPV: 0,
@@ -71,6 +73,7 @@ const Dashboard = (props) => {
     regDateInMs,
     recruitmentTimer,
     saldoAkumulasi,
+    pdfFiles,
   } = props;
 
   const [message, setMessage] = useState({
@@ -196,6 +199,15 @@ const Dashboard = (props) => {
     }
   }, [saldoAkumulasi]);
 
+  useEffect(() => {
+    if (token === null) {
+      return;
+    }
+    if (pdfFiles === null) {
+      fetchPDFFiles();
+    }
+  }, [token, pdfFiles]);
+
   /*useEffect(() => {
     if (mockData === null) {
       return;
@@ -259,6 +271,18 @@ const Dashboard = (props) => {
       setHpvError(null);
     }
   };
+
+  const fetchPDFFiles = async () => {
+    const fetchData = await getPDFFiles(token);
+    if (fetchData !== null) {
+      props.updateReduxHomePDFFiles(fetchData);
+    }
+  }
+
+  const refreshDashboard = () => {
+    fetchHPV();
+    fetchPDFFiles();
+  }
 
   function onLockPress() {
     props.updateReduxProfileLockStatus(!profileLock);
@@ -353,7 +377,7 @@ const Dashboard = (props) => {
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={() => fetchHPV()}
+            onRefresh={() => refreshDashboard()}
           />
         }
       >
@@ -407,6 +431,7 @@ const Dashboard = (props) => {
             <DashboardButtons
               userId={currentUser?.id}
               username={currentUser?.name}
+              pdfFiles={pdfFiles}
               setMessage={(text, isError) =>
                 setMessage({
                   text,
@@ -534,6 +559,7 @@ const mapStateToProps = (store) => ({
   hpv: store.userState.hpv,
   hpvTotalRekrutmen: store.userState.hpvTotalRekrutmen,
   saldoAkumulasi: store.userState.saldoAkumulasi,
+  pdfFiles: store.homeState.pdfFiles,
 });
 
 const mapDispatchProps = (dispatch) =>
@@ -546,6 +572,7 @@ const mapDispatchProps = (dispatch) =>
       getRegisterSnapToken,
       updateReduxRegisterSnapToken,
       getLaporanSaldo,
+      updateReduxHomePDFFiles,
     },
     dispatch
   );

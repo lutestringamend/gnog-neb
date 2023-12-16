@@ -103,6 +103,7 @@ export const mediakitphoto = "api/mobile/media-kit/foto"
 export const mediakitvideo = "api/admin/media-kit/video"
 export const mediakitkategori = "api/mobile/media-kit/kategori"
 export const tutorialvideo = "api/mobile/video-tutorial"
+export const getpdffiles = "api/mobile/file-pdf/index-pdf"
 
 export const personalwebsiteurl = "https://daclen.com/web/"
 export const personalwebsiteurlshort = "daclen.com/web/"

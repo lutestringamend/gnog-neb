@@ -41,6 +41,9 @@ import {
   dashboardbuttonsdefaultscreenwidth,
   dashboardbuttonsdefaultwidth,
   dashboardbuttonsmaxratio,
+  kataloghadiahtag,
+  kodeetiktag,
+  penjelasanbisnistag,
 } from "../constants";
 
 const screenWidth = Dimensions.get("window").width;
@@ -60,10 +63,10 @@ export const DashButton = (props) => {
         styles.button,
         {
           paddingVertical: Math.round(
-            ratio * dashboardbuttonsdefaultpaddingvertical
+            ratio * dashboardbuttonsdefaultpaddingvertical,
           ),
           paddingHorizontal: Math.round(
-            ratio * dashboardbuttonsdefaultpaddinghorizontal
+            ratio * dashboardbuttonsdefaultpaddinghorizontal,
           ),
           width: Math.round(ratio * dashboardbuttonsdefaultwidth),
           height: Math.round(ratio * dashboardbuttonsdefaultheight),
@@ -98,7 +101,7 @@ export const DashButton = (props) => {
   );
 };
 
-const DashboardButtons = ({ userId, username }) => {
+const DashboardButtons = ({ userId, username, pdfFiles }) => {
   const navigation = useNavigation();
 
   const shareURL = async () => {
@@ -129,7 +132,7 @@ const DashboardButtons = ({ userId, username }) => {
     if (Platform.OS === "android") {
       ToastAndroid.show(
         "Link Referral tersalin ke Clipboard",
-        ToastAndroid.SHORT
+        ToastAndroid.SHORT,
       );
     }
     if (!(props?.setMessage === undefined || props?.setMessage === null)) {
@@ -146,12 +149,12 @@ const DashboardButtons = ({ userId, username }) => {
     openWhatsapp(adminWA, template);
   }
 
-  function openKodeEtik() {
+  /*function openKodeEtik() {
     navigation.navigate("PDFViewer", {
       title: "Kode Etik",
       uri: dashboardkodeetikpdf,
     });
-  }
+  }*/
 
   function openBlog() {
     navigation.navigate("BlogFeed");
@@ -161,25 +164,32 @@ const DashboardButtons = ({ userId, username }) => {
     navigation.navigate("Tutorial");
   }
 
-  function openExplanation() {
+  function openPDFFile(tag) {
     /*navigation.navigate("PDFViewer", {
       title: "Penjelasan Bisnis",
       uri: dashboardpenjelasanbisnispdf,
     })*/
-    Linking.openURL(dashboardpenjelasanbisnispdf);
+    try {
+      const data = pdfFiles.find(({ judul }) => judul.toLowerCase() === tag);
+      if (!(data === undefined || data === null)) {
+        Linking.openURL(data?.file);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   function openWebDashboard() {
     Linking.openURL(webdashboard);
   }
 
-  function openCatalog() {
-    /*navigation.navigate("PDFViewer", {
+  /*function openCatalog() {
+    navigation.navigate("PDFViewer", {
       title: "Katalog Hadiah",
       uri: dashboardhadiahpdf,
-    })*/
+    })
     Linking.openURL(dashboardhadiahpdf);
-  }
+  }*/
 
   return (
     <View style={styles.containerMain}>
@@ -193,8 +203,19 @@ const DashboardButtons = ({ userId, username }) => {
           <DashButton
             text="KODE ETIK"
             icon="file-document-multiple"
-            onPress={() => openKodeEtik()}
-            disabled={true}
+            onPress={() => openPDFFile(kodeetiktag)}
+            disabled={
+              pdfFiles === undefined ||
+              pdfFiles === null ||
+              pdfFiles?.length === undefined ||
+              pdfFiles?.length < 1 ||
+              pdfFiles.find(
+                ({ judul }) => judul.toLowerCase() === kodeetiktag,
+              ) === undefined ||
+              pdfFiles.find(
+                ({ judul }) => judul.toLowerCase() === kodeetiktag,
+              ) === null
+            }
           />
           <DashButton
             text="BLOG"
@@ -216,8 +237,19 @@ const DashboardButtons = ({ userId, username }) => {
           <DashButton
             text={`PENJELASAN\nBISNIS`}
             icon="help-rhombus"
-            onPress={() => openExplanation()}
-            disabled={true}
+            onPress={() => openPDFFile(penjelasanbisnistag)}
+            disabled={
+              pdfFiles === undefined ||
+              pdfFiles === null ||
+              pdfFiles?.length === undefined ||
+              pdfFiles?.length < 1 ||
+              pdfFiles.find(
+                ({ judul }) => judul.toLowerCase() === penjelasanbisnistag,
+              ) === undefined ||
+              pdfFiles.find(
+                ({ judul }) => judul.toLowerCase() === penjelasanbisnistag,
+              ) === null
+            }
           />
           <DashButton
             text={`DASHBOARD\nWEBSITE`}
@@ -227,8 +259,19 @@ const DashboardButtons = ({ userId, username }) => {
           <DashButton
             text={`KATALOG\nHADIAH`}
             icon="gift"
-            onPress={() => openCatalog()}
-            disabled={true}
+            onPress={() => openPDFFile(kataloghadiahtag)}
+            disabled={
+              pdfFiles === undefined ||
+              pdfFiles === null ||
+              pdfFiles?.length === undefined ||
+              pdfFiles?.length < 1 ||
+              pdfFiles.find(
+                ({ judul }) => judul.toLowerCase() === kataloghadiahtag,
+              ) === undefined ||
+              pdfFiles.find(
+                ({ judul }) => judul.toLowerCase() === kataloghadiahtag,
+              ) === null
+            }
           />
         </View>
       </View>

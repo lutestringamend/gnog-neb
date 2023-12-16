@@ -6,12 +6,20 @@ import {
   HOME_SLIDER_STATE_CHANGE,
   HOME_BANNER_STATE_CHANGE,
   HOME_CLEAR_DATA,
+  HOME_PDF_STATE_CHANGE,
 } from "../../redux/constants";
 
 export function clearHomeData() {
   return (dispatch) => {
     console.log("clearHomeData");
     dispatch({ type: HOME_CLEAR_DATA });
+  };
+}
+
+export function updateReduxHomePDFFiles(data) {
+  return (dispatch) => {
+    console.log("updateReduxHomePDFFiles", data);
+    dispatch({ type: HOME_PDF_STATE_CHANGE, data });
   };
 }
 

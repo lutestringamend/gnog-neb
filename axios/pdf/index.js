@@ -1,10 +1,31 @@
 import Axios from "axios";
-import * as FileSystem from "expo-file-system";
+import Axioss from "../index";
+//import * as FileSystem from "expo-file-system";
 import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
 import { sharingOptionsInvoicePDF } from "../../components/media/constants";
 import { sentryLog } from "../../sentry";
 import { getInvoiceFileName } from "../cart";
+import { getpdffiles } from "../constants";
+
+export const getPDFFiles = async (token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  };
+
+  const response = await Axioss.get(getpdffiles, config)
+    .catch((error) => {
+      console.error(error);
+      return null;
+    });
+
+  const data = response?.data ? response?.data?.data ? response?.data?.data : null : null;
+  console.log("getPDFFiles with header");
+  return data;
+}
 
 export const createInvoicePDF = async (html, invoice_no) => {
   let session = null;
@@ -29,6 +50,7 @@ export const createInvoicePDF = async (html, invoice_no) => {
     error = e.toString();
   } 
 
+  
 
   /*
 const blob = new Blob([data], {
