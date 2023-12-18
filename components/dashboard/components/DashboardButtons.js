@@ -56,6 +56,7 @@ export const DashButton = (props) => {
   /*if (props?.disabled) {
     return null;
   }*/
+  const { pdfFiles, tag, disabled } = props;
 
   return (
     <TouchableOpacity
@@ -76,7 +77,17 @@ export const DashButton = (props) => {
         },
       ]}
       onPress={() => props?.onPress()}
-      disabled={props?.disabled}
+      disabled={disabled || 
+        pdfFiles === undefined ||
+        pdfFiles === null ||
+        pdfFiles?.length === undefined ||
+        pdfFiles?.length < 1 ||
+        pdfFiles.find(
+          ({ judul }) => judul.toLowerCase() === tag.toLowerCase(),
+        ) === undefined ||
+        pdfFiles.find(
+          ({ judul }) => judul.toLowerCase() === tag.toLowerCase(),
+        ) === null}
     >
       {props?.icon ? (
         <MaterialCommunityIcons
@@ -166,7 +177,7 @@ const DashboardButtons = ({ userId, username, pdfFiles }) => {
 
   function openPDFFile(tag) {
     try {
-      const data = pdfFiles.find(({ judul }) => judul.toLowerCase() === tag);
+      const data = pdfFiles.find(({ judul }) => judul.toLowerCase() === tag.toLowerCase());
       if (!(data === undefined || data === null)) {
         navigation.navigate("PDFViewer", {
           title: tag,
@@ -204,18 +215,8 @@ const DashboardButtons = ({ userId, username, pdfFiles }) => {
             text="KODE ETIK"
             icon="file-document-multiple"
             onPress={() => openPDFFile(kodeetiktag)}
-            disabled={
-              pdfFiles === undefined ||
-              pdfFiles === null ||
-              pdfFiles?.length === undefined ||
-              pdfFiles?.length < 1 ||
-              pdfFiles.find(
-                ({ judul }) => judul.toLowerCase() === kodeetiktag,
-              ) === undefined ||
-              pdfFiles.find(
-                ({ judul }) => judul.toLowerCase() === kodeetiktag,
-              ) === null
-            }
+            pdfFiles={pdfFiles}
+            tag={kodeetiktag}
           />
           <DashButton
             text="BLOG"
@@ -238,18 +239,8 @@ const DashboardButtons = ({ userId, username, pdfFiles }) => {
             text={`PENJELASAN\nBISNIS`}
             icon="help-rhombus"
             onPress={() => openPDFFile(penjelasanbisnistag)}
-            disabled={
-              pdfFiles === undefined ||
-              pdfFiles === null ||
-              pdfFiles?.length === undefined ||
-              pdfFiles?.length < 1 ||
-              pdfFiles.find(
-                ({ judul }) => judul.toLowerCase() === penjelasanbisnistag,
-              ) === undefined ||
-              pdfFiles.find(
-                ({ judul }) => judul.toLowerCase() === penjelasanbisnistag,
-              ) === null
-            }
+            pdfFiles={pdfFiles}
+            tag={penjelasanbisnistag}
           />
           <DashButton
             text={`DASHBOARD\nWEBSITE`}
@@ -260,18 +251,8 @@ const DashboardButtons = ({ userId, username, pdfFiles }) => {
             text={`KATALOG\nHADIAH`}
             icon="gift"
             onPress={() => openPDFFile(kataloghadiahtag)}
-            disabled={
-              pdfFiles === undefined ||
-              pdfFiles === null ||
-              pdfFiles?.length === undefined ||
-              pdfFiles?.length < 1 ||
-              pdfFiles.find(
-                ({ judul }) => judul.toLowerCase() === kataloghadiahtag,
-              ) === undefined ||
-              pdfFiles.find(
-                ({ judul }) => judul.toLowerCase() === kataloghadiahtag,
-              ) === null
-            }
+            pdfFiles={pdfFiles}
+            tag={kataloghadiahtag}
           />
         </View>
       </View>

@@ -66,9 +66,9 @@ export const WATERMARK_VIDEO = "Video Promosi";
 export const watermarkphotoicon = "image";
 export const watermarkvideoicon = "video-box";
 
-export const penjelasanbisnistag = "penjelasan bisnis"
-export const kataloghadiahtag = "katalog hadiah"
-export const kodeetiktag = "kode etik"
+export const penjelasanbisnistag = "Penjelasan Bisnis"
+export const kataloghadiahtag = "Katalog Hadiah"
+export const kodeetiktag = "Kode Etik"
 
 export const linkcopied = "Tersimpan ke Clipboard";
 export const sharingdialogtitle = "Bagikan Link Referral";

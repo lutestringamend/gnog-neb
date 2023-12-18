@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { SafeAreaView, StyleSheet } from "react-native";
 import Pdf from "react-native-pdf";
 import { colors, dimensions } from "../../styles/base";
@@ -24,34 +24,45 @@ function openExternalLink(uri) {
 }
 
 const PDFViewer = (props) => {
-  const title = props.route.params?.title ? props.route.params?.title : "Daclen";
+  const title = props.route.params?.title
+    ? props.route.params?.title
+    : "Daclen";
   const uri = props.route.params?.uri ? props.route.params?.uri : null;
-  const content = props.route.params?.content
-    ? props.route.params?.content
-    : null;
-  props.navigation.setOptions({
-    title,
-    headerShown: true,
-  });
-  const PdfResource = { uri, cache: true };
+
+  useEffect(() => {
+    if (props.route.params?.title) {
+      props.navigation.setOptions({
+        title,
+        headerShown: true,
+      });
+    }
+  }, [props.route.params]);
 
   try {
     return (
       <SafeAreaView style={styles.container}>
-        <Pdf 
-          trustAllCerts={false}
-          source={PdfResource}
-          style={styles.pdf}
-          onLoadComplete={(numberOfPages, filePath) => {
-              console.log(`number of pages: ${numberOfPages}`);
-          }}
-        />
+        {uri ? (
+          <Pdf
+            trustAllCerts={false}
+            source={{ uri, cache: true }}
+            style={styles.pdf}
+            onLoadComplete={(numberOfPages, filePath) => {
+              console.log("onLoadComplete", numberOfPages, filePath);
+            }}
+          />
+        ) : null}
       </SafeAreaView>
     );
   } catch (e) {
     console.error(e);
     sentryLog(e);
-    return <ErrorScreen title={title} message="Baca PDF di website Daclen" uri={mainhttp} />;
+    return (
+      <ErrorScreen
+        title={title}
+        message="Baca PDF di website Daclen"
+        uri={mainhttp}
+      />
+    );
   }
 };
 
@@ -64,8 +75,7 @@ const styles = StyleSheet.create({
   pdf: {
     flex: 1,
     width: dimensions.fullWidth,
-    height: dimensions.fullHeight,
-  }
+  },
 });
 
 export default PDFViewer;
