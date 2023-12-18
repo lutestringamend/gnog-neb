@@ -321,17 +321,24 @@ export function processExpoImagePickerUri(result) {
         Platform.OS === "ios"
           ? result?.uri.replace("file://", "")
           : result?.uri,
-      type: result?.type,
-      name: result?.fileName,
+      type: getMimeType(result?.uri),
+      name: `${result?.uri.split("/").pop()}`,
     };
   } catch (e) {
     console.log(e);
   }
 
+  console.log("processExpoImagePickerUri", newFoto);
+
   return newFoto;
 }
 
 export function getMimeType(dataURI) {
+  /*try {
+    return mime.getType(dataURI);
+  } catch (err) {
+    
+  }*/
   try {
     if (Platform.OS === "web") {
       const splitDataURI = dataURI.split(",");
@@ -347,9 +354,10 @@ export function getMimeType(dataURI) {
       }
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
     return "";
   }
+  
 }
 
 export function sendProfilePhotoCameraFail(message) {
@@ -505,8 +513,8 @@ export const pickImage = async () => {
     if (result === null || result?.canceled) {
       return null;
     } else if (!result?.canceled) {
-      console.log("result", result);
-      data = processExpoImagePickerUri(result?.uri ? result : result.assets[0]);
+      console.log("launchImageLibraryAsync", result);
+      data = processExpoImagePickerUri(result?.assets ? result?.assets[0] ? result?.assets[0] : null : null);
       /*if (Platform.OS === "ios") {
         if (data?.fileSize !== undefined && data?.fileSize !== null) {
           return null;
@@ -514,7 +522,6 @@ export const pickImage = async () => {
           return FILE_OVERSIZE;
         }
       }*/
-      console.log(data);
       return data?.uri;
     } else {
       return IMAGE_PICKER_ERROR;

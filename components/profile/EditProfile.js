@@ -222,12 +222,6 @@ function EditProfile(props) {
       setUploadingPhoto(defaultUploadingPhoto);
       props.setMediaProfilePicture(null, currentUser?.id);
     }
-
-    /*
-              case "addressIncomplete":
-            rbSheetAddress.current.open();
-            break;
-    */
   }, [userUpdate]);
 
   useEffect(() => {
@@ -328,8 +322,22 @@ function EditProfile(props) {
     }
   }
 
-  const executeUploadPhoto = () => {
-    props.updateUserPhoto(currentUser?.id, token, props.profilePicture);
+  const executeUploadPhoto = async () => {
+    const result = await updateUserPhoto(currentUser?.id, token, props.profilePicture);
+    if (result === undefined || result === null || result?.result === undefined || result?.result === null) {
+      props.setMediaProfilePicture(null, currentUser?.id);
+      setSuccess(false);
+      setError(result?.error ? result?.error : "Foto tidak berhasil disimpan");
+    } else {
+      setSuccess(true);
+      setError("Foto berhasil disimpan");
+    }
+    if (loading) {
+      setLoading(false);
+    }
+    if (uploadingPhoto.pending || uploadingPhoto.uploading) {
+      setUploadingPhoto(defaultUploadingPhoto);
+    }
   };
 
   const executeUploadData = (foto) => {
@@ -887,10 +895,11 @@ const styles = StyleSheet.create({
   button: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 12,
+    paddingVertical: 8,
     paddingHorizontal: 32,
     marginHorizontal: 20,
     marginBottom: 20,
+    height: 42,
     borderRadius: 6,
     zIndex: 3,
     backgroundColor: colors.daclen_blue,
@@ -905,8 +914,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   textButton: {
-    fontSize: 16,
-    fontFamily: "Poppins-Bold",
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
     color: colors.white,
   },
   textUid: {
@@ -933,7 +942,6 @@ const mapDispatchProps = (dispatch) =>
     {
       updateUserData,
       getBank,
-      updateUserPhoto,
       clearMediaData,
       getCurrentUser,
       updateReduxCurrentUserData,

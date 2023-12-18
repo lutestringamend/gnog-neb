@@ -120,7 +120,7 @@ function BSMedia(props) {
           <Text allowFontScaling={false} style={styles.textButton}>Foto dari Kamera</Text>
         </TouchableOpacity>
 
-        {Platform.OS === "android" || Platform.OS === "ios" ? null : <TouchableOpacity
+        {Platform.OS === "ios" ? null : <TouchableOpacity
             onPress={() => openImagePicker()}
             style={[
               styles.button,

@@ -123,6 +123,7 @@ import {
   saldokeluartag,
   saldomasuktag,
 } from "../../components/dashboard/constants";
+import axios from "axios";
 
 export const resetPassword = () => {
   Linking.openURL(resetpassword);
@@ -149,7 +150,7 @@ export const userLogout = async (username) => {
   setObjectAsync(ASYNC_WELCOME_NOTIFICATION_KEY, null);
   setObjectAsync(
     ASYNC_USER_PREVIOUS_USERNAME,
-    username === undefined || username === null ? null : username
+    username === undefined || username === null ? null : username,
   );
   //await clearStorage();
 };
@@ -377,7 +378,7 @@ export const storePenarikanSaldo = async (token, saldo, userId) => {
           data: null,
           error: error.toString(),
         };
-      }
+      },
     );
     const data = response?.data;
     console.log("storePenarikanSaldo response", response);
@@ -699,7 +700,7 @@ export function deleteAccount(email, password, deviceToken) {
         password,
         device_name: Platform.OS,
       },
-      deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN
+      deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN,
     );
     console.log("deleteAccount");
 
@@ -812,59 +813,120 @@ export function getOTP(id, token, nomor_telp) {
   };
 }
 
-export function updateUserPhoto(id, token, uri) {
+export const updateUserPhoto = async (id, token, uri) => {
+  let result = null;
+  let error = null;
+
   try {
-    return (dispatch) => {
-      let formData = new FormData();
-      let type = getMimeType(uri);
-      let name = getProfilePictureName(id, type, uri);
-      let method = "";
+    let formData = new FormData();
+    let type = getMimeType(uri);
+    let name = `${uri.split("/").pop()}`;
+    //getProfilePictureName(id, type, uri)
+    let method = "";
 
-      const foto = {
-        name,
-        type,
-        uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
-      };
+    const foto = {
+      uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
+      name,
+      type,
+    };
 
-      if (Platform.OS === "web") {
-        const fileSize = calculateBase64SizeInBytes(uri);
-        if (fileSize >= MAXIMUM_FILE_SIZE_IN_BYTES) {
-          dispatch(sendProfilePhotoUnusable(true));
-          dispatch({ type: MEDIA_CLEAR_DATA });
-          return;
-        }
-
-        let blob = DataURIToBlob(uri);
-        formData.append("foto", blob, name);
-        method = "uri to blob";
-        console.log("sending blob", name, type, blob);
-      } else {
-        formData.append("foto", foto);
-        method = "using object";
+    if (Platform.OS === "web") {
+      const fileSize = calculateBase64SizeInBytes(uri);
+      if (fileSize >= MAXIMUM_FILE_SIZE_IN_BYTES) {
+        dispatch(sendProfilePhotoUnusable(true));
+        dispatch({ type: MEDIA_CLEAR_DATA });
+        return;
       }
 
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      };
+      let blob = DataURIToBlob(uri);
+      formData.append("foto", blob, name);
+      method = "uri to blob";
+      console.log("sending blob", name, type, blob);
+    } else {
+      formData.append("foto", foto);
+      method = "using object";
+    }
 
-      const url = updateuserphoto + "/" + id.toString();
-      console.log("updateUserPhoto", url);
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        "Content-Type": "multipart/form-data",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Allow-Credentials": "true",
+      },
+    };
 
-      Axioss.post(url, formData, config)
+    /*
+      JSON.stringify({
+                      MAINMESSAGE: error.message,
+                      CONFIG: JSON.stringify(config),
+                      METHOD: method,
+                      URI: uri,
+                      TYPE: type,
+                      FORMDATA: JSON.stringify(formData),
+                    })
+      */
+
+    const url = mainhttp + updateuserphoto + "/" + id.toString();
+    console.log("updateUserPhoto", url, foto, config);
+    /*let res = await fetch(
+        url,
+        {
+          method: "post",
+          body: formData,
+          headers,
+        }
+      ).catch((e) => {
+        console.error("fetch error", e);
+        error = e.toString();
+      });*/
+
+    //await Axios.post(url, formData, config)
+
+    let res = await axios({
+      method: "POST",
+      url,
+      data: formData,
+      headers: config.headers,
+      transformRequest: (data, error) => {
+        return formData;
+      },
+    }).catch((e) => {
+      console.error("axios formdata error", e, JSON.stringify(e));
+      sentryLog(e);
+      error = e.toString();
+    });
+
+    if (!(res === undefined || res === null)) {
+      let responseJson = await res.json();
+      if (responseJson?.status === 1) {
+        result = responseJson;
+      }
+      console.log("fetch uup", res, responseJson);
+    }
+
+    /*Axioss.post(url, formData, config)
         .then((response) => {
           const data = response.data;
           console.log(data);
           if (data?.session === "success") {
             dispatch({ type: USER_UPDATE_STATE_CHANGE, data: data });
           } else if (id === 8054) {
+            let message = data?.errors
+              ? data?.errors?.foto
+                ? data?.errors?.foto[0]
+                  ? data?.errors?.foto[0]
+                  : JSON.stringify(data?.errors?.foto)
+                : JSON.stringify(data?.errors)
+              : JSON.stringify(data);
             dispatch({
               type: USER_UPDATE_STATE_CHANGE,
               data: {
                 session: "photoError",
-                message: `${JSON.stringify(foto)}\n\n${JSON.stringify(data)}`,
+                message,
               },
             });
           } else if (data?.errors !== undefined) {
@@ -873,7 +935,7 @@ export function updateUserPhoto(id, token, uri) {
                 type: USER_UPDATE_STATE_CHANGE,
                 data: {
                   session: "photoError",
-                  message: JSON.stringify(data?.errors?.foto),
+                  message,
                 },
               });
             } else {
@@ -881,7 +943,7 @@ export function updateUserPhoto(id, token, uri) {
                 type: USER_UPDATE_STATE_CHANGE,
                 data: {
                   session: "photoError",
-                  message: JSON.stringify(data?.errors),
+                  message,
                 },
               });
             }
@@ -906,23 +968,17 @@ export function updateUserPhoto(id, token, uri) {
                 type: USER_UPDATE_STATE_CHANGE,
                 data: {
                   session: "photoError",
-                  message: data[0].toString(),
+                  message: JSON.stringify(data),
                 },
               });
             }
           }
           dispatch({ type: MEDIA_CLEAR_DATA });
         })
-        .catch((error) => {
-          console.error(error);
-          sentryLog(error);
-          dispatch({
-            type: USER_UPDATE_STATE_CHANGE,
-            data: {
-              session: "photoError",
-              message:
-                id === 8054
-                  ? JSON.stringify({
+        
+        });*/
+    /*
+        JSON.stringify({
                       MAINMESSAGE: error.message,
                       CONFIG: JSON.stringify(config),
                       METHOD: method,
@@ -930,15 +986,12 @@ export function updateUserPhoto(id, token, uri) {
                       TYPE: type,
                       FORMDATA: JSON.stringify(formData),
                     })
-                  : "Foto tidak berhasil diupload",
-            },
-          });
-        });
-    };
-  } catch (error) {
-    console.error(error);
-    sentryLog(error);
-    return (dispatch) => {
+        */
+  } catch (err) {
+    console.error(err);
+    sentryLog(err);
+    error = err.toString();
+    /*return (dispatch) => {
       dispatch({
         type: USER_UPDATE_STATE_CHANGE,
         data: {
@@ -951,9 +1004,13 @@ export function updateUserPhoto(id, token, uri) {
           }),
         },
       });
-    };
+    };*/
   }
-}
+  return {
+    result,
+    error,
+  };
+};
 
 export function updateUserData(
   id,
@@ -961,7 +1018,7 @@ export function updateUserData(
   address,
   token,
   currentUser,
-  foto
+  foto,
 ) {
   try {
     return (dispatch) => {
@@ -1184,7 +1241,7 @@ export function changePassword(authData, id, token) {
 
     const url = userchangepassword + "/" + id.toString();
     console.log(
-      "changePassword with header and params " + JSON.stringify(authData)
+      "changePassword with header and params " + JSON.stringify(authData),
     );
 
     Axioss.post(url, authData, config)
@@ -1249,7 +1306,7 @@ export const serverLogout = async (token) => {
           session,
           error: error.toString(),
         };
-      }
+      },
     );
     if (
       result === null ||
@@ -1279,7 +1336,7 @@ export function register(authData, deviceToken) {
         ...authData,
         device_name: Platform.OS,
       },
-      deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN
+      deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN,
     );
 
     let isDevUser = isUserDevServer(authData?.name);
@@ -1313,7 +1370,7 @@ export function register(authData, deviceToken) {
             },
             (error) => {
               console.error(error);
-            }
+            },
           );
           dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token });
           storeNewToken(token, authData?.password);
@@ -1342,7 +1399,7 @@ export async function loginCheck(email) {
         console.error(error);
         sentryLog(error);
         result["error"] = error.toString();
-      }
+      },
     );
     const data = response?.data;
     console.log("loginCheck", email, data);
@@ -1370,7 +1427,7 @@ export function login(email, password, resetPIN, deviceToken) {
         password,
         device_name: Platform.OS,
       },
-      deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN
+      deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN,
     );
 
     let isDevUser = isUserDevServer(email);
@@ -1406,7 +1463,7 @@ export function login(email, password, resetPIN, deviceToken) {
             },
             (error) => {
               console.error(error);
-            }
+            },
           );
           if (resetPIN) {
             dispatch({ type: USER_PROFILE_PIN_STATE_CHANGE, data: null });
@@ -1455,11 +1512,10 @@ export const getCurrentUser = (token, storageCurrentUser) => {
             if (level.includes("admin")) {
               userLogout();
               dispatch({ type: USER_TOKEN_STATE_CHANGE, token: null });
-              dispatch({ type: USER_STATE_CHANGE, data: null }); 
+              dispatch({ type: USER_STATE_CHANGE, data: null });
               dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
               dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });
             }
-
           } catch (e) {
             console.error(e);
           }
@@ -1538,7 +1594,7 @@ export const fetchHPVfromUserCurrent = async (dispatch, token, currentUser) => {
       result === null ||
       result?.result === undefined ||
       result?.result === null ||
-      result?.result?.data === undefined || 
+      result?.result?.data === undefined ||
       result?.result?.data === null ||
       result?.result?.data?.children === null ||
       result?.result?.data?.children?.length === undefined ||
@@ -1644,7 +1700,7 @@ function readStorageCurrentUser(dispatch, storageCurrentUser, status) {
         `Terjadi kendala saat login. Mohon menghubungi Daclen Care untuk penjelasan lebih lanjut.${
           status ? `\n${status.toString()}` : ""
         }`,
-        ToastAndroid.LONG
+        ToastAndroid.LONG,
       );
     }
   } else {
@@ -1684,7 +1740,7 @@ export function setNewToken(token, storageCurrentUser, key, deviceToken) {
           password: key,
           device_name: Platform.OS,
         },
-        deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN
+        deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN,
       );
       console.log("setNewToken login", {
         ...params,
