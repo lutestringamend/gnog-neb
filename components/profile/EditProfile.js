@@ -133,8 +133,8 @@ function EditProfile(props) {
       genderArray.map((item) =>
         item.value === currentUser?.detail_user?.jenis_kelamin
           ? { ...item, selected: true }
-          : { ...item, selected: false }
-      )
+          : { ...item, selected: false },
+      ),
     );
     //console.log("EditProfile currentUser", currentUser);
     let newBankId = currentUser?.detail_user?.bank?.id;
@@ -161,27 +161,9 @@ function EditProfile(props) {
   }, [user]);
 
   useEffect(() => {
-    //debug purposes
-    /*if (currentUser?.id === 8054 && props.profilePicture !== null) {
-      let uri = Platform.OS === "web" ? "base64" : props.profilePicture;
-      let type = getMimeType(props.profilePicture);
-      let name = getProfilePictureName(
-        currentUser?.id,
-        type,
-        props.profilePicture
-      );
-      setError(`uri ${uri}\ntype ${type}\nname ${name}`);
-    }*/
-    if (uploadingPhoto.uploading) {
-      props.getCurrentUser(token);
-      setUploadingPhoto({
-        pending: false,
-        uploading: false,
-      });
-    }
     console.log(
       "redux media profilePicture",
-      props.profilePicture === null ? null : "not null"
+      props.profilePicture === null ? null : "not null",
     );
   }, [props.profilePicture]);
 
@@ -217,7 +199,7 @@ function EditProfile(props) {
           userUpdate?.message === null ||
           userUpdate?.message === ""
           ? "Error mengambil foto baru"
-          : userUpdate?.message
+          : userUpdate?.message,
       );
       setUploadingPhoto(defaultUploadingPhoto);
       props.setMediaProfilePicture(null, currentUser?.id);
@@ -236,7 +218,7 @@ function EditProfile(props) {
   function onPressRadioButtonGender(radioButtonsArray) {
     try {
       const chosen = radioButtonsArray.find(
-        ({ selected }) => selected === true
+        ({ selected }) => selected === true,
       );
       setUser({ ...user, jenis_kelamin: chosen.value });
     } catch (e) {
@@ -317,18 +299,30 @@ function EditProfile(props) {
         });
       }
       executeUploadData(
-        userProfilePicture ? userProfilePicture : currentUser?.detail_user?.foto
+        userProfilePicture
+          ? userProfilePicture
+          : currentUser?.detail_user?.foto,
       );
     }
   }
 
   const executeUploadPhoto = async () => {
-    const result = await updateUserPhoto(currentUser?.id, token, props.profilePicture);
-    if (result === undefined || result === null || result?.result === undefined || result?.result === null) {
+    const result = await updateUserPhoto(
+      currentUser?.id,
+      token,
+      props.profilePicture,
+    );
+    if (
+      result === undefined ||
+      result === null ||
+      result?.result === undefined ||
+      result?.result === null
+    ) {
       props.setMediaProfilePicture(null, currentUser?.id);
       setSuccess(false);
       setError(result?.error ? result?.error : "Foto tidak berhasil disimpan");
     } else {
+      props.getCurrentUser(token);
       setSuccess(true);
       setError("Foto berhasil disimpan");
     }
@@ -347,7 +341,7 @@ function EditProfile(props) {
       currentAddress,
       token,
       currentUser,
-      foto
+      foto,
     );
   };
 
@@ -401,8 +395,14 @@ function EditProfile(props) {
                   : props.profilePicture
               }
               alt={user?.nama_lengkap}
-              contentFit={Platform.OS === "ios" && userProfilePicture === null ? "contain" : "cover"}
-              placeholder={Platform.OS === "ios" ? null : require("../../assets/user.png")}
+              contentFit={
+                Platform.OS === "ios" && userProfilePicture === null
+                  ? "contain"
+                  : "cover"
+              }
+              placeholder={
+                Platform.OS === "ios" ? null : require("../../assets/user.png")
+              }
               transition={100}
             />
             {uploadingPhoto.pending || uploadingPhoto.uploading ? (
@@ -434,7 +434,7 @@ function EditProfile(props) {
             >
               Telah diverifikasi pada
               {moment(currentUser?.nomor_telp_verified_at).format(
-                " MMM DD YYYY, HH:mm"
+                " MMM DD YYYY, HH:mm",
               )}
             </Text>
           )}
@@ -470,7 +470,7 @@ function EditProfile(props) {
             >
               Telah diverifikasi pada
               {moment(currentUser?.email_verified_at).format(
-                " MMM DD YYYY, HH:mm"
+                " MMM DD YYYY, HH:mm",
               )}
             </Text>
           )}
@@ -947,7 +947,7 @@ const mapDispatchProps = (dispatch) =>
       updateReduxCurrentUserData,
       setMediaProfilePicture,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchProps)(EditProfile);

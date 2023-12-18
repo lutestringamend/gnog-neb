@@ -858,18 +858,6 @@ export const updateUserPhoto = async (id, token, uri) => {
         "Access-Control-Allow-Credentials": "true",
       },
     };
-
-    /*
-      JSON.stringify({
-                      MAINMESSAGE: error.message,
-                      CONFIG: JSON.stringify(config),
-                      METHOD: method,
-                      URI: uri,
-                      TYPE: type,
-                      FORMDATA: JSON.stringify(formData),
-                    })
-      */
-
     const url = mainhttp + updateuserphoto + "/" + id.toString();
     console.log("updateUserPhoto", url, foto, config);
     /*let res = await fetch(
@@ -886,7 +874,7 @@ export const updateUserPhoto = async (id, token, uri) => {
 
     //await Axios.post(url, formData, config)
 
-    let res = await axios({
+    result = await axios({
       method: "POST",
       url,
       data: formData,
@@ -900,93 +888,13 @@ export const updateUserPhoto = async (id, token, uri) => {
       error = e.toString();
     });
 
-    if (!(res === undefined || res === null)) {
+    /*if (!(res === undefined || res === null)) {
       let responseJson = await res.json();
       if (responseJson?.status === 1) {
         result = responseJson;
       }
-      console.log("fetch uup", res, responseJson);
-    }
-
-    /*Axioss.post(url, formData, config)
-        .then((response) => {
-          const data = response.data;
-          console.log(data);
-          if (data?.session === "success") {
-            dispatch({ type: USER_UPDATE_STATE_CHANGE, data: data });
-          } else if (id === 8054) {
-            let message = data?.errors
-              ? data?.errors?.foto
-                ? data?.errors?.foto[0]
-                  ? data?.errors?.foto[0]
-                  : JSON.stringify(data?.errors?.foto)
-                : JSON.stringify(data?.errors)
-              : JSON.stringify(data);
-            dispatch({
-              type: USER_UPDATE_STATE_CHANGE,
-              data: {
-                session: "photoError",
-                message,
-              },
-            });
-          } else if (data?.errors !== undefined) {
-            if (data?.errors?.foto !== undefined) {
-              dispatch({
-                type: USER_UPDATE_STATE_CHANGE,
-                data: {
-                  session: "photoError",
-                  message,
-                },
-              });
-            } else {
-              dispatch({
-                type: USER_UPDATE_STATE_CHANGE,
-                data: {
-                  session: "photoError",
-                  message,
-                },
-              });
-            }
-          } else {
-            try {
-              let message = "";
-              for (let a of data) {
-                if (!(a === null || a === "")) {
-                  message = `${message === "" ? a : `${message}\n${a}`}`;
-                }
-              }
-              dispatch({
-                type: USER_UPDATE_STATE_CHANGE,
-                data: {
-                  session: "photoError",
-                  message,
-                },
-              });
-            } catch (e) {
-              console.error(e);
-              dispatch({
-                type: USER_UPDATE_STATE_CHANGE,
-                data: {
-                  session: "photoError",
-                  message: JSON.stringify(data),
-                },
-              });
-            }
-          }
-          dispatch({ type: MEDIA_CLEAR_DATA });
-        })
-        
-        });*/
-    /*
-        JSON.stringify({
-                      MAINMESSAGE: error.message,
-                      CONFIG: JSON.stringify(config),
-                      METHOD: method,
-                      URI: uri,
-                      TYPE: type,
-                      FORMDATA: JSON.stringify(formData),
-                    })
-        */
+    }*/
+    console.log("updateUserPhoto result", result);
   } catch (err) {
     console.error(err);
     sentryLog(err);
