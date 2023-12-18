@@ -37,10 +37,10 @@
     },
     "production": {
       "android": {
-        "channel": "production"
+        "channel": "production-pdf"
       },
       "ios": {
-        "channel": "production-ios",
+        "channel": "production-pdf",
         "resourceClass": "m1-medium"
       }
     }

@@ -165,14 +165,14 @@ const DashboardButtons = ({ userId, username, pdfFiles }) => {
   }
 
   function openPDFFile(tag) {
-    /*navigation.navigate("PDFViewer", {
-      title: "Penjelasan Bisnis",
-      uri: dashboardpenjelasanbisnispdf,
-    })*/
     try {
       const data = pdfFiles.find(({ judul }) => judul.toLowerCase() === tag);
       if (!(data === undefined || data === null)) {
-        Linking.openURL(data?.file);
+        navigation.navigate("PDFViewer", {
+          title: tag,
+          uri: data?.file,
+        })
+        //Linking.openURL(data?.file);
       }
     } catch (e) {
       console.error(e);

@@ -1,8 +1,9 @@
 import React from "react";
 import { SafeAreaView, StyleSheet } from "react-native";
-//import PDFReader from "@hashiprobr/expo-pdf-reader";
-import { colors } from "../../styles/base";
-import WebView from "react-native-webview";
+import Pdf from "react-native-pdf";
+import { colors, dimensions } from "../../styles/base";
+//import WebView from "react-native-webview";
+import { mainhttp } from "../../axios/constants";
 
 function ErrorScreen({ title, message, uri }) {
   return (
@@ -32,17 +33,25 @@ const PDFViewer = (props) => {
     title,
     headerShown: true,
   });
+  const PdfResource = { uri, cache: true };
 
   try {
     return (
       <SafeAreaView style={styles.container}>
-        <WebView source={uri ? { uri } : content} />
+        <Pdf 
+          trustAllCerts={false}
+          source={PdfResource}
+          style={styles.pdf}
+          onLoadComplete={(numberOfPages, filePath) => {
+              console.log(`number of pages: ${numberOfPages}`);
+          }}
+        />
       </SafeAreaView>
     );
   } catch (e) {
     console.error(e);
     sentryLog(e);
-    return <ErrorScreen title={title} message="Baca PDF di website Daclen" uri={uri} />;
+    return <ErrorScreen title={title} message="Baca PDF di website Daclen" uri={mainhttp} />;
   }
 };
 
@@ -52,6 +61,11 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: colors.white,
   },
+  pdf: {
+    flex: 1,
+    width: dimensions.fullWidth,
+    height: dimensions.fullHeight,
+  }
 });
 
 export default PDFViewer;
