@@ -19,6 +19,42 @@ export function clearProductData() {
   };
 }
 
+export const formatProductDescription = (e) => {
+  try {
+    let str = e.replaceAll("</strong></p>", "#STRONGP#");
+    str = str.replaceAll("</p>", "#P#");
+    str = str.replaceAll("</li>", "#LI#");
+    str = str.replace(/<[^>]*>?/gm, '');
+    str = str.replaceAll("&nbsp;", "");
+    let items = str.split("\n");
+    let pieces = [];
+    for (let i = 0; i < items?.length; i++) {
+      let tag = "p";
+      let text = items[i].trim();
+      if (text.includes("#LI#")) {
+        tag = "li";
+        text = text.replaceAll("#LI#", "");
+      } else if (text.includes("#STRONGP#")) {
+        tag = "strongp";
+        text = text.replaceAll("#STRONGP#", "");
+      } else {
+        text = text.replaceAll("#P#", "");
+      }
+      text = text.trim();
+      if (text !== "") {
+        pieces.push({
+          tag,
+          text,
+        });
+      }
+    }
+    return pieces;
+  } catch (err) {
+    console.error(err);
+  }
+  return [];
+}
+
 export function getProductData(storageProducts, paginationIndex, page) {
   return (dispatch) => {
     try {

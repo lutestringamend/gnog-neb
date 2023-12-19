@@ -366,7 +366,8 @@ function Shop(props) {
             Tidak ada produk tersedia di kategori ini
           </Text>
         ) : (
-          <FlashList
+          <View style={styles.containerList}>
+            <FlashList
             estimatedItemSize={productpaginationnumber}
             numColumns={1}
             horizontal={false}
@@ -405,6 +406,8 @@ function Shop(props) {
               />
             )}
           />
+            </View>
+          
         )}
       </View>
     </View>
@@ -463,7 +466,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  containerFlatlistBottom: {
+  containerList: {
     flex: 1,
     backgroundColor: "transparent",
     alignSelf: "center",
@@ -471,6 +474,9 @@ const styles = StyleSheet.create({
       screenWidth < staticDimensions.shopMaxWidth
         ? screenWidth
         : staticDimensions.shopMaxWidth,
+  },
+  containerFlatlistBottom: {
+    backgroundColor: "transparent",
     paddingBottom: staticDimensions.pageBottomPadding / 2,
   },
   containerHorizontal: {
