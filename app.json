@@ -2,7 +2,7 @@
   "expo": {
     "name": "Daclen",
     "slug": "daclen",
-    "version": "1.2.31",
+    "version": "1.2.32",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
     "userInterfaceStyle": "light",
@@ -77,12 +77,16 @@
       "softwareKeyboardLayoutMode": "resize",
       "useNextNotificationsApi": true,
       "userInterfaceStyle": "light",
-      "versionCode": 85
+      "versionCode": 86
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      [
+        "./plugins/withDisableForcedDarkModeAndroid.js",
+        {}
+      ],
       [
         "@config-plugins/ffmpeg-kit-react-native",
         {

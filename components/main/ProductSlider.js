@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, TouchableHighlight } from "react-native";
+import {
+  StyleSheet,
+  View,
+  TouchableHighlight,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
@@ -28,7 +34,7 @@ function ProductSlider(props) {
         const check = props.productItems.find(({ id }) => id === props.id);
         if (check !== undefined) {
           setMainPhoto(
-            check?.thumbnail_url ? check?.thumbnail_url : check?.foto_url
+            check?.thumbnail_url ? check?.thumbnail_url : check?.foto_url,
           );
           const data = [
             {
@@ -45,7 +51,7 @@ function ProductSlider(props) {
                   thumbnail: thumbnail_url ? thumbnail_url : foto_url,
                   id,
                 }))
-                .flat(1)
+                .flat(1),
             ),
           ];
           setPhotos(data);
@@ -79,25 +85,19 @@ function ProductSlider(props) {
     return (
       <View style={styles.container}>
         {mainPhoto === null ? null : (
-          <TouchableHighlight
+          <TouchableOpacity
             style={styles.containerSlider}
             onPress={() => openImageViewer()}
-            underlayColor={colors.daclen_lightgrey}
           >
+            <ActivityIndicator size="large" color={colors.daclen_gray} style={styles.spinner} />
             <Image
-              style={[
-                styles.image,
-                {
-                  width: dimensions.fullWidth,
-                  height: dimensions.fullWidth,
-                },
-              ]}
+              style={styles.largeImage}
               source={mainPhoto}
               contentFit="contain"
-              placeholder={blurhash}
-              transition={0}
+              placeholder={null}
+              transition={100}
             />
-          </TouchableHighlight>
+          </TouchableOpacity>
         )}
 
         {photos?.length > 1 ? (
@@ -107,18 +107,19 @@ function ProductSlider(props) {
               horizontal={true}
               data={photos}
               renderItem={({ item }) => (
-                <TouchableHighlight
+                <TouchableOpacity
+                  style={styles.containerItem}
                   onPress={() => openPhoto(item?.img)}
-                  underlayColor={colors.daclen_orange}
                 >
+                  <ActivityIndicator size="small" color={colors.daclen_gray} style={styles.spinner} />
                   <Image
                     style={styles.imageList}
                     source={item?.thumbnail}
                     contentFit="contain"
-                    placeholder={blurhash}
-                    transition={0}
+                    placeholder={null}
+                    transition={100}
                   />
-                </TouchableHighlight>
+                </TouchableOpacity>
               )}
             />
           </View>
@@ -158,10 +159,13 @@ function ProductSlider(props) {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
+    backgroundColor: "transparent",
   },
   containerSlider: {
-    width: "100%",
-    justifyContent: "flex-start",
+    backgroundColor: colors.white,
+    width: dimensions.fullWidth,
+    height: dimensions.fullWidth,
+    justifyContent: "center",
     alignItems: "center",
   },
   containerFlatlist: {
@@ -173,17 +177,40 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderRadius: 2,
   },
+  containerItem: {
+    backgroundColor: colors.white,
+    width: 60,
+    height: 60,
+    borderColor: colors.daclen_lightgrey,
+    borderStartWidth: 1,
+    borderEndWidth: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  largeImage: {
+    backgroundColor: "transparent",
+    width: dimensions.fullWidth,
+    height: dimensions.fullWidth,
+    position: "absolute",
+    top: 0,
+    start: 0,
+    zIndex: 2,
+  },
   image: {
-    backgroundColor: "white",
+    backgroundColor: "transparent",
   },
   imageList: {
     width: 60,
     height: 60,
-    aspectRatio: 1 / 1,
-    backgroundColor: "white",
-    borderColor: colors.daclen_lightgrey,
-    borderStartWidth: 1,
-    borderEndWidth: 1,
+    backgroundColor: colors.white,
+    position: "absolute",
+    top: 0,
+    start: 0,
+    zIndex: 2,
+  },
+  spinner: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
   },
 });
 

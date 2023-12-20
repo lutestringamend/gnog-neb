@@ -181,6 +181,7 @@ const styles = StyleSheet.create({
   },
   textDescStrong: {
     marginTop: 6,
+    fontSize: 13,
     fontFamily: "Poppins-SemiBold",
   },
   textSpecHeader: {

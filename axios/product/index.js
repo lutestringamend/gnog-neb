@@ -26,6 +26,7 @@ export const formatProductDescription = (e) => {
     str = str.replaceAll("</li>", "#LI#");
     str = str.replace(/<[^>]*>?/gm, '');
     str = str.replaceAll("&nbsp;", "");
+    str = str.replaceAll("&rdquo;", `"`);
     let items = str.split("\n");
     let pieces = [];
     for (let i = 0; i < items?.length; i++) {

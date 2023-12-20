@@ -4795,6 +4795,14 @@ expo-structured-headers@~3.1.0:
   resolved "https://registry.yarnpkg.com/expo-structured-headers/-/expo-structured-headers-3.1.2.tgz#ac2ec100349a398f5d4fcc450d9b963b9a6efcff"
   integrity sha512-UjVKwKeq6Ya4FWweDyfeaB2a2FY6BzrgF/c2uRMUDRVbUZIkhmc6BNYHKmfS2bnYWOc3bqp/REX5YFLSQfqvOg==
 
+expo-system-ui@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/expo-system-ui/-/expo-system-ui-2.6.0.tgz#573743670e4b9ec342eacecddc7b28c314d2b415"
+  integrity sha512-QvWpFoVnQnGq6y3C9Rpm6WeIxkdRaPe/rLgMnhmKYNdoq31WYEZkrJLH8ri04XeT29v1yupVeXhh+2yvrm2OhQ==
+  dependencies:
+    "@react-native/normalize-color" "^2.0.0"
+    debug "^4.3.2"
+
 expo-updates-interface@~0.9.0:
   version "0.9.1"
   resolved "https://registry.npmjs.org/expo-updates-interface/-/expo-updates-interface-0.9.1.tgz"

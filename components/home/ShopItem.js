@@ -39,23 +39,22 @@ const ShopItem = (props) => {
           onPress={() => openProduct()}
           style={styles.containerImage}
         >
+          <ActivityIndicator
+            size={16}
+            color={colors.daclen_gray}
+            style={styles.spinner}
+          />
           <Image
             key={id}
             style={[styles.image, index > 9 ? styles.imageBundle : null]}
             source={foto_url}
             onClick={() => openProduct()}
             contentFit={index > 9 ? "contain" : "cover"}
-            placeholder={blurhash}
-            transition={50}
+            placeholder={null}
+            transition={100}
           />
         </TouchableOpacity>
-      ) : (
-        <ActivityIndicator
-          size="small"
-          color={colors.daclen_gray}
-          style={{ alignSelf: "center" }}
-        />
-      )}
+      ) : null}
 
       <TouchableOpacity
         style={styles.containerRightTop}
@@ -164,6 +163,13 @@ const styles = StyleSheet.create({
     marginTop: 4,
     backgroundColor: "transparent",
   },
+  spinner: { 
+    alignSelf: "center",
+    backgroundColor: "transparent",
+    top: 52,
+    start: 26,
+    position: "absolute",
+  }
 });
 
 export default memo(ShopItem);
