@@ -66,7 +66,7 @@ export default function CartAction(props) {
         <TouchableOpacity
           onPress={() => onButtonPressed()}
           disabled={props?.buttonDisabled}
-          style={[styles.button, { backgroundColor: color }]}
+          style={[styles.button, { backgroundColor: props?.buttonDisabled ? colors.daclen_gray : color }]}
         >
           {loading && props?.enableProcessing ? (
             <ActivityIndicator

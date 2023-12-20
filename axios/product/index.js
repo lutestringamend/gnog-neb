@@ -1,6 +1,7 @@
-import Axios from "../index";
+import Axioss from "../index";
+import Axios from "axios";
 
-import { productfetchlink, showproduct } from "../constants/index";
+import { mainhttp, productfetchlink, showproduct } from "../constants/index";
 import {
   PRODUCTS_DATA_STATE_CHANGE,
   PRODUCT_ITEM_DATA_STATE_CHANGE,
@@ -12,6 +13,7 @@ import {
 } from "../../redux/constants";
 import { productpaginationnumber } from "../constants/index";
 import { sentryLog } from "../../sentry";
+import { checkNumberEmpty } from "../cart";
 
 export function clearProductData() {
   return (dispatch) => {
@@ -59,19 +61,20 @@ export const formatProductDescription = (e) => {
 export function getProductData(storageProducts, paginationIndex, page) {
   return (dispatch) => {
     try {
-      const url = productfetchlink + (page === undefined || page === null ? "" : `?page=${page}`);
+      const url = mainhttp + productfetchlink + (page === undefined || page === null ? "" : `?page=${page}`);
+      console.log("getProductData", url);
       Axios.get(url)
       .then((response) => {
         //console.log("getProductData response", url, response?.data);
         const products = response?.data?.data;
         if (
-          products === undefined ||
+          (products === undefined ||
           products === null ||
           products?.length === undefined ||
-          products?.length < 1
+          products?.length < 1) && checkNumberEmpty(page) <= 1
         ) {
           dispatch({ type: PRODUCT_FETCH_ERROR_STATE_CHANGE, data: "getProductData response null" });
-          console.log("getProductData response null", response);
+          console.log("getProductData response null", response?.data);
           readStorageProductData(dispatch, storageProducts, paginationIndex, null);
         } else {
           dispatch({ type: PRODUCT_FETCH_ERROR_STATE_CHANGE, data: null });

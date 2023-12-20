@@ -18,7 +18,7 @@ import { checkoutdefaultsendername } from "../main/constants";
 import { calculateSaldoAvailable, formatPrice } from "../../axios/cart";
 
 export default function CartDetails(props) {
-  const { saldo, allowSaldo } = props;
+  const { saldo, allowSaldo, saldoCut } = props;
   const [useSaldo, setUseSaldo] = useState(false);
   const navigation = useNavigation();
 
@@ -35,7 +35,7 @@ export default function CartDetails(props) {
   }, [saldo]);
 
   function openAddress() {
-    navigation.navigate("LocationPin", { isCheckout: true });
+    navigation.navigate("PickAddress", { isCheckout: true });
   }
 
   const setSaldo = (value) => {
@@ -171,15 +171,14 @@ export default function CartDetails(props) {
         ) : (
           <View style={styles.containerRadio}>
             <Text allowFontScaling={false} style={styles.textIncompleteAddress}>
-              Anda harus mengisi alamat dengan lengkap sebelum melanjutkan
-              Checkout
+              Anda harus mengisi alamat pengiriman dahulu
             </Text>
             <TouchableOpacity
               onPress={() => openAddress()}
               style={styles.button}
             >
               <Text allowFontScaling={false} style={styles.textButton}>
-                Lengkapi Alamat Pengiriman
+                Pilih Alamat
               </Text>
             </TouchableOpacity>
           </View>
@@ -215,7 +214,7 @@ export default function CartDetails(props) {
         </View>
       )}
 
-      {!props?.isCart ||
+      {props?.isCart ?
       props?.totalPrice === undefined ||
       props?.totalPrice === null ||
       props?.totalPrice <= 0 ||
@@ -295,7 +294,18 @@ export default function CartDetails(props) {
             thumbColor={colors.daclen_light}
           />
         </View>
-      )}
+      ) : saldoCut === undefined || saldoCut === null || saldoCut === 0 ? null : (
+        <View style={[styles.containerEntry, { marginBottom: 24 }]}>
+        <Text allowFontScaling={false} style={[styles.textEntryHeader, { color: colors.daclen_red }]}>
+          Pembayaran dengan Saldo
+        </Text>
+        <Text
+          allowFontScaling={false}
+          style={[styles.textEntry, { color: colors.daclen_red }]}
+        >{`- ${formatPrice(saldoCut)}`}</Text>
+      </View>
+      )
+      }
 
       <Separator thickness={1} />
 
@@ -396,10 +406,9 @@ const styles = StyleSheet.create({
     color: colors.daclen_red,
   },
   textIncompleteAddress: {
-    fontFamily: "Poppins",
     fontSize: 14,
     color: colors.daclen_danger,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     textAlign: "center",
   },
   textSaldoHeader: {
@@ -420,7 +429,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 10,
-    paddingHorizontal: 12,
+    paddingHorizontal: 24,
     marginVertical: 10,
     borderRadius: 4,
     elevation: 3,

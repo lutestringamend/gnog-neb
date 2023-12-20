@@ -1,12 +1,25 @@
-import { MIDTRANS_CLIENT_KEY } from "../../axios/constants";
+import {
+  MIDTRANS_CLIENT_KEY,
+  MIDTRANS_PROD_DOMAIN,
+  MIDTRANS_SB_DOMAIN,
+  SB_MIDTRANS_CLIENT_KEY,
+  devhttp,
+  mainhttp,
+} from "../../axios/constants";
 
-export const snapHTML =`
+export const snapHTML = `
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript"
-            src="https://app.midtrans.com/snap/snap.js"
-            data-client-key=${MIDTRANS_CLIENT_KEY}"></script>
+            src="${
+              mainhttp === devhttp ? MIDTRANS_SB_DOMAIN : MIDTRANS_PROD_DOMAIN
+            }snap/snap.js"
+            data-client-key=${
+              mainhttp === devhttp
+                ? SB_MIDTRANS_CLIENT_KEY
+                : MIDTRANS_CLIENT_KEY
+            }"></script>
 </head>
 
 <body>

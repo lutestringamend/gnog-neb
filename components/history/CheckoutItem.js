@@ -32,60 +32,94 @@ import { checkoutsubtotalcommissionpercentage } from "../main/constants";
 import { createInvoicePDF } from "../../axios/pdf";
 
 function CheckoutItem(props) {
-  const { checkout, token, userCheckout } = props;
+  const { token, userCheckout, checkouts } = props;
+  const [checkout, setCheckout] = useState(null);
   const [snapToken, setSnapToken] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingSnap, setLoadingSnap] = useState(null);
+  const [saldoCut, setSaldoCut] = useState(0);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
 
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (
-      props.route.params?.id !== null &&
-      props.route.params?.id !== undefined
-    ) {
-      props.getCheckoutItem(props.route.params?.id);
-    }
-  }, [props.route.params?.id]);
+    getCheckoutData();
+    //console.log("checkoutItem params", props.route.params);
+  }, [props.route.params]);
 
   useEffect(() => {
-    if (checkout === null && !refreshing) {
-      props.clearUserCheckoutData();
-      console.log("checkout is null");
-    } else {
-      console.log("checkout", checkout);
-      if (
-        checkout?.status === null ||
-        checkout?.status.toLowerCase() === "tertunda"
-      ) {
-        props.postPembayaran(token, checkout?.id);
-      }
+    if (checkout === null) {
+      return;
     }
+
+    //console.log("checkout", checkout?.pembayaran_dengan_saldo[0]?.komisi);
+    if (
+      checkout?.status === null ||
+      checkout?.status.toLowerCase() === "tertunda"
+    ) {
+      props.postPembayaran(token, checkout?.id);
+    }
+    if (
+      !(
+        checkout?.pembayaran_dengan_saldo === undefined ||
+        checkout?.pembayaran_dengan_saldo[0] === undefined ||
+        checkout?.pembayaran_dengan_saldo[0]?.komisi === undefined ||
+        checkout?.pembayaran_dengan_saldo[0]?.komisi === null
+      )
+    ) {
+      setSaldoCut(Math.abs(checkout?.pembayaran_dengan_saldo[0]?.komisi));
+      return;
+    }
+    setSaldoCut(0);
   }, [checkout]);
 
   useEffect(() => {
     if (refreshing) {
-      if (
-        props.route.params?.id !== null &&
-        props.route.params?.id !== undefined
-      ) {
-        props.getCheckoutItem(props.route.params?.id);
-      }
+      getCheckoutData();
       setRefreshing(false);
     }
   }, [refreshing]);
 
   useEffect(() => {
     if (userCheckout?.snap_token === null || checkout === null) {
-      console.log("userCheckout is null", userCheckout);
+      console.log("userCheckout is", userCheckout);
       setSnapToken(null);
     } else {
       console.log("userCheckout updated", userCheckout);
       setSnapToken(userCheckout?.snap_token);
     }
   }, [userCheckout]);
+
+  const getCheckoutData = () => {
+    try {
+      if (
+        props.route.params?.id === undefined ||
+        props.route.params?.id === null
+      ) {
+        props.clearUserCheckoutData();
+        navigation.goBack();
+      } else {
+        if (
+          !(
+            checkouts === undefined ||
+            checkouts === null ||
+            checkouts?.length === undefined ||
+            checkouts?.length < 1
+          )
+        ) {
+          const find = checkouts.find(
+            ({ id }) => id === props.route.params?.id,
+          );
+          setCheckout(find ? find : null);
+          return;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setCheckout(null);
+  };
 
   const openMidtrans = () => {
     setLoadingSnap(true);
@@ -128,7 +162,7 @@ function CheckoutItem(props) {
       setError(null);
       const invoicing = await createInvoicePDF(
         response?.data,
-        checkout?.invoice
+        checkout?.invoice,
       );
       if (
         invoicing === null ||
@@ -138,7 +172,7 @@ function CheckoutItem(props) {
       ) {
         setSuccess(false);
         setError(
-          invoicing?.error ? invoicing?.error : "Gagal mencetak invoice"
+          invoicing?.error ? invoicing?.error : "Gagal mencetak invoice",
         );
       } else {
         setSuccess(true);
@@ -150,7 +184,17 @@ function CheckoutItem(props) {
   return (
     <SafeAreaView style={styles.container}>
       {error ? (
-        <Text allowFontScaling={false} style={[styles.textError, { backgroundColor: success ? colors.daclen_green : colors.daclen_danger }]}>
+        <Text
+          allowFontScaling={false}
+          style={[
+            styles.textError,
+            {
+              backgroundColor: success
+                ? colors.daclen_green
+                : colors.daclen_danger,
+            },
+          ]}
+        >
           {error}
         </Text>
       ) : null}
@@ -163,15 +207,14 @@ function CheckoutItem(props) {
           />
         }
       >
-        {checkout === null ||
-        checkout?.detail_checkout === undefined ||
-        refreshing ? (
+        {refreshing ? (
           <ActivityIndicator
             size="large"
             color={colors.daclen_orange}
             style={{ alignSelf: "center", marginVertical: 20 }}
           />
-        ) : (
+        ) : checkout === null ||
+          checkout?.detail_checkout === undefined ? null : (
           <View style={styles.container}>
             <View style={styles.containerHeader}>
               <View style={styles.containerDescVertical}>
@@ -205,7 +248,7 @@ function CheckoutItem(props) {
                   Info Penerima
                 </Text>
                 <Text allowFontScaling={false} styles={styles.textEntry}>
-                  {`${checkout.detail_checkout?.nama_lengkap}\n${checkout.detail_checkout?.email}\n${checkout.detail_checkout?.nomor_telp}`}
+                  {`${checkout?.detail_checkout?.nama_lengkap}\n${checkout?.detail_checkout?.email}\n${checkout?.detail_checkout?.nomor_telp}`}
                 </Text>
 
                 <Text allowFontScaling={false} style={styles.textTitle}>
@@ -219,7 +262,7 @@ function CheckoutItem(props) {
                   Alamat Pengiriman
                 </Text>
                 <Text allowFontScaling={false} styles={styles.textEntry}>
-                  {checkout.detail_checkout?.alamat_lengkap}
+                  {checkout?.detail_checkout?.alamat_lengkap}
                 </Text>
               </View>
             </View>
@@ -255,10 +298,11 @@ function CheckoutItem(props) {
                   ? formatPrice(
                       (checkoutsubtotalcommissionpercentage *
                         checkout?.keranjang?.subtotal) /
-                        100
+                        100,
                     )
                   : 0
               }
+              saldoCut={saldoCut}
             />
           </View>
         )}
@@ -266,7 +310,7 @@ function CheckoutItem(props) {
 
       <CartAction
         isCart={false}
-        totalPrice={checkout?.total}
+        totalPrice={checkout?.total - saldoCut}
         buttonAction={() => openMidtrans()}
         buttonText={
           checkout?.status === "diverifikasi"
@@ -274,10 +318,11 @@ function CheckoutItem(props) {
             : checkout?.status
         }
         buttonDisabled={
-          (checkout?.status === null && snapToken === null) ||
+          (snapToken === null && checkout?.status === null) ||
           loadingSnap ||
           checkout?.status === "ditolak" ||
-          checkout?.status === "diterima"
+          checkout?.status === "diterima" ||
+          checkout?.status === "diproses"
         }
       />
     </SafeAreaView>
@@ -394,6 +439,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   userCheckout: store.userState.checkout,
+  checkouts: store.historyState.checkouts,
   checkout: store.historyState.checkout,
 });
 
@@ -404,7 +450,7 @@ const mapDispatchProps = (dispatch) =>
       postPembayaran,
       clearUserCheckoutData,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchProps)(CheckoutItem);

@@ -25,6 +25,7 @@ import {
   overhaulReduxCart,
   overhaulReduxTempCart,
   processPhoneNumberforCheckout,
+  checkNumberEmpty,
 } from "../../axios/cart";
 import { callMasterkurir, getKurirData } from "../../axios/courier";
 import { clearHistoryData } from "../../axios/history";
@@ -45,6 +46,7 @@ import CheckoutSenderName from "./CheckoutSenderName";
 import { sentryLog } from "../../sentry";
 import { ASYNC_HISTORY_CHECKOUT_KEY } from "../asyncstorage/constants";
 import { setObjectAsync } from "../asyncstorage";
+import { devhttp, mainhttp } from "../../axios/constants";
 
 const defaultSaldo = {
   used: 0,
@@ -86,7 +88,7 @@ function Checkout(props) {
   const [saldo, setSaldo] = useState(defaultSaldo);
   const [totalPrice, setTotalPrice] = useState(0);
   const [checkoutJson, setCheckoutJson] = useState(null);
-  const [allowSaldo, setAllowSaldo] = useState(false);
+  const [allowSaldo, setAllowSaldo] = useState(true);
 
   const {
     currentUser,
@@ -102,6 +104,13 @@ function Checkout(props) {
   const rbDisclaimer = useRef();
   const rbSenderName = useRef();
   const navigation = useNavigation();
+
+  useEffect(() => {
+    if (token === undefined || token === null) {
+      return;
+    }
+    props.getCurrentUser(token);
+  }, [token]);
 
   useEffect(() => {
     if (
@@ -389,9 +398,11 @@ function Checkout(props) {
     }
   }, [addressComplete, totalPrice, courierService, packaging]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     try {
-      if (!(riwayatSaldo === null || riwayatSaldo?.length === undefined || riwayatSaldo?.length < 1)) {
+      if (riwayatSaldo === null || riwayatSaldo?.length === undefined || riwayatSaldo?.length < 1) {
+        setAllowSaldo(true);
+      } else {
         let allWithdrawalsDone = true;
         for (let s of riwayatSaldo) {
           if (s?.status.toLowerCase() === "diproses") {
@@ -400,13 +411,13 @@ function Checkout(props) {
         }
         setAllowSaldo(allWithdrawalsDone);
         console.log("redux riwayatSaldo", riwayatSaldo?.length, allWithdrawalsDone);
-        return;
       }
+      return;
     } catch (e) {
       console.error(e);
     }
     setAllowSaldo(false);
-  }, [riwayatSaldo]);
+  }, [riwayatSaldo]);*/
 
   useEffect(() => {
     if (checkout !== null) {
@@ -429,18 +440,11 @@ function Checkout(props) {
     if (afterCheckout) {
       try {
         setError(checkoutError?.response?.data?.message);
-        if (Platform.OS === "android") {
-          ToastAndroid.show(
-            checkoutError?.response?.data?.message,
-            ToastAndroid.LONG
-          );
-        } else {
-          console.log(
-            "redux checkoutError",
-            checkoutError,
-            checkoutError?.response?.data?.message
-          );
-        }
+        console.log(
+          "redux checkoutError",
+          checkoutError,
+          checkoutError?.response?.data?.message
+        );
       } catch (e) {
         console.error(e);
         setError(checkoutError.toString());
@@ -459,7 +463,8 @@ function Checkout(props) {
     setCheckoutJson({
       ...checkoutJson,
       user: {
-        saldo: (saldo.available - saldo.used).toString(),
+        ...checkoutJson?.user,
+        pakai_saldo: checkNumberEmpty(saldo.used) > 0 ? true : false,
       },
     });
   }, [saldo]);
@@ -643,6 +648,13 @@ function Checkout(props) {
       }
 
       //console.log("createCheckoutJson courier", courier);
+      let user = {
+        pakai_saldo: checkNumberEmpty(saldo.used) > 0 ? true : false,
+      }
+      //saldo: (saldo.available - saldo.used).toString(),
+      console.log("checkout user", user);
+
+      //tipe_kemasan: packaging,
       const newCheckout = {
         checkout: {
           keranjang_id: props.cart.id,
@@ -654,7 +666,6 @@ function Checkout(props) {
           },
           total: totalPrice,
           metode_pembayaran: "transfer_bank",
-          tipe_kemasan: packaging,
         },
         detail_checkout: {
           ...detail_checkout,
@@ -663,9 +674,7 @@ function Checkout(props) {
             : "Daclen Official",
           nomor_telp: detail_checkout?.nomor_telp ? processPhoneNumberforCheckout(detail_checkout?.nomor_telp) : "",
         },
-        user: {
-          saldo: (saldo.available - saldo.used).toString(),
-        },
+        user,
       };
       //console.log("createCheckoutJson", newCheckout);
       setCheckoutJson(newCheckout);

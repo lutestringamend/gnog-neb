@@ -12,7 +12,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { useNavigation } from "@react-navigation/native";
 
 import { colors } from "../../../styles/base";
-import { dashboardkodeetikpdf, webdashboard } from "../../../axios/constants";
+import { MIDTRANS_PROD_DOMAIN, MIDTRANS_SB_DOMAIN, dashboardkodeetikpdf, devhttp, mainhttp, webdashboard } from "../../../axios/constants";
 import {
   dashboardonboardingbutton,
   dashboardonboardingtext1,
@@ -55,14 +55,15 @@ const DashboardUpgrade = (props) => {
       Linking.openURL(webdashboard);
       return;
     }
-    let snap_url = `https://app.midtrans.com/snap/v3/redirection/${registerSnapToken?.snap_token}`;
+    let domain = mainhttp === devhttp ? MIDTRANS_SB_DOMAIN : MIDTRANS_PROD_DOMAIN;
+    let snap_url = `${domain}snap/v3/redirection/${registerSnapToken?.snap_token}`;
     try {
       const params = {
         snapToken: registerSnapToken?.snap_token,
         snap_url,
         checkoutId: registerSnapToken?.bayar_register_id,
       };
-      console.log("open snap", params);
+      console.log("open snap", snap_url);
       navigation.navigate("OpenMidtrans", params);
     } catch (e) {
       console.log(e);

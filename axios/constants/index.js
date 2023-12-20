@@ -1,7 +1,8 @@
 export const appname = "Daclen"
 export const mainhttp = "https://daclen.com/"
-export const devhttp = "https://devdcn.com/"
-export const mainhttpcookie = "https://daclen.com"
+//export const mainhttp = "https://dev.daclen.id/"
+export const devhttp = "https://dev.daclen.id/"
+//export const mainhttpcookie = "https://dev.daclen.id"
 export const localisationID = "id-ID";
 export const defaultcurrency = "IDR";
 export const defaultcountry = "Indonesia";
@@ -10,6 +11,8 @@ export const googleAPIkey = "AIzaSyAyT3F_f80zLWHNHSiG2oZMjW5G_Z9jhy4"
 //export const placesAPIkey = "AIzaSyAyT3F_f80zLWHNHSiG2oZMjW5G_Z9jhy4";
 //export const googleAPIdevkey = "AIzaSyDK1LZOoEtLWkcunXe40MKc-VO7oZjXQ7A";
 
+export const MIDTRANS_PROD_DOMAIN = "https://app.midtrans.com/"
+export const MIDTRANS_SB_DOMAIN = "https://app.sandbox.midtrans.com/"
 export const MIDTRANS_CLIENT_KEY = "Mid-client-BqXWNDpvPhUU7fB1"
 export const SB_MIDTRANS_CLIENT_KEY = "SB-Mid-client-xamInlBsiMBuJSWC"
 

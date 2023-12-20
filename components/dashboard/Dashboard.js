@@ -118,14 +118,14 @@ const Dashboard = (props) => {
         setRegDate(
           currentUser?.join_date
             ? convertInvoiceNumbertoRegDate(currentUser?.join_date)
-            : null
+            : null,
         );
       }
       try {
         setTotalRekrutmen({
           ...total_rekrutmen,
           childrenSize: checkNumberEmpty(
-            currentUser?.target_rekrutmen_latest?.target_dicapai
+            currentUser?.target_rekrutmen_latest?.target_dicapai,
           ),
         });
       } catch (e) {
@@ -137,20 +137,22 @@ const Dashboard = (props) => {
       }
       return;
     }
+  }, [currentUser]);
 
+  useEffect(() => {
     if (fetchingToken) {
       props.getRegisterSnapToken(currentUser?.id, token);
     } else if (registerSnapToken === null) {
       checkAsyncSnapToken();
     }
-  }, [currentUser]);
+  }, [fetchingToken]);
 
   useEffect(() => {
     if (registerSnapToken !== null) {
       setObjectAsync(ASYNC_USER_REGISTER_SNAP_TOKEN_KEY, registerSnapToken);
       setFetchingToken(false);
     }
-    //console.log("redux registerSnapToken", registerSnapToken);
+    console.log("redux registerSnapToken", registerSnapToken);
   }, [registerSnapToken]);
 
   useEffect(() => {
@@ -192,7 +194,8 @@ const Dashboard = (props) => {
         token === null ||
         currentUser === null ||
         currentUser?.id === undefined ||
-        currentUser?.id === null
+        currentUser?.id === null ||
+        !currentUser?.isActive
       )
     ) {
       props.getLaporanSaldo(currentUser?.id, token);
@@ -221,7 +224,7 @@ const Dashboard = (props) => {
     }
     setFetchingToken(true);
     const storageSnapToken = await getObjectAsync(
-      ASYNC_USER_REGISTER_SNAP_TOKEN_KEY
+      ASYNC_USER_REGISTER_SNAP_TOKEN_KEY,
     );
     if (
       storageSnapToken === undefined ||
@@ -277,12 +280,12 @@ const Dashboard = (props) => {
     if (fetchData !== null) {
       props.updateReduxHomePDFFiles(fetchData);
     }
-  }
+  };
 
   const refreshDashboard = () => {
     fetchHPV();
     fetchPDFFiles();
-  }
+  };
 
   function onLockPress() {
     props.updateReduxProfileLockStatus(!profileLock);
@@ -349,8 +352,8 @@ const Dashboard = (props) => {
                 hpvError !== null
                   ? colors.daclen_blue
                   : message?.isError
-                  ? colors.daclen_red
-                  : colors.daclen_green,
+                    ? colors.daclen_red
+                    : colors.daclen_green,
             },
           ]}
           disabled={hpvError === null}
@@ -385,8 +388,7 @@ const Dashboard = (props) => {
         currentUser?.id === undefined ||
         currentUser?.name === undefined ? (
           <DashboardLogout />
-        ) : (
-            currentUser?.join_date === undefined ||
+        ) : (currentUser?.join_date === undefined ||
             currentUser?.join_date === null ||
             currentUser?.target_rekrutmen_latest === undefined ||
             currentUser?.target_rekrutmen_latest === null) &&
@@ -465,7 +467,7 @@ const Dashboard = (props) => {
           join_date={convertDateISOStringtoDisplayDate(
             currentUser?.join_date,
             true,
-            null
+            null,
           )}
           regDateInMs={regDateInMs}
           countdownColor={
@@ -574,7 +576,7 @@ const mapDispatchProps = (dispatch) =>
       getLaporanSaldo,
       updateReduxHomePDFFiles,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchProps)(Dashboard);

@@ -50,7 +50,7 @@ export const history = (state = initialState, action) => {
     case HISTORY_CHECKOUT_STATE_CHANGE:
       return {
         ...state,
-        checkout: state.checkouts.find(({ id }) => id === action.id),
+        checkout: state.checkouts === null || state.checkouts?.length === undefined ? null : state.checkouts.find(({ id }) => id === action.id),
       };
 
     case HISTORY_DELIVERY_STATE_CHANGE:

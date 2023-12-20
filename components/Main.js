@@ -72,6 +72,7 @@ import { sentryLog } from "../sentry";
 import { colors } from "../styles/base";
 import { fetchRajaOngkir } from "../axios/address";
 import { requestLocationForegroundPermission } from "./address";
+import { devhttp, mainhttp } from "../axios/constants";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -277,7 +278,7 @@ function Main(props) {
         readStorageProducts();
       } else {
         props.clearCartError();
-        if (props.products?.length < 11) {
+        if (props.products?.length < 11 && mainhttp !== devhttp) {
           props.getProductData(null, 0, 2);
         } else {
           setObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY, props.products);

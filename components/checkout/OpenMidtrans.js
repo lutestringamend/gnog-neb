@@ -5,29 +5,29 @@ import {
   StyleSheet,
   Text,
   View,
-  BackHandler,
-  Image,
+  TouchableOpacity,
   ActivityIndicator,
   Linking,
 } from "react-native";
+import { WebView } from "react-native-webview";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
 import { webcheckout } from "../../axios/constants";
 import { useNavigation } from "@react-navigation/native";
 import MainHeader from "../main/MainHeader";
-import { colors, dimensions } from "../../styles/base";
+import { colors } from "../../styles/base";
 import { ErrorView } from "../webview/WebviewChild";
-
-import { WebView } from "react-native-webview";
+import { getCurrentUser } from "../../axios/user";
+//import { getCheckoutItem } from "../../axios/history";
 import { snapHTML } from "./snap";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { sentryLog } from "../../sentry";
 
 function MainScreen(props) {
-  const navigation = useNavigation();
-  const id = props?.checkoutId;
-
   const backNavigation = () => {
-    navigation.goBack();
+    if (!(props?.backNavigation === undefined || props?.backNavigation === null)) {
+      props?.backNavigation();
+    }
   };
 
   return (
@@ -55,13 +55,20 @@ function MainScreen(props) {
   );
 }
 
-export default function OpenMidtrans(props) {
+const OpenMidtrans = (props) => {
+  const navigation = useNavigation();
+  const checkoutId = props?.checkoutId ? props?.checkoutId : null;
+
   try {
     const [htmlContent, setHtmlContent] = useState(null);
     const [error, setError] = useState(null);
     let token = props.route.params?.snapToken;
     let checkoutId = props.route.params?.checkoutId;
     let snap_url = props.route.params?.snap_url;
+
+    useEffect(() => {
+      console.log("openmidtrans redux token", props?.token);
+    }, [props?.token]);
 
     useEffect(() => {
       console.log({ token, checkoutId });
@@ -82,9 +89,18 @@ export default function OpenMidtrans(props) {
       //setError(`onNavigationStateChange\n${JSON.stringify(e)}`);
     }
 
+    const backNavigation = () => {
+      if (!(props?.token === undefined || props?.token === null)) {
+        props?.getCurrentUser(props?.token);
+      }
+      navigation.goBack();
+    };
+
     if (token === null || token === undefined) {
       return (
         <MainScreen
+          props={props}
+          backNavigation={() => backNavigation()}
           checkoutId={checkoutId}
           content={<Text allowFontScaling={false} style={styles.text}>Tidak ada snap token!</Text>}
         />
@@ -92,6 +108,8 @@ export default function OpenMidtrans(props) {
     } else if (Platform.OS !== "web") {
       return (
         <MainScreen
+          props={props}
+          backNavigation={() => backNavigation()}
           checkoutId={checkoutId}
           error={error}
           content={
@@ -126,6 +144,8 @@ export default function OpenMidtrans(props) {
 
       return (
         <MainScreen
+          props={props}
+          backNavigation={() => backNavigation()}
           checkoutId={checkoutId}
           error={error}
           content={
@@ -138,6 +158,7 @@ export default function OpenMidtrans(props) {
     } else {
       return (
         <MainScreen
+          props={props}
           backNavigation={() => backNavigation()}
           content={
             <ErrorView
@@ -152,6 +173,7 @@ export default function OpenMidtrans(props) {
     sentryLog(error);
     return (
       <MainScreen
+        props={props}
         backNavigation={() => backNavigation()}
         content={
           <ErrorView
@@ -211,3 +233,17 @@ const styles = StyleSheet.create({
     margin: 32,
   },
 });
+
+const mapStateToProps = (store) => ({
+  token: store.userState.token,
+});
+
+const mapDispatchProps = (dispatch) =>
+  bindActionCreators(
+    {
+      getCurrentUser,
+    },
+    dispatch
+  );
+
+export default connect(mapStateToProps, mapDispatchProps)(OpenMidtrans);

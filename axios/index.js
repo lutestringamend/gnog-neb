@@ -7,7 +7,7 @@ const instance = Axios.create({
   baseURL: mainhttp,
 });
 
-instance.interceptors.request.use(
+/*instance.interceptors.request.use(
   async (config) => {
     let baseURL = await getObjectAsync(ASYNC_SERVER_URL);
     if (baseURL === undefined || baseURL === null || baseURL === "") {
@@ -23,7 +23,7 @@ instance.interceptors.request.use(
   (error) => {
     console.error(error);
   }
-);
+);*/
 
 export const isUserDevServer = (name) => {
   if (name === undefined || name === null || name === "") {
