@@ -1110,6 +1110,10 @@ export function setAuthData(data) {
 
 export function getRegisterSnapToken(id, token) {
   return (dispatch) => {
+    if (id === undefined || id === null || token === undefined || token === null) {
+      return;
+    }
+
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -1476,7 +1480,7 @@ export const getCurrentUser = (token, storageCurrentUser) => {
           errorJSON?.status === undefined
             ? null
             : errorJSON?.status);
-        console.error("getCurrentUser", status, error);
+        console.log("getCurrentUser", status, JSON.stringify(error));
         //sentryLog(error);
         dispatch({ type: USER_LOGIN_TOKEN_STATE_CHANGE, token: null });
         dispatch({ type: USER_REGISTER_TOKEN_STATE_CHANGE, token: null });

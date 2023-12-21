@@ -74,7 +74,7 @@ export const About = (props) => {
         <Text allowFontScaling={false} style={styles.textDesc}>
           {abouttext}
         </Text>
-        {devToken || currentUser?.id === 8054 ? (
+        {devToken || currentUser?.id === 8054 || currentUser?.name === "tester" ? (
           <Text allowFontScaling={false} style={styles.textDesc}>
             {devToken}
           </Text>
