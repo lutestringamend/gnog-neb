@@ -218,7 +218,7 @@ function Main(props) {
         return unsubscribe;
       } catch (e) {
         console.error(e);
-        setError(e.toString());
+        addError(e.toString());
         setObjectAsync(ASYNC_DEVICE_TOKEN_KEY, "ERROR_DEV_TOKEN");
         /*if (Platform.OS === "android") {
           ToastAndroid.show(e.toString(), ToastAndroid.LONG);
@@ -291,7 +291,7 @@ function Main(props) {
       if (productError === undefined || productError === null) {
         return;
       }
-      setError(`Mengalami gangguan koneksi`);
+      addError(`Mengalami gangguan koneksi`);
     }, [productError]);
 
     /*useEffect(() => {
@@ -507,7 +507,7 @@ function Main(props) {
         return storageCurrentUser;
       } catch (e) {
         sentryLog(e);
-        setError(e.toString());
+        addError(e.toString());
         return null;
       }
     };
@@ -620,6 +620,10 @@ function Main(props) {
         props.updateReduxMediaKitWatermarkData(newData);
         setObjectAsync(ASYNC_MEDIA_WATERMARK_DATA_KEY, newData);
       }
+    };
+
+    const addError = (text) => {
+      setError((error) => `${error ? error + "\n" : ""}${text}`);
     };
 
     if (
