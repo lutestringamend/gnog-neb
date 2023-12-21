@@ -1031,7 +1031,7 @@ function VideoPlayer(props) {
                   styles.containerPanelVideoPortrait,
                   {
                     top:
-                      videoSize.videoHeight - (Platform.OS === "ios" ? 50 : 40),
+                      videoSize.videoHeight - (Platform.OS === "ios" ? 80 : 40),
                     width: screenWidth,
                     height:
                       Platform.OS === "ios"
