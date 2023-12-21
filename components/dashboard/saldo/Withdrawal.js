@@ -62,11 +62,6 @@ const Withdrawal = (props) => {
   useEffect(() => {
     if (isNaN(amount)) {
       setError("Masukkan nominal yang benar.");
-    } else if (
-      checkNumberEmpty(amount) >
-      checkNumberEmpty(currentUser?.komisi_user?.total)
-    ) {
-      setError("Nominal melebihi saldo yang Anda miliki.");
     } else {
       setError(null);
     }
@@ -93,7 +88,11 @@ const Withdrawal = (props) => {
     /*Linking.openURL(websaldo);
     navigation.goBack();*/
     setLoading(true);
-    const result = await storePenarikanSaldo(token, amount, currentUser?.id);
+    const result = await storePenarikanSaldo(
+      token,
+      (parseInt(amount) + parseInt(SALDO_ADMIN_FEE)).toString(),
+      currentUser?.id,
+    );
     console.log("storePenarikanSaldo result", result);
     if (
       result === undefined ||
@@ -103,9 +102,9 @@ const Withdrawal = (props) => {
     ) {
       setSuccess(false);
       setError(
-        `Gagal mengajukan permintaan menarik saldo.${
+        `Gagal mengajukan permintaan penarikan.${
           result?.error ? `\n${result?.error}` : ""
-        }`
+        }`,
       );
     } else {
       setObjectAsync(ASYNC_USER_RIWAYAT_PENARIKAN, null);
@@ -130,12 +129,15 @@ const Withdrawal = (props) => {
         </Text>
       ) : null}
       <ScrollView style={styles.container}>
-        <Text allowFontScaling={false} style={styles.textCompulsory}>
-          Masukkan Jumlah Penarikan yang Diinginkan
+        <Text
+          allowFontScaling={false}
+          style={[styles.textCompulsory, { fontSize: 16 }]}
+        >
+          Masukkan Jumlah Penarikan
         </Text>
         <Text allowFontScaling={false} style={[styles.text, { marginTop: 2 }]}>
           {`(Minimal Penarikan ${formatPrice(
-            SALDO_WITHDRAWAL_MINIMUM
+            SALDO_WITHDRAWAL_MINIMUM,
           )}, Biaya Admin ${formatPrice(SALDO_ADMIN_FEE)})`}
         </Text>
         <View style={styles.containerTextHorizontal}>
@@ -164,22 +166,35 @@ const Withdrawal = (props) => {
           style={[
             styles.textRemaining,
             {
-              color: error && !success ? colors.daclen_red : colors.daclen_blue,
+              color:
+                amount !== "" &&
+                (parseInt(amount) < SALDO_WITHDRAWAL_MINIMUM ||
+                  parseInt(amount) + SALDO_ADMIN_FEE >
+                    checkNumberEmpty(currentUser?.komisi_user?.total))
+                  ? colors.daclen_red
+                  : colors.daclen_blue,
             },
           ]}
-        >{`${
+        >{`Saldo Anda sekarang ${
           currentUser?.komisi_user
             ? currentUser?.komisi_user?.total
               ? formatPrice(currentUser?.komisi_user?.total)
               : "Rp 0"
             : "Rp 0"
-        } tersedia${
-          parseInt(amount) >= SALDO_WITHDRAWAL_MINIMUM &&
-          parseInt(amount) <= checkNumberEmpty(currentUser?.komisi_user?.total)
-            ? `\nJumlah yang Akan Diterima: ${formatPrice(
-                parseInt(amount) - SALDO_ADMIN_FEE
-              )}`
-            : ""
+        }${
+          amount === ""
+            ? ""
+            : parseInt(amount) < SALDO_WITHDRAWAL_MINIMUM
+              ? `\nMinimal penarikan ${formatPrice(SALDO_WITHDRAWAL_MINIMUM)}`
+              : parseInt(amount) + SALDO_ADMIN_FEE <=
+                  checkNumberEmpty(currentUser?.komisi_user?.total)
+                ? `\nSaldo akan berkurang ${formatPrice(
+                    parseInt(amount) + SALDO_ADMIN_FEE,
+                  )}`
+                : `\nMaksimal penarikan ${formatPrice(
+                    checkNumberEmpty(currentUser?.komisi_user?.total) -
+                      SALDO_ADMIN_FEE,
+                  )} di luar biaya admin ${formatPrice(SALDO_ADMIN_FEE)}`
         }`}</Text>
 
         <Text allowFontScaling={false} style={styles.text}>
@@ -225,9 +240,12 @@ const Withdrawal = (props) => {
             >
               {currentUser?.detail_user?.nomor_rekening}
             </Text>
-            <Text allowFontScaling={false} style={styles.textEntry}>
-              {currentUser?.detail_user?.cabang_bank}
-            </Text>
+            {currentUser?.detail_user?.cabang_bank ? (
+              <Text allowFontScaling={false} style={styles.textEntry}>
+                {currentUser?.detail_user?.cabang_bank}
+              </Text>
+            ) : null}
+
             <TouchableOpacity
               onPress={() => editBankDetails()}
               style={styles.containerHorizontal}
@@ -301,10 +319,10 @@ const Withdrawal = (props) => {
                   loading ||
                   amount === "" ||
                   parseInt(amount) < SALDO_WITHDRAWAL_MINIMUM ||
-                  checkNumberEmpty(amount) >
+                  parseInt(amount) + SALDO_ADMIN_FEE >
                     checkNumberEmpty(currentUser?.komisi_user?.total)
                     ? colors.daclen_gray
-                    : colors.daclen_orange,
+                    : colors.daclen_yellow_new,
                 marginTop: 32,
                 marginBottom: staticDimensions.pageBottomPadding / 2,
               },
@@ -313,7 +331,7 @@ const Withdrawal = (props) => {
               loading ||
               amount === "" ||
               parseInt(amount) < SALDO_WITHDRAWAL_MINIMUM ||
-              checkNumberEmpty(amount) >
+              parseInt(amount) + SALDO_ADMIN_FEE >
                 checkNumberEmpty(currentUser?.komisi_user?.total)
             }
           >
@@ -381,15 +399,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 4,
-    elevation: 4,
-    backgroundColor: colors.daclen_orange,
+    elevation: 2,
     marginHorizontal: 20,
     zIndex: 4,
   },
   textButton: {
-    fontSize: 16,
-    fontFamily: "Poppins-Bold",
-    color: colors.white,
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
+    color: colors.daclen_black,
   },
   textCompulsory: {
     color: colors.daclen_orange,
@@ -399,9 +416,9 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   textCurrency: {
-    color: colors.daclen_orange,
+    color: colors.daclen_bg,
     fontSize: 16,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
     alignSelf: "center",
     marginStart: 20,
   },
@@ -420,7 +437,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
     marginHorizontal: 20,
     fontFamily: "Poppins",
-    fontSize: 14,
+    fontSize: 16,
   },
   textError: {
     fontSize: 14,
@@ -451,10 +468,11 @@ const styles = StyleSheet.create({
   },
   textRemaining: {
     color: colors.daclen_blue,
-    fontSize: 14,
-    fontFamily: "Poppins-Bold",
+    fontSize: 12,
+    fontFamily: "Poppins-SemiBold",
     marginHorizontal: 20,
-    marginTop: 4,
+    height: 48,
+    marginTop: 8,
   },
   textExplanation: {
     color: colors.daclen_gray,
@@ -475,7 +493,7 @@ const mapDispatchProps = (dispatch) =>
     {
       updateReduxUserRiwayatSaldo,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchProps)(Withdrawal);

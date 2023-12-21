@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 14,
-    fontFamily: "Poppins",
+    fontFamily: "Poppins-SemiBold",
     color: colors.daclen_black,
   },
 });
