@@ -23,7 +23,39 @@ import { getLaporanPoin, clearAuthError } from "../../axios/user";
 import { colors, staticDimensions } from "../../styles/base";
 import Separator from "../profile/Separator";
 import { ErrorView } from "../webview/WebviewChild";
-import { weblaporanpoin } from "../../axios/constants";
+import { weblaporanpoin, webpenukaranpoin } from "../../axios/constants";
+
+const ExchangeButton = ({ disabled }) => {
+  function openExchange() {
+    Linking.openURL(webpenukaranpoin);
+  }
+  return (
+    <View style={styles.containerButton}>
+      <TouchableOpacity
+        onPress={() => openExchange()}
+        style={[
+          styles.exchangeButton,
+          {
+            backgroundColor: disabled
+              ? colors.daclen_gray
+              : colors.daclen_yellow_new,
+          },
+        ]}
+        disabled={disabled}
+      >
+        <MaterialCommunityIcons
+          name="swap-vertical-circle"
+          size={14}
+          color={colors.daclen_black}
+          style={{ alignSelf: "center" }}
+        />
+        <Text allowFontScaling={false} style={styles.textExchangeButton}>
+          Tukar Poin
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 function PointReport(props) {
   const { token, currentUser, points, checkouts, hpv, authError } = props;
@@ -104,6 +136,23 @@ function PointReport(props) {
 
   return (
     <SafeAreaView style={styles.container}>
+       <View style={styles.containerHeader}>
+          <TouchableOpacity
+            style={styles.arrow}
+            onPress={() => navigation.goBack()}
+          >
+            <MaterialCommunityIcons
+              name="arrow-left"
+              size={24}
+              color={colors.daclen_light}
+              style={styles.icon}
+            />
+          </TouchableOpacity>
+          <Text allowFontScaling={false} style={styles.textHeader}>
+            Laporan Poin
+          </Text>
+          <ExchangeButton disabled={token === null || currentUser === null} />
+        </View>
       {loading ? (
         <ActivityIndicator
           size="large"
@@ -229,6 +278,17 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     width: "100%",
   },
+  containerHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    backgroundColor: colors.daclen_black,
+    elevation: 4,
+    borderBottomWidth: 1,
+    borderColor: colors.daclen_light,
+  },
   containerDescVertical: {
     flex: 1,
     marginHorizontal: 10,
@@ -243,6 +303,10 @@ const styles = StyleSheet.create({
   },
   containerFlatlist: {
     flex: 1,
+  },
+  containerButton: {
+    backgroundColor: "transparent",
+    alignSelf: "center",
   },
   containerItem: {
     flex: 1,
@@ -281,6 +345,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: colors.daclen_orange,
   },
+  textHeader: {
+    backgroundColor: "transparent",
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 16,
+    marginHorizontal: 20,
+    color: colors.daclen_light,
+    alignSelf: "center",
+    flex: 1,
+  },
   textTotalPoint: {
     fontFamily: "Poppins-Bold",
     fontSize: 20,
@@ -313,6 +386,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Poppins-Bold",
     color: colors.white,
+  },
+  exchangeButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  textExchangeButton: {
+    fontSize: 12,
+    fontFamily: "Poppins-SemiBold",
+    textAlign: "center",
+    marginStart: 6,
+    color: colors.daclen_black,
   },
 });
 

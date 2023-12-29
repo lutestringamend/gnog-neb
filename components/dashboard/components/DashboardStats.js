@@ -148,7 +148,7 @@ export default function DashboardStats(props) {
                 : currentUser?.poin_user?.hpv
                   ? currentUser?.poin_user?.hpv
                   : "0"
-            } Point`}</Text>
+            } Poin`}</Text>
           </View>
           <TouchableOpacity
             style={styles.button}
@@ -175,7 +175,7 @@ export default function DashboardStats(props) {
                   : currentUser?.poin_user?.total
                     ? currentUser?.poin_user?.total
                     : "0"
-              } Point`}</Text>
+              } Poin`}</Text>
             </View>
           )}
 
@@ -186,7 +186,7 @@ export default function DashboardStats(props) {
             <Text
               allowFontScaling={false}
               style={styles.textButton}
-            >{`Laporan\nPoint`}</Text>
+            >{`Laporan &\nTukar Poin`}</Text>
           </TouchableOpacity>
         </View>
 

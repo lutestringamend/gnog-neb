@@ -369,7 +369,7 @@ export default function App() {
               <Stack.Screen
                 name="PointReportScreen"
                 component={PointReportScreen}
-                options={{ ...defaultOptions, title: "Laporan Poin User" }}
+                options={{ ...defaultOptions, headerShown: false }}
               />
               <Stack.Screen
                 name="UserRootsScreen"

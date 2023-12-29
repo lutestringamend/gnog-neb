@@ -127,6 +127,7 @@ export const webcheckout = "https://daclen.com/admin/checkout"
 export const websaldo = "https://daclen.com/admin/penarikan/komisi/riwayat-penarikan"
 export const weblaporanpoin = "https://daclen.com/admin/laporan/poin-user/pengguna"
 export const websyaratbonus = "https://daclen.com/admin/setting/bonus-root/syarat"
+export const webpenukaranpoin = "https://daclen.com/admin/penukaran-poin"
 
 //DASHBOARD PDF
 export const commissionpointpdf = "https://daclen.com/asset/HADIAH.pdf"
