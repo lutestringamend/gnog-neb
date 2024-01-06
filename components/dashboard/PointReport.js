@@ -24,10 +24,13 @@ import { colors, staticDimensions } from "../../styles/base";
 import Separator from "../profile/Separator";
 import { ErrorView } from "../webview/WebviewChild";
 import { weblaporanpoin, webpenukaranpoin } from "../../axios/constants";
+import { getPenukaranPoinDates } from "../../axios/user/points";
+import { convertDateISOStringtoDisplayDate } from "../../axios/profile";
 
-const ExchangeButton = ({ disabled }) => {
+const ExchangeButton = ({ navigation, disabled }) => {
   function openExchange() {
     Linking.openURL(webpenukaranpoin);
+    //navigation.navigate("PointWithdrawal");
   }
   return (
     <View style={styles.containerButton}>
@@ -62,6 +65,10 @@ function PointReport(props) {
   const [loading, setLoading] = useState(true);
   const [referralData, setReferralData] = useState([]);
   const [error, setError] = useState(null);
+  const [exchangeStatus, setExchangeStatus] = useState({
+    disabled: true,
+    message: "",
+  });
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -69,6 +76,9 @@ function PointReport(props) {
   }, []);
 
   useEffect(() => {
+    if (token !== null) {
+      penukaranPoinCheckAsync();
+    }
     refreshPage();
   }, [token, points]);
 
@@ -102,7 +112,7 @@ function PointReport(props) {
               id,
               name,
             }))
-            .flat(1)
+            .flat(1),
         ),
       ];
       setReferralData(data);
@@ -110,8 +120,37 @@ function PointReport(props) {
     }
   }, [hpv]);
 
+  const penukaranPoinCheckAsync = async () => {
+    try {
+      let result = await getPenukaranPoinDates(token);
+      let starting = new Date(result?.result?.tanggal_dari);
+      let ending = new Date(result?.result?.tanggal_sampai);
+      let today = new Date().getTime();
+
+      console.log(ending.getTime() - today, today - starting.getTime());
+      if (today <= ending.getTime() && today >= starting.getTime()) {
+        setExchangeStatus({ disabled: false, message: "" });
+      } else {
+        setExchangeStatus({
+          disabled: true,
+          message: `Penukaran poin akan berlaku dari tanggal\n${convertDateISOStringtoDisplayDate(
+            starting,
+            true,
+          )} hingga ${convertDateISOStringtoDisplayDate(ending, true)}`,
+        });
+      }
+
+      console.log("penukaranPoinCheckAsync", result);
+    } catch (e) {
+      console.error(e);
+      setError(e.toString());
+      setExchangeStatus({ disabled: true, message: "" });
+    }
+  };
+
   function refreshPage() {
     if (points === null && token !== null && currentUser?.id !== undefined) {
+      penukaranPoinCheckAsync();
       props.getLaporanPoin(currentUser?.id, token);
       setLoading(true);
     } else {
@@ -136,34 +175,49 @@ function PointReport(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-       <View style={styles.containerHeader}>
-          <TouchableOpacity
-            style={styles.arrow}
-            onPress={() => navigation.goBack()}
-          >
-            <MaterialCommunityIcons
-              name="arrow-left"
-              size={24}
-              color={colors.daclen_light}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
-          <Text allowFontScaling={false} style={styles.textHeader}>
-            Laporan Poin
-          </Text>
-          <ExchangeButton disabled={token === null || currentUser === null} />
+      <View style={styles.containerHeader}>
+        <TouchableOpacity
+          style={styles.arrow}
+          onPress={() => navigation.goBack()}
+        >
+          <MaterialCommunityIcons
+            name="arrow-left"
+            size={24}
+            color={colors.daclen_light}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+        <Text allowFontScaling={false} style={styles.textHeader}>
+          Laporan Poin
+        </Text>
+        <ExchangeButton
+          navigation={navigation}
+          disabled={
+            token === null || currentUser === null || exchangeStatus?.disabled
+          }
+        />
+      </View>
+      {exchangeStatus?.message ? (
+        <View style={styles.containerInfo}>
+          <MaterialCommunityIcons
+            name="progress-clock"
+            size={18}
+            color={colors.daclen_light}
+          />
+          <Text style={styles.textInfo}>{exchangeStatus?.message}</Text>
         </View>
+      ) : null}
       {loading ? (
         <ActivityIndicator
           size="large"
-          color={colors.daclen_orange}
+          color={colors.daclen_gray}
           style={{ alignSelf: "center", marginVertical: 20 }}
         />
       ) : error ? (
         <ErrorView
-        error={`Mohon membuka website Daclen untuk membaca Laporan Poin${
-          error ? `\n${error}` : ""
-        }`}
+          error={`Mohon membuka website Daclen untuk membaca Laporan Poin${
+            error ? `\n${error}` : ""
+          }`}
           onOpenExternalLink={() => onOpenExternalLink()}
         />
       ) : token === null || currentUser?.id === undefined ? (
@@ -192,7 +246,9 @@ function PointReport(props) {
               numColumns={1}
               horizontal={false}
               data={points?.data}
-              contentContainerStyle={{ paddingBottom: staticDimensions.pageBottomPadding }}
+              contentContainerStyle={{
+                paddingBottom: staticDimensions.pageBottomPadding,
+              }}
               renderItem={({ item }) => (
                 <View style={{ width: "100%" }}>
                   <View style={styles.containerItem}>
@@ -220,15 +276,21 @@ function PointReport(props) {
                       referralData?.length < 1 ||
                       item?.refferal_user_id === undefined ||
                       item?.refferal_user_id === null ? null : (
-                        <Text allowFontScaling={false} style={styles.textReferral}>
+                        <Text
+                          allowFontScaling={false}
+                          style={styles.textReferral}
+                        >
                           {`Poin Didapatkan dari Referral\nReferral: ${
                             referralData.find(
-                              ({ id }) => id === item?.refferal_user_id
+                              ({ id }) => id === item?.refferal_user_id,
                             )?.name
-                           ? `\nReferral: ${
-                            referralData.find(
-                              ({ id }) => id === item?.refferal_user_id
-                            )?.name}` : ""}`}
+                              ? `\nReferral: ${
+                                  referralData.find(
+                                    ({ id }) => id === item?.refferal_user_id,
+                                  )?.name
+                                }`
+                              : ""
+                          }`}
                         </Text>
                       )}
                       {item?.checkout_id === undefined ||
@@ -237,14 +299,23 @@ function PointReport(props) {
                           onPress={() => openItem(item?.checkout_id)}
                           disabled={loading}
                         >
-                          <Text allowFontScaling={false} style={styles.textCheckout}>{`Poin Didapatkan dari Checkout\nBuka Checkout`}</Text>
+                          <Text
+                            allowFontScaling={false}
+                            style={styles.textCheckout}
+                          >{`Poin Didapatkan dari Checkout\nBuka Checkout`}</Text>
                         </TouchableOpacity>
                       )}
                     </View>
 
                     <View style={styles.containerDescHorizontal}>
                       <View style={styles.containerPoints}>
-                        <Text allowFontScaling={false} style={[styles.textPoint, { fontFamily: "Poppins", fontSize: 12 }]}>
+                        <Text
+                          allowFontScaling={false}
+                          style={[
+                            styles.textPoint,
+                            { fontFamily: "Poppins", fontSize: 12 },
+                          ]}
+                        >
                           Poin
                         </Text>
                         <Text allowFontScaling={false} style={styles.textPoint}>
@@ -252,10 +323,19 @@ function PointReport(props) {
                         </Text>
                       </View>
                       <View style={styles.containerPoints}>
-                        <Text allowFontScaling={false} style={[styles.textTotalPoint, { fontFamily: "Poppins", fontSize: 12 }]}>
+                        <Text
+                          allowFontScaling={false}
+                          style={[
+                            styles.textTotalPoint,
+                            { fontFamily: "Poppins", fontSize: 12 },
+                          ]}
+                        >
                           Total
                         </Text>
-                        <Text allowFontScaling={false} style={styles.textTotalPoint}>
+                        <Text
+                          allowFontScaling={false}
+                          style={styles.textTotalPoint}
+                        >
                           {item?.total_poin ? item?.total_poin : "0"}
                         </Text>
                       </View>
@@ -301,6 +381,14 @@ const styles = StyleSheet.create({
   containerPoints: {
     marginHorizontal: 10,
   },
+  containerInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: colors.daclen_gray,
+  },
   containerFlatlist: {
     flex: 1,
   },
@@ -325,18 +413,29 @@ const styles = StyleSheet.create({
     color: colors.daclen_black,
     marginTop: 10,
   },
+  textInfo: {
+    fontSize: 12,
+    fontFamily: "Poppins-SemiBold",
+    textAlign: "center",
+    marginStart: 6,
+    flex: 1,
+    color: colors.daclen_light,
+  },
   textDate: {
-    fontFamily: "Poppins", fontSize: 10,
+    fontFamily: "Poppins",
+    fontSize: 10,
     color: colors.daclen_gray,
     marginTop: 2,
   },
   textReferral: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins",
+    fontSize: 12,
     color: colors.daclen_black,
     marginTop: 6,
   },
   textCheckout: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins",
+    fontSize: 12,
     color: colors.daclen_blue,
     marginTop: 6,
   },
@@ -360,7 +459,8 @@ const styles = StyleSheet.create({
     color: colors.daclen_green,
   },
   textUid: {
-    fontFamily: "Poppins", fontSize: 12,
+    fontFamily: "Poppins",
+    fontSize: 12,
     marginVertical: 20,
     textAlign: "center",
     padding: 10,
@@ -419,7 +519,7 @@ const mapDispatchProps = (dispatch) =>
       getLaporanPoin,
       clearAuthError,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchProps)(PointReport);

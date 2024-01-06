@@ -109,7 +109,7 @@ const Dashboard = (props) => {
       currentUser?.id === null ||
       (currentUser?.status !== undefined && currentUser?.status !== null) ||
       currentUser?.level === "spv" ||
-      currentUser?.status_member === "supervisor"
+      currentUser?.status_member === "supervisor" || (currentUser?.name === "daclen" && currentUser?.level === "super_user" && currentUser?.id === 2)
     ) {
       try {
         setRegDate(new Date(currentUser?.join_date));
@@ -395,7 +395,7 @@ const Dashboard = (props) => {
           !(
             currentUser?.level === "spv" ||
             currentUser?.status_member === "supervisor"
-          ) ? (
+          ) && !(currentUser?.name === "daclen" && currentUser?.level === "super_user" && currentUser?.id === 2) ? (
           <DashboardUpgrade
             registerSnapToken={registerSnapToken}
             fetchingToken={fetchingToken}

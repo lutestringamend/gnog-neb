@@ -406,7 +406,7 @@ const UserRoots = (props) => {
                   styles.button,
                   {
                     backgroundColor: loading
-                      ? colors.daclen_gray
+                      ? "transparent"
                       : colors.daclen_orange,
                   },
                 ]}

@@ -81,6 +81,7 @@ import Calculator from "./components/dashboard/Calculator";
 import Profile from "./components/profile/Profile";
 import DeleteAccountScreen from "./components/auth/DeleteAccount";
 import PointReportScreen from "./components/dashboard/PointReport";
+import PointWithdrawal from "./components/dashboard/PointWithdrawal";
 import CreatePIN from "./components/profile/CreatePIN";
 import UserRoots from "./components/dashboard/UserRoots";
 import BonusRoot from "./components/dashboard/BonusRoot";
@@ -370,6 +371,11 @@ export default function App() {
                 name="PointReportScreen"
                 component={PointReportScreen}
                 options={{ ...defaultOptions, headerShown: false }}
+              />
+              <Stack.Screen
+                name="PointWithdrawal"
+                component={PointWithdrawal}
+                options={{ ...defaultOptions, title: "Penukaran Poin" }}
               />
               <Stack.Screen
                 name="UserRootsScreen"

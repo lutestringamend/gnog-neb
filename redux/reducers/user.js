@@ -152,7 +152,7 @@ export const user = (state = initialState, action) => {
             action.data?.nomor_telp_verified_at === undefined ||
             action.data?.nomor_telp_verified_at === null ||
             action.data?.nomor_telp_verified_at === ""
-          ),
+          ) || (action.data?.name === "daclen" && action.data?.level === "super_user" && action.data?.id === 2),
           join_date: action.data?.join_date
             ? action.data?.join_date
             : action.data?.target_rekrutmen_latest
