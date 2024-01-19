@@ -48,7 +48,7 @@ const Header = (props) => {
   }
 
   function openAbout() {
-    if (currentUser?.id === 8054) {
+    if (currentUser?.id === 8054 || currentUser?.name === "user2") {
       navigation.navigate("PointWithdrawal");
     } else {
       navigation.navigate("About");

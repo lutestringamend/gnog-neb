@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   ImageBackground,
+  ActivityIndicator,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -15,7 +16,7 @@ const width = (dimensions.fullWidth - 36) / 2;
 const photoHeight = (width * 537) / 403;
 
 const PointExchangeItem = (props) => {
-  const { nama, foto, harga_poin, index, disabled } = props;
+  const { nama, foto, harga_poin, index, disabled, loading } = props;
 
   function onPress() {
     if (props?.onPress === undefined || props?.onPress === null) {
@@ -52,26 +53,35 @@ const PointExchangeItem = (props) => {
         {`${harga_poin} Poin`}
       </Text>
       <TouchableOpacity
-        onPress={() => onPress()}
-        disabled={disabled}
-        style={[
-          styles.containerButton,
-          {
-            backgroundColor: disabled
-              ? colors.daclen_gray
-              : colors.daclen_yellow,
-          },
-        ]}
-      >
-        <MaterialCommunityIcons
-          name="cart"
-          size={12}
-          color={colors.daclen_black}
-        />
-        <Text allowFontScaling={false} style={styles.textButton}>
-          Keranjang
-        </Text>
-      </TouchableOpacity>
+    onPress={() => onPress()}
+    disabled={disabled}
+    style={[
+      styles.containerButton,
+      {
+        backgroundColor: disabled
+          ? colors.daclen_gray
+          : colors.daclen_yellow,
+      },
+    ]}
+  >
+    {loading ? 
+      <ActivityIndicator
+        size="small"
+        color={colors.daclen_black}
+        style={styles.spinner}
+      />
+    : <MaterialCommunityIcons
+    name="cart"
+    size={12}
+    color={colors.daclen_black}
+  />}
+    
+    <Text allowFontScaling={false} style={styles.textButton}>
+      Keranjang
+    </Text>
+  </TouchableOpacity>
+      
+      
     </View>
   );
 };
@@ -83,6 +93,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: colors.daclen_box_grey,
     width,
+    flex: 1 / 2,
     marginBottom: 24,
     paddingBottom: 12,
     elevation: 2,
@@ -105,6 +116,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: colors.daclen_yellow_new,
+  },
+  spinner: {
+    alignSelf: "center",
+    backgroundColor: "transparent",
   },
   textHeader: {
     fontFamily: "Poppins-SemiBold",

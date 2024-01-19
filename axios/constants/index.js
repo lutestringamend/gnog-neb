@@ -110,6 +110,10 @@ export const getpdffiles = "api/mobile/file-pdf/index-pdf"
 
 export const getpenukaranpoindates = "api/mobile/setting/penukaran-poin"
 export const getpenukaranpoinindexproduk = "api/mobile/penukaran-poin/index-produk"
+export const getpenukaranpoin = "api/mobile/penukaran-poin"
+export const getpenukaranpoinkeranjang = "api/mobile/penukaran-poin/keranjang"
+export const postpenukaranpoinkeranjang = "api/mobile/penukaran-poin/keranjang/update"
+export const postpenukaranpoinstore = "api/mobile/penukaran-poin/store"
 
 export const personalwebsiteurl = "https://daclen.com/web/"
 export const personalwebsiteurlshort = "daclen.com/web/"

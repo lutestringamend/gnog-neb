@@ -29,8 +29,8 @@ import { convertDateISOStringtoDisplayDate } from "../../axios/profile";
 
 const ExchangeButton = ({ navigation, disabled }) => {
   function openExchange() {
-    Linking.openURL(webpenukaranpoin);
-    //navigation.navigate("PointWithdrawal");
+    //Linking.openURL(webpenukaranpoin);
+    navigation.navigate("PointWithdrawal");
   }
   return (
     <View style={styles.containerButton}>

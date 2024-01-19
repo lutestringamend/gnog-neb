@@ -8,42 +8,65 @@ import {
   ActivityIndicator,
   ScrollView,
   RefreshControl,
-  Linking,
-  Platform,
-  ToastAndroid,
+  FlatList,
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
 import {
+  getPenukaranPoin,
   getPenukaranPoinDates,
   getPenukaranPoinIndexProduk,
+  getPenukaranPoinKeranjang,
+  postPenukaranPoinKeranjang,
+  postPenukaranPoinStore,
 } from "../../axios/user/points";
-import { colors, staticDimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import PointExchangeItem from "./point/PointExchangeItem";
+import { convertDateISOStringtoDisplayDate } from "../../axios/profile";
+import { checkNumberEmpty } from "../../axios/cart";
 
 const defaultStatus = {
   disabled: true,
   message: "",
 };
 
+const PointCartItem = {
+  id: null,
+  user_id: null,
+  produk: [],
+  subtotal: 0,
+  jumlah_produk: 0,
+};
+
 const PointWithdrawal = (props) => {
   const { token, currentUser } = props;
   const [loading, setLoading] = useState(true);
+  const [storing, setStoring] = useState(false);
   const [error, setError] = useState(null);
   const [exchangeStatus, setExchangeStatus] = useState(defaultStatus);
   const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState(PointCartItem);
+  const [itemLoading, setItemLoading] = useState(null);
   const navigation = useNavigation();
+
+  useEffect(() => {
+    /*if (token === null && currentUser?.name !== "user2") {
+      setExchangeStatus(defaultStatus);
+      return;
+    }*/
+    penukaranPoinCheckAsync();
+  }, []);
 
   useEffect(() => {
     if (token === null) {
       setExchangeStatus(defaultStatus);
       return;
     }
-    penukaranPoinCheckAsync();
+    getPenukaranPoin(token);
+    checkCart();
   }, [token]);
 
   useEffect(() => {
@@ -51,6 +74,37 @@ const PointWithdrawal = (props) => {
       fetchPoinProductsAsync();
     }
   }, [exchangeStatus?.disabled]);
+
+  useEffect(() => {
+    if (products?.length === undefined || products?.length < 1) {
+      setItemLoading(null);
+      return;
+    }
+    let newItems = [];
+    for (let r of products) {
+      newItems.push({
+        id: r?.id,
+        loading: false,
+      });
+    }
+    setItemLoading(newItems);
+  }, [products]);
+
+  const checkCart = async () => {
+    const result = await getPenukaranPoinKeranjang(token);
+    if (
+      result === undefined ||
+      result === null ||
+      result?.result === undefined ||
+      result?.result === null
+    ) {
+      setError(
+        result?.error ? result?.error : "Tidak bisa mendapatkan keranjang",
+      );
+    } else {
+      setCart(result?.result);
+    }
+  };
 
   const fetchPoinProductsAsync = async () => {
     try {
@@ -74,6 +128,9 @@ const PointWithdrawal = (props) => {
       setError(e.toString());
     }
     setProducts([]);
+    if (loading) {
+      setLoading(false);
+    }
   };
 
   const penukaranPoinCheckAsync = async () => {
@@ -102,6 +159,76 @@ const PointWithdrawal = (props) => {
     }
   };
 
+  const setItemLoadingStatus = (id, loading) => {
+    if (itemLoading?.length === undefined || itemLoading?.length < 1) {
+      return;
+    }
+    let newItems = [];
+    for (let i of itemLoading) {
+      if (i?.id === id) {
+        newItems.push({
+          id,
+          loading,
+        });
+      } else {
+        newItems.push(i);
+      }
+    }
+    setItemLoading(newItems);
+  };
+
+  const addToCart = async (id) => {
+    setItemLoadingStatus(id, true);
+    const result = await postPenukaranPoinKeranjang(token, [id]);
+    if (
+      result === undefined ||
+      result === null ||
+      result?.result === undefined ||
+      result?.result === null
+    ) {
+      setError(
+        result?.error ? result?.error : "Tidak bisa menambahkan ke keranjang",
+      );
+    } else {
+      setCart(result?.result);
+      checkCart();
+    }
+    setItemLoadingStatus(id, false);
+  };
+
+  const storePenukaranPoin = async () => {
+    if (cart?.id === null) {
+      return;
+    }
+
+    setStoring(true);
+    try {
+      const result = await postPenukaranPoinStore(token, cart?.id);
+      if (
+        result === undefined ||
+        result === null ||
+        result?.result === undefined ||
+        result?.result === null ||
+        result?.result?.session === undefined ||
+        result?.result?.session !== "success"
+      ) {
+        setError(result?.error ? result?.error : "Tidak bisa menukarkan poin");
+      } else {
+        navigation.goBack();
+      }
+    } catch (e) {
+      console.error(e);
+      setError(e.toString());
+    }
+    setStoring(false);
+  };
+
+  const refresh = () => {
+    penukaranPoinCheckAsync();
+    fetchPoinProductsAsync();
+    getPenukaranPoin(token);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {exchangeStatus?.message ? (
@@ -111,7 +238,7 @@ const PointWithdrawal = (props) => {
             size={18}
             color={colors.daclen_light}
           />
-          <Text style={[styles.textInfo, { textAlign: "center" }]}>
+          <Text style={[styles.textInfo, { textAlign: "center", flex: 1 }]}>
             {exchangeStatus?.message}
           </Text>
         </View>
@@ -125,24 +252,43 @@ const PointWithdrawal = (props) => {
           ]}
         >
           <Text style={[styles.textInfo, { flex: 1, marginStart: 0 }]}>
-            {`Total Poin Anda: 0 Poin`}
+            {`Total Poin Anda: ${
+              currentUser?.poin_user
+                ? currentUser?.poin_user?.total
+                  ? currentUser?.poin_user?.total
+                  : "-"
+                : "-"
+            } Poin`}
           </Text>
           <TouchableOpacity
-            disabled={exchangeStatus?.disabled}
+            disabled={
+              exchangeStatus?.disabled ||
+              checkNumberEmpty(cart?.subtotal) >
+                checkNumberEmpty(currentUser?.poin_user?.total)
+            }
             style={[
               styles.containerButton,
               {
                 backgroundColor: exchangeStatus?.disabled
                   ? colors.daclen_gray
-                  : colors.daclen_yellow_new,
+                  : checkNumberEmpty(cart?.subtotal) >
+                      checkNumberEmpty(currentUser?.poin_user?.total)
+                    ? colors.daclen_danger
+                    : colors.daclen_yellow_new,
               },
             ]}
+            onPress={() => storePenukaranPoin()}
           >
-            <MaterialCommunityIcons
-              name="cart"
-              size={18}
-              color={colors.daclen_black}
-            />
+            {storing ? (
+              <ActivityIndicator size="small" color={colors.daclen_black} />
+            ) : (
+              <MaterialCommunityIcons
+                name="cart"
+                size={18}
+                color={colors.daclen_black}
+              />
+            )}
+
             <Text
               style={[
                 styles.textInfo,
@@ -152,37 +298,56 @@ const PointWithdrawal = (props) => {
                 },
               ]}
             >
-              {`Keranjang berisi 0 Poin`}
+              {`Total ${cart?.subtotal ? cart?.subtotal : "0"} Poin`}
             </Text>
           </TouchableOpacity>
         </View>
       )}
 
-      {loading ? (
-        <ActivityIndicator
-          size="large"
-          color={colors.daclen_gray}
-          style={{ alignSelf: "center", marginVertical: 20 }}
-        />
-      ) : (
-        <View style={styles.containerList}>
-          <FlashList
-            estimatedItemSize={10}
-            numColumns={2}
-            horizontal={false}
-            data={products}
-            showsVerticalScrollIndicator={false}
+      {error ? (
+        <Text allowFontScaling={false} style={styles.textError}>
+          {error}
+        </Text>
+      ) : null}
+
+      {exchangeStatus?.disabled || loading ? (
+        exchangeStatus?.disabled ? null : (
+          <ScrollView
+            style={styles.containerScroll}
             refreshControl={
               <RefreshControl
                 refreshing={loading}
-                onRefresh={() => fetchPoinProductsAsync()}
+                onRefresh={() => refresh()}
+              />
+            }
+          >
+            <View style={styles.containerSpinner}>
+              <ActivityIndicator size="large" color={colors.daclen_gray} />
+            </View>
+          </ScrollView>
+        ) 
+      ) : (
+        <View style={styles.containerList}>
+          <FlatList
+            numColumns={2}
+            horizontal={false}
+            data={products}
+            refreshControl={
+              <RefreshControl
+                refreshing={loading}
+                onRefresh={() => refresh()}
               />
             }
             renderItem={({ item, index }) => (
               <PointExchangeItem
                 index={index}
                 {...item}
-                onPress={() => console.log(item)}
+                loading={
+                  itemLoading
+                    ? itemLoading.find(({ id }) => item?.id === id)?.loading
+                    : false
+                }
+                onPress={() => addToCart(item?.id)}
                 disabled={exchangeStatus?.disabled}
               />
             )}
@@ -198,6 +363,11 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: colors.white,
+  },
+  containerScroll: {
+    flex: 1,
+    backgroundColor: "transparent",
+    width: "100%",
   },
   containerInfo: {
     flexDirection: "row",
@@ -220,11 +390,26 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     paddingHorizontal: 12,
   },
+  containerSpinner: {
+    minHeight: dimensions.fullHeight - 60,
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   textInfo: {
     fontSize: 12,
     fontFamily: "Poppins-SemiBold",
     marginStart: 6,
     color: colors.daclen_light,
+  },
+  textError: {
+    fontSize: 12,
+    fontFamily: "Poppins-SemiBold",
+    color: colors.white,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: colors.daclen_danger,
+    textAlign: "center",
   },
 });
 
