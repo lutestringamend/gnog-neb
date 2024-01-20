@@ -186,7 +186,7 @@ export function showProduct(id) {
   return (dispatch) => {
     const url = showproduct + "/" + id.toString();
     console.log("showProduct " + url);
-    Axios.get(url)
+    Axioss.get(url)
       .then((response) => {
         const data = response.data?.data;
         console.log(data);
@@ -200,7 +200,7 @@ export function showProduct(id) {
         dispatch({ type: PRODUCT_ITEM_DATA_STATE_CHANGE, data });
       })
       .catch((error) => {
-        console.log(`showProduct ${id} is error`, error.toString());
+        console.error(error);
         sentryLog(error);
       });
   };

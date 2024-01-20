@@ -150,11 +150,13 @@ const FlyerMengajak = (props) => {
   }
 
   function openPhoto(index) {
-    navigation.navigate("FlyerSliderView", {
+    let params = {
       index: page * itemLimit + index,
       type: STARTER_KIT_FLYER_MENGAJAK_TAG,
       product: STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE,
-    });
+    };
+    navigation.navigate("FlyerSliderView", params);
+    console.log("open FlyerSliderView", params);
     /*navigation.navigate("ImageViewer", {
       disableWatermark: false,
       title: STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE,

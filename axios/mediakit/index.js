@@ -420,7 +420,7 @@ export const getMediaKitKategori = async (token) => {
     const response = await Axios.get(mediakitkategori, config).catch(
       (error) => {
         console.error(error);
-        sentryLog(error);
+        sentryLog("getMediaKitKategori", error);
         return {
           result: null,
           error: error.toString(),
@@ -483,7 +483,7 @@ export const getMediaKitKategori = async (token) => {
       };
     }
   } catch (e) {
-    console.error(e);
+    console.error("getMediaKitKategori error", e);
     sentryLog(e);
     return {
       result: null,

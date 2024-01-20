@@ -77,8 +77,7 @@ export const DashButton = (props) => {
         },
       ]}
       onPress={() => props?.onPress()}
-      disabled={disabled || 
-        pdfFiles === undefined ||
+      disabled={disabled || (pdfFiles !== undefined && (pdfFiles === undefined ||
         pdfFiles === null ||
         pdfFiles?.length === undefined ||
         pdfFiles?.length < 1 ||
@@ -87,7 +86,8 @@ export const DashButton = (props) => {
         ) === undefined ||
         pdfFiles.find(
           ({ judul }) => judul.toLowerCase() === tag.toLowerCase(),
-        ) === null}
+        ) === null))
+        }
     >
       {props?.icon ? (
         <MaterialCommunityIcons

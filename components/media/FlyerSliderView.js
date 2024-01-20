@@ -39,6 +39,7 @@ import {
   calculateFlyerDisplayWidth,
   calculateResizedImageDimensions,
 } from "../mediakit";
+import { checkNumberEmpty } from "../../axios";
 
 const defaultFlyers = [null, null, null];
 const screenWidth = Dimensions.get("window").width;
@@ -54,7 +55,7 @@ const photoHeight = previewHeight - paddingTop;
 
 const FlyerSliderView = (props) => {
   const { currentUser, watermarkData, mediaKitPhotos, flyerMengajak } = props;
-  const initIndex = props.route.params?.index ? props.route.params?.index : null;
+  const initIndex = props.route.params?.index === undefined || props.route.params?.index === null ? null : checkNumberEmpty(props.route.params?.index);
   const navigation = useNavigation();
   const refScroll = useRef();
   const imageRef = useRef();
