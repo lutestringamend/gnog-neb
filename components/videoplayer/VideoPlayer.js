@@ -193,6 +193,7 @@ function VideoPlayer(props) {
     }
 
     let logs = {
+      title,
       uri,
       jenis_video,
       videoId,
@@ -852,9 +853,9 @@ function VideoPlayer(props) {
               style={[
                 styles.textHeaderLandscape,
                 jenis_video === VIDEO_TUTORIAL_TAG
-                  ? { fontFamily: "Poppins", fontSize: 16, paddingVertical: 9 }
+                  ? { fontFamily: "Poppins", paddingVertical: 9 }
                   : loading || error === null
-                  ? { fontSize: 14, paddingVertical: 9 }
+                  ? { fontSize: title?.length > 20 ? 12 : 14, paddingVertical: 9 }
                   : null,
               ]}
             >
@@ -1031,7 +1032,7 @@ function VideoPlayer(props) {
                   styles.containerPanelVideoPortrait,
                   {
                     top:
-                      videoSize.videoHeight - (Platform.OS === "ios" ? 80 : 40),
+                      videoSize.videoHeight - (Platform.OS === "ios" ? 60 : 40),
                     width: screenWidth,
                     height:
                       Platform.OS === "ios"

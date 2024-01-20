@@ -125,7 +125,7 @@ export function updateReduxMediaKitPhotos(data) {
 
 export function updateReduxMediaKitFlyerMengajak(data) {
   return (dispatch) => {
-    console.log("updateReduxMediaKitFlyerMengajak", data);
+    console.log("updateReduxMediaKitFlyerMengajak", data?.length);
     dispatch({ type: MEDIA_KIT_FLYER_MENGAJAK_STATE_CHANGE, data });
   };
 }
@@ -416,6 +416,7 @@ export const getMediaKitKategori = async (token) => {
     },
   };
 
+  console.log("getMediaKitKategori", mediakitkategori);
   try {
     const response = await Axios.get(mediakitkategori, config).catch(
       (error) => {

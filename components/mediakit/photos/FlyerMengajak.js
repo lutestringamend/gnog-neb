@@ -68,10 +68,10 @@ const FlyerMengajak = (props) => {
     setPaginated(newPaginated);
   }, [page]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     console.log("paginated", paginated);
   }),
-    [paginated];
+    [paginated];*/
 
   useEffect(() => {
     if (photosMultipleSave?.success !== success) {

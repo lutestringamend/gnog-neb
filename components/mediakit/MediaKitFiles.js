@@ -236,7 +236,7 @@ function MediaKitFiles(props) {
 
   const fetchWatermarkPhotos = async () => {
     const result = await getMediaKitKategori(token);
-    console.log("getMediaKitKategori", result);
+    //console.log("getMediaKitKategori", result);
     if (
       result === undefined ||
       result === null ||
