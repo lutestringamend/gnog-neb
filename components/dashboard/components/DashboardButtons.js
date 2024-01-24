@@ -157,7 +157,7 @@ const DashboardButtons = ({ userId, username, pdfFiles }) => {
       template = adminWAtemplate.replace("#I#", username);
     }
     console.log("openDaclenCare", template);
-    openWhatsapp(adminWA, template);
+    openWhatsapp(adminWA, template, true);
   }
 
   /*function openKodeEtik() {

@@ -13,7 +13,7 @@ export const openWhatsapp = (no, template, forceNoTrim) => {
         number = number.replaceAll(" ", "");
         number = number.replaceAll("-", "");
       }
-      url = Platform.OS === "web" ? `https://wa.me/${number}${template ? `?text=${template}` : ""}` : `whatsapp://send${template ? `?text=${template}` : ""}}&phone=${number}`;
+      url = Platform.OS === "web" ? `https://wa.me/${number}${template ? `?text=${template}` : ""}` : `whatsapp://send${template ? `?text=${template}` : ""}&phone=${number}`;
     } catch (e) {
       console.error(e);
     }
