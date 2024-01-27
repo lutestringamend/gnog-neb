@@ -165,7 +165,6 @@
         }
       ],
       "@config-plugins/react-native-blob-util",
-      "@config-plugins/react-native-pdf",
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       "sentry-expo"

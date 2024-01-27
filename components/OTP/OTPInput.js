@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { colors } from "../../styles/base";
 
-const OTPInput = ({ code, setCode, maximumLength, setIsPinReady, style }) => {
+const OTPInput = ({ code, setCode, maximumLength, setIsPinReady, style, boxStyle, fontSize }) => {
   const boxArray = new Array(maximumLength).fill(0);
   const inputRef = useRef();
 
@@ -39,6 +39,7 @@ const OTPInput = ({ code, setCode, maximumLength, setIsPinReady, style }) => {
         style={[
           styles.SplitBoxes,
           isInputBoxFocused && isValueFocused ? styles.SplitBoxesFocused : null,
+          boxStyle ? boxStyle : null,
         ]}
         key={index}
       >
@@ -46,6 +47,7 @@ const OTPInput = ({ code, setCode, maximumLength, setIsPinReady, style }) => {
           style={[
             styles.SplitBoxText,
             isInputBoxFocused && isValueFocused ? { color: colors.daclen_light } : null,
+            { fontSize: fontSize ? fontSize : 24 },
           ]}
         >
           {digit}
@@ -105,7 +107,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.daclen_blue,
   },
   SplitBoxText: {
-    fontSize: 24,
     textAlign: "center",
     fontFamily: "Poppins-Bold",
     color: colors.daclen_graydark,

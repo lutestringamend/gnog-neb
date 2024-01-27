@@ -30,6 +30,7 @@ export const defaulttoprightlong = 107.86793313814107;*/
 export const defaultlatitudelongbits = "-4603892706931430400";
 export const defaultlongitudelongbits = "4637272587357913000";
 
+export const phone_regex = RegExp(/^[\s()+-]*([0-9][\s()+-]*){6,20}$/);
 export const email_regex = RegExp(
 	/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
 );

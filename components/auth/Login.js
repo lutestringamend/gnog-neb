@@ -42,6 +42,7 @@ import {
   devhttp,
   email_regex,
   mainhttp,
+  phone_regex,
   uppercase_regex,
   username_regex,
 } from "../../axios/constants";
@@ -264,17 +265,12 @@ function Login(props) {
       return;
     }
 
-    if (
-      authData?.nomor_telp === undefined ||
-      authData?.nomor_telp === null ||
-      authData?.nomor_telp === "" ||
-      authData?.nomor_telp?.length < 10
-    ) {
+    if (!phone_regex.test(authData?.nomor_telp)) {
       setRegisterError({
         ...defaultLoginError,
         nomor_telp: "Masukkan Nomor Handphone aktif yang valid",
       });
-    } else if (
+    /*} else if (
       authData?.email === undefined ||
       authData?.email === null ||
       authData?.email === ""
@@ -300,11 +296,9 @@ function Login(props) {
       setRegisterError({
         ...defaultLoginError,
         name: "Username hanya boleh memakai huruf kecil",
-      });
+      });*/
     } else if (
-      authData?.referral === "" ||
-      authData?.referral === null ||
-      authData?.referral === undefined
+      authData?.referral?.length === undefined || authData?.referral?.length < 3
     ) {
       setRegisterError({
         ...defaultLoginError,
@@ -315,7 +309,7 @@ function Login(props) {
         ...defaultLoginError,
         referral: "Referral tidak boleh mengandung spasi",
       });
-    } else if (
+    /*} else if (
       authData?.password === undefined ||
       authData?.password === null
     ) {
@@ -335,11 +329,17 @@ function Login(props) {
       setRegisterError({
         ...defaultLoginError,
         confirmPassword: "Konfirmasi Password tidak sama",
-      });
+      });*/
     } else {
+      console.log("proceed to WA verification", authData?.nomor_telp, authData?.referral);
+      navigation.navigate("RegisterVerifyPhone", {
+        nomor_telp: authData?.nomor_telp,
+        referral: authData?.referral,
+      })
+      /*
       setLoading(true);
       const deviceToken = await getObjectAsync(ASYNC_DEVICE_TOKEN_KEY);
-      props.register(authData, deviceToken);
+      props.register(authData, deviceToken);*/
     }
   };
 
@@ -484,7 +484,7 @@ function Login(props) {
                     ? resetPIN
                       ? "Reset PIN"
                       : "Continue"
-                    : "Daftar"}
+                    : "Continue"}
                 </Text>
               )}
             </TouchableOpacity>
@@ -499,7 +499,7 @@ function Login(props) {
                   disabled={loading}
                 >
                   <Text allowFontScaling={false} style={styles.textChange}>
-                    {isLogin ? "Daftar" : "Login"}
+                    {isLogin ? "Register" : "Login"}
                   </Text>
                 </TouchableOpacity>
               </View>

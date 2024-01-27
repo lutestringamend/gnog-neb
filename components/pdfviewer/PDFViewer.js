@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { SafeAreaView, StyleSheet } from "react-native";
-import Pdf from "react-native-pdf";
+//import Pdf from "react-native-pdf";
 import { colors, dimensions } from "../../styles/base";
 //import WebView from "react-native-webview";
 import { mainhttp } from "../../axios/constants";
@@ -41,16 +41,11 @@ const PDFViewer = (props) => {
   try {
     return (
       <SafeAreaView style={styles.container}>
-        {uri ? (
-          <Pdf
-            trustAllCerts={false}
-            source={{ uri, cache: true }}
-            style={styles.pdf}
-            onLoadComplete={(numberOfPages, filePath) => {
-              console.log("onLoadComplete", numberOfPages, filePath);
-            }}
-          />
-        ) : null}
+        <ErrorScreen
+        title={title}
+        message="Baca PDF di website Daclen"
+        uri={uri}
+      />
       </SafeAreaView>
     );
   } catch (e) {
@@ -65,6 +60,18 @@ const PDFViewer = (props) => {
     );
   }
 };
+/*
+{uri ? (
+          <Pdf
+            trustAllCerts={false}
+            source={{ uri, cache: true }}
+            style={styles.pdf}
+            onLoadComplete={(numberOfPages, filePath) => {
+              console.log("onLoadComplete", numberOfPages, filePath);
+            }}
+          />
+        ) : null}
+*/
 
 const styles = StyleSheet.create({
   container: {

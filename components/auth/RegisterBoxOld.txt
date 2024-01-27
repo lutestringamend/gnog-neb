@@ -20,7 +20,6 @@ function RegisterBox(props) {
       <TextInputLabel
         label="Nomor Whatsapp Aktif"
         compulsory
-        placeholder="08xxxxxxxxx"
         value={authData?.nomor_telp}
         inputMode="decimal"
         error={errors?.nomor_telp}
@@ -29,27 +28,7 @@ function RegisterBox(props) {
         }
       />
 
-     
-
       <TextInputLabel
-        label="Referral"
-        compulsory
-        placeholder="Username yang mengajak join"
-        value={authData?.referral}
-        error={errors?.referral}
-        maxCharacter={16}
-        onChangeText={(referral) =>
-          props.setAuthData({ ...authData, referral })
-        }
-      />
-
-     
-    </View>
-  );
-}
-
-/*
- <TextInputLabel
         label="Email"
         compulsory
         value={authData?.email}
@@ -70,7 +49,19 @@ function RegisterBox(props) {
         onEndEditing={() => checkInputUsername()}
       />
 
-       <TextInputLabel
+      <TextInputLabel
+        label="Referral"
+        compulsory
+        placeholder="Username yang mengajak join"
+        value={authData?.referral}
+        error={errors?.referral}
+        maxCharacter={16}
+        onChangeText={(referral) =>
+          props.setAuthData({ ...authData, referral })
+        }
+      />
+
+      <TextInputLabel
         label="Password"
         secureTextEntry
         compulsory
@@ -91,8 +82,9 @@ function RegisterBox(props) {
           props.setAuthData({ ...authData, confirmPassword })
         }
       />
-
-*/
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
