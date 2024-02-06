@@ -17,6 +17,7 @@ import CheckoutScreen from "../components/main/Checkout";
 import VerifyPhone from "../components/auth/VerifyPhone";
 import RegisterVerifyPhoneScreen from "../components/auth/RegisterVerifyPhoneScreen";
 import OTPScreen from "../components/auth/OTPScreen";
+import CompleteRegistrationScreen from "./screens/auth/CompleteRegistrationScreen";
 
 import OpenMidtrans from "../components/checkout/OpenMidtrans";
 import Withdrawal from "../components/dashboard/saldo/Withdrawal";
@@ -117,6 +118,15 @@ export const Screens = [
       ...options,
       headerShown: true,
       title: "Verifikasi Nomor Handphone",
+    },
+  },
+  {
+    name: "CompleteRegistration",
+    screen: CompleteRegistrationScreen,
+    options: {
+      ...options,
+      headerShown: true,
+      title: "Lengkapi Identitas",
     },
   },
   {

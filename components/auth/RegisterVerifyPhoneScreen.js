@@ -8,137 +8,172 @@ import {
   ScrollView,
   ActivityIndicator,
   Keyboard,
+  AppState,
 } from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-
-import { validateOTP, getOTP } from "../../axios/user";
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, staticDimensions } from "../../styles/base";
 import OTPInput from "../OTP/OTPInput";
 import BSPopup from "../bottomsheets/BSPopup";
+import {
+  postRequestAuthOTP,
+  postVerifikasiAuthOTP,
+} from "../../src/axios/auth";
 
 function RegisterVerifyPhoneScreen(props) {
-  const { phoneOTP, validationOTP } = props;
   const nomor_telp = props.route.params?.nomor_telp
     ? props.route.params?.nomor_telp
     : null;
   const navigation = useNavigation();
+  const appState = useRef(AppState.currentState);
   const rbSheet = useRef();
 
+  const [otp_id, setOtpId] = useState(null);
   const [otp, setOtp] = useState("");
+  const [requested, setRequested] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [ongoing, setOngoing] = useState(false);
   const [error, setError] = useState(null);
   const [isPinReady, setIsPinReady] = useState(false);
-  const [timerCount, setTimer] = useState(0);
+  const [elapsed, setElapsed] = useState(90);
 
   useEffect(() => {
-    /*let interval = setInterval(() => {
-      setTimer((lastTimerCount) => {
-        if (lastTimerCount == 0) {
-          setOngoing(false);
-        } else {
-          lastTimerCount <= 1 && clearInterval(interval);
-          return lastTimerCount - 1;
-        }
-      });
-    }, 1000);
-    return () => clearInterval(interval);*/
-    console.log("getOTP", nomor_telp, props.route.params?.referral);
-  }, []);
+    if (nomor_telp === undefined || nomor_telp === null) {
+      return;
+    }
+    console.log("OTP screen params", nomor_telp, props.route.params?.referral);
+    requestOTP();
+  }, [nomor_telp]);
 
   useEffect(() => {
-    console.log({ otp, isPinReady });
+    if (!requested) {
+      return;
+    }
+    if (elapsed < 90) {
+      setElapsed(90);
+    }
+    getElapsedTime();
+
+    const theAppState = AppState.addEventListener(
+      "change",
+      handleAppStateChange,
+    );
+    return () => theAppState.remove();
+  }, [requested]);
+
+  useEffect(() => {
+    if (elapsed > 0 && requested) {
+      setTimeout(getElapsedTime, 1000);
+    }
+  }, [elapsed]);
+
+  useEffect(() => {
     if (isPinReady) {
       validateOTP();
     }
   }, [isPinReady]);
 
-  useEffect(() => {
-    if (loading) {
-      if (validationOTP?.session === "success") {
-        setSuccess(true);
-        setError("Berhasil verifikasi nomor handphone Anda");
-        rbSheet.current.open();
-      } else {
-        setIsPinReady(false);
-        setSuccess(false);
-        setError(
-          "Gagal verifikasi nomor handphone Anda\n" + validationOTP?.message,
-        );
-      }
-      setLoading(false);
+  const handleAppStateChange = async (nextAppState) => {
+    if (
+      appState.current.match(/inactive|background/) &&
+      nextAppState === "active"
+    ) {
+      getElapsedTime();
     }
-  }, [validationOTP]);
+    appState.current = nextAppState;
+  };
 
-  useEffect(() => {
-    setOngoing(false);
-    if (phoneOTP?.session === "success") {
-      if (phoneOTP?.timeout !== null) {
-        try {
-          let timeDiff = phoneOTP?.timeout.getTime() - new Date().getTime();
-          if (timeDiff > 0) {
-            setOngoing(true);
-            setTimer(getSeconds(timeDiff));
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      }
+  const getElapsedTime = async () => {
+    try {
+      setElapsed((elapsed) => elapsed - 1);
+    } catch (err) {
+      console.error(err);
+      setError(err?.toString());
     }
-  }, [phoneOTP]);
+  };
 
   function getSeconds(time) {
     return Math.ceil(time / 1000).toString();
   }
 
+  const requestOTP = async () => {
+    setLoading(true);
+    const result = await postRequestAuthOTP(
+      nomor_telp,
+      props.route.params?.referral,
+    );
+    if (
+      result === undefined ||
+      result === null ||
+      result?.result === undefined ||
+      result?.result === null ||
+      result?.result?.otp_id === undefined ||
+      result?.result?.otp_id === null
+    ) {
+      setOtpId(null);
+      setError("Gagal mendapatkan OTP");
+    } else {
+      setOtpId(result?.result?.otp_id);
+      setRequested(true);
+      console.log("getOTP", result?.result);
+    }
+    setLoading(false);
+  };
+
   function requestNewOTP() {
-    console.log("getOTP");
+    setOtpId(null);
+    setRequested(false);
+    requestOTP();
   }
 
-  function validateOTP() {
+  const validateOTP = async () => {
     if (otp?.length === undefined || otp?.length < 5) {
       setError("OTP harus lengkap diisi 6 digit");
     } else {
-      console.log("validateOTP", otp);
-      /*TO BE CONTINUED
       setLoading(true);
-      props.validateOTP(null, null, otp);*/
+      const result = await postVerifikasiAuthOTP(otp_id, otp);
+      console.log("verifikasiOTP", result?.result);
+      if (
+        result === undefined ||
+        result === null ||
+        result?.result === undefined ||
+        result?.result === null ||
+        result?.result?.session !== "success"
+      ) {
+        setError("OTP tidak sesuai");
+      } else {
+        setSuccess(true);
+        setError(result?.result?.message ? result?.result?.message : "");
+        navigation.navigate("CompleteRegistration", {
+          otp_id,
+          nomor_telp,
+          referral: props.route.params?.referral,
+        })
+      }
+      setLoading(false);
     }
-  }
-
-  function closeBS() {}
+  };
 
   return (
     <SafeAreaView style={styles.container} onPress={Keyboard.dismiss}>
+      {error ? (
+          <Text
+            allowFontScaling={false}
+            style={[
+              styles.textError,
+              success && { backgroundColor: colors.daclen_green },
+            ]}
+          >
+            {error}
+          </Text>
+        ) : null}
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.containerScroll}
       >
-        {loading ? (
-          <ActivityIndicator
-            size="large"
-            color={colors.daclen_orange}
-            style={{ alignSelf: "center", marginVertical: 20 }}
-          />
-        ) : (
-          error && (
-            <Text
-              allowFontScaling={false}
-              style={[
-                styles.textError,
-                success && { backgroundColor: colors.daclen_green },
-              ]}
-            >
-              {error}
-            </Text>
-          )
-        )}
+        
 
         <View style={styles.containerContent}>
           <Text allowFontScaling={false} style={styles.text}>
@@ -183,28 +218,38 @@ function RegisterVerifyPhoneScreen(props) {
               {
                 backgroundColor:
                   isPinReady && !loading
-                    ? colors.daclen_orange
+                    ? colors.daclen_yellow_new
                     : colors.daclen_gray,
               },
             ]}
-            disabled={loading || !ongoing}
+            disabled={!requested || loading || !isPinReady}
           >
-            <Text allowFontScaling={false} style={styles.textButton}>
-              Verifikasi OTP
-            </Text>
+            {loading ? (
+              <ActivityIndicator
+                size="small"
+                color={colors.daclen_black}
+                style={{ alignSelf: "center" }}
+              />
+            ) : (
+              <Text allowFontScaling={false} style={styles.textButton}>
+                Verifikasi OTP
+              </Text>
+            )}
           </TouchableOpacity>
 
-          <TouchableOpacity
-            disabled={ongoing || timerCount > 0}
-            style={styles.containerRetry}
-            onPress={() => requestNewOTP()}
-          >
-            <Text allowFontScaling={false} style={styles.textRetry}>
-              {ongoing && timerCount > 0
-                ? `Mohon menunggu ${timerCount} detik sebelum meminta OTP baru`
-                : "Minta OTP Baru"}
-            </Text>
-          </TouchableOpacity>
+          {requested ? (
+            <TouchableOpacity
+              disabled={elapsed > 0}
+              style={styles.containerRetry}
+              onPress={() => requestNewOTP()}
+            >
+              <Text allowFontScaling={false} style={styles.textRetry}>
+                {elapsed > 0
+                  ? `Mohon menunggu ${elapsed} detik sebelum meminta OTP baru`
+                  : "Minta OTP Baru"}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
       </ScrollView>
       <RBSheet
@@ -274,9 +319,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   textRetry: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "Poppins",
-    color: colors.daclen_blue,
+    color: colors.daclen_black,
     textAlign: "center",
   },
   textInput: {
@@ -294,14 +339,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 32,
     borderRadius: 4,
-    elevation: 3,
     backgroundColor: colors.daclen_yellow_new,
   },
   textError: {
-    fontSize: 14,
-    fontFamily: "Poppins-Bold",
+    fontSize: 12,
+    fontFamily: "Poppins-SemiBold",
     color: colors.white,
-    padding: 20,
+    padding: 10,
     backgroundColor: colors.daclen_danger,
     textAlign: "center",
   },
@@ -312,21 +356,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (store) => ({
-  phoneOTP: store.userState.phoneOTP,
-  validationOTP: store.userState.validationOTP,
-});
-
-const mapDispatchProps = (dispatch) =>
-  bindActionCreators(
-    {
-      getOTP,
-      validateOTP,
-    },
-    dispatch,
-  );
-
-export default connect(
-  mapStateToProps,
-  mapDispatchProps,
-)(RegisterVerifyPhoneScreen);
+export default RegisterVerifyPhoneScreen

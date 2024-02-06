@@ -238,7 +238,7 @@ export const fetchRajaOngkir = async (token, key, param, id) => {
     ) {
       url += "?" + param.toString() + "=" + id.toString();
     }
-    console.log("fetchRajaOngkir", url);
+    //console.log("fetchRajaOngkir", url);
 
     const response = await Axios.get(url, config).catch((error) => {
       console.log(error);
@@ -248,7 +248,7 @@ export const fetchRajaOngkir = async (token, key, param, id) => {
     const data = response?.data?.data;
     if (key === "provinsi") {
       await setObjectAsync(ASYNC_RAJAONGKIR_PROVINSI_KEY, data);
-      console.log("storage provinsi saved");
+      console.log("storage provinsi saved", JSON.stringify(data));
       return null;
     } else if (key === "kota") {
       let storageKota = await getObjectAsync(ASYNC_RAJAONGKIR_KOTA_KEY);

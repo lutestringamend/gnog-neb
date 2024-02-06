@@ -95,8 +95,13 @@ export const cancelcheckout = "api/mobile/checkout/#ID#/cancel"
 export const deletecheckout = "api/mobile/checkout/delete"
 export const getblog = "api/mobile/blog"
 export const showblog = "api/mobile/blog/show"
+
 export const getotp = "api/mobile/otp"
 export const validateotp = "/verifikasi"
+export const postauthrequestotp = "api/mobile/auth/request-otp"
+export const postauthverifikasiotp = "api/mobile/auth/verifikasi-otp"
+export const getauthshowotp = "api/mobile/auth/show-otp"
+
 export const getfaq = "api/mobile/faq"
 export const mediakithtml = "api/mobile/media-kit"
 export const syaratketentuanhtml = "api/mobile/syarat-ketentuan"

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   AppState,
   PermissionsAndroid,
+  ToastAndroid,
 } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -151,8 +152,8 @@ function Main(props) {
               await messaging().registerDeviceForRemoteMessages();
             }
             console.log("Authorization status:", authStatus);
-          } else {
-            addError("Notification not authorized on this device");
+          } else if (Platform.OS === "android") {
+            ToastAndroid.show("Notification not authorized on this device", ToastAndroid.LONG);
           }
         };
 
