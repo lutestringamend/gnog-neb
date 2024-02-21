@@ -3,7 +3,10 @@ import { TouchableOpacity, View, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-import { blurhash, colors } from "../../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
+
+const width = 135 * dimensions.fullWidthAdjusted / 430;
+const height = 180 * dimensions.fullWidthAdjusted / 430;
 
 const PhotoItem = (props) => {
   const { item, index, selected, style, selectMode, imageStyle, imageWidth } = props;
@@ -35,8 +38,8 @@ const PhotoItem = (props) => {
           imageStyle
             ? imageStyle
             : {
-                width: imageWidth ? imageWidth : 94,
-                height: imageWidth ? 125 * imageWidth / 94 : 125,
+                width: imageWidth ? imageWidth : width,
+                height: imageWidth ? 180 * imageWidth / 135 : height,
                 alignSelf: "flex-start",
               },
         ]}
@@ -65,11 +68,9 @@ const PhotoItem = (props) => {
 
 const styles = StyleSheet.create({
   containerImage: {
-    backgroundColor: colors.daclen_light,
-    marginHorizontal: 10,
-    borderWidth: 1,
+    backgroundColor: colors.daclen_grey_light,
+    marginHorizontal: staticDimensions.marginHorizontal / 2,
     borderRadius: 6,
-    borderColor: colors.daclen_lightgrey,
     alignSelf: "center",
   },
   containerSelected: {
@@ -87,6 +88,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     backgroundColor: colors.daclen_light,
     elevation: 4,
+    borderRadius: 6,
     overflow: "hidden",
   },
   check: {

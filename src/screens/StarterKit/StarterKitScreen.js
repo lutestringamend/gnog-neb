@@ -8,7 +8,6 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
-  ImageBackground,
   BackHandler,
 } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -32,20 +31,22 @@ import {
   updateReduxMediaKitVideosMengajak,
   updateReduxMediaKitPhotosMultipleSave,
   updateReduxMediaKitFlyerSelection,
-} from "../../axios/mediakit";
-import { overwriteWatermarkVideos } from "../media";
-import { getObjectAsync, setObjectAsync } from "../asyncstorage";
-import { colors } from "../../styles/base";
-import { ErrorView } from "../webview/WebviewChild";
-import WatermarkPhotos from "./photos/WatermarkPhotos";
-import WatermarkVideos from "./videos/WatermarkVideos";
-import { sentryLog } from "../../sentry";
+} from "../../../axios/mediakit";
+import { overwriteWatermarkVideos } from "../../../components/media";
+import {
+  getObjectAsync,
+  setObjectAsync,
+} from "../../../components/asyncstorage";
+import { colors, dimensions } from "../../styles/base";
+import { ErrorView } from "../../../components/webview/WebviewChild";
+import StarterKitFlyerProduk from "./StarterKitFlyerProduk";
+import StarterKitVideo from "./StarterKitVideo";
+import { sentryLog } from "../../../sentry";
 import {
   ASYNC_MEDIA_FLYER_MENGAJAK_KEY,
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
   ASYNC_MEDIA_WATERMARK_PHOTOS_KEY,
-} from "../asyncstorage/constants";
-import Header from "../DashboardHeader";
+} from "../../../components/asyncstorage/constants";
 import {
   STARTER_KIT_FLYER_PRODUK,
   STARTER_KIT_FLYER_MENGAJAK,
@@ -62,15 +63,28 @@ import {
   FLYER_SELECTION_LIMIT,
   STARTER_KIT_VIDEO_MENGAJAK_TAG,
   STARTER_KIT_VIDEO_PRODUK_TAG,
-} from "./constants";
-import StarterKitHome from "./home/StarterKitHome";
-import StarterKitModal from "./home/StarterKitModal";
-import FlyerMengajak from "./photos/FlyerMengajak";
+  STARTER_KIT_PERSONAL_WEBSITE,
+  STARTER_KIT_PERSONAL_WEBSITE_ICON,
+  STARTER_KIT_REFERRAL,
+  STARTER_KIT_REFERRAL_ICON,
+  STARTER_KIT_TOKO_ONLINE_DESC,
+  STARTER_KIT_TOKO_ONLINE_ICON,
+  STARTER_KIT_TOKO_ONLINE_TEXT,
+} from "../../constants/starterkit";
+import StarterKitHomeScreen from "./StarterKitHomeScreen";
+import StarterKitModal from "../../components/modal/StarterKitModal";
+import FlyerMengajak from "./StarterKitFlyerMengajak";
+import StarterKitHeader from "../../components/starterkit/StarterKitHeader";
+import EmptyPlaceholder from "../../components/empty/EmptyPlaceholder";
+import StarterKitPanelButton from "../../components/starterkit/StarterKitPanelButton";
 import {
+  personalwebsiteurl,
   personalwebsiteurlshort,
+  tokoonlineurl,
   tokoonlineurlshort,
+  webreferral,
+  webreferralshort,
 } from "../../axios/constants";
-import { checkNumberEmpty } from "../../axios/cart";
 
 const defaultModal = {
   visible: false,
@@ -80,7 +94,10 @@ const defaultModal = {
   desc: null,
 };
 
-function MediaKitFiles(props) {
+const panelWidth = (398 * dimensions.fullWidthAdjusted) / 430;
+const panelHeight = (74 * dimensions.fullWidthAdjusted) / 430;
+
+function StarterKitScreen(props) {
   const [activeTab, setActiveTab] = useState(STARTER_KIT_HOME);
   const [photoLoading, setPhotoLoading] = useState(false);
   const [videoLoading, setVideoLoading] = useState(false);
@@ -92,6 +109,7 @@ function MediaKitFiles(props) {
   const {
     token,
     currentUser,
+    profilePicture,
     photoError,
     watermarkData,
     mediaKitPhotos,
@@ -150,7 +168,7 @@ function MediaKitFiles(props) {
 
   useEffect(() => {
     if (mediaKitPhotos === undefined || mediaKitPhotos === null) {
-      fetchWatermarkPhotos();
+      fetchStarterKitFlyerProduk();
     } else {
       setPhotoKeys(Object.keys(mediaKitPhotos).sort());
       if (photoLoading) {
@@ -234,7 +252,7 @@ function MediaKitFiles(props) {
     }
   };
 
-  const fetchWatermarkPhotos = async () => {
+  const fetchStarterKitFlyerProduk = async () => {
     const result = await getMediaKitKategori(token);
     //console.log("getMediaKitKategori", result);
     if (
@@ -294,7 +312,7 @@ function MediaKitFiles(props) {
 
   const refreshPhotos = () => {
     setPhotoLoading(true);
-    fetchWatermarkPhotos();
+    fetchStarterKitFlyerProduk();
   };
 
   const refreshVideos = () => {
@@ -315,7 +333,9 @@ function MediaKitFiles(props) {
   };
 
   const onBackPress = () => {
-    if (modal?.visible) {
+    if (selectMode) {
+      clearSelection();
+    } else if (modal?.visible) {
       setModal(defaultModal);
     } else if (activeTab !== STARTER_KIT_HOME) {
       setSelectMode(false);
@@ -355,6 +375,36 @@ function MediaKitFiles(props) {
     }
   };
 
+  function openTokoOnline() {
+    setModal({
+      visible: true,
+      title: STARTER_KIT_TOKO_ONLINE_TEXT,
+      url: `${tokoonlineurl}${currentUser?.name}`,
+      urlShort: `${tokoonlineurlshort}${currentUser?.name}`,
+      desc: STARTER_KIT_TOKO_ONLINE_DESC,
+    });
+  }
+
+  function openPersonalWeb() {
+    setModal({
+      visible: true,
+      title: STARTER_KIT_PERSONAL_WEBSITE,
+      url: `${personalwebsiteurl}${currentUser?.name}`,
+      urlShort: `${personalwebsiteurlshort}${currentUser?.name}`,
+      desc: null,
+    });
+  }
+
+  function openReferral() {
+    setModal({
+      visible: true,
+      title: STARTER_KIT_REFERRAL,
+      url: `${webreferral}${currentUser?.name}`,
+      urlShort: `${webreferralshort}${currentUser?.name}`,
+      desc: null,
+    });
+  }
+
   const onSelectPress = () => {
     if (selectMode) {
       openMultipleImageSave();
@@ -382,105 +432,51 @@ function MediaKitFiles(props) {
     });
   };
 
+  const openWatermarkSettings = () => {
+    navigation.navigate("WatermarkSettings", {
+      urlTitle:
+        activeTab === STARTER_KIT_FLYER_PRODUK
+          ? STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE
+          : activeTab === STARTER_KIT_FLYER_MENGAJAK
+            ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE
+            : activeTab === STARTER_KIT_VIDEO_PRODUK
+              ? STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE
+              : activeTab === STARTER_KIT_VIDEO_MENGAJAK
+                ? STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE
+                : null,
+      urlEndpoint:
+        activeTab === STARTER_KIT_FLYER_PRODUK ||
+        activeTab === STARTER_KIT_VIDEO_PRODUK
+          ? tokoonlineurlshort
+          : personalwebsiteurlshort,
+    });
+  };
+
   try {
     return (
       <View style={styles.container}>
-        <ImageBackground
-          source={require("../../assets/profilbg.png")}
-          style={styles.background}
-          resizeMode="cover"
+        <StarterKitHeader
+          onPress={() => openWatermarkSettings()}
+          token={token}
+          currentUser={currentUser}
+          profilePicture={profilePicture}
         />
 
-        <Header />
-
-        <View style={styles.containerPanel}>
-          <View style={styles.containerSelection}>
-            <View style={styles.containerText}>
-              <Text allowFontScaling={false} style={styles.textSelection}>
-                {selectMode
-                  ? `${
-                      flyerSelection
-                        ? checkNumberEmpty(flyerSelection?.length)
-                        : "0"
-                    } / ${FLYER_SELECTION_LIMIT} Flyer dipilih`
-                  : ""}
-              </Text>
-
-              {selectMode ? (
-                <TouchableOpacity
-                  onPress={() => clearSelection()}
-                  style={styles.cancel}
-                >
-                  <MaterialCommunityIcons
-                    name="close"
-                    size={18}
-                    color={colors.daclen_orange}
-                  />
-                </TouchableOpacity>
-              ) : null}
-            </View>
-          </View>
-
-          <View style={styles.containerNav}>
+        <View style={styles.containerInside}>
+          <View style={styles.containerPanel}>
             {activeTab === STARTER_KIT_HOME ? (
-              <TouchableOpacity
-                style={[
-                  styles.containerRefresh,
-                  {
-                    backgroundColor:
-                      photoLoading || videoLoading
-                        ? colors.daclen_gray
-                        : colors.daclen_bg_highlighted,
-                    borderTopStartRadius: 6,
-                    borderBottomStartRadius: 6,
-                  },
-                ]}
-                disabled={photoLoading || videoLoading}
-                onPress={() =>
-                  navigation.navigate("WatermarkSettings", {
-                    urlTitle:
-                      activeTab === STARTER_KIT_FLYER_PRODUK
-                        ? STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE
-                        : activeTab === STARTER_KIT_FLYER_MENGAJAK
-                          ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE
-                          : activeTab === STARTER_KIT_VIDEO_PRODUK
-                            ? STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE
-                            : activeTab === STARTER_KIT_VIDEO_MENGAJAK
-                              ? STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE
-                              : null,
-                    urlEndpoint:
-                      activeTab === STARTER_KIT_FLYER_PRODUK ||
-                      activeTab === STARTER_KIT_VIDEO_PRODUK
-                        ? tokoonlineurlshort
-                        : personalwebsiteurlshort,
-                  })
-                }
-              >
-                <Text style={styles.textRefresh}>SETTING WATERMARK</Text>
-              </TouchableOpacity>
+              <StarterKitPanelButton
+                icon="store"
+                text="Toko Online"
+                onPress={() => openTokoOnline()}
+              />
             ) : (
-              <TouchableOpacity
-                style={[
-                  styles.containerRefresh,
-                  {
-                    backgroundColor:
-                      photoLoading || videoLoading
-                        ? colors.daclen_gray
-                        : colors.daclen_bg_highlighted,
-                    borderTopStartRadius: 6,
-                    borderBottomStartRadius: 6,
-                  },
-                ]}
+              <StarterKitPanelButton
+                icon="chevron-left"
+                text="Kembali"
                 disabled={photoLoading || videoLoading}
                 onPress={() => onBackPress()}
-              >
-                <MaterialCommunityIcons
-                  name="chevron-left"
-                  size={24}
-                  color={colors.daclen_light}
-                  style={styles.refresh}
-                />
-              </TouchableOpacity>
+              />
             )}
 
             {(activeTab === STARTER_KIT_FLYER_MENGAJAK &&
@@ -489,23 +485,9 @@ function MediaKitFiles(props) {
               )) ||
             (activeTab === STARTER_KIT_FLYER_PRODUK &&
               !(photoKeys?.length === undefined || photoKeys?.length < 1)) ? (
-              <TouchableOpacity
-                style={[
-                  styles.containerRefresh,
-                  {
-                    backgroundColor:
-                      photoLoading ||
-                      videoLoading ||
-                      (selectMode &&
-                        (activeTab === STARTER_KIT_FLYER_PRODUK ||
-                          activeTab === STARTER_KIT_FLYER_MENGAJAK) &&
-                        (flyerSelection?.length === undefined ||
-                          flyerSelection?.length < 1))
-                        ? colors.daclen_gray
-                        : colors.daclen_blue,
-                  },
-                ]}
-                onPress={() => onSelectPress()}
+              <StarterKitPanelButton
+                icon={selectMode ? "content-save-all" : "select-multiple"}
+                text={selectMode ? "Download" : "Seleksi"}
                 disabled={
                   photoLoading ||
                   videoLoading ||
@@ -515,130 +497,125 @@ function MediaKitFiles(props) {
                     (flyerSelection?.length === undefined ||
                       flyerSelection?.length < 1))
                 }
-              >
-                <MaterialCommunityIcons
-                  name={selectMode ? "content-save-all" : "select-multiple"}
-                  size={24}
-                  color={colors.daclen_light}
-                  style={[styles.refresh, { marginHorizontal: 16 }]}
-                />
-              </TouchableOpacity>
-            ) : null}
+                onPress={() => onSelectPress()}
+              />
+            ) : activeTab === STARTER_KIT_HOME ? (
+              <StarterKitPanelButton
+                icon="web"
+                text="Personal Web"
+                onPress={() => openPersonalWeb()}
+              />
+            ) : (
+              <View style={{ backgroundColor: "transparent", flex: 1 }} />
+            )}
 
-            <TouchableOpacity
-              style={styles.containerRefresh}
-              disabled={photoLoading || videoLoading}
-              onPress={() => refreshContent()}
-            >
-              {photoLoading || videoLoading ? (
-                <ActivityIndicator
-                  size="small"
-                  color={colors.daclen_light}
-                  style={{
-                    alignSelf: "center",
-                    marginVertical: 10,
-                    marginHorizontal: 12,
-                  }}
-                />
-              ) : (
-                <MaterialCommunityIcons
-                  name="refresh"
-                  size={24}
-                  color={colors.daclen_light}
-                  style={styles.refresh}
-                />
-              )}
-            </TouchableOpacity>
+            {photoLoading || videoLoading ? (
+              <ActivityIndicator
+                size="small"
+                color={colors.daclen_grey_placeholder}
+                style={{
+                  alignSelf: "center",
+                  flex: 1,
+                }}
+              />
+            ) : activeTab === STARTER_KIT_HOME ? (
+              <StarterKitPanelButton
+                icon="share-circle"
+                text="Ajak Bergabung"
+                onPress={() => openReferral()}
+              />
+            ) : (
+              <StarterKitPanelButton
+                icon="refresh"
+                text="Refresh"
+                disabled={photoLoading || videoLoading}
+                onPress={() => refreshContent()}
+              />
+            )}
           </View>
-        </View>
 
-        <View style={styles.scrollView}>
-          {token === null ||
-          currentUser === null ||
-          currentUser?.id === undefined ||
-          ((currentUser?.isActive === undefined ||
-            currentUser?.isActive === null ||
-            !currentUser?.isActive) &&
-            !(
-              currentUser?.level === "spv" ||
-              currentUser?.status_member === "supervisor"
-            )) ? (
-            currentUser?.nomor_telp_verified_at === undefined ||
-            currentUser?.nomor_telp_verified_at === null ? (
-              <Text
-                allowFontScaling={false}
-                style={[
-                  styles.textSelection,
-                  { color: colors.daclen_light, marginVertical: 32 },
-                ]}
-              >
-                Mohon menyelesaikan proses registrasi terlebih dahulu.
-              </Text>
-            ) : null
-          ) : watermarkData === null ? (
-            <ActivityIndicator
-              size="large"
-              color={colors.daclen_orange}
-              style={styles.spinner}
-            />
-          ) : activeTab === STARTER_KIT_VIDEO_PRODUK ||
-            activeTab === STARTER_KIT_VIDEO_MENGAJAK ? (
-            <WatermarkVideos
-              watermarkData={watermarkData}
-              userId={currentUser?.id}
-              token={token}
-              loading={videoLoading}
-              jenis_video={
-                activeTab === STARTER_KIT_VIDEO_MENGAJAK
-                  ? STARTER_KIT_VIDEO_MENGAJAK_TAG
-                  : STARTER_KIT_VIDEO_PRODUK_TAG
-              }
-              refreshPage={() => refreshVideos()}
-            />
-          ) : activeTab === STARTER_KIT_FLYER_PRODUK ? (
-            <WatermarkPhotos
-              userId={currentUser?.id}
-              loading={photoLoading}
-              error={photoError}
-              watermarkData={watermarkData}
-              sharingAvailability={sharingAvailability}
-              photos={mediaKitPhotos}
-              photoKeys={photoKeys}
-              jenis_foto={STARTER_KIT_FLYER_PRODUK_TAG}
-              photosMultipleSave={photosMultipleSave}
-              clearMultipleSave={() =>
-                props?.updateReduxMediaKitPhotosMultipleSave(null)
-              }
-              refreshPage={() => refreshPhotos()}
-              selectMode={selectMode}
-              selected={flyerSelection}
-              setSelected={(isAdd, e) => setSelected(isAdd, e)}
-            />
-          ) : activeTab === STARTER_KIT_FLYER_MENGAJAK ? (
-            <FlyerMengajak
-              photos={flyerMengajak}
-              refreshing={photoLoading}
-              showTitle={false}
-              userId={currentUser?.id}
-              watermarkData={watermarkData}
-              sharingAvailability={sharingAvailability}
-              jenis_foto={STARTER_KIT_FLYER_MENGAJAK_TAG}
-              photosMultipleSave={photosMultipleSave}
-              clearMultipleSave={() =>
-                props?.updateReduxMediaKitPhotosMultipleSave(null)
-              }
-              refreshPage={() => refreshPhotos()}
-              selectMode={selectMode}
-              selected={flyerSelection}
-              setSelected={(isAdd, e) => setSelected(isAdd, e)}
-            />
-          ) : (
-            <StarterKitHome
-              currentUser={currentUser}
-              setModal={(e) => setModal(e)}
-              setActiveTab={(e) => setActiveTab(e)}
-            />
-          )}
+          <View style={styles.containerScroll}>
+            {token === null ||
+            currentUser === null ||
+            currentUser?.id === undefined ||
+            ((currentUser?.isActive === undefined ||
+              currentUser?.isActive === null ||
+              !currentUser?.isActive) &&
+              !(
+                currentUser?.level === "spv" ||
+                currentUser?.status_member === "supervisor"
+              )) ? (
+              currentUser?.nomor_telp_verified_at === undefined ||
+              currentUser?.nomor_telp_verified_at === null ? (
+                <EmptyPlaceholder
+                  title="Starter Kit"
+                  text="Mohon menyelesaikan proses registrasi dahulu sebelum mengakses Starter Kit."
+                />
+              ) : null
+            ) : watermarkData === null ? (
+              <ActivityIndicator
+                size="large"
+                color={colors.daclen_orange}
+                style={styles.spinner}
+              />
+            ) : activeTab === STARTER_KIT_VIDEO_PRODUK ||
+              activeTab === STARTER_KIT_VIDEO_MENGAJAK ? (
+              <StarterKitVideo
+                watermarkData={watermarkData}
+                userId={currentUser?.id}
+                token={token}
+                loading={videoLoading}
+                jenis_video={
+                  activeTab === STARTER_KIT_VIDEO_MENGAJAK
+                    ? STARTER_KIT_VIDEO_MENGAJAK_TAG
+                    : STARTER_KIT_VIDEO_PRODUK_TAG
+                }
+                refreshPage={() => refreshVideos()}
+              />
+            ) : activeTab === STARTER_KIT_FLYER_PRODUK ? (
+              <StarterKitFlyerProduk
+                userId={currentUser?.id}
+                loading={photoLoading}
+                error={photoError}
+                watermarkData={watermarkData}
+                sharingAvailability={sharingAvailability}
+                photos={mediaKitPhotos}
+                photoKeys={photoKeys}
+                jenis_foto={STARTER_KIT_FLYER_PRODUK_TAG}
+                photosMultipleSave={photosMultipleSave}
+                clearMultipleSave={() =>
+                  props?.updateReduxMediaKitPhotosMultipleSave(null)
+                }
+                refreshPage={() => refreshPhotos()}
+                selectMode={selectMode}
+                selected={flyerSelection}
+                setSelected={(isAdd, e) => setSelected(isAdd, e)}
+              />
+            ) : activeTab === STARTER_KIT_FLYER_MENGAJAK ? (
+              <FlyerMengajak
+                photos={flyerMengajak}
+                refreshing={photoLoading}
+                showTitle={false}
+                userId={currentUser?.id}
+                watermarkData={watermarkData}
+                sharingAvailability={sharingAvailability}
+                jenis_foto={STARTER_KIT_FLYER_MENGAJAK_TAG}
+                photosMultipleSave={photosMultipleSave}
+                clearMultipleSave={() =>
+                  props?.updateReduxMediaKitPhotosMultipleSave(null)
+                }
+                refreshPage={() => refreshPhotos()}
+                selectMode={selectMode}
+                selected={flyerSelection}
+                setSelected={(isAdd, e) => setSelected(isAdd, e)}
+              />
+            ) : (
+              <StarterKitHomeScreen
+                setModal={(e) => setModal(e)}
+                setActiveTab={(e) => setActiveTab(e)}
+              />
+            )}
+          </View>
         </View>
 
         {modal?.visible ? (
@@ -655,10 +632,10 @@ function MediaKitFiles(props) {
     sentryLog(error);
     return (
       <SafeAreaView style={styles.container}>
-        <Header />
-        <ErrorView
-          error={error.message}
-          onOpenExternalLink={() => openExternalLink()}
+        <EmptyPlaceholder
+          title="Starter Kit"
+          text={error.message}
+          minHeight={dimensions.fullHeight}
         />
       </SafeAreaView>
     );
@@ -669,33 +646,37 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: "transparent",
+    backgroundColor: colors.daclen_black,
   },
-  scrollView: {
+  containerScroll: {
     flex: 1,
-    width: "100%",
+    width: dimensions.fullWidth,
+    marginTop: panelHeight / 2,
+    paddingTop: panelHeight / 2,
+    backgroundColor: colors.white,
+    borderTopStartRadius: (20 * dimensions.fullWidth) / 430,
+    borderTopEndRadius: (20 * dimensions.fullWidth) / 430,
+    minHeight: dimensions.fullHeight * 0.9,
+  },
+  containerInside: {
     backgroundColor: "transparent",
-    alignItems: "center",
-  },
-  background: {
-    position: "absolute",
-    zIndex: 0,
-    top: 0,
-    start: 0,
-    width: "100%",
-    height: "100%",
-  },
-  containerHeader: {
-    flexDirection: "row",
-    padding: 10,
-    backgroundColor: colors.daclen_graydark,
   },
   containerPanel: {
-    marginTop: 12,
-    zIndex: 10,
-    width: "100%",
+    position: "absolute",
+    top: 0,
+    zIndex: 6,
+    width: panelWidth,
+    height: panelHeight,
+    start: (dimensions.fullWidth - panelWidth) / 2,
+    end: (dimensions.fullWidth - panelWidth) / 2,
+    borderRadius: 20,
+    borderColor: colors.daclen_grey_container,
+    borderWidth: 1,
+    backgroundColor: colors.white,
+    paddingHorizontal: (28 * dimensions.fullWidthAdjusted) / 430,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
   },
   containerText: {
     backgroundColor: "transparent",
@@ -808,6 +789,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
+  profilePicture: store.userState.profilePicture,
   photosUri: store.mediaKitState.photosUri,
   watermarkData: store.mediaKitState.watermarkData,
   mediaKitPhotos: store.mediaKitState.photos,
@@ -839,4 +821,4 @@ const mapDispatchProps = (dispatch) =>
     dispatch,
   );
 
-export default connect(mapStateToProps, mapDispatchProps)(MediaKitFiles);
+export default connect(mapStateToProps, mapDispatchProps)(StarterKitScreen);

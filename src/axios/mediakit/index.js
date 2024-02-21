@@ -29,7 +29,7 @@ import {
   STARTER_KIT_FLYER_PRODUK_TAG,
   STARTER_KIT_VIDEO_MENGAJAK_TAG,
   STARTER_KIT_VIDEO_PRODUK_TAG,
-} from "../../components/mediakit/constants";
+} from "../../constants/starterkit";
 
 export function clearMediaKitData() {
   return (dispatch) => {

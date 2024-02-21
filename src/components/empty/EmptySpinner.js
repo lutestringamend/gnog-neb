@@ -10,7 +10,7 @@ const EmptySpinner = ({ minHeight }) => {
         { minHeight: minHeight ? minHeight : dimensions.fullHeight * 0.75 },
       ]}
     >
-      <ActivityIndicator size="large" color={colors.daclen_button_disabled_grey} />
+      <ActivityIndicator size="large" color={colors.daclen_grey_placeholder} />
     </View>
   );
 };

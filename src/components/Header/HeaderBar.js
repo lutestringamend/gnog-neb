@@ -173,7 +173,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: staticDimensions.marginHorizontal,
-    
   },
   containerBack: {
     backgroundColor: "transparent",
@@ -194,12 +193,11 @@ const styles = StyleSheet.create({
   textRightButton: {
     backgroundColor: "transparent",
     color: colors.white,
-    fontFamily: "Poppins-SemiBold",
-    fontSize: 11,
-    letterSpacing: 0.5,
+    fontFamily: "Poppins",
+    fontSize: 12,
   },
   thickBorderBottom: {
-    borderColor: colors.daclen_lightgrey,
+    borderColor: colors.daclen_grey_light,
     borderBottomWidth: 10,
   },
   rightImage: {

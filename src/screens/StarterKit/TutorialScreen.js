@@ -11,8 +11,8 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { colors } from "../../../styles/base";
-import VideosFlatlist from "../videos/VideosFlatlist";
+import { colors } from "../../styles/base";
+import VideosFlatlist from "../../components/starterkit/VideosFlatlist";
 import {
   getTutorialVideos,
   clearMediaKitVideosError,
@@ -20,9 +20,9 @@ import {
 } from "../../../axios/mediakit";
 import { getObjectAsync, setObjectAsync } from "../../asyncstorage";
 import { ASYNC_MEDIA_TUTORIAL_VIDEOS_KEY } from "../../asyncstorage/constants";
-import { VIDEO_TUTORIAL_TITLE } from "../constants";
+import { VIDEO_TUTORIAL_TITLE } from "../../constants/starterkit";
 
-const Tutorial = (props) => {
+const TutorialScreen = (props) => {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const { tutorials, videoError, currentUser, token } = props;
@@ -232,4 +232,4 @@ const mapDispatchProps = (dispatch) =>
     dispatch
   );
 
-export default connect(mapStateToProps, mapDispatchProps)(Tutorial);
+export default connect(mapStateToProps, mapDispatchProps)(TutorialScreen);

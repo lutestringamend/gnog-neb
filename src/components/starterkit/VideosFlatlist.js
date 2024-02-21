@@ -10,13 +10,24 @@ import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, staticDimensions, blurhash } from "../../../styles/base";
+import { colors, staticDimensions, dimensions } from "../../styles/base";
 import {
+  FLYER_MENGAJAK_PAGINATION_LIMIT,
   STARTER_KIT_VIDEO_PRODUK_TAG,
     vwmarkdefaultsourceheight,
     vwmarkdefaultsourcewidth,
-  } from "../constants";
-import { checkVideoFileName } from "../../../axios/mediakit";
+  } from "../../constants/starterkit";
+import { checkVideoFileName } from "../../axios/mediakit";
+
+const screenAR = dimensions.fullWidth / dimensions.fullHeight;
+const limitAR = 9 / 16;
+const numColumns = screenAR >= limitAR ? 4 : 3;
+const itemLimit = FLYER_MENGAJAK_PAGINATION_LIMIT * numColumns;
+const width = (dimensions.fullWidth - (numColumns + 1) * 20) / numColumns;
+const height = (180 * width) / 135;
+
+const smallWidth = 135 * dimensions.fullWidthAdjusted / 430;
+const smallHeight = 180 * dimensions.fullWidthAdjusted / 430;
 
 const VideosFlatlist = (props) => {
   const { videos, refreshing, showTitle, userId, jenis_video, style, title } = props;
@@ -70,11 +81,11 @@ const VideosFlatlist = (props) => {
   }
 
   return (
-    <View style={[styles.containerFlatlist, style ? style : {width: "100%"}]}>
+    <View style={[styles.container, style ? style : {width: "100%"}]}>
       <FlashList
         estimatedItemSize={6}
         horizontal={false}
-        numColumns={jenis_video === STARTER_KIT_VIDEO_PRODUK_TAG ? 2 : 3}
+        numColumns={numColumns}
         data={videos}
         contentContainerStyle={styles.containerFlatlist}
         refreshControl={
@@ -90,26 +101,29 @@ const VideosFlatlist = (props) => {
             style={[
               styles.containerImage,
               {
-                paddingBottom:
-                  videos?.length > 3 && index >= Math.floor(videos?.length / 3) * 3
-                    ? staticDimensions.pageBottomPadding
-                    : 20,
+                flex: 1,
+                marginTop: index < numColumns ? staticDimensions.marginHorizontal : 0,
+                marginBottom:
+                  index >= videos?.length - 1 && jenis_video !== STARTER_KIT_VIDEO_PRODUK_TAG
+                    ? height + (3 * staticDimensions.marginHorizontal)
+                    : staticDimensions.marginHorizontal,
               },
             ]}
           >
-            <View style={styles.containerThumbnail}>
-              <Image
-                style={styles.imageList}
+            <Image
+                style={[styles.imageList, {
+                  width: jenis_video === STARTER_KIT_VIDEO_PRODUK_TAG ? width : width,
+                  height: jenis_video === STARTER_KIT_VIDEO_PRODUK_TAG ? height: height, 
+                }]}
                 source={getTempThumbnail(item)}
                 contentFit="cover"
-                placeholder={blurhash}
-                transition={0}
+                placeholder={null}
+                transition={100}
                 cachepolicy="memory-disk"
               />
-            </View>
 
             {showTitle && item?.judul ? (
-              <Text allowFontScaling={false} style={[styles.textHeader, { fontSize: jenis_video === STARTER_KIT_VIDEO_PRODUK_TAG ? 14 : 10 }]}>
+              <Text allowFontScaling={false} style={styles.textHeader}>
                 {item?.judul}
               </Text>
             ) : null}
@@ -121,39 +135,31 @@ const VideosFlatlist = (props) => {
 };
 
 const styles = StyleSheet.create({
-  containerFlatlist: {
+  container: {
+    backgroundColor: "transparent",
     flex: 1,
+  },
+  containerFlatlist: {
     backgroundColor: "transparent",
   },
   containerImage: {
-    flex: 1,
     backgroundColor: "transparent",
-    marginHorizontal: 10,
-  },
-  containerThumbnail: {
-    flex: 1,
-    aspectRatio: 3 / 4,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: colors.daclen_lightgrey,
-    backgroundColor: "transparent",
+    marginHorizontal: staticDimensions.marginHorizontal / 2,
+    minHeight: height,
   },
   imageList: {
-    flex: 1,
-    aspectRatio: 3 / 4,
     borderRadius: 6,
     backgroundColor: "transparent",
   },
   textHeader: {
+    width,
     backgroundColor: "transparent",
-    fontSize: 10,
-    fontFamily: "Poppins",
-    alignSelf: "center",
+    fontSize: 12,
+    fontFamily: "Poppins-Light",
     textAlign: "center",
     textAlignVertical: "center",
-    marginTop: 10,
-    marginHorizontal: 10,
-    color: colors.daclen_light,
+    marginTop: staticDimensions.marginHorizontal,
+    color: colors.black,
   },
 });
 

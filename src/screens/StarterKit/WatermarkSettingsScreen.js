@@ -7,34 +7,38 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  SafeAreaView,
 } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
+import { useNavigation } from "@react-navigation/native";
+
 import { colors } from "../../styles/base";
-import { privacypolicy } from "../profile/constants";
+import { privacypolicy } from "../../../components/profile/constants";
 import {
   updateReduxMediaKitWatermarkData,
   updateReduxMediaKitPhotosUri,
   setWatermarkDatafromCurrentUser,
-} from "../../axios/mediakit";
+} from "../../../axios/mediakit";
 import { updateUserData } from "../../axios/user";
-import { overwriteWatermarkVideos } from "../media";
+import { overwriteWatermarkVideos } from "../../../components/media";
 import {
   WatermarkData,
   vwmarktextnamecharlimit,
   vwmarktextphonecharlimit,
-} from "./constants";
-import { useNavigation } from "@react-navigation/native";
-import { setObjectAsync } from "../asyncstorage";
+} from "../../constants/starterkit";
+import { setObjectAsync } from "../../asyncstorage";
 import {
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
   ASYNC_WATERMARK_PHOTOS_PDF_KEY,
   ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY,
-} from "../asyncstorage/constants";
-import { sentryLog } from "../../sentry";
+} from "../../asyncstorage/constants";
+import { sentryLog } from "../../../sentry";
+import HeaderBar from "../../components/Header/HeaderBar";
+import AlertBox from "../../components/alert/AlertBox";
 
-const WatermarkSettings = (props) => {
+const WatermarkSettingsScreen = (props) => {
   const { token, currentUser, currentAddress, watermarkData, userUpdate } =
     props;
   const { urlTitle, urlEndpoint } = props.route.params;
@@ -135,30 +139,14 @@ const WatermarkSettings = (props) => {
   };
 
   return (
-    <View style={styles.container}>
-      {error ? (
-        <Text
-          allowFontScaling={false}
-          style={[
-            styles.textError,
-            success && { backgroundColor: colors.daclen_green },
-          ]}
-        >
-          {error}
-        </Text>
-      ) : null}
+    <SafeAreaView style={styles.container}>
+     <HeaderBar title="Setting Watermark" />
       {token === null ||
       currentUser === null ||
       currentUser?.id === undefined ||
       currentUser?.name === undefined ||
       currentUser?.id === null ||
-      currentUser?.name === null ? (
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text allowFontScaling={false} style={styles.textUid}>
-            Anda harus Login / Register untuk mengganti Watermark
-          </Text>
-        </TouchableOpacity>
-      ) : (
+      currentUser?.name === null ? null : (
         <ScrollView style={styles.containerInfo}>
           <View style={styles.containerPrivacy}>
             <Text allowFontScaling={false} style={styles.textUid}>
@@ -246,7 +234,8 @@ const WatermarkSettings = (props) => {
           </View>
         </ScrollView>
       )}
-    </View>
+      <AlertBox text={error} success={success} onClose={() => setError(null)} />
+    </SafeAreaView>
   );
 };
 
@@ -354,4 +343,4 @@ const mapDispatchProps = (dispatch) =>
     dispatch
   );
 
-export default connect(mapStateToProps, mapDispatchProps)(WatermarkSettings);
+export default connect(mapStateToProps, mapDispatchProps)(WatermarkSettingsScreen);

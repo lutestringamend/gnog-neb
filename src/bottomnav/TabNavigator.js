@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import DashboardMain from "../../components/dashboard/Dashboard";
 import HomeScreen from "../../components/home/Home";
 import ShopScreen from "../screens/Shop/ShopScreen";
-import MediaKitFiles from "../../components/mediakit/MediaKitFiles";
+import StarterKitScreen from "../screens/StarterKit/StarterKitScreen";
 import ProfileScreen from "../screens/Profile/ProfileScreen";
 
 import { colors, bottomNav, staticDimensions, dimensions } from "../styles/base";
@@ -58,7 +58,7 @@ export default function TabNavigator(props) {
       <Tab.Screen
         name="StarterKit"
         key="StarterKit"
-        component={MediaKitFiles}
+        component={StarterKitScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <TabBarIcon

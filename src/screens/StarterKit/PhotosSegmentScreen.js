@@ -1,9 +1,7 @@
 import React, { useEffect, useState, Suspense } from "react";
 import {
-  TouchableHighlight,
   StyleSheet,
   Text,
-  ActivityIndicator,
   TouchableOpacity,
   Platform,
   ToastAndroid,
@@ -19,15 +17,29 @@ import { Image } from "expo-image";
 import { shareAsync } from "expo-sharing";
 import { useNavigation } from "@react-navigation/native";
 
-import { blurhash, colors } from "../../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import { sentryLog } from "../../../sentry";
-import { getObjectAsync } from "../../asyncstorage";
-import { ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../../asyncstorage/constants";
-import { ErrorView } from "../../webview/WebviewChild";
+import { getObjectAsync } from "../../../components/asyncstorage";
+import { ASYNC_WATERMARK_PHOTOS_PDF_KEY } from "../../../components/asyncstorage/constants";
 import { webfotowatermark } from "../../../axios/constants";
-import { STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE, STARTER_KIT_FLYER_MENGAJAK_TAG, STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE } from "../constants";
+import {
+  STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE,
+  STARTER_KIT_FLYER_MENGAJAK_TAG,
+  STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE,
+  FLYER_MENGAJAK_PAGINATION_LIMIT,
+} from "../../constants/starterkit";
+import EmptyPlaceholder from "../../components/empty/EmptyPlaceholder";
+import EmptySpinner from "../../components/empty/EmptySpinner";
+import HeaderBar from "../../components/Header/HeaderBar";
 
-const PhotosSegment = (props) => {
+const screenAR = dimensions.fullWidth / dimensions.fullHeight;
+const limitAR = 9 / 16;
+const numColumns = screenAR >= limitAR ? 4 : 3;
+const itemLimit = FLYER_MENGAJAK_PAGINATION_LIMIT * numColumns;
+const width = (dimensions.fullWidth - (numColumns + 1) * 20) / numColumns;
+const height = (180 * width) / 135;
+
+const PhotosSegmentScreen = (props) => {
   const { title, photos, sharingAvailability, jenis_foto } = props.route.params;
   const { photosUri, watermarkData, currentUser } = props;
   const userId = currentUser?.id ? currentUser?.id : null;
@@ -35,14 +47,6 @@ const PhotosSegment = (props) => {
   const [loading, setLoading] = useState(false);
   const [savedUri, setSavedUri] = useState(null);
   const navigation = useNavigation();
-
-  useEffect(() => {
-    props.navigation.setOptions({
-      title: jenis_foto === STARTER_KIT_FLYER_MENGAJAK_TAG ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE : `Flyer ${title}`,
-      headerShown: true,
-    });
-    //console.log("PhotosSegment params", props.route.params);
-  }, [props.route.params]);
 
   useEffect(() => {
     console.log("photos", photos);
@@ -68,7 +72,7 @@ const PhotosSegment = (props) => {
       photosUri?.length < 1
     ) {
       const storagePdfPhotos = await getObjectAsync(
-        ASYNC_WATERMARK_PHOTOS_PDF_KEY
+        ASYNC_WATERMARK_PHOTOS_PDF_KEY,
       );
       console.log("storagePdfPhotos", storagePdfPhotos);
       if (
@@ -129,10 +133,8 @@ const PhotosSegment = (props) => {
 
   //{savedUri === null || savedUri === "" ?  "" : ""}
 
-  try {
-    return (
-      <SafeAreaView style={styles.containerFlatlist}>
-        <View style={styles.containerHeader}>
+  /*
+<View style={styles.containerHeader}>
           <Text allowFontScaling={false} style={styles.textHeader}>{title}</Text>
           {savedUri === null || savedUri === "" ? null : (
             <TouchableOpacity
@@ -178,36 +180,55 @@ const PhotosSegment = (props) => {
             </TouchableOpacity>
           ) : null}
         </View>
-        <Suspense
-          fallback={
-            <ActivityIndicator
-              size="small"
-              color={colors.daclen_orange}
-              style={styles.spinner}
-            />
+  */
+
+  try {
+    return (
+      <SafeAreaView style={styles.container}>
+        <HeaderBar
+          title={
+            jenis_foto === STARTER_KIT_FLYER_MENGAJAK_TAG
+              ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE
+              : `Flyer ${title}`
           }
-        >
+        />
+        <Suspense fallback={<EmptySpinner />}>
           <FlashList
-            estimatedItemSize={6}
+            estimatedItemSize={20}
             horizontal={false}
-            numColumns={3}
+            numColumns={numColumns}
             data={photos}
-            renderItem={({ item, index }) => item ? item?.jenis_foto ? item?.jenis_foto?.toLowerCase() === jenis_foto.toLowerCase() ? (
-              <TouchableHighlight
-                key={index}
-                onPress={() => openPhoto(index)}
-                underlayColor={colors.daclen_orange}
-                style={styles.containerImage}
-              >
-                <Image
-                  style={styles.imageList}
-                  source={item?.thumbnail ? item?.thumbnail : item?.foto}
-                  contentFit="cover"
-                  placeholder={null}
-                  transition={0}
-                />
-              </TouchableHighlight>
-            ) : null : null : null}
+            contentContainerStyle={styles.containerFlatlist}
+            renderItem={({ item, index }) =>
+              item ? (
+                item?.jenis_foto ? (
+                  item?.jenis_foto?.toLowerCase() ===
+                  jenis_foto.toLowerCase() ? (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => openPhoto(index)}
+                      style={[
+                        styles.containerImage,
+                        {
+                          marginBottom:
+                            index >= photos?.length - 1
+                              ? height + 2 * staticDimensions.marginHorizontal
+                              : staticDimensions.marginHorizontal,
+                        },
+                      ]}
+                    >
+                      <Image
+                        style={styles.imageList}
+                        source={item?.thumbnail ? item?.thumbnail : item?.foto}
+                        contentFit="cover"
+                        placeholder={null}
+                        transition={100}
+                      />
+                    </TouchableOpacity>
+                  ) : null
+                ) : null
+              ) : null
+            }
           />
         </Suspense>
       </SafeAreaView>
@@ -217,24 +238,23 @@ const PhotosSegment = (props) => {
     sentryLog(e);
     return (
       <SafeAreaView style={styles.container}>
-        <ErrorView
-          error={e.toString()}
-          onOpenExternalLink={() => Linking.openURL(webfotowatermark)}
-        />
+        <EmptyPlaceholder title="Flyer Produk" text={e.toString()} />
       </SafeAreaView>
     );
   }
 };
 
-/*
-          
-*/
-
 const styles = StyleSheet.create({
-  containerFlatlist: {
+  container: {
     flex: 1,
     width: "100%",
     backgroundColor: colors.white,
+  },
+  containerFlatlist: {
+    width: dimensions.fullWidth,
+    backgroundColor: "transparent",
+    paddingTop: staticDimensions.marginHorizontal,
+    paddingHorizontal: staticDimensions.marginHorizontal / 2,
   },
   containerHeader: {
     flexDirection: "row",
@@ -248,16 +268,14 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.daclen_lightgrey,
   },
   containerImage: {
-    flex: 1,
-    backgroundColor: colors.daclen_light,
-    borderWidth: 0.5,
-    borderColor: colors.daclen_lightgrey,
+    backgroundColor: "transparent",
+    borderRadius: 6,
+    overflow: "hidden",
+    marginHorizontal: staticDimensions.marginHorizontal / 2,
   },
   imageList: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-    aspectRatio: 3 / 4,
+    width,
+    height,
   },
   button: {
     flexDirection: "row",
@@ -282,23 +300,10 @@ const styles = StyleSheet.create({
     color: colors.daclen_black,
     flex: 1,
   },
-  textUid: {
-    fontFamily: "Poppins", fontSize: 16,
-    marginVertical: 20,
-    textAlign: "center",
-    padding: 10,
-    color: colors.daclen_gray,
-    marginHorizontal: 10,
-  },
   icon: {
     alignSelf: "center",
     marginStart: 12,
     backgroundColor: "transparent",
-  },
-  spinner: {
-    alignSelf: "center",
-    width: 16,
-    height: 16,
   },
 });
 
@@ -308,4 +313,4 @@ const mapStateToProps = (store) => ({
   watermarkData: store.mediaKitState.watermarkData,
 });
 
-export default connect(mapStateToProps, null)(PhotosSegment);
+export default connect(mapStateToProps, null)(PhotosSegmentScreen);

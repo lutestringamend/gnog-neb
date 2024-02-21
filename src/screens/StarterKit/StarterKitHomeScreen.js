@@ -6,6 +6,7 @@ import {
   Dimensions,
   Linking,
 } from "react-native";
+import { connect } from "react-redux";
 import {
   STARTER_KIT_FLYER_MENGAJAK,
   STARTER_KIT_FLYER_MENGAJAK_ICON,
@@ -13,35 +14,20 @@ import {
   STARTER_KIT_FLYER_PRODUK,
   STARTER_KIT_FLYER_PRODUK_ICON,
   STARTER_KIT_FLYER_PRODUK_TEXT,
-  STARTER_KIT_PERSONAL_WEBSITE,
-  STARTER_KIT_PERSONAL_WEBSITE_ICON,
-  STARTER_KIT_REFERRAL,
-  STARTER_KIT_REFERRAL_ICON,
-  STARTER_KIT_TOKO_ONLINE_DESC,
-  STARTER_KIT_TOKO_ONLINE_ICON,
-  STARTER_KIT_TOKO_ONLINE_TEXT,
   STARTER_KIT_VIDEO_MENGAJAK,
   STARTER_KIT_VIDEO_MENGAJAK_ICON,
   STARTER_KIT_VIDEO_MENGAJAK_TEXT,
   STARTER_KIT_VIDEO_PRODUK,
   STARTER_KIT_VIDEO_PRODUK_ICON,
   STARTER_KIT_VIDEO_PRODUK_TEXT,
-} from "../constants";
-import StarterKitHomeButton from "./StarterKitHomeButton";
-import { staticDimensions } from "../../../styles/base";
-import {
-  personalwebsiteurl,
-  personalwebsiteurlshort,
-  tokoonlineurl,
-  tokoonlineurlshort,
-  webreferral,
-  webreferralshort,
-} from "../../../axios/constants";
+} from "../../../components/mediakit/constants";
+import StarterKitHomeButton from "../../../components/mediakit/home/StarterKitHomeButton";
+import { staticDimensions } from "../../styles/base";
 
 const screenWidth = Dimensions.get("window").width;
 
-const StarterKitHome = (props) => {
-  const { currentUser } = props;
+const StarterKitHomeScreen = (props) => {
+  const { currentUser, mediaKitPhotos, flyerMengajak, mediaKitVideos, videosMengajak } = props;
 
   function setModal(e) {
     if (props?.setModal === undefined || props?.setModal === null) {
@@ -50,35 +36,7 @@ const StarterKitHome = (props) => {
     props?.setModal(e);
   }
 
-  function openTokoOnline() {
-    setModal({
-      visible: true,
-      title: STARTER_KIT_TOKO_ONLINE_TEXT,
-      url: `${tokoonlineurl}${currentUser?.name}`,
-      urlShort: `${tokoonlineurlshort}${currentUser?.name}`,
-      desc: STARTER_KIT_TOKO_ONLINE_DESC,
-    });
-  }
-
-  function openPersonalWeb() {
-    setModal({
-      visible: true,
-      title: STARTER_KIT_PERSONAL_WEBSITE,
-      url: `${personalwebsiteurl}${currentUser?.name}`,
-      urlShort: `${personalwebsiteurlshort}${currentUser?.name}`,
-      desc: null,
-    });
-  }
-
-  function openReferral() {
-    setModal({
-      visible: true,
-      title: STARTER_KIT_REFERRAL,
-      url: `${webreferral}${currentUser?.name}`,
-      urlShort: `${webreferralshort}${currentUser?.name}`,
-      desc: null,
-    });
-  }
+  
 
   function setActiveTab(e) {
     if (props?.setActiveTab === undefined || props?.setActiveTab === null) {
@@ -118,30 +76,6 @@ const StarterKitHome = (props) => {
             style={{ marginStart: 10, flex: 1 / 2 }}
           />
         </View>
-        <View style={styles.containerHorizontal}>
-          <StarterKitHomeButton
-            onPress={() => openTokoOnline()}
-            icon={STARTER_KIT_TOKO_ONLINE_ICON}
-            text={STARTER_KIT_TOKO_ONLINE_TEXT}
-            style={{ marginHorizontal: 6, flex: 1 / 3 }}
-            fontSize={12}
-          />
-          <StarterKitHomeButton
-            onPress={() => openPersonalWeb()}
-            icon={STARTER_KIT_PERSONAL_WEBSITE_ICON}
-            text={STARTER_KIT_PERSONAL_WEBSITE}
-            style={{ marginHorizontal: 6, flex: 1 / 3 }}
-            fontSize={12}
-          />
-          <StarterKitHomeButton
-            onPress={() => openReferral()}
-            icon={STARTER_KIT_REFERRAL_ICON}
-            text={STARTER_KIT_REFERRAL}
-            style={{ marginHorizontal: 6, flex: 1 / 3 }}
-            fontSize={12}
-          />
-        </View>
-        <View style={styles.containerBottom} />
       </ScrollView>
     </View>
   );
@@ -170,4 +104,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export default StarterKitHome;
+const mapStateToProps = (store) => ({
+  token: store.userState.token,
+  currentUser: store.userState.currentUser,
+  mediaKitPhotos: store.mediaKitState.photos,
+  mediaKitVideos: store.mediaKitState.videos,
+  flyerMengajak: store.mediaKitState.flyerMengajak,
+  videosMengajak: store.mediaKitState.videosMengajak,
+});
+
+export default connect(mapStateToProps, null)(StarterKitHomeScreen);

@@ -8,7 +8,7 @@ import {
   monthNamesShort,
   tempdeadlineintervalinmiliseconds,
 } from "../constants/index";
-import privacyHTML from "../../components/profile/privacy";
+import privacyHTML from "../../../components/profile/privacy";
 
 import {
   PROFILE_FAQ_CHANGE,

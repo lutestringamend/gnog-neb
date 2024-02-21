@@ -1,30 +1,19 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  ActivityIndicator,
-  Linking,
-  RefreshControl,
-  FlatList,
-  TouchableOpacity,
-} from "react-native";
+import { View, StyleSheet, RefreshControl, FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-//import { FlashList } from "@shopify/flash-list";
 
-import { colors } from "../../../styles/base";
-import { webfotowatermark } from "../../../axios/constants";
-import { ErrorView } from "../../webview/WebviewChild";
-import WatermarkPhotosSegment from "./WatermarkPhotosSegment";
-import { sentryLog } from "../../../sentry";
+import { staticDimensions } from "../../styles/base";
+import WatermarkPhotosSegment from "../../components/starterkit/StarterKitPhotoSegment";
+import { sentryLog } from "../../sentry";
+import EmptyPlaceholder from "../../components/empty/EmptyPlaceholder";
+import EmptySpinner from "../../components/empty/EmptySpinner";
+import AlertBox from "../../components/alert/AlertBox";
 
-const WatermarkPhotos = (props) => {
+const StarterKitFlyerProduk = (props) => {
   const {
     photos,
     photoKeys,
     loading,
-    error,
     watermarkData,
     sharingAvailability,
     refreshPage,
@@ -113,66 +102,13 @@ const WatermarkPhotos = (props) => {
         type: jenis_foto,
         product,
       });
-      /*try {
-        navigation.navigate("ImageViewer", {
-          disableWatermark: false,
-          title: product,
-          jenis_foto,
-          photoIndex: index,
-          id: item?.id,
-          uri: item?.foto,
-          thumbnail: item?.thumbnail,
-          isSquare: false,
-          width: item?.width,
-          height: item?.height,
-          text_align: item?.text_align,
-          text_x: item?.text_x,
-          text_y: item?.text_y,
-          link_x: item?.link_x,
-          link_y: item?.link_y,
-          font: item?.font,
-          fontFamily: "Poppins",
-          fontSize: item?.font ? item?.font?.ukuran : 48,
-          watermarkData,
-          sharingAvailability,
-        });
-      } catch (e) {
-        console.error(e);
-      }*/
     }
 
     return (
       <View style={styles.container}>
-        {error ? (
-          <View
-            style={[
-              styles.containerError,
-              {
-                backgroundColor: success
-                  ? colors.daclen_green
-                  : colors.daclen_danger,
-              },
-            ]}
-          >
-            <Text allowFontScaling={false} style={styles.textError}>
-              {error}
-            </Text>
-            <TouchableOpacity onPress={() => clearError()} style={styles.close}>
-              <MaterialCommunityIcons
-                name="close"
-                size={20}
-                color={colors.daclen_light}
-              />
-            </TouchableOpacity>
-          </View>
-        ) : null}
         <View style={styles.containerMain}>
           {loading || photos === undefined || photos === null ? (
-            <ActivityIndicator
-              size="large"
-              color={colors.daclen_light}
-              style={{ alignSelf: "center", marginVertical: 20, zIndex: 1 }}
-            />
+            <EmptySpinner />
           ) : null}
 
           <View style={styles.containerInside}>
@@ -180,9 +116,10 @@ const WatermarkPhotos = (props) => {
             photos === undefined ||
             photos === null ? null : photoKeys?.length === undefined ||
               photoKeys?.length < 1 ? (
-              <Text allowFontScaling={false} style={styles.textUid}>
-                Tidak ada Flyer Produk tersedia.
-              </Text>
+              <EmptyPlaceholder
+                title="Flyer Produk"
+                text="Tidak ada Flyer Produk tersedia."
+              />
             ) : (
               <FlatList
                 estimatedItemSize={10}
@@ -219,14 +156,19 @@ const WatermarkPhotos = (props) => {
             )}
           </View>
         </View>
+        <AlertBox
+          success={success}
+          text={error}
+          onClose={() => setError(null)}
+        />
       </View>
     );
   } catch (e) {
     sentryLog(e);
     return (
-      <ErrorView
-        error={`Mohon membuka website Daclen untuk melihat foto Media Kit\n\n${e.toString()}`}
-        onOpenExternalLink={() => Linking.openURL(webfotowatermark)}
+      <EmptyPlaceholder
+        title="Flyer Produk"
+        text={`Mohon membuka website Daclen untuk melihat foto Media Kit\n\n${e.toString()}`}
       />
     );
   }
@@ -258,63 +200,8 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: "transparent",
-  },
-  containerError: {
-    width: "100%",
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    backgroundColor: colors.daclen_danger,
-    flexDirection: "row",
-    alignItems: "center",
-    zIndex: 4,
-  },
-  containerImage: {
-    flex: 1,
-    backgroundColor: colors.daclen_light,
-    borderWidth: 0.5,
-    borderColor: colors.daclen_lightgrey,
-  },
-  containerButton: {
-    position: "absolute",
-    width: "100%",
-    end: 0,
-    bottom: 20,
-    zIndex: 10,
-    backgroundColor: "transparent",
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  imageList: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-    aspectRatio: 1 / 1,
-  },
-  textError: {
-    flex: 1,
-    fontSize: 12,
-    fontFamily: "Poppins-SemiBold",
-    color: colors.white,
-    marginHorizontal: 10,
-    backgroundColor: "transparent",
-    textAlign: "center",
-    alignSelf: "center",
-  },
-  textUid: {
-    fontFamily: "Poppins-SemiBold",
-    fontSize: 12,
-    color: colors.daclen_light,
-    padding: 20,
-    textAlign: "center",
-    zIndex: 20,
-    height: "100%",
-    backgroundColor: "transparent",
-  },
-  close: {
-    alignSelf: "center",
-    backgroundColor: "transparent",
+    paddingTop: staticDimensions.marginHorizontal,
   },
 });
 
-export default WatermarkPhotos;
+export default StarterKitFlyerProduk;

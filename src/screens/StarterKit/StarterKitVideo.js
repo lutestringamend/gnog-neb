@@ -17,20 +17,26 @@ import {
   updateReduxMediaKitVideos,
   clearMediaKitVideosError,
 } from "../../../axios/mediakit";
-import { overwriteWatermarkVideos } from "../../media";
-import { getObjectAsync, setObjectAsync } from "../../asyncstorage";
+import { overwriteWatermarkVideos } from "../../../components/media";
+import {
+  getObjectAsync,
+  setObjectAsync,
+} from "../../../components/asyncstorage";
 import {
   ASYNC_MEDIA_WATERMARK_VIDEOS_KEY,
   ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY,
-} from "../../asyncstorage/constants";
-import WatermarkVideosSegment from "./WatermarkVideosSegment";
-import VideosFlatlist from "./VideosFlatlist";
+} from "../../../components/asyncstorage/constants";
+import StarterKitVideoSegment from "../../components/starterkit/StarterKitVideoSegment";
+import VideosFlatlist from "../../components/starterkit/VideosFlatlist";
 import {
   STARTER_KIT_VIDEO_MENGAJAK_TAG,
   STARTER_KIT_VIDEO_PRODUK_TAG,
-} from "../constants";
+} from "../../../components/mediakit/constants";
+import EmptySpinner from "../../components/empty/EmptySpinner";
+import EmptyPlaceholder from "../../components/empty/EmptyPlaceholder";
+import { staticDimensions } from "../../styles/base";
 
-const WatermarkVideos = (props) => {
+const StarterKitVideo = (props) => {
   const [refreshing, setRefreshing] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [videoKeys, setVideoKeys] = useState(null);
@@ -62,7 +68,7 @@ const WatermarkVideos = (props) => {
     console.log(
       "redux media kit videos - videosMengajak",
       mediaKitVideos,
-      videosMengajak
+      videosMengajak,
     );
   }, [mediaKitVideos]);
 
@@ -114,7 +120,7 @@ const WatermarkVideos = (props) => {
 
   const checkAsyncWatermarkVideosSaved = async () => {
     const storageWatermarkVideosSaved = await getObjectAsync(
-      ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY
+      ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY,
     );
     if (
       !(
@@ -143,25 +149,21 @@ const WatermarkVideos = (props) => {
 
   return (
     <View style={styles.container}>
-      {loading || fetching || refreshing ? (
-        <ActivityIndicator
-          size="large"
-          color={colors.daclen_light}
-          style={{ alignSelf: "center", marginVertical: 20, zIndex: 1 }}
-        />
-      ) : null}
+      {loading || fetching || refreshing ? <EmptySpinner /> : null}
       {loading || fetching || refreshing ? null : (
         <View style={styles.containerInside}>
           {jenis_video === STARTER_KIT_VIDEO_PRODUK_TAG &&
           videoKeys?.length < 1 ? (
-            <Text allowFontScaling={false} style={styles.textUid}>
-              Tidak ada Video Produk tersedia.
-            </Text>
+            <EmptyPlaceholder
+              title="Video Produk"
+              text="Tidak ada Video Produk tersedia."
+            />
           ) : jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG &&
             videosMengajak?.length < 1 ? (
-            <Text allowFontScaling={false} style={styles.textUid}>
-              Tidak ada Video Mengajak tersedia.
-            </Text>
+            <EmptyPlaceholder
+              title="Video Mengajak"
+              text="Tidak ada Video Mengajak tersedia."
+            />
           ) : jenis_video === STARTER_KIT_VIDEO_MENGAJAK_TAG ? (
             <VideosFlatlist
               videos={videosMengajak}
@@ -169,7 +171,9 @@ const WatermarkVideos = (props) => {
               refreshPage={() => refreshPage()}
               jenis_video={jenis_video}
               showTitle={true}
-              style={{marginHorizontal: 10, marginTop: 20}}
+              style={{
+                paddingHorizontal: staticDimensions.marginHorizontal / 2,
+              }}
               userId={userId}
             />
           ) : jenis_video === STARTER_KIT_VIDEO_PRODUK_TAG ? (
@@ -186,7 +190,7 @@ const WatermarkVideos = (props) => {
                 />
               }
               renderItem={({ item, index }) => (
-                <WatermarkVideosSegment
+                <StarterKitVideoSegment
                   index={index}
                   isLast={index === videoKeys?.length - 1}
                   key={item}
@@ -199,9 +203,10 @@ const WatermarkVideos = (props) => {
               )}
             />
           ) : (
-            <Text allowFontScaling={false} style={styles.textUid}>
-              Tidak ada video tersedia.
-            </Text>
+            <EmptyPlaceholder
+              title="Starter Kit"
+              text="Tidak ada video tersedia."
+            />
           )}
         </View>
       )}
@@ -268,14 +273,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  textUid: {
-    backgroundColor: "transparent",
-    fontFamily: "Poppins-SemiBold",
-    fontSize: 12,
-    color: colors.daclen_light,
-    margin: 20,
-    textAlign: "center",
-  },
 });
 
 const mapStateToProps = (store) => ({
@@ -294,7 +291,7 @@ const mapDispatchProps = (dispatch) =>
       updateReduxMediaKitVideos,
       overwriteWatermarkVideos,
     },
-    dispatch
+    dispatch,
   );
 
-export default connect(mapStateToProps, mapDispatchProps)(WatermarkVideos);
+export default connect(mapStateToProps, mapDispatchProps)(StarterKitVideo);

@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -10,10 +10,11 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { getFAQ } from "../../axios/profile";
-import FAQChild from "./FAQChild";
+import FAQChild from "../../components/profile/FAQChild";
 import { colors, dimensions, staticDimensions } from "../../styles/base";
+import HeaderBar from "../../components/Header/HeaderBar";
 
-function FAQ(props) {
+function FAQScreen(props) {
   useEffect(() => {
     if (
       props.faq?.length < 1 ||
@@ -29,6 +30,7 @@ function FAQ(props) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <HeaderBar title="Frequently Asked Questions" />
       {props.faq?.length > 0 ? (
         <FlashList
           estimatedItemSize={10}
@@ -71,4 +73,4 @@ const mapDispatchProps = (dispatch) =>
     dispatch
   );
 
-export default memo(connect(mapStateToProps, mapDispatchProps)(FAQ));
+export default connect(mapStateToProps, mapDispatchProps)(FAQScreen);

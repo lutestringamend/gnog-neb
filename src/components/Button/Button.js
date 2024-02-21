@@ -96,7 +96,7 @@ const Button = (props) => {
       {props?.withArrow ? (
         <MaterialCommunityIcons
           name={props?.rightArrow ? props?.rightArrow : "chevron-right"}
-          size={props?.arrowSize ? props?.arrowSize : 12}
+          size={props?.arrowSize ? props?.arrowSize : 14}
           color={
             props?.fontColor
               ? props?.fontColor

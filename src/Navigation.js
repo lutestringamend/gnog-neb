@@ -24,7 +24,7 @@ import CompleteRegistrationScreen from "./screens/auth/CompleteRegistrationScree
 import OpenMidtrans from "../components/checkout/OpenMidtrans";
 import Withdrawal from "../components/dashboard/saldo/Withdrawal";
 import WebviewScreen from "../components/webview/Webview";
-import FAQScreen from "../components/profile/FAQ";
+import FAQScreen from "./screens/Profile/FAQScreen";
 import AboutScreen from "../components/profile/About";
 import PDFViewer from "../components/pdfviewer/PDFViewer";
 import LoginScreen from "../components/auth/Login";
@@ -36,17 +36,19 @@ import LocationPin from "../components/address/LocationPin";
 import EditProfileScreen from "../components/profile/EditProfile";
 import CameraView from "../components/media/CameraView";
 import ImageRotateView from "../components/media/ImageRotateView";
+
 import ImageViewer from "../components/imageviewer/ImageViewer";
 import MultipleImageView from "../components/imageviewer/MultipleImageView";
 import MultipleImageSave from "../components/imageviewer/MultipleImageSave";
-import MediaKitFiles from "../components/mediakit/MediaKitFiles";
-import WatermarkSettings from "../components/mediakit/WatermarkSettings";
-import PhotosSegment from "../components/mediakit/photos/PhotosSegment";
+import MediaKitFiles from "./screens/StarterKit/StarterKitScreen";
+import TutorialScreen from "./screens/StarterKit/TutorialScreen";
+import WatermarkSettingsScreen from "./screens/StarterKit/WatermarkSettingsScreen";
+import PhotosSegmentScreen from "./screens/StarterKit/PhotosSegmentScreen";
 import FlyerSliderView from "../components/media/FlyerSliderView";
-import QRScreen from "../components/qrscreen/QRScreen";
 import VideoPlayer from "../components/videoplayer/VideoPlayer";
 import VideoLogs from "../components/videoplayer/VideoLogs";
-import Tutorial from "../components/mediakit/tutorial/Tutorial";
+
+import QRScreen from "../components/qrscreen/QRScreen";
 import Calculator from "../components/dashboard/Calculator";
 
 import DeleteAccountScreen from "./screens/Profile/DeleteAccountScreen";
@@ -248,13 +250,13 @@ export const Screens = [
   },
   {
     name: "WatermarkSettings",
-    screen: WatermarkSettings,
-    options: { ...options, headerShown: true, title: "Setting Watermark" },
+    screen: WatermarkSettingsScreen,
+    options,
   },
   {
     name: "PhotosSegment",
-    screen: PhotosSegment,
-    options: { ...options, headerShown: true, title: "Foto Promosi" },
+    screen: PhotosSegmentScreen,
+    options,
   },
   {
     name: "FlyerSliderView",
@@ -296,8 +298,8 @@ export const Screens = [
   },
   {
     name: "Tutorial",
-    screen: Tutorial,
-    options: { ...options, headerShown: true, title: "Tutorial" },
+    screen: TutorialScreen,
+    options,
   },
   {
     name: "Calculator",

@@ -4,29 +4,35 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
-  ActivityIndicator,
   RefreshControl,
   FlatList,
+  ScrollView,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, dimensions, staticDimensions } from "../../../styles/base";
-import PhotoItem from "./PhotoItem";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
+import PhotoItem from "../../components/starterkit/PhotoItem";
 import {
   STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE,
   STARTER_KIT_FLYER_MENGAJAK_TAG,
   FLYER_MENGAJAK_PAGINATION_LIMIT,
-} from "../constants";
+} from "../../constants/starterkit";
+import AlertBox from "../../components/alert/AlertBox";
+import EmptySpinner from "../../components/empty/EmptySpinner";
+import EmptyPlaceholder from "../../components/empty/EmptyPlaceholder";
 
 const screenAR = dimensions.fullWidth / dimensions.fullHeight;
 const limitAR = 9 / 16;
 const numColumns = screenAR >= limitAR ? 4 : 3;
 const itemLimit = FLYER_MENGAJAK_PAGINATION_LIMIT * numColumns;
 const width = (dimensions.fullWidth - (numColumns + 1) * 20) / numColumns;
-const height = (4 * width) / 3;
+const height = (180 * width) / 135;
 
-const FlyerMengajak = (props) => {
+const arrowSize = 24 * dimensions.fullWidth / 430;
+const textSize = 12 * dimensions.fullWidth / 430;
+
+const StarterKitFlyerMengajak = (props) => {
   const { photos, refreshing, photosMultipleSave, selectMode, selected } =
     props;
   const navigation = useNavigation();
@@ -181,87 +187,53 @@ const FlyerMengajak = (props) => {
   }
 
   return (
-    <View style={styles.container}>
-      {error ? (
-        <View
-          style={[
-            styles.containerError,
-            {
-              backgroundColor: success
-                ? colors.daclen_green
-                : colors.daclen_danger,
-            },
-          ]}
-        >
-          <Text allowFontScaling={false} style={styles.textError}>
-            {error}
-          </Text>
-          <TouchableOpacity onPress={() => clearError()} style={styles.close}>
-            <MaterialCommunityIcons
-              name="close"
-              size={20}
-              color={colors.daclen_light}
-            />
-          </TouchableOpacity>
-        </View>
-      ) : null}
+    <ScrollView style={styles.container}>
       {photos === null || refreshing ? (
-        <View style={styles.containerSpinner}>
-          <ActivityIndicator
-            size="large"
-            color={colors.daclen_light}
-            style={{ alignSelf: "center", marginVertical: 20, zIndex: 1 }}
-          />
-        </View>
+       <EmptySpinner />
       ) : null}
       {photos === null || refreshing ? null : photos?.length === undefined ||
         photos?.length < 1 ? (
-        <Text allowFontScaling={false} style={styles.textUid}>
-          Tidak ada Flyer Mengajak tersedia.
-        </Text>
+          <EmptyPlaceholder title="Flyer Mengajak" text="Tidak ada Flyer Mengajak tersedia." />
       ) : (
-        <View style={styles.containerFlatlist}>
-          <FlatList
-            horizontal={false}
-            numColumns={numColumns}
-            data={paginated}
-            scrollEnabled
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={() => refreshPage()}
-              />
-            }
-            renderItem={({ item, index }) => (
-              <PhotoItem
-                selected={
-                  selected.find(({ id }) => item?.id === id) ? true : false
-                }
-                navigation={navigation}
-                item={item}
-                index={index}
-                style={[
-                  styles.containerImage,
-                  {
-                    flex: 1 / numColumns,
-                    width,
-                    height,
-                    marginHorizontal: 10,
-                    marginBottom:
-                      photos?.length > 3 &&
-                      index >= Math.floor(photos?.length / 3) * 3
-                        ? staticDimensions.pageBottomPadding
-                        : 20,
-                  },
-                ]}
-                imageStyle={styles.photoImage}
-                selectMode={selectMode}
-                onLongPress={() => onLongPress(item)}
-                onPress={() => onPress(item, index)}
-              />
-            )}
+        <FlatList
+        horizontal={false}
+        numColumns={numColumns}
+        data={paginated}
+        scrollEnabled
+        contentContainerStyle={styles.containerFlatlist}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => refreshPage()}
           />
-          <View style={styles.containerPagination}>
+        }
+        renderItem={({ item, index }) => (
+          <PhotoItem
+            selected={
+              selected.find(({ id }) => item?.id === id) ? true : false
+            }
+            navigation={navigation}
+            item={item}
+            index={index}
+            style={[
+              styles.containerImage,
+              {
+                flex: 1 / numColumns,
+                width,
+                height,
+                backgroundColor: "transparent",
+                marginBottom: staticDimensions.marginHorizontal,
+              },
+            ]}
+            imageStyle={styles.photoImage}
+            selectMode={selectMode}
+            onLongPress={() => onLongPress(item)}
+            onPress={() => onPress(item, index)}
+          />
+        )}
+      />
+      )}
+      {photos === null || refreshing ? null : <View style={styles.containerPagination}>
             <TouchableOpacity
               style={[styles.containerArrow, { opacity: page < 1 ? 0 : 1 }]}
               disabled={page < 1}
@@ -269,8 +241,8 @@ const FlyerMengajak = (props) => {
             >
               <MaterialCommunityIcons
                 name="chevron-double-left"
-                size={24}
-                color={colors.daclen_light}
+                size={arrowSize}
+                color={colors.black}
               />
             </TouchableOpacity>
             <TouchableOpacity
@@ -280,8 +252,8 @@ const FlyerMengajak = (props) => {
             >
               <MaterialCommunityIcons
                 name="chevron-left"
-                size={24}
-                color={colors.daclen_light}
+                size={arrowSize}
+                color={colors.black}
               />
             </TouchableOpacity>
             <Text allowFontScaling={false} style={styles.textPageNumber}>
@@ -297,8 +269,8 @@ const FlyerMengajak = (props) => {
             >
               <MaterialCommunityIcons
                 name="chevron-right"
-                size={24}
-                color={colors.daclen_light}
+                size={arrowSize}
+                color={colors.black}
               />
             </TouchableOpacity>
             <TouchableOpacity
@@ -311,50 +283,16 @@ const FlyerMengajak = (props) => {
             >
               <MaterialCommunityIcons
                 name="chevron-double-right"
-                size={24}
-                color={colors.daclen_light}
+                size={arrowSize}
+                color={colors.black}
               />
             </TouchableOpacity>
-          </View>
-        </View>
-      )}
-    </View>
+          </View>}
+      <AlertBox text={error} success={success} onClose={() => clearError()} />
+    </ScrollView>
   );
 };
 
-/*
-            <TouchableOpacity
-              key={index}
-              onLongPress={() => onLongPress(item)}
-              onPress={() => onPress(item)}
-              style={[
-                styles.containerImage,
-                {
-                  paddingBottom:
-                    photos?.length > 3 && index >= Math.floor(photos?.length / 3) * 3
-                      ? staticDimensions.pageBottomPadding / 2
-                      : 0,
-                },
-              ]}
-            >
-              <View style={styles.containerThumbnail}>
-                <Image
-                  style={styles.imageList}
-                  source={item?.thumbnail ? item?.thumbnail : null}
-                  contentFit="cover"
-                  placeholder={blurhash}
-                  transition={0}
-                  cachepolicy="memory-disk"
-                />
-              </View>
-
-              {showTitle && item?.nama ? (
-                <Text allowFontScaling={false} style={styles.textHeader}>
-                  {item?.nama}
-                </Text>
-              ) : null}
-            </TouchableOpacity>
-*/
 
 const styles = StyleSheet.create({
   container: {
@@ -362,23 +300,14 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "transparent",
   },
-  containerSpinner: {
-    flex: 1,
-    width: "100%",
-    backgroundColor: "transparent",
-    justifyContent: "center",
-    alignItems: "center",
-  },
   containerFlatlist: {
-    flex: 1,
+    height: (3 * height) + (4 * staticDimensions.marginHorizontal),
     backgroundColor: "transparent",
-    marginVertical: 20,
-    marginHorizontal: 10,
+    paddingTop: staticDimensions.marginHorizontal,
   },
   containerPagination: {
     backgroundColor: "transparent",
     alignSelf: "flex-end",
-    marginTop: 12,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -387,67 +316,21 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginStart: 6,
   },
-  containerButton: {
-    position: "absolute",
-    width: "100%",
-    end: 0,
-    bottom: 20,
-    zIndex: 10,
-    backgroundColor: "transparent",
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
   containerImage: {
     flex: 1 / numColumns,
-    backgroundColor: "transparent",
-    marginHorizontal: 10,
   },
-  containerThumbnail: {
-    flex: 1,
-    aspectRatio: 3 / 4,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: colors.daclen_lightgrey,
-    backgroundColor: colors.daclen_lightgrey,
-  },
-  containerError: {
-    width: "100%",
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    backgroundColor: colors.daclen_danger,
-    flexDirection: "row",
-    alignItems: "center",
-    zIndex: 4,
-  },
-  textError: {
-    flex: 1,
-    fontSize: 14,
-    fontFamily: "Poppins-SemiBold",
-    color: colors.white,
-    marginHorizontal: 10,
-    backgroundColor: "transparent",
-    textAlign: "center",
-    alignSelf: "center",
-  },
+ 
   textPageNumber: {
     marginHorizontal: 2,
     alignSelf: "center",
     backgroundColor: "transparent",
-    color: colors.daclen_light,
-    fontSize: 14,
-    fontFamily: "Poppins-SemiBold",
+    color: colors.black,
+    fontSize: textSize,
+    fontFamily: "Poppins-Light",
   },
   photoImage: {
-    width: width - 2,
-    height: height - 2,
-    borderRadius: 6,
-  },
-  imageList: {
-    flex: 1,
-    aspectRatio: 3 / 4,
-    borderRadius: 6,
-    backgroundColor: colors.daclen_light,
+   width,
+   height,
   },
   textHeader: {
     backgroundColor: "transparent",
@@ -462,20 +345,6 @@ const styles = StyleSheet.create({
     height: 52,
     color: colors.daclen_light,
   },
-  textUid: {
-    fontFamily: "Poppins-SemiBold",
-    fontSize: 12,
-    color: colors.daclen_light,
-    padding: 20,
-    textAlign: "center",
-    zIndex: 20,
-    height: "100%",
-    backgroundColor: "transparent",
-  },
-  close: {
-    alignSelf: "center",
-    backgroundColor: "transparent",
-  },
 });
 
-export default FlyerMengajak;
+export default StarterKitFlyerMengajak;

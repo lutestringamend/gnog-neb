@@ -4,7 +4,6 @@ import {
   TouchableOpacity,
   View,
   Text,
-  Dimensions,
   Linking,
   Share,
   Platform,
@@ -14,11 +13,11 @@ import { BlurView } from "expo-blur";
 import QRCode from "react-native-qrcode-svg";
 import * as Clipboard from "expo-clipboard";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { colors } from "../../../styles/base";
+import { colors, dimensions } from "../../styles/base";
 import { useNavigation } from "@react-navigation/native";
 
-const screenWidth = Dimensions.get("window").width;
-const screenHeight = Dimensions.get("window").height;
+const screenWidth = dimensions.fullWidthAdjusted;
+const screenHeight = dimensions.fullHeight;
 const modalWidth =
   screenWidth < 320 ? 296 : screenWidth > 424 ? 400 : screenWidth - 24;
 const modalHeight = 540;
@@ -83,10 +82,7 @@ const StarterKitModal = (props) => {
         style={[
           styles.container,
           {
-            width: screenWidth,
-            height: screenHeight,
             zIndex: 100,
-            elevation: 4,
           },
         ]}
         onPress={() => toggleModal()}
@@ -96,9 +92,6 @@ const StarterKitModal = (props) => {
           style={[
             styles.container,
             {
-              width: screenWidth,
-              height: screenHeight,
-
               opacity: 0.95,
             },
           ]}
@@ -109,10 +102,10 @@ const StarterKitModal = (props) => {
               {
                 width: modalWidth,
                 height: modalHeight,
-                start: (screenWidth - modalWidth) / 2,
-                end: (screenWidth - modalWidth) / 2,
-                top: (screenHeight - modalHeight) / 2 - 40,
-                bottom: (screenHeight - modalHeight) / 2 + 40,
+                start: (dimensions.fullWidth - modalWidth) / 2,
+                end: (dimensions.fullWidth - modalWidth) / 2,
+                top: (screenHeight - modalHeight) / 2,
+                bottom: (screenHeight - modalHeight) / 2,
               },
             ]}
           >
@@ -294,6 +287,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     start: 0,
+    width: dimensions.fullWidth,
+    height: screenHeight,
     backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
