@@ -16,8 +16,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { useNavigation } from "@react-navigation/native";
 
 import { colors, staticDimensions } from "../../styles/base";
-import ShopItem from "./ShopItem";
-import Search from "./Search";
+import ShopItem from "../../src/components/shop/ShopItem";
 import { getObjectAsync } from "../asyncstorage";
 import { ASYNC_PRODUCTS_ARRAY_KEY } from "../asyncstorage/constants";
 import { productpaginationnumber } from "../../axios/constants";
@@ -234,7 +233,7 @@ function Shop(props) {
         >
           <View style={[styles.containerLogo, isSearch ? { flex: 1 } : null]}>
             {isSearch ? (
-              <Search />
+              null
             ) : currentUser?.level === "spv" ||
               currentUser?.status_member === "supervisor" ? null : (
               <TouchableOpacity

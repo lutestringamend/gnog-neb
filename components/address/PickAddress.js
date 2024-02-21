@@ -7,9 +7,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
-  RefreshControl,
-  FlatList,
-  Platform,
 } from "react-native";
 //import * as Location from "expo-location";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -31,7 +28,6 @@ import {
   ASYNC_USER_ADDRESSES_KEY,
   ASYNC_USER_PROFILE_ADDRESS_ID_KEY,
 } from "../asyncstorage/constants";
-import Header from "../profile/Header";
 import { privacypolicy } from "../profile/constants";
 import Separator from "../profile/Separator";
 import { changeAddress, deleteAlamat } from "../../axios/address";
@@ -212,13 +208,7 @@ function PickAddress(props) {
     );
 
     if (currentUser === null || currentUser?.id === undefined) {
-      return (
-        <Header
-          currentUser={currentUser}
-          profile={null}
-          backgroundColor="transparent"
-        />
-      );
+      return null;
     }
 
     return (

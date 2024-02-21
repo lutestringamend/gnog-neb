@@ -17,10 +17,10 @@
       "developmentClient": true,
       "distribution": "internal",
       "android": {
-        "channel": "dev"
+        "channel": "dev-130"
       },
       "ios": {
-        "channel": "dev-ios",
+        "channel": "dev-130",
         "resourceClass": "m1-medium",
         "simulator": "true"
       }
@@ -37,10 +37,10 @@
     },
     "production": {
       "android": {
-        "channel": "production-pdf"
+        "channel": "production-130"
       },
       "ios": {
-        "channel": "production-pdf",
+        "channel": "production-130",
         "resourceClass": "m1-medium"
       }
     }

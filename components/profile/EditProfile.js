@@ -161,10 +161,12 @@ function EditProfile(props) {
   }, [user]);
 
   useEffect(() => {
+    if (Platform.OS === "web" || props.profilePicture === null) {
+      return;
+    }
     console.log(
       "redux media profilePicture",
-      props.profilePicture === null ? null : "not null",
-    );
+      props.profilePicture);
   }, [props.profilePicture]);
 
   useEffect(() => {

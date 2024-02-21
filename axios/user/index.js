@@ -874,6 +874,7 @@ export const updateUserPhoto = async (id, token, uri) => {
 
     //await Axios.post(url, formData, config)
 
+    console.log("formData", formData);
     result = await axios({
       method: "POST",
       url,

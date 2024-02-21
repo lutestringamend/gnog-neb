@@ -16,7 +16,7 @@ import auth from "@react-native-firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 
 import SplashScreen from "./Splash";
-import TabNavigator from "./bottomnav/TabNavigator";
+import TabNavigator from "../src/bottomnav/TabNavigator";
 import { getProductData, clearData } from "../axios/product";
 import {
   login,
@@ -74,6 +74,8 @@ import { colors } from "../styles/base";
 import { fetchRajaOngkir } from "../axios/address";
 import { requestLocationForegroundPermission } from "./address";
 import { devhttp, mainhttp } from "../axios/constants";
+import { updateReduxUserMainModal } from "../src/utils/user";
+import ModalView from "../src/components/modal/ModalView";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -88,6 +90,7 @@ function Main(props) {
   const {
     token,
     currentUser,
+    mainModal,
     notificationsArray,
     productError,
     profileLock,
@@ -651,6 +654,11 @@ function Main(props) {
             isActive={currentUser ? currentUser?.isActive ? currentUser?.isActive : false : false}
             recruitmentTimer={recruitmentTimer}
           />
+          {mainModal === null || !mainModal?.visible ? null : 
+          <ModalView
+            {...mainModal}
+          />
+          }
         </SafeAreaView>
       );
     }
@@ -694,6 +702,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
+  mainModal: store.userState.mainModal,
   notificationsArray: store.notificationsState.notificationsArray,
   profileLock: store.userState.profileLock,
   profilePicture: store.userState.profilePicture,
@@ -734,6 +743,7 @@ const mapDispatchProps = (dispatch) =>
       updateReduxProfilePIN,
       updateReduxUserAddressId,
       updateReduxUserAddresses,
+      updateReduxUserMainModal,
     },
     dispatch,
   );

@@ -31,8 +31,7 @@ const defaultData = {
 const CompleteRegistrationScreen = (props) => {
   const { registerToken } = props;
   const navigation = useNavigation();
-  //const otp_id = props.route.params?.otp_id ? props.route.params?.otp_id : null;
-  const otp_id = 492;
+  const otp_id = props.route.params?.otp_id ? props.route.params?.otp_id : null;
   const nomor_telp = props.route.params?.nomor_telp
     ? props.route.params?.nomor_telp
     : null;

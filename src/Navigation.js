@@ -2,7 +2,9 @@ import appJson from "../app.json";
 import { colors } from "../styles/base";
 
 import MainScreen from "../components/Main";
-import Splash from "../components/Splash";
+
+import HomeScreen from "./screens/Home/HomeScreen";
+
 import History from "../components/history/History";
 import Dashboard from "../components/dashboard/Dashboard";
 import HistoryCheckoutScreen from "../components/history/Checkout";
@@ -47,8 +49,7 @@ import VideoLogs from "../components/videoplayer/VideoLogs";
 import Tutorial from "../components/mediakit/tutorial/Tutorial";
 import Calculator from "../components/dashboard/Calculator";
 
-import Profile from "../components/profile/Profile";
-import DeleteAccountScreen from "../components/auth/DeleteAccount";
+import DeleteAccountScreen from "./screens/Profile/DeleteAccountScreen";
 import PointReportScreen from "../components/dashboard/PointReport";
 import PointWithdrawal from "../components/dashboard/PointWithdrawal";
 import CreatePIN from "../components/profile/CreatePIN";
@@ -74,6 +75,11 @@ export const Screens = [
   {
     name: "Main",
     screen: MainScreen,
+    options,
+  },
+  {
+    name: "Home",
+    screen: HomeScreen,
     options,
   },
   { name: "Dashboard", screen: Dashboard, options },
@@ -219,7 +225,7 @@ export const Screens = [
   { name: "CameraView", screen: CameraView, options },
   { name: "ImageRotateView", screen: ImageRotateView, options },
   { name: "Login", screen: LoginScreen, options },
-  { name: "Profile", screen: Profile, options },
+  
   {
     name: "EditProfile",
     screen: EditProfileScreen,

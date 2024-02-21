@@ -2,7 +2,7 @@
   "expo": {
     "name": "Daclen",
     "slug": "daclen",
-    "version": "1.2.36",
+    "version": "1.2.99",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
     "userInterfaceStyle": "light",
@@ -77,7 +77,7 @@
       "softwareKeyboardLayoutMode": "resize",
       "useNextNotificationsApi": true,
       "userInterfaceStyle": "light",
-      "versionCode": 86
+      "versionCode": 90
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -86,35 +86,6 @@
       [
         "./plugins/withDisableForcedDarkModeAndroid.js",
         {}
-      ],
-      [
-        "@config-plugins/ffmpeg-kit-react-native",
-        {
-          "package": "min-gpl"
-        }
-      ],
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "compileSdkVersion": 33,
-            "targetSdkVersion": 33,
-            "minSdkVersion": 26,
-            "buildToolsVersion": "31.0.0",
-            "packagingOptions": {
-              "pickFirst": [
-                "lib/arm64-v8a/libc++_shared.so",
-                "lib/armeabi-v7a/libc++_shared.so",
-                "lib/x86/libc++_shared.so",
-                "lib/x86_64/libc++_shared.so"
-              ]
-            }
-          },
-          "ios": {
-            "deploymentTarget": "15.0",
-            "useFrameworks": "static"
-          }
-        }
       ],
       [
         "expo-camera",
@@ -164,7 +135,6 @@
           "username": "daclenmobile"
         }
       ],
-      "@config-plugins/react-native-blob-util",
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       "sentry-expo"

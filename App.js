@@ -8,7 +8,7 @@ import { useFonts } from "expo-font";
 import * as NavigationBar from "expo-navigation-bar";
 
 import { Provider } from "react-redux";
-import rootReducer from "./redux/reducers";
+import rootReducer from "./src/redux/reducers";
 
 /*import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
@@ -40,7 +40,7 @@ import { Screens } from "./src/Navigation";
 import { appname } from "./axios/constants";
 import { colors, staticDimensions } from "./styles/base";
 import { sentryLog } from "./sentry";
-import { defaultpoppins } from "./styles/fonts";
+import { defaultpoppins } from "./src/styles/fonts";
 
 
 SplashScreen.preventAutoHideAsync();
