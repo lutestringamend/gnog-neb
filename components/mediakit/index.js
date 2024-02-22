@@ -1,5 +1,5 @@
 import { Platform } from "react-native";
-import { pdfpagewidth } from "../imageviewer/constants";
+import { pdfpagewidth } from "../../src/constants/imageviewer";
 
 export const calculateResizedImageDimensions = (width, height) => {
     if (Platform.OS !== "ios") {

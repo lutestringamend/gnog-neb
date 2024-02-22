@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import {
   StyleSheet,
-  SafeAreaView,
-  ActivityIndicator,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 
@@ -11,8 +9,9 @@ import { bindActionCreators } from "redux";
 
 import { getFAQ } from "../../axios/profile";
 import FAQChild from "../../components/profile/FAQChild";
-import { colors, dimensions, staticDimensions } from "../../styles/base";
-import HeaderBar from "../../components/Header/HeaderBar";
+import { staticDimensions } from "../../styles/base";
+import CenteredView from "../../components/view/CenteredView";
+import EmptySpinner from "../../components/empty/EmptySpinner";
 
 function FAQScreen(props) {
   useEffect(() => {
@@ -29,8 +28,7 @@ function FAQScreen(props) {
   }, [props.faq]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <HeaderBar title="Frequently Asked Questions" />
+    <CenteredView title="Frequently Asked Questions" style={styles.container}>
       {props.faq?.length > 0 ? (
         <FlashList
           estimatedItemSize={10}
@@ -42,13 +40,9 @@ function FAQScreen(props) {
           )}
         />
       ) : (
-        <ActivityIndicator
-          size="large"
-          color={colors.daclen_orange}
-          style={{ alignSelf: "center", marginVertical: 20 }}
-        />
+        <EmptySpinner />
       )}
-    </SafeAreaView>
+    </CenteredView>
   );
 }
 

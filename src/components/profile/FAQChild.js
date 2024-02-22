@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 import { colors } from "../../../styles/base";
-import Separator from "../../../components/profile/Separator";
+import Separator from "../Separator";
 
 export default function FAQChild(props) {
   const [expand, setExpand] = useState(false);

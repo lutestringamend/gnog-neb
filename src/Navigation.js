@@ -1,65 +1,67 @@
 import appJson from "../app.json";
 import { colors } from "../styles/base";
 
-import MainScreen from "../components/Main";
+import MainScreen from "./screens/Main";
+
+
+import LoginScreen from "./screens/auth/LoginScreen";
 
 import HomeScreen from "./screens/Home/HomeScreen";
 
-import History from "../components/history/History";
-import Dashboard from "../components/dashboard/Dashboard";
-import HistoryCheckoutScreen from "../components/history/Checkout";
-import CheckoutItemScreen from "../components/history/CheckoutItem";
-import DeliveryItemScreen from "../components/history/DeliveryItem";
-import BlogFeedScreen from "../components/blog/BlogFeed";
-import BlogScreen from "../components/blog/Blog";
-import ProductScreen from "../components/main/Product";
-import Notifications from "../components/notifications/Notifications";
+import History from "./screens/history/HistoryScreen";
+import Dashboard from "./screens/dashboard/DashboardScreen";
+import HistoryCheckoutScreen from "./components/history/Checkout";
+import CheckoutItemScreen from "./screens/history/CheckoutItemScreen";
+import DeliveryItemScreen from "./screens/history/DeliveryItemScreen";
+import ProductScreen from "./screens/product/ProductScreen";
+import NotificationsScreen from "./screens/notifications/NotificationsScreen";
 
-import CheckoutScreen from "../components/main/Checkout";
+import CheckoutScreen from "./screens/checkout/CheckoutScreen";
 import VerifyPhone from "../components/auth/VerifyPhone";
-import RegisterVerifyPhoneScreen from "../components/auth/RegisterVerifyPhoneScreen";
-import OTPScreen from "../components/auth/OTPScreen";
+import RegisterVerifyPhoneScreen from "./screens/auth/RegisterVerifyPhoneScreen";
+import OTPScreen from "./screens/auth/OTPScreen";
 import CompleteRegistrationScreen from "./screens/auth/CompleteRegistrationScreen";
 
 import OpenMidtrans from "../components/checkout/OpenMidtrans";
-import Withdrawal from "../components/dashboard/saldo/Withdrawal";
-import WebviewScreen from "../components/webview/Webview";
+import WithdrawalScreen from "./screens/saldo/WithdrawalScreen";
+import WebviewScreen from "./screens/webview/WebviewScreen";
 import FAQScreen from "./screens/Profile/FAQScreen";
-import AboutScreen from "../components/profile/About";
-import PDFViewer from "../components/pdfviewer/PDFViewer";
-import LoginScreen from "../components/auth/Login";
+import AboutScreen from "./screens/Profile/AboutScreen";
+import PDFViewerScreen from "./screens/pdfviewer/PDFViewerScreen";
 
-import PickAddress from "../components/address/PickAddress";
-import FillAddressScreen from "../components/address/FillAddress";
-import LocationPin from "../components/address/LocationPin";
+import PickAddress from "./screens/address/PickAddress";
+import FillAddressScreen from "./screens/address/FillAddress";
+import LocationPin from "./screens/address/LocationPin";
 
-import EditProfileScreen from "../components/profile/EditProfile";
-import CameraView from "../components/media/CameraView";
-import ImageRotateView from "../components/media/ImageRotateView";
+import EditProfileScreen from "./screens/Profile/EditProfileScreen";
+import CameraView from "./screens/media/CameraView";
+import ImageRotateView from "./screens/media/ImageRotateView";
 
-import ImageViewer from "../components/imageviewer/ImageViewer";
-import MultipleImageView from "../components/imageviewer/MultipleImageView";
-import MultipleImageSave from "../components/imageviewer/MultipleImageSave";
+import ImageViewerScreen from "./screens/imageviewer/ImageViewerScreen";
+import MultipleImageSaveScreen from "./screens/imageviewer/MultipleImageSaveScreen";
+import MultipleImageViewScreen from "./screens/imageviewer/MultipleImageViewScreen";
 import MediaKitFiles from "./screens/StarterKit/StarterKitScreen";
 import TutorialScreen from "./screens/StarterKit/TutorialScreen";
 import WatermarkSettingsScreen from "./screens/StarterKit/WatermarkSettingsScreen";
 import PhotosSegmentScreen from "./screens/StarterKit/PhotosSegmentScreen";
-import FlyerSliderView from "../components/media/FlyerSliderView";
+import FlyerSliderScreen from "./screens/StarterKit/FlyerSliderScreen";
 import VideoPlayer from "../components/videoplayer/VideoPlayer";
 import VideoLogs from "../components/videoplayer/VideoLogs";
+import WmarkTestScreen from "../components/media/WmarkTestScreen";
 
-import QRScreen from "../components/qrscreen/QRScreen";
-import Calculator from "../components/dashboard/Calculator";
+import BlogFeedScreen from "./screens/blog/BlogFeedScreen";
+import BlogScreen from "./screens/blog/BlogScreen";
 
 import DeleteAccountScreen from "./screens/Profile/DeleteAccountScreen";
-import PointReportScreen from "../components/dashboard/PointReport";
-import PointWithdrawal from "../components/dashboard/PointWithdrawal";
-import CreatePIN from "../components/profile/CreatePIN";
-import UserRoots from "../components/dashboard/UserRoots";
-import BonusRoot from "../components/dashboard/BonusRoot";
-import SaldoReport from "../components/dashboard/saldo/SaldoReport";
-import TimerExplanation from "../components/dashboard/components/TimerExplanation";
-import WmarkTestScreen from "../components/media/WmarkTestScreen";
+import PointReportScreen from "./screens/point/PointReportScreen";
+import PointWithdrawal from "./screens/point/PointWithdrawalScreen";
+import CreatePIN from "./screens/dashboard/CreatePINScreen";
+import UserRoots from "./screens/userroot/UserRootScreen";
+import BonusRoot from "./screens/dashboard/BonusRootScreen";
+import SaldoReport from "./screens/saldo/SaldoReportScreen";
+import Calculator from "./screens/dashboard/CalculatorScreen";
+import TimerExplanation from "./screens/dashboard/TimerExplanationScreen";
+
 
 const options = {
   headerTitleStyle: {
@@ -87,28 +89,28 @@ export const Screens = [
   { name: "Dashboard", screen: Dashboard, options },
   {
     name: "Notifications",
-    screen: Notifications,
-    options: { ...options, headerShown: true, title: "Notifikasi" },
+    screen: NotificationsScreen,
+    options: { ...options, title: "Notifikasi" },
   },
   {
     name: "History",
     screen: History,
-    options: { ...options, headerShown: true, title: "Riwayat Transaksi" },
+    options: { ...options, title: "Riwayat Transaksi" },
   },
   {
     name: "HistoryCheckout",
     screen: HistoryCheckoutScreen,
-    options: { ...options, headerShown: true, title: "Riwayat Checkout" },
+    options: { ...options, title: "Riwayat Checkout" },
   },
   {
     name: "Product",
     screen: ProductScreen,
-    options: { ...options, headerShown: true, title: "Keterangan Produk" },
+    options: { ...options, title: "Keterangan Produk" },
   },
   {
     name: "Checkout",
     screen: CheckoutScreen,
-    options: { ...options, headerShown: true, title: "Keranjang Belanja" },
+    options: { ...options, title: "Keranjang Belanja" },
   },
   {
     name: "VerifyPhone",
@@ -140,18 +142,18 @@ export const Screens = [
   {
     name: "OTPScreen",
     screen: OTPScreen,
-    options: { ...options, headerShown: true, title: "Isi OTP dari Whatsapp" },
+    options: { ...options, title: "Isi OTP dari Whatsapp" },
   },
   { name: "LocationPin", screen: LocationPin, options },
   {
     name: "PickAddress",
     screen: PickAddress,
-    options: { ...options, headerShown: true, title: "Pilih Alamat" },
+    options: { ...options, title: "Pilih Alamat" },
   },
   {
     name: "Address",
     screen: FillAddressScreen,
-    options: { ...options, headerShown: true, title: "Lengkapi Alamat" },
+    options: { ...options, title: "Lengkapi Alamat" },
   },
   {
     name: "OpenMidtrans",
@@ -163,24 +165,24 @@ export const Screens = [
   },
   {
     name: "Withdrawal",
-    screen: Withdrawal,
-    options: { ...options, headerShown: true, title: "Penarikan Saldo" },
+    screen: WithdrawalScreen,
+    options: { ...options, title: "Penarikan Saldo" },
   },
   {
     name: "CheckoutItem",
     screen: CheckoutItemScreen,
-    options: { ...options, headerShown: true, title: "Info Checkout" },
+    options: { ...options, title: "Info Checkout" },
   },
   {
     name: "DeliveryItem",
     screen: DeliveryItemScreen,
-    options: { ...options, headerShown: true, title: "Info Pengiriman" },
+    options: { ...options, title: "Info Pengiriman" },
   },
   { name: "BlogFeed", screen: BlogFeedScreen, options },
   {
     name: "Blog",
     screen: BlogScreen,
-    options: { ...options, headerShown: true, title: "Blog" },
+    options: { ...options, title: "Blog" },
   },
   { name: "Webview", screen: WebviewScreen, options },
   {
@@ -208,21 +210,21 @@ export const Screens = [
       headerShown: false,
     },
   },
-  { name: "PDFViewer", screen: PDFViewer, options },
+  { name: "PDFViewer", screen: PDFViewerScreen, options },
   {
     name: "ImageViewer",
-    screen: ImageViewer,
-    options: { ...options, headerShown: true, title: "Foto Produk" },
+    screen: ImageViewerScreen,
+    options: { ...options, title: "Foto Produk" },
   },
   {
     name: "MultipleImageView",
-    screen: MultipleImageView,
-    options: { ...options, headerShown: true, title: "Download All" },
+    screen: MultipleImageViewScreen,
+    options: { ...options, title: "Download All" },
   },
   {
     name: "MultipleImageSave",
-    screen: MultipleImageSave,
-    options: { ...options, headerShown: true, title: "Simpan Flyer" },
+    screen: MultipleImageSaveScreen,
+    options: { ...options, title: "Simpan Flyer" },
   },
   { name: "CameraView", screen: CameraView, options },
   { name: "ImageRotateView", screen: ImageRotateView, options },
@@ -231,22 +233,22 @@ export const Screens = [
   {
     name: "EditProfile",
     screen: EditProfileScreen,
-    options: { ...options, headerShown: true, title: "Atur Profil" },
+    options: { ...options, title: "Atur Profil" },
   },
   {
     name: "DeleteAccount",
     screen: DeleteAccountScreen,
-    options: { ...options, headerShown: true, title: "Hapus Akun Daclen" },
+    options: { ...options, title: "Hapus Akun Daclen" },
   },
   {
     name: "CreatePIN",
     screen: CreatePIN,
-    options: { ...options, headerShown: true, title: "Buat PIN Baru" },
+    options: { ...options, title: "Buat PIN Baru" },
   },
   {
     name: "MediaKitFiles",
     screen: MediaKitFiles,
-    options: { ...options, headerShown: true, title: "Materi Promosi" },
+    options: { ...options, title: "Materi Promosi" },
   },
   {
     name: "WatermarkSettings",
@@ -259,42 +261,37 @@ export const Screens = [
     options,
   },
   {
-    name: "FlyerSliderView",
-    screen: FlyerSliderView,
-    options: { ...options, headerShown: true, title: "Starter Kit" },
+    name: "FlyerSliderScreen",
+    screen: FlyerSliderScreen,
+    options: { ...options, title: "Starter Kit" },
   },
   { name: "PointReportScreen", screen: PointReportScreen, options },
   {
     name: "PointWithdrawal",
     screen: PointWithdrawal,
-    options: { ...options, headerShown: true, title: "Penukaran Poin" },
+    options: { ...options, title: "Penukaran Poin" },
   },
   {
     name: "UserRootsScreen",
     screen: UserRoots,
-    options: { ...options, headerShown: true, title: "Agen & Reseller" },
+    options: { ...options, title: "Agen & Reseller" },
   },
   {
     name: "BonusRootScreen",
     screen: BonusRoot,
-    options: { ...options, headerShown: true, title: "Syarat Bonus Root" },
+    options: { ...options, title: "Syarat Bonus Root" },
   },
   { name: "SaldoReportScreen", screen: SaldoReport, options },
-  {
-    name: "QRScreen",
-    screen: QRScreen,
-    options: { ...options, headerShown: true, title: "QR Code" },
-  },
   { name: "VideoPlayerScreen", screen: VideoPlayer, options },
   {
     name: "VideoLogsScreen",
     screen: VideoLogs,
-    options: { ...options, headerShown: true, title: "Logs" },
+    options: { ...options, title: "Logs" },
   },
   {
     name: "WmarkTestScreen",
     screen: WmarkTestScreen,
-    options: { ...options, headerShown: true, title: "Test" },
+    options: { ...options, title: "Test" },
   },
   {
     name: "Tutorial",
@@ -304,6 +301,6 @@ export const Screens = [
   {
     name: "Calculator",
     screen: Calculator,
-    options: { ...options, headerShown: true, title: "Simulasi Saldo" },
+    options: { ...options, title: "Simulasi Saldo" },
   },
 ];

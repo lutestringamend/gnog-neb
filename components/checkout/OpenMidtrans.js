@@ -17,7 +17,7 @@ import { webcheckout } from "../../axios/constants";
 import { useNavigation } from "@react-navigation/native";
 import MainHeader from "../main/MainHeader";
 import { colors } from "../../styles/base";
-import { ErrorView } from "../webview/WebviewChild";
+import { ErrorView } from "../../src/components/webview/WebviewChild";
 import { getCurrentUser } from "../../axios/user";
 //import { getCheckoutItem } from "../../axios/history";
 import { snapHTML } from "./snap";

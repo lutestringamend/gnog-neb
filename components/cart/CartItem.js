@@ -4,7 +4,7 @@ import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 
 import CartOld from "./CartOld";
-import Separator from "../profile/Separator";
+import Separator from "../../src/components/Separator";
 import { colors, blurhash } from "../../styles/base";
 
 const CartItem = (props) => {

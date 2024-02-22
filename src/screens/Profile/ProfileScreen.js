@@ -21,7 +21,7 @@ import {
 import { colors, dimensions, staticDimensions } from "../../styles/base";
 
 import ProfileMenuItem from "../../components/profile/ProfileMenuItem";
-//import BSPopup from "../../../components/bottomsheets/BSPopup";
+//import BSPopup from "../../components/bottomsheets/BSPopup";
 import { openWhatsapp } from "../../../components/whatsapp/Whatsapp";
 import { adminWA } from "../../../components/profile/constants";
 import { useNavigation } from "@react-navigation/native";

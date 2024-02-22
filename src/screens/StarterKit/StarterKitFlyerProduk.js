@@ -97,7 +97,7 @@ const StarterKitFlyerProduk = (props) => {
     };
 
     function openPhoto(item, product, index) {
-      navigation.navigate("FlyerSliderView", {
+      navigation.navigate("FlyerSliderScreen", {
         index,
         type: jenis_foto,
         product,

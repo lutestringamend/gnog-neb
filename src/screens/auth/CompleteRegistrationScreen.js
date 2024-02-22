@@ -13,7 +13,7 @@ import { bindActionCreators } from "redux";
 import { useNavigation } from "@react-navigation/native";
 import RBSheet from "react-native-raw-bottom-sheet";
 
-import BSPopup from "../../../components/bottomsheets/BSPopup";
+import BSPopup from "../../components/bottomsheets/BSPopup";
 import { colors } from "../../../styles/base";
 import { getAuthShowOTP, postAuthRegister } from "../../axios/auth";
 import TextInputLabel from "../../../components/textinputs/TextInputLabel";

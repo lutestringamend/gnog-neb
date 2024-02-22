@@ -7,7 +7,6 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
-  SafeAreaView,
 } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -35,8 +34,8 @@ import {
   ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY,
 } from "../../asyncstorage/constants";
 import { sentryLog } from "../../../sentry";
-import HeaderBar from "../../components/Header/HeaderBar";
 import AlertBox from "../../components/alert/AlertBox";
+import CenteredView from "../../components/view/CenteredView";
 
 const WatermarkSettingsScreen = (props) => {
   const { token, currentUser, currentAddress, watermarkData, userUpdate } =
@@ -139,103 +138,103 @@ const WatermarkSettingsScreen = (props) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-     <HeaderBar title="Setting Watermark" />
-      {token === null ||
-      currentUser === null ||
-      currentUser?.id === undefined ||
-      currentUser?.name === undefined ||
-      currentUser?.id === null ||
-      currentUser?.name === null ? null : (
-        <ScrollView style={styles.containerInfo}>
-          <View style={styles.containerPrivacy}>
-            <Text allowFontScaling={false} style={styles.textUid}>
-              {`Kirimkan ${urlTitle === null ? "flyer dan video " : urlTitle} Daclen dengan watermark spesial berisikan informasi berikut ini:`}
-            </Text>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("Webview", {
-                  webKey: "privacy",
-                  text: privacypolicy,
-                })
-              }
-              disabled={loading}
-            >
-              <Text allowFontScaling={false} style={styles.textChange}>
-                Baca {privacypolicy}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <Text allowFontScaling={false} style={styles.textCompulsory}>
-            Nama*
+    <CenteredView title="Setting Watermark" style={styles.container}>
+    {token === null ||
+    currentUser === null ||
+    currentUser?.id === undefined ||
+    currentUser?.name === undefined ||
+    currentUser?.id === null ||
+    currentUser?.name === null ? null : (
+      <ScrollView style={styles.containerInfo}>
+        <View style={styles.containerPrivacy}>
+          <Text allowFontScaling={false} style={styles.textUid}>
+            {`Kirimkan ${urlTitle === null ? "flyer dan video " : urlTitle} Daclen dengan watermark spesial berisikan informasi berikut ini:`}
           </Text>
-          <TextInput
-            value={tempWatermarkData?.name}
-            style={styles.textInput}
-            onChangeText={(name) =>
-              setTempWatermarkData({ ...tempWatermarkData, name })
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Webview", {
+                webKey: "privacy",
+                text: privacypolicy,
+              })
             }
-            editable={editable}
-            maxLength={vwmarktextnamecharlimit}
-          />
-          <Text allowFontScaling={false} style={styles.textCompulsory}>
-            Nomor telepon*
-          </Text>
-          <TextInput
-            value={tempWatermarkData?.phone}
-            style={[styles.textInput, { marginBottom: 0 }]}
-            inputMode="numeric"
-            onChangeText={(phone) =>
-              setTempWatermarkData({ ...tempWatermarkData, phone })
-            }
-            editable={editable}
-            maxLength={vwmarktextphonecharlimit}
-          />
-          {urlTitle && urlEndpoint ? <Text
-            allowFontScaling={false}
-            style={[styles.textCompulsory, { marginTop: 12 }]}
+            disabled={loading}
           >
-            {`Link ${urlTitle}:\n${urlEndpoint}${currentUser?.name}`}
-          </Text> : null}
-          
-          <View style={styles.containerButtons}>
-            <TouchableOpacity
-              onPress={() => changeWatermark()}
-              style={[
-                styles.button,
-                {
-                  backgroundColor:
-                    loading || disabled || !editable
-                      ? colors.daclen_gray
-                      : colors.daclen_orange,
-                },
-              ]}
-              disabled={loading || disabled || !editable}
-            >
-              {loading ? (
-                <ActivityIndicator
-                  color={colors.daclen_light}
-                  size="small"
-                  style={styles.spinner}
-                />
-              ) : (
-                <Text allowFontScaling={false} style={styles.textButton}>
-                  Ganti
-                </Text>
-              )}
-            </TouchableOpacity>
+            <Text allowFontScaling={false} style={styles.textChange}>
+              Baca {privacypolicy}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-            <TouchableOpacity onPress={() => reset()} style={styles.button}>
+        <Text allowFontScaling={false} style={styles.textCompulsory}>
+          Nama*
+        </Text>
+        <TextInput
+          value={tempWatermarkData?.name}
+          style={styles.textInput}
+          onChangeText={(name) =>
+            setTempWatermarkData({ ...tempWatermarkData, name })
+          }
+          editable={editable}
+          maxLength={vwmarktextnamecharlimit}
+        />
+        <Text allowFontScaling={false} style={styles.textCompulsory}>
+          Nomor telepon*
+        </Text>
+        <TextInput
+          value={tempWatermarkData?.phone}
+          style={[styles.textInput, { marginBottom: 0 }]}
+          inputMode="numeric"
+          onChangeText={(phone) =>
+            setTempWatermarkData({ ...tempWatermarkData, phone })
+          }
+          editable={editable}
+          maxLength={vwmarktextphonecharlimit}
+        />
+        {urlTitle && urlEndpoint ? <Text
+          allowFontScaling={false}
+          style={[styles.textCompulsory, { marginTop: 12 }]}
+        >
+          {`Link ${urlTitle}:\n${urlEndpoint}${currentUser?.name}`}
+        </Text> : null}
+        
+        <View style={styles.containerButtons}>
+          <TouchableOpacity
+            onPress={() => changeWatermark()}
+            style={[
+              styles.button,
+              {
+                backgroundColor:
+                  loading || disabled || !editable
+                    ? colors.daclen_gray
+                    : colors.daclen_orange,
+              },
+            ]}
+            disabled={loading || disabled || !editable}
+          >
+            {loading ? (
+              <ActivityIndicator
+                color={colors.daclen_light}
+                size="small"
+                style={styles.spinner}
+              />
+            ) : (
               <Text allowFontScaling={false} style={styles.textButton}>
-                Reset
+                Ganti
               </Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      )}
-      <AlertBox text={error} success={success} onClose={() => setError(null)} />
-    </SafeAreaView>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => reset()} style={styles.button}>
+            <Text allowFontScaling={false} style={styles.textButton}>
+              Reset
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    )}
+    <AlertBox text={error} success={success} onClose={() => setError(null)} />
+  </CenteredView>
+   
   );
 };
 

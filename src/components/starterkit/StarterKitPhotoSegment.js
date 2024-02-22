@@ -83,7 +83,9 @@ const StarterKitPhotoSegment = (props) => {
           style={styles.containerHorizontal}
         >
           <View style={styles.containerVertical}>
-          <Text allowFontScaling={false} style={styles.textName}>
+          <Text allowFontScaling={false} style={[styles.textName, {
+            fontSize: title?.length > 20 ? 14 * dimensions.fullWidthAdjusted / 430 : 18 * dimensions.fullWidthAdjusted / 430,
+          }]}>
             {title}
           </Text>
           <Text allowFontScaling={false} style={styles.textNum}>
@@ -151,6 +153,10 @@ const styles = StyleSheet.create({
     margin: 4 * dimensions.fullWidthAdjusted / 430,
   },
   button: {
+    position: "absolute",
+    zIndex: 2,
+    bottom: 0,
+    end: 0,
     height: 30 * dimensions.fullWidthAdjusted / 430,
     borderRadius: 6 * dimensions.fullWidthAdjusted / 430,
     marginTop: staticDimensions.marginHorizontal,
@@ -163,7 +169,7 @@ const styles = StyleSheet.create({
   },
   textNum: {
     fontFamily: "Poppins-Light",
-    fontSize: 12,
+    fontSize: 12 * dimensions.fullWidthAdjusted / 430,
     color: colors.black,
   },
   textButton: {

@@ -28,7 +28,7 @@ import { getObjectAsync } from "../../asyncstorage";
 import { ASYNC_PRODUCTS_ARRAY_KEY } from "../../asyncstorage/constants";
 import { productpaginationnumber } from "../../axios/constants";
 import { updateProductSearchFilter } from "../../axios/product";
-import { openCheckout } from "../../../components/main/CheckoutScreen";
+import { openCheckout } from "../../utils/checkout";
 import {
   checkNumberEmpty,
   alterKeranjang,

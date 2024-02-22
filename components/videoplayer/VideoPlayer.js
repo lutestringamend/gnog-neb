@@ -1,6 +1,6 @@
 import React from "react";
 import { Linking, SafeAreaView, StyleSheet } from "react-native";
-import { ErrorView } from "../webview/WebviewChild";
+import { ErrorView } from "../../src/components/webview/WebviewChild";
 import { webvideowatermark } from "../../axios/constants";
 import MainHeader from "../main/MainHeader";
 import { useNavigation } from "@react-navigation/native";

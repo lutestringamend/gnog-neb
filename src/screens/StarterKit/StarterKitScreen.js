@@ -38,7 +38,7 @@ import {
   setObjectAsync,
 } from "../../../components/asyncstorage";
 import { colors, dimensions } from "../../styles/base";
-import { ErrorView } from "../../../components/webview/WebviewChild";
+import { ErrorView } from "../../components/webview/WebviewChild";
 import StarterKitFlyerProduk from "./StarterKitFlyerProduk";
 import StarterKitVideo from "./StarterKitVideo";
 import { sentryLog } from "../../../sentry";

@@ -161,8 +161,8 @@ const StarterKitFlyerMengajak = (props) => {
       type: STARTER_KIT_FLYER_MENGAJAK_TAG,
       product: STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE,
     };
-    navigation.navigate("FlyerSliderView", params);
-    console.log("open FlyerSliderView", params);
+    navigation.navigate("FlyerSliderScreen", params);
+    console.log("open FlyerSliderScreen", params);
     /*navigation.navigate("ImageViewer", {
       disableWatermark: false,
       title: STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE,

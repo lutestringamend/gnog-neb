@@ -2,12 +2,8 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
-  ActivityIndicator,
   Text,
-  ImageBackground,
-  TouchableOpacity,
 } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
@@ -17,10 +13,13 @@ import {
   getTutorialVideos,
   clearMediaKitVideosError,
   updateReduxMediaKitVideosTutorial,
-} from "../../../axios/mediakit";
+} from "../../axios/mediakit";
 import { getObjectAsync, setObjectAsync } from "../../asyncstorage";
 import { ASYNC_MEDIA_TUTORIAL_VIDEOS_KEY } from "../../asyncstorage/constants";
 import { VIDEO_TUTORIAL_TITLE } from "../../constants/starterkit";
+import CenteredView from "../../components/view/CenteredView";
+import EmptySpinner from "../../components/empty/EmptySpinner";
+import AlertBox from "../../components/alert/AlertBox";
 
 const TutorialScreen = (props) => {
   const [refreshing, setRefreshing] = useState(false);
@@ -84,32 +83,9 @@ const TutorialScreen = (props) => {
   };
 
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={require("../../../assets/profilbg.png")}
-        style={styles.background}
-        resizeMode="cover"
-      />
-      {error ? (
-        <View style={styles.containerError}>
-          <Text allowFontScaling={false} style={styles.textError}>
-            {error}
-          </Text>
-          <TouchableOpacity onPress={() => refreshPage()} style={styles.close}>
-            <MaterialCommunityIcons
-              name="refresh"
-              size={20}
-              color={colors.daclen_light}
-            />
-          </TouchableOpacity>
-        </View>
-      ) : null}
+    <CenteredView title="Tutorial" style={styles.container}>
       {(tutorials === null || refreshing) && error === null ? (
-        <ActivityIndicator
-          size="large"
-          color={colors.daclen_light}
-          style={{ alignSelf: "center", marginVertical: 20, zIndex: 1 }}
-        />
+        <EmptySpinner />
       ) : null}
       {tutorials === null || refreshing ? null : (
         <View style={styles.containerInside}>
@@ -131,7 +107,8 @@ const TutorialScreen = (props) => {
           )}
         </View>
       )}
-    </View>
+      <AlertBox text={error} onClose={() => setError(null)} />
+    </CenteredView>
   );
 };
 
@@ -139,7 +116,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: "transparent",
+    backgroundColor: colors.white,
     justifyContent: "center",
     alignItems: "center",
   },

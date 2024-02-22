@@ -20,8 +20,9 @@ import { bindActionCreators } from "redux";
 
 import { deleteAccount, setNewToken, clearUserData } from "../../axios/user";
 import { colors } from "../../styles/base";
-import BSPopup from "../../../components/bottomsheets/BSPopup";
+import BSPopup from "../../components/bottomsheets/BSPopup";
 import { userLogOut } from "../../utils/auth";
+import CenteredView from "../../components/view/CenteredView";
 
 function DeleteAccountScreen(props) {
   const { currentUser, token, authDelete } = props;
@@ -79,7 +80,7 @@ function DeleteAccountScreen(props) {
   };
 
   return (
-    <SafeAreaView style={styles.container} onPress={Keyboard.dismiss}>
+    <CenteredView title="Hapus Akun" style={styles.container} onPress={Keyboard.dismiss}>
       <ScrollView style={styles.scrollView}>
         {loading ? (
           <ActivityIndicator
@@ -175,7 +176,7 @@ function DeleteAccountScreen(props) {
           closeThis={() => rbSheet.current.close()}
         />
       </RBSheet>
-    </SafeAreaView>
+    </CenteredView>
   );
 }
 

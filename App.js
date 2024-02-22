@@ -34,7 +34,7 @@ import {
 
 import { SENTRY_DSN } from "./sentry/constants";
 
-import Splash from "./components/Splash";
+import Splash from "./src/screens/Splash";
 import { Screens } from "./src/Navigation";
 
 import { appname } from "./axios/constants";

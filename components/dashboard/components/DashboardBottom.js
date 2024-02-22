@@ -25,9 +25,6 @@ const DashboardBottom = (props) => {
   const navigation = useNavigation();
 
   function openQRLink() {
-    navigation.navigate("QRScreen", {
-      text: `${personalwebsiteurl}${currentUser?.name}`,
-    });
   }
 
   function openPersonalWebsite() {

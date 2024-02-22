@@ -11,7 +11,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { useNavigation } from "@react-navigation/native";
 import RadioGroup from "react-native-radio-buttons-group";
 
-import Separator from "../profile/Separator";
+import Separator from "../../src/components/Separator";
 import { colors } from "../../styles/base";
 //import { defaultPackagingOptions } from "./constants";
 import { checkoutdefaultsendername } from "../main/constants";

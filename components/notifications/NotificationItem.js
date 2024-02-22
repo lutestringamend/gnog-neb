@@ -11,7 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { colors } from "../../styles/base";
-import Separator from "../profile/Separator";
+import Separator from "../../src/components/Separator";
 import { openScreenFromNotification } from ".";
 import { convertDateISOStringtoDisplayDate } from "../../axios/profile";
 

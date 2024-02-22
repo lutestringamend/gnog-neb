@@ -1,7 +1,7 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import DashboardMain from "../../components/dashboard/Dashboard";
+import DashboardMain from "../screens/dashboard/DashboardScreen";
 import HomeScreen from "../../components/home/Home";
 import ShopScreen from "../screens/Shop/ShopScreen";
 import StarterKitScreen from "../screens/StarterKit/StarterKitScreen";
@@ -16,7 +16,7 @@ export default function TabNavigator(props) {
   const { isLogin, isActive, recruitmentTimer } = props;
   return (
     <Tab.Navigator
-      initialRouteName="StarterKit"
+      initialRouteName="Home"
       tabBarOptions={{
         showLabel: false,
         style: {
