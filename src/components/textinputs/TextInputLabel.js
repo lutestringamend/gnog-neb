@@ -123,8 +123,8 @@ const TextInputLabel = (props) => {
             }
           >
             <MaterialCommunityIcons
-              name={isPasswordSecure ? "eye-off" : "eye"}
-              size={16}
+              name={isPasswordSecure ? "eye" : "eye-off"}
+              size={20}
               color={colors.daclen_grey_placeholder}
               style={{
                 backgroundColor: "transparent",
@@ -132,11 +132,16 @@ const TextInputLabel = (props) => {
               }}
             />
           </TouchableOpacity>
-        ) : verified ? (
+        ) : error ? (<MaterialCommunityIcons
+          name="alert-circle-outline"
+          size={20}
+          color={colors.daclen_danger}
+          style={styles.check}
+        /> ) : verified ? (
           shortVerified ? (
             <MaterialCommunityIcons
               name="check-bold"
-              size={16}
+              size={20}
               color={colors.daclen_success}
               style={styles.check}
             />
@@ -146,7 +151,7 @@ const TextInputLabel = (props) => {
         ) : rightArrow ? (
           <MaterialCommunityIcons
             name="chevron-right"
-            size={16}
+            size={20}
             color={colors.daclen_grey_placeholder}
             style={styles.arrow}
           />

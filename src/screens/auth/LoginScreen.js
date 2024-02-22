@@ -455,14 +455,10 @@ function Login(props) {
               <View style={styles.containerAdditional}>
                 <Text allowFontScaling={false} style={styles.text}>
                   {isLogin ? "Tidak punya akun? " : "Sudah punya akun? "}
-                  <TouchableOpacity
-                  onPress={() => switchPage()}
-                  disabled={loading}
-                >
-                  <Text allowFontScaling={false} style={styles.textChange}>
+                  <Text onPress={() => switchPage()}
+                  disabled={loading} allowFontScaling={false} style={styles.textChange}>
                     {isLogin ? "Register" : "Login"}
                   </Text>
-                </TouchableOpacity>
                 </Text>
                
               </View>
