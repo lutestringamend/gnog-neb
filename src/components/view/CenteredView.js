@@ -30,7 +30,6 @@ const CenteredView = (props) => {
         style={[
           style ? style : null,
           {
-            alignSelf: "center",
             width: dimensions.fullWidthAdjusted,
             flex: 1,
             marginHorizontal:
