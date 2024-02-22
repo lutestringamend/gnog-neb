@@ -365,7 +365,7 @@ function ShopScreen(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "transparent",
+    backgroundColor: colors.daclen_black,
   },
   containerScroll: {
     flex: 1,
@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
   containerFlatlistBottom: {
     backgroundColor: "transparent",
     paddingHorizontal: staticDimensions.marginHorizontal,
-    paddingBottom: (160 * dimensions.fullWidthAdjusted) / 430,
+    paddingBottom: (320 * dimensions.fullWidthAdjusted) / 430,
   },
   containerHorizontal: {
     flexDirection: "row",

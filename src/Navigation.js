@@ -22,7 +22,7 @@ import RegisterVerifyPhoneScreen from "./screens/auth/RegisterVerifyPhoneScreen"
 import OTPScreen from "./screens/auth/OTPScreen";
 import CompleteRegistrationScreen from "./screens/auth/CompleteRegistrationScreen";
 
-import OpenMidtrans from "../components/checkout/OpenMidtrans";
+import OpenMidtransScreen from "./screens/checkout/OpenMidtransScreen";
 import WithdrawalScreen from "./screens/saldo/WithdrawalScreen";
 import WebviewScreen from "./screens/webview/WebviewScreen";
 import FAQScreen from "./screens/Profile/FAQScreen";
@@ -157,11 +157,8 @@ export const Screens = [
   },
   {
     name: "OpenMidtrans",
-    screen: OpenMidtrans,
-    options: {
-      ...options,
-      headerShown: false,
-    },
+    screen: OpenMidtransScreen,
+    options,
   },
   {
     name: "Withdrawal",

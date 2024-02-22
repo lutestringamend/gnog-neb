@@ -5,7 +5,7 @@ import {
   SB_MIDTRANS_CLIENT_KEY,
   devhttp,
   mainhttp,
-} from "../../axios/constants";
+} from "../../../axios/constants";
 
 export const snapHTML = `
 <html>

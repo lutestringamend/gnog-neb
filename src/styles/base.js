@@ -2,7 +2,7 @@ import { StatusBar, Platform, Dimensions } from "react-native";
 
 export const staticDimensions = {
   statusBarPadding: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-  marginHorizontal: 13,
+  marginHorizontal: 25,
   authMarginHorizontal: 25,
   smallScreenWidth: 390,
   maxScreenWidth: 450,

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   View,
@@ -13,15 +12,15 @@ import { WebView } from "react-native-webview";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { webcheckout } from "../../axios/constants";
+import { webcheckout } from "../../../axios/constants";
 import { useNavigation } from "@react-navigation/native";
-import MainHeader from "../main/MainHeader";
-import { colors } from "../../styles/base";
-import { ErrorView } from "../../src/components/webview/WebviewChild";
-import { getCurrentUser } from "../../axios/user";
+import { colors } from "../../../styles/base";
+import { ErrorView } from "../../components/webview/WebviewChild";
+import { getCurrentUser } from "../../../axios/user";
 //import { getCheckoutItem } from "../../axios/history";
-import { snapHTML } from "./snap";
-import { sentryLog } from "../../sentry";
+import { snapHTML } from "../../components/midtrans/snap";
+import { sentryLog } from "../../../sentry";
+import CenteredView from "../../components/view/CenteredView";
 
 function MainScreen(props) {
   const backNavigation = () => {
@@ -31,12 +30,7 @@ function MainScreen(props) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <MainHeader
-        title="Pembayaran Midtrans"
-        icon="arrow-left"
-        onBackPress={() => backNavigation()}
-      />
+    <CenteredView title="Pembayaran Midtrans" onBackPress={() => backNavigation()} style={styles.container}>
       <View style={styles.container}>
         {props?.error ? (
           <Text allowFontScaling={false} style={styles.textError}>{props?.error}</Text>
@@ -51,7 +45,7 @@ function MainScreen(props) {
           props?.content
         )}
       </View>
-    </SafeAreaView>
+    </CenteredView>
   );
 }
 

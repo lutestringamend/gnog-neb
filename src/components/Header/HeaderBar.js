@@ -85,7 +85,7 @@ const HeaderBar = (props) => {
           <MaterialCommunityIcons
             name="chevron-left"
             color={color ? color : colors.white}
-            size={20}
+            size={35 * dimensions.fullWidthAdjusted / 430}
           />
         </TouchableOpacity>
       )}
@@ -168,7 +168,7 @@ const HeaderBar = (props) => {
 const styles = StyleSheet.create({
   container: {
     width: dimensions.fullWidth,
-    height: 60,
+    height: 95 * dimensions.fullWidthAdjusted / 430,
     backgroundColor: colors.daclen_black_old,
     flexDirection: "row",
     alignItems: "center",
@@ -176,8 +176,12 @@ const styles = StyleSheet.create({
   },
   containerBack: {
     backgroundColor: "transparent",
-    marginEnd: 10,
     alignItems: "center",
+    position: "absolute",
+    zIndex: 2,
+    top: 30 * dimensions.fullWidthAdjusted / 430,
+    bottom: 30 * dimensions.fullWidthAdjusted / 430,
+    start: 25 * dimensions.fullWidthAdjusted / 430,
   },
   containerRightButton: {
     backgroundColor: "transparent",
@@ -185,9 +189,11 @@ const styles = StyleSheet.create({
     marginStart: 10,
   },
   textHeader: {
+    zIndex: 0,
     backgroundColor: "transparent",
-    fontFamily: "Poppins-SemiBold",
-    fontSize: 14,
+    fontFamily: "Poppins-Bold",
+    fontSize: 18 * dimensions.fullWidthAdjusted / 430,
+    textAlign: "center",
     flex: 1,
   },
   textRightButton: {

@@ -11,7 +11,8 @@ const CenteredView = (props) => {
       style={{
         backgroundColor: backgroundColor
           ? backgroundColor
-          : colors.daclen_black,
+          : 
+          "#F1EFEF",
         width: dimensions.fullWidth,
         flex: 1,
       }}
