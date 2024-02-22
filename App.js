@@ -38,7 +38,7 @@ import Splash from "./src/screens/Splash";
 import { Screens } from "./src/Navigation";
 
 import { appname } from "./axios/constants";
-import { colors, staticDimensions } from "./styles/base";
+import { colors, staticDimensions } from "./src/styles/base";
 import { sentryLog } from "./sentry";
 import { defaultpoppins } from "./src/styles/fonts";
 
@@ -55,7 +55,7 @@ Sentry.init({
 export default function App() {
   try {
     const theme = useTheme();
-    theme.colors.primary = colors.daclen_bg;
+    theme.colors.primary = colors.daclen_black;
     theme.colors.primaryContainer = colors.daclen_black;
     theme.colors.secondaryContainer = "transparent";
 
@@ -83,25 +83,14 @@ export default function App() {
     setCustomTouchableOpacity(customTouchableOpacityProps);
 
     if (Platform.OS === "android") {
-      NavigationBar.setBackgroundColorAsync(colors.daclen_bg);
+      NavigationBar.setBackgroundColorAsync(colors.daclen_black);
       NavigationBar.setButtonStyleAsync("light");
     }
-
-    const defaultOptions = {
-      headerTitleStyle: {
-        color: colors.daclen_light,
-      },
-      headerStyle: {
-        backgroundColor: colors.daclen_bg,
-      },
-      headerTintColor: colors.daclen_light,
-      title: appname,
-    };
 
     return (
       <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
         <StatusBar
-          backgroundColor="transparent"
+          backgroundColor={colors.daclen_black}
           translucent={true}
           style="light"
         />
@@ -155,20 +144,18 @@ const customTextInputProps = {
   underlineColorAndroid: "rgba(0,0,0,0)",
   style: {
     borderWidth: 1,
-    borderColor: colors.daclen_gray,
+    borderColor: colors.daclen_grey_placeholder,
     fontFamily: "Poppins",
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    backgroundColor: "white",
-    color: colors.daclen_gray,
+    backgroundColor: colors.white,
+    color: colors.black,
   },
 };
 
 const customTextProps = {
   style: {
     fontFamily: "Poppins",
-    color: colors.daclen_black,
-    letterSpacing: 0.25,
+    color: colors.black,
+    fontSize: 12,
   },
 };
 

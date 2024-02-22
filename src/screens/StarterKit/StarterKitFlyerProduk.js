@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet, RefreshControl, FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { staticDimensions } from "../../styles/base";
+import { dimensions, staticDimensions } from "../../styles/base";
 import WatermarkPhotosSegment from "../../components/starterkit/StarterKitPhotoSegment";
 import { sentryLog } from "../../sentry";
 import EmptyPlaceholder from "../../components/empty/EmptyPlaceholder";
@@ -121,38 +121,27 @@ const StarterKitFlyerProduk = (props) => {
                 text="Tidak ada Flyer Produk tersedia."
               />
             ) : (
-              <FlatList
-                estimatedItemSize={10}
-                horizontal={false}
-                numColumns={1}
-                data={photoKeys}
-                style={styles.containerFlatlist}
-                refreshControl={
-                  <RefreshControl
-                    refreshing={loading}
-                    onRefresh={() => refreshPage()}
-                  />
-                }
-                renderItem={({ item, index }) => (
-                  <WatermarkPhotosSegment
-                    index={index}
-                    isLast={index === photoKeys?.length - 1}
-                    key={item}
-                    title={item}
-                    jenis_foto={jenis_foto}
-                    photos={photos[item]}
-                    watermarkData={watermarkData}
-                    sharingAvailability={sharingAvailability}
-                    navigation={navigation}
-                    selected={selected}
-                    selectMode={selectMode}
-                    onPress={(e, title, photoIndex) =>
-                      onPress(e, title, photoIndex)
-                    }
-                    onLongPress={(e) => onLongPress(e)}
-                  />
-                )}
-              />
+              <View style={styles.containerFlatlist}>
+                {photoKeys.map((item, index) => (
+                   <WatermarkPhotosSegment
+                   index={index}
+                   isLast={index === photoKeys?.length - 1}
+                   key={item}
+                   title={item}
+                   jenis_foto={jenis_foto}
+                   photos={photos[item]}
+                   watermarkData={watermarkData}
+                   sharingAvailability={sharingAvailability}
+                   navigation={navigation}
+                   selected={selected}
+                   selectMode={selectMode}
+                   onPress={(e, title, photoIndex) =>
+                     onPress(e, title, photoIndex)
+                   }
+                   onLongPress={(e) => onLongPress(e)}
+                 />
+                ))}
+              </View>
             )}
           </View>
         </View>
@@ -176,20 +165,15 @@ const StarterKitFlyerProduk = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    width: "100%",
     backgroundColor: "transparent",
   },
   containerMain: {
     flex: 1,
-    width: "100%",
     backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
   },
   containerInside: {
-    width: "100%",
-    height: "100%",
     backgroundColor: "transparent",
     position: "absolute",
     top: 0,
@@ -197,9 +181,9 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   containerFlatlist: {
-    flex: 1,
-    width: "100%",
     backgroundColor: "transparent",
+    flex: 1,
+    height: dimensions.fullHeight * 10,
     paddingTop: staticDimensions.marginHorizontal,
   },
 });

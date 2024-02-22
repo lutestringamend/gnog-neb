@@ -51,7 +51,7 @@ export const genderchoices = [
 export const abouttext =
   `Daclen merupakan brand premium yang menghadirkan bermacam produk fashion berkualitas tinggi. Bergabung bersama Daclen dan dapatkan kesempatan meraih penghasilan yang tak terbatas, tanpa pembelian! Karena kami percaya dengan kualitas produk Daclen. Jika kamu ingin memiliki bisnis online terpercaya dengan komisi yang langsung dapat dicairkan, kesempatan mendapat banyak hadiah serta cashback dan tentu saja memiliki produk fashion premium berkualitas, Daclen jawabannya!\n\nDaclen menganut sistem bisnis Direct Selling yang merupakan metode penjualan dengan memaksimalkan anggotanya untuk mendapatkan keuntungan dari penjualan produk Daclen. Di Daclen, pendaftaran menjadi reseller cukup dengan Rp 300.000 sekali seumur hidup. Bahkan, kamu juga tidak perlu membeli produk apapun untuk menjadi reseller Daclen! Setelah menjadi reseller, kamu bisa menggunakan referalmu untuk mengajak orang lain bergabung, dan setiap transaksi pembelian produk yang dilakukan member yang kamu ajak, tentu kamu akan mendapat komisi!
   `;
-export const copyrighttext = "Copyright 2023 Daclen";
+export const copyrighttext = "Copyright 2024 Daclen";
 export const adminWA = "62811210555";
 export const adminWAtemplate = `Halo, Daclen Care! Saya adalah seller dengan id #I# (${Platform.OS}).\n`;
 export const adminWAnonusertemplate = `Halo, Daclen Care! Saya adalah pengguna aplikasi ${Platform.OS} yang belum login.\n`;

@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   ScrollView,
-  SafeAreaView,
   Text,
   Linking,
 } from "react-native";
@@ -31,6 +30,7 @@ import ProfileHeader from "../../components/profile/ProfileHeader";
 import { updateReduxUserMainModal } from "../../utils/user";
 import { ModalModel } from "../../models/modal";
 import ModalView from "../../components/modal/ModalView";
+import CenteredView from "../../components/view/CenteredView";
 
 const appVersion = `Versi ${packageJson?.version}`;
 const LogoutModal = {
@@ -146,9 +146,9 @@ function ProfileScreen(props) {
   */
 
   return (
-    <SafeAreaView style={styles.container}>
+    <CenteredView style={styles.container}>
       <ScrollView
-        style={styles.containerInside}
+        style={styles.container}
         contentContainerStyle={styles.containerVertical}
       >
         <ProfileHeader
@@ -257,7 +257,7 @@ function ProfileScreen(props) {
     />  : null
     }
      
-    </SafeAreaView>
+    </CenteredView>
   );
 }
 
@@ -280,14 +280,7 @@ function ProfileScreen(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: "100%",
-    backgroundColor: colors.daclen_black,
-    alignItems: "center",
-  },
-  containerInside: {
-    flex: 1,
     backgroundColor: "transparent",
-    width: dimensions.fullWidthAdjusted,
   },
   containerVertical: {
     backgroundColor: colors.daclen_black,

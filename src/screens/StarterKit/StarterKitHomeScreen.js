@@ -4,7 +4,6 @@ import {
   StyleSheet,
   View,
   Dimensions,
-  Linking,
 } from "react-native";
 import { connect } from "react-redux";
 import {
@@ -28,15 +27,6 @@ const screenWidth = Dimensions.get("window").width;
 
 const StarterKitHomeScreen = (props) => {
   const { currentUser, mediaKitPhotos, flyerMengajak, mediaKitVideos, videosMengajak } = props;
-
-  function setModal(e) {
-    if (props?.setModal === undefined || props?.setModal === null) {
-      return;
-    }
-    props?.setModal(e);
-  }
-
-  
 
   function setActiveTab(e) {
     if (props?.setActiveTab === undefined || props?.setActiveTab === null) {

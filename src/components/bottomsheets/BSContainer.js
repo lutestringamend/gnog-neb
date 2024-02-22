@@ -39,9 +39,10 @@ export default function BSContainer(props) {
 
 const styles = StyleSheet.create({
   container: {
-    width: dimensions.fullWidthAdjusted,
+    width: dimensions.fullWidth,
+    paddingHorizontal: (dimensions.fullWidth - dimensions.fullWidthAdjusted) / 2,
     flex: 1,
-    backgroundColor: colors.daclen_light,
+    backgroundColor: "transparent",
     borderTopWidth: 2,
     borderTopColor: colors.daclen_gray,
     elevation: 10,

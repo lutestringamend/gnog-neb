@@ -6,14 +6,14 @@ import {
   TouchableOpacity,
   Linking,
 } from "react-native";
-import TextInputPassword from "./TextInputPassword";
+import TextInputPassword from "../../../components/auth/TextInputPassword";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { setAuthData } from "../../axios/user";
-import { colors } from "../../styles/base";
-import { resetpassword } from "../../axios/constants";
+import { setAuthData } from "../../../axios/user";
+import { colors } from "../../../styles/base";
+import { resetpassword } from "../../../axios/constants";
 
 function ChangePasswordBox(props) {
   const resetPassword = () => {

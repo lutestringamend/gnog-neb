@@ -3,16 +3,11 @@ import {
   View,
   StyleSheet,
   Text,
-  Image,
   TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
-  SafeAreaView,
   BackHandler,
 } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import RBSheet from "react-native-raw-bottom-sheet";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -25,10 +20,9 @@ import {
   loginCheck,
 } from "../../../axios/user";
 
-import LoginBox from "../../../components/auth/LoginBox";
-import RegisterBox from "../../../components/auth/RegisterBox";
-import ChangePasswordBox from "../../../components/auth/ChangePasswordBox";
-import BSPopup from "../../components/bottomsheets/BSPopup";
+import LoginBox from "../../components/auth/LoginBox";
+import RegisterBox from "../../components/auth/RegisterBox";
+import ChangePasswordBox from "../../components/auth/ChangePasswordBox";
 import { colors, dimensions, staticDimensions } from "../../styles/base";
 import { getObjectAsync, setObjectAsync } from "../../../components/asyncstorage";
 import {
@@ -47,12 +41,11 @@ import {
   username_regex,
 } from "../../../axios/constants";
 import CenteredView from "../../components/view/CenteredView";
-
-function setPageHeight(bottomPadding) {
-  return (
-    dimensions.fullHeight - staticDimensions.authBoxTopHeight + bottomPadding
-  );
-}
+import AuthHeader from "../../components/auth/AuthHeader";
+import AlertBox from "../../components/alert/AlertBox";
+import Button from "../../components/Button/Button";
+import ModalView from "../../components/modal/ModalView";
+import { ModalModel } from "../../models/modal";
 
 const defaultRegisterErrorArray = {
   name: false,
@@ -71,6 +64,7 @@ const defaultLoginError = {
 };
 
 function Login(props) {
+
   const [error, setError] = useState(null);
   const [isLogin, setLogin] = useState(true);
   const [isChangePassword, setChangePassword] = useState(false);
@@ -82,8 +76,8 @@ function Login(props) {
   const [registerErrorArray, setRegisterErrorArray] = useState(
     defaultRegisterErrorArray
   );
+  const [modal, setModal] = useState(ModalModel);
 
-  const rbSheet = useRef();
   const webKey = props.route?.params ? props.route.params?.webKey ? props.route.params?.webKey : null : null;
   const resetPIN = props.route?.params ? props.route.params?.resetPIN
     ? props.route.params?.resetPIN
@@ -140,7 +134,7 @@ function Login(props) {
       if (isChangePassword) {
         setError(authError?.message);
         if (authError?.session === "success") {
-          rbSheet.current.open();
+          openModal();
         }
       } else if (!isLogin && authError !== null) {
         setRegisterErrorArray(defaultRegisterErrorArray);
@@ -177,7 +171,7 @@ function Login(props) {
     if (isLogin && !isChangePassword && props.loginToken !== null) {
       console.log("loginToken", props.loginToken);
       setLoading(false);
-      rbSheet.current.open();
+      openModal();
     }
   }, [props.loginToken]);
 
@@ -185,9 +179,24 @@ function Login(props) {
     if (!isLogin && !isChangePassword && props.registerToken !== null) {
       console.log("registerToken", props.registerToken);
       setLoading(false);
-      rbSheet.current.open();
+      openModal();
     }
   }, [props.registerToken]);
+
+  const openModal = () => {
+    setModal({
+      ...modal,
+      visible: true,
+      title: isChangePassword ? "Ganti Password" : isLogin ? "Login" : "Register",
+      text: isChangePassword
+      ? "Anda telah berhasil mengganti password akun Daclen Anda"
+      : isLogin
+      ? `Anda telah berhasil login sebagai ${authData?.email}.\nSelamat datang kembali di Daclen!`
+      : `Anda telah berhasil register sebagai ${
+          authData?.name ? authData?.name : authData?.email
+        }.\nSelamat datang di Daclen!`,
+    })
+  }
 
   const switchPage = () => {
     setLoginError(defaultLoginError);
@@ -394,43 +403,10 @@ function Login(props) {
   };
 
   return (
-    <CenteredView backgroundColor={colors.white} style={styles.container}>
+    <CenteredView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <View style={styles.containerFull}>
-          <View style={styles.containerHeader}>
-            <TouchableOpacity
-              style={styles.containerBack}
-              onPress={() => onBackPress()}
-            >
-              <MaterialCommunityIcons
-                name="arrow-left-bold-circle"
-                size={32}
-                color={colors.daclen_light}
-                style={{ alignSelf: "center" }}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("Main")}>
-              <Image
-                source={require("../../assets/splashsmall.png")}
-                style={styles.imageLogo}
-              />
-            </TouchableOpacity>
-          </View>
-          <View
-            style={[
-              styles.containerBottom,
-              {
-                height:
-                  !isChangePassword && !isLogin
-                    ? setPageHeight(
-                        staticDimensions.authPageRegisterBottomPadding
-                      )
-                    : setPageHeight(staticDimensions.pageBottomPadding),
-              },
-            ]}
-          />
-
-          <View style={styles.containerBox}>
+        <AuthHeader hideBack={isLogin && !userExist} onBackPress={() => onBackPress()} />
+      <View style={styles.containerBox}>
             <Text allowFontScaling={false} style={styles.textHeader}>
               {isChangePassword
                 ? "Ganti Password"
@@ -455,47 +431,31 @@ function Login(props) {
               />
             )}
 
-            <TouchableOpacity
-              onPress={() =>
-                isLogin
-                  ? isChangePassword
-                    ? onChangePassword()
-                    : onLogin()
-                  : onRegister()
-              }
-              style={[
-                styles.button,
-                loading && { backgroundColor: colors.daclen_gray },
-              ]}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator
-                  size="small"
-                  color={colors.daclen_light}
-                  style={{
-                    alignSelf: "center",
-                  }}
-                />
-              ) : (
-                <Text allowFontScaling={false} style={styles.textButton}>
-                  {isChangePassword
-                    ? "Ganti Password"
-                    : isLogin
-                    ? resetPIN
-                      ? "Reset PIN"
-                      : "Continue"
-                    : "Continue"}
-                </Text>
-              )}
-            </TouchableOpacity>
+            <Button
+            onPress={() =>
+              isLogin
+                ? isChangePassword
+                  ? onChangePassword()
+                  : onLogin()
+                : onRegister()
+            }
+            loading={loading}
+            style={styles.button}
+              text={isChangePassword
+                ? "Ganti Password"
+                : isLogin
+                ? resetPIN
+                  ? "Reset PIN"
+                  : "Continue"
+                : "Continue"}
+            />
+
 
             {!isChangePassword && !resetPIN ? (
               <View style={styles.containerAdditional}>
                 <Text allowFontScaling={false} style={styles.text}>
-                  {isLogin ? "Tidak punya akun?" : "Sudah punya akun?"}
-                </Text>
-                <TouchableOpacity
+                  {isLogin ? "Tidak punya akun? " : "Sudah punya akun? "}
+                  <TouchableOpacity
                   onPress={() => switchPage()}
                   disabled={loading}
                 >
@@ -503,44 +463,19 @@ function Login(props) {
                     {isLogin ? "Register" : "Login"}
                   </Text>
                 </TouchableOpacity>
+                </Text>
+               
               </View>
             ) : null}
-
-            {error ? (
-              <Text allowFontScaling={false} style={styles.textError}>
-                {error}
-              </Text>
-            ) : null}
           </View>
-        </View>
+          <AlertBox text={error} onClose={() => setError(null)} />
+          {modal?.visible ?
+          <ModalView
+            {...modal}
+            setModal={() => closeBS()}
+          />
+          : null}
       </ScrollView>
-
-      <RBSheet
-        ref={rbSheet}
-        openDuration={250}
-        height={350}
-        onClose={() => closeBS()}
-      >
-        <BSPopup
-          title={
-            isChangePassword ? "Ganti Password" : isLogin ? "Login" : "Register"
-          }
-          text={
-            isChangePassword
-              ? "Anda telah berhasil mengganti password akun Daclen Anda"
-              : isLogin
-              ? `Anda telah berhasil login sebagai ${authData?.email}.\nSelamat datang kembali di Daclen!`
-              : `Anda telah berhasil register sebagai ${
-                  authData?.name ? authData?.name : authData?.email
-                }.\nSelamat datang di Daclen!`
-          }
-          buttonNegative="OK"
-          buttonNegativeColor={colors.daclen_gray}
-          logo="../../assets/verified.png"
-          closeThis={() => rbSheet.current.close()}
-          onPress={null}
-        />
-      </RBSheet>
     </CenteredView>
   );
 }
@@ -549,101 +484,37 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    height: "100%",
-    backgroundColor: colors.daclen_black,
+    backgroundColor: colors.white,
   },
   scrollView: {
     flex: 1,
-    width: "100%",
-    height: "100%",
-    backgroundColor: colors.white,
-  },
-  containerFull: {
-    flex: 1,
-    width: "100%",
-    alignItems: "center",
-  },
-  containerBottom: {
-    backgroundColor: "white",
-    height: setPageHeight(staticDimensions.pageBottomPadding),
-    width: "100%",
-  },
-  containerBack: {
-    position: "absolute",
-    top: 48,
-    start: 12,
-    elevation: 4,
-  },
-  containerHeader: {
-    width: "100%",
-    backgroundColor: colors.daclen_black,
-    alignItems: "center",
-    height: staticDimensions.authBoxTopHeight,
+    backgroundColor: "transparent",
   },
   containerBox: {
-    position: "absolute",
-    width: "100%",
-    backgroundColor: "white",
-    borderTopStartRadius: 16,
-    borderTopEndRadius: 16,
-    marginHorizontal: 40,
-    marginTop: 120,
-    padding: 20,
-    elevation: 4,
+    flex: 1,
+    backgroundColor: "transparent",
+    minHeight: dimensions.fullHeight * 0.9,
+    paddingHorizontal: staticDimensions.authMarginHorizontal,
   },
   containerAdditional: {
-    marginVertical: 10,
-    marginHorizontal: 20,
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  imageLogo: {
-    width: 150,
-    height: 36,
-    marginTop: 48,
+    backgroundColor: "transparent",
+    marginVertical: staticDimensions.marginHorizontal,
   },
   textHeader: {
-    fontSize: 20,
-    fontFamily: "Poppins-SemiBold",
-    textAlign: "center",
+    fontSize: 36 * dimensions.fullWidthAdjusted / 430,
+    fontFamily: "Poppins-Light",
     marginBottom: 20,
   },
   button: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginHorizontal: 20,
-    marginVertical: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-    backgroundColor: colors.daclen_yellow_new,
-  },
-  textError: {
-    fontSize: 14,
-    fontFamily: "Poppins-Bold",
-    marginHorizontal: 10,
-    marginTop: 20,
-    marginBottom: 32,
-    color: colors.daclen_danger,
-    textAlign: "center",
-    textAlignVertical: "center",
-  },
-  textButton: {
-    fontSize: 14,
-    fontFamily: "Poppins",
-    color: colors.daclen_black,
+    marginVertical: staticDimensions.marginHorizontal,
   },
   text: {
-    color: colors.daclen_graydark,
+    color: colors.black,
     fontFamily: "Poppins",
-    fontSize: 14,
-    marginHorizontal: 10,
+    fontSize: 12,
   },
   textChange: {
-    color: colors.daclen_blue,
-    fontSize: 14,
-    fontFamily: "Poppins-SemiBold",
+    color: colors.daclen_blue_link,
   },
 });
 

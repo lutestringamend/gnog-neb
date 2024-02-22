@@ -18,7 +18,6 @@ export default function ProductDesc(props) {
       setContent([]);
       return;
     }
-    console.log("deskripsi", deskripsi);
     setContent(formatProductDescription(deskripsi));
   }, [deskripsi]);
 

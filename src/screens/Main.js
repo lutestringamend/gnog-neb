@@ -54,7 +54,11 @@ import {
   convertDateISOStringtoMiliseconds,
   updateReduxRegDateInMs,
 } from "../../axios/profile";
-import { getObjectAsync, getTokenAsync, setObjectAsync } from "../../components/asyncstorage";
+import {
+  getObjectAsync,
+  getTokenAsync,
+  setObjectAsync,
+} from "../../components/asyncstorage";
 import {
   ASYNC_DEVICE_TOKEN_KEY,
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
@@ -107,12 +111,19 @@ function Main(props) {
   const [locationPermission, setLocationPermission] = useState(null);
   const [recruitmentTimer, setRecruitmentTimer] = useState(null);
   const [welcomeCheck, setWelcomeCheck] = useState(false);
+  const [userCheck, setUserCheck] = useState(false);
+
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
   const navigationRef = useNavigation();
   const timeoutHandle = useRef();
 
   useEffect(() => {
-    if (!(props.route.params?.openScreen === undefined || props.route.params?.openScreen === null)) {
+    if (
+      !(
+        props.route.params?.openScreen === undefined ||
+        props.route.params?.openScreen === null
+      )
+    ) {
       navigationRef.navigate(props.route.params?.openScreen);
     }
     console.log("Main route params", props.route.params);
@@ -157,7 +168,10 @@ function Main(props) {
             }
             console.log("Authorization status:", authStatus);
           } else if (Platform.OS === "android") {
-            ToastAndroid.show("Notification not authorized on this device", ToastAndroid.LONG);
+            ToastAndroid.show(
+              "Notification not authorized on this device",
+              ToastAndroid.LONG,
+            );
           }
         };
 
@@ -186,11 +200,7 @@ function Main(props) {
           });
 
         messaging().onNotificationOpenedApp(async (remoteMessage) => {
-          receiveNotificationAccordingly(
-            props,
-            remoteMessage,
-            currentUser?.id,
-          );
+          receiveNotificationAccordingly(props, remoteMessage, currentUser?.id);
           console.log(
             "Notification caused app to open from background state:",
             remoteMessage.notification,
@@ -200,20 +210,12 @@ function Main(props) {
 
         // Register background handler
         messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-          receiveNotificationAccordingly(
-            props,
-            remoteMessage,
-            currentUser?.id,
-          );
+          receiveNotificationAccordingly(props, remoteMessage, currentUser?.id);
           console.log("Message handled in the background!", remoteMessage);
         });
 
         const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-          receiveNotificationAccordingly(
-            props,
-            remoteMessage,
-            currentUser?.id,
-          );
+          receiveNotificationAccordingly(props, remoteMessage, currentUser?.id);
           console.log("FCM message", remoteMessage);
           /*if (Platform.OS === "android") {
             ToastAndroid.show(`FCM MESSAGE\n${JSON.stringify(remoteMessage)}`, ToastAndroid.LONG);
@@ -232,6 +234,12 @@ function Main(props) {
     }, []);
 
     useEffect(() => {
+      if (token !== null && userCheck) {
+        setUserCheck(false);
+      }
+    }, [token]);
+
+    useEffect(() => {
       if (lastNotificationResponse) {
         try {
           console.log(
@@ -240,8 +248,10 @@ function Main(props) {
           );
           openScreenFromNotification(
             navigationRef,
-            lastNotificationResponse?.notification?.request?.content?.data?.on_mobile_open,
-            lastNotificationResponse?.notification?.request?.content?.data?.title,
+            lastNotificationResponse?.notification?.request?.content?.data
+              ?.on_mobile_open,
+            lastNotificationResponse?.notification?.request?.content?.data
+              ?.title,
           );
         } catch (e) {
           console.error(e);
@@ -437,6 +447,7 @@ function Main(props) {
     };
 
     const checkUserData = async () => {
+      setUserCheck(true);
       const storageToken = await readStorageToken();
       const storageCurrentUser = await readStorageCurrentUser();
       const key = await deriveUserKey(storageToken);
@@ -468,6 +479,7 @@ function Main(props) {
         props.clearMediaKitData();
         props.clearReduxNotifications();
       }
+      setUserCheck(false);
     };
 
     const checkWelcomeNotif = async () => {
@@ -635,29 +647,29 @@ function Main(props) {
       error !== null ||
       props.products === null ||
       props.products?.length === undefined ||
-      props.products?.length < 1
+      props.products?.length < 1 ||
+      userCheck
     ) {
       return <SplashScreen loading={true} errorText={error} />;
-    } else if (token === null ||
-      currentUser === null ||
-      currentUser?.id === undefined ||
-      currentUser?.id === null ||
-      currentUser?.name === undefined ||
-      currentUser?.name === null) {
-      return (<LoginScreen />);
+    } else if (token === null) {
+      return <LoginScreen />;
     } else {
       return (
         <SafeAreaView style={styles.container}>
           <TabNavigator
             isLogin={true}
-            isActive={currentUser ? currentUser?.isActive ? currentUser?.isActive : false : false}
+            isActive={
+              currentUser
+                ? currentUser?.isActive
+                  ? currentUser?.isActive
+                  : false
+                : false
+            }
             recruitmentTimer={recruitmentTimer}
           />
-          {mainModal === null || !mainModal?.visible ? null : 
-          <ModalView
-            {...mainModal}
-          />
-          }
+          {mainModal === null || !mainModal?.visible ? null : (
+            <ModalView {...mainModal} />
+          )}
         </SafeAreaView>
       );
     }

@@ -3,7 +3,7 @@ import Axioss from "../index";
 //import * as FileSystem from "expo-file-system";
 import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
-import { sharingOptionsInvoicePDF } from "../../components/media/constants";
+import { sharingOptionsInvoicePDF } from "../../../components/media/constants";
 import { sentryLog } from "../../sentry";
 import { getInvoiceFileName } from "../cart";
 import { getpdffiles } from "../constants";

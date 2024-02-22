@@ -3,7 +3,7 @@ import { View, StyleSheet, Platform } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { eliminateSpaceFromString, setAuthData } from "../../axios/user";
+import { eliminateSpaceFromString, setAuthData } from "../../../axios/user";
 import { colors } from "../../styles/base";
 import TextInputLabel from "../textinputs/TextInputLabel";
 
@@ -96,10 +96,6 @@ function RegisterBox(props) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingHorizontal: 10,
-    paddingTop: 10,
-    paddingBottom: 20,
     backgroundColor: "transparent",
   },
   text: {

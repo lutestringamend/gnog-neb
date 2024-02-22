@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   Platform,
   ToastAndroid,
-  SafeAreaView,
   ScrollView,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
@@ -20,10 +19,8 @@ import {
   colors,
   staticDimensions,
   dimensions,
-  bottomNav,
 } from "../../styles/base";
 import ShopItem from "../../components/shop/ShopItem";
-//import Search from "./Search";
 import { getObjectAsync } from "../../asyncstorage";
 import { ASYNC_PRODUCTS_ARRAY_KEY } from "../../asyncstorage/constants";
 import { productpaginationnumber } from "../../axios/constants";
@@ -40,6 +37,7 @@ import EmptyPlaceholder from "../../components/empty/EmptyPlaceholder";
 import { TEMP_SHOP_CATEGORIES } from "../../models/shop";
 import ShopCategory from "../../components/shop/ShopCategory";
 import ShopSearch from "../../components/shop/ShopSearch";
+import CenteredView from "../../components/view/CenteredView";
 
 const headerHeight = (60 * dimensions.fullWidthAdjusted) / 430;
 
@@ -207,13 +205,8 @@ function ShopScreen(props) {
   */
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View
-        style={[
-          styles.containerInside,
-        ]}
-      >
-        <View style={styles.containerHeader}>
+    <CenteredView style={styles.container}>
+       <View style={styles.containerHeader}>
           <ShopSearch height={headerHeight} />
 
           {currentUser?.level === "spv" ||
@@ -365,24 +358,14 @@ function ShopScreen(props) {
         </ScrollView>
 
         <AlertBox text={cartError} success={false} />
-      </View>
-    </SafeAreaView>
+    </CenteredView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: "100%",
-    backgroundColor: colors.daclen_black,
-    alignItems: "center",
-  },
-  containerInside: {
-    flex: 1,
-    justifyContent: "flex-start",
     backgroundColor: "transparent",
-    width: dimensions.fullWidthAdjusted,
-    alignSelf: "center",
   },
   containerScroll: {
     flex: 1,

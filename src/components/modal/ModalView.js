@@ -79,8 +79,8 @@ const ModalView = (props) => {
                 : buttonSubmit
                   ? extendedModalHeight
                   : modalHeight,
-              start: (dimensions.fullWidth - modalWidth) / 2,
-              end: (dimensions.fullWidth - modalWidth) / 2,
+              start: (dimensions.fullWidthAdjusted - modalWidth) / 2,
+              end: (dimensions.fullWidthAdjusted - modalWidth) / 2,
             },
             style ? style : null,
           ]}
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     start: 0,
     end: 0,
     bottom: 0,
-    width: dimensions.fullWidth,
+    width: dimensions.fullWidthAdjusted,
     height: dimensions.fullHeight,
     zIndex: 100,
     backgroundColor: "transparent",

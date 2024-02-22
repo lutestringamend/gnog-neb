@@ -3,6 +3,7 @@ import { StatusBar, Platform, Dimensions } from "react-native";
 export const staticDimensions = {
   statusBarPadding: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   marginHorizontal: 13,
+  authMarginHorizontal: 25,
   smallScreenWidth: 390,
   maxScreenWidth: 450,
   isSmallScreen: Dimensions.get("window").width < 390,
@@ -35,6 +36,7 @@ export const colors = {
   daclen_blue_light_border: "#DAE0FA",
   daclen_blue_dark: "#2C304B",
   daclen_blue: "#00BFFF",
+  daclen_blue_link: "#4169E1",
   daclen_grey_light: "#F1EFEF",
   daclen_grey_container: "#E4E4E2",
   daclen_grey_search_container: "#E4E4EE",

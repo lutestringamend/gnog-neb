@@ -5,19 +5,16 @@ import {
   View,
   Platform,
   ToastAndroid,
-  Text,
-  TouchableOpacity,
   ActivityIndicator,
   BackHandler,
+  ScrollView,
 } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { isAvailableAsync } from "expo-sharing";
 
 import {
-  getMediaKitPhotos,
   getMediaKitKategori,
   getMediaKitVideos,
   clearMediaKitPhotosError,
@@ -38,7 +35,6 @@ import {
   setObjectAsync,
 } from "../../../components/asyncstorage";
 import { colors, dimensions } from "../../styles/base";
-import { ErrorView } from "../../components/webview/WebviewChild";
 import StarterKitFlyerProduk from "./StarterKitFlyerProduk";
 import StarterKitVideo from "./StarterKitVideo";
 import { sentryLog } from "../../../sentry";
@@ -85,6 +81,7 @@ import {
   webreferral,
   webreferralshort,
 } from "../../axios/constants";
+import EmptySpinner from "../../components/empty/EmptySpinner";
 
 const defaultModal = {
   visible: false,
@@ -454,7 +451,7 @@ function StarterKitScreen(props) {
 
   try {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <StarterKitHeader
           onPress={() => openWatermarkSettings()}
           token={token}
@@ -534,7 +531,11 @@ function StarterKitScreen(props) {
             )}
           </View>
 
-          <View style={styles.containerScroll}>
+          <View style={styles.containerContent}>
+          <ScrollView style={styles.containerScroll} contentContainerStyle={[styles.containerScrollContent, {
+            minHeight: activeTab === STARTER_KIT_FLYER_PRODUK || activeTab === STARTER_KIT_VIDEO_PRODUK  ? 4 * dimensions.fullHeight : dimensions.fullHeight,
+          }]}>
+
             {token === null ||
             currentUser === null ||
             currentUser?.id === undefined ||
@@ -553,11 +554,7 @@ function StarterKitScreen(props) {
                 />
               ) : null
             ) : watermarkData === null ? (
-              <ActivityIndicator
-                size="large"
-                color={colors.daclen_orange}
-                style={styles.spinner}
-              />
+            <EmptySpinner />
             ) : activeTab === STARTER_KIT_VIDEO_PRODUK ||
               activeTab === STARTER_KIT_VIDEO_MENGAJAK ? (
               <StarterKitVideo
@@ -615,7 +612,11 @@ function StarterKitScreen(props) {
                 setActiveTab={(e) => setActiveTab(e)}
               />
             )}
+          </ScrollView>
+
           </View>
+
+          
         </View>
 
         {modal?.visible ? (
@@ -626,7 +627,7 @@ function StarterKitScreen(props) {
             }
           />
         ) : null}
-      </View>
+      </SafeAreaView>
     );
   } catch (error) {
     sentryLog(error);
@@ -645,21 +646,29 @@ function StarterKitScreen(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: "100%",
     backgroundColor: colors.daclen_black,
+  },
+  containerContent: {
+    flex: 1,
+    width: dimensions.fullWidth,
+    backgroundColor: colors.white,
+    marginTop: panelHeight / 2,
+    borderTopStartRadius: (20 * dimensions.fullWidth) / 430,
+    borderTopEndRadius: (20 * dimensions.fullWidth) / 430,
   },
   containerScroll: {
     flex: 1,
     width: dimensions.fullWidth,
+    backgroundColor: "transparent",
+  },
+  containerScrollContent: {
+    width: dimensions.fullWidth,
     marginTop: panelHeight / 2,
-    paddingTop: panelHeight / 2,
-    backgroundColor: colors.white,
-    borderTopStartRadius: (20 * dimensions.fullWidth) / 430,
-    borderTopEndRadius: (20 * dimensions.fullWidth) / 430,
-    minHeight: dimensions.fullHeight * 0.9,
+    backgroundColor: "transparent",
   },
   containerInside: {
     backgroundColor: "transparent",
+    flex: 1,
   },
   containerPanel: {
     position: "absolute",

@@ -1,20 +1,21 @@
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { colors, staticDimensions } from '../../styles/base';
+import { colors } from '../../styles/base';
 
-const TextBoxVerified = ({ notVerified, style }) => {
+const TextBoxVerified = ({ isShort }) => {
   return (
-    <View style={[styles.containerVerified, {backgroundColor: notVerified ? colors.danger_background : colors.green_box_border}, style ? style : null]}>
+    <View style={styles.containerVerified}>
             <MaterialCommunityIcons
-              name={notVerified ? "alert-circle-outline" : "check"}
-              size={8}
-              color={notVerified ? colors.danger : colors.white}
+              name="check-bold"
+              size={12}
+              color={colors.daclen_success}
               style={styles.verified}
             />
-            <Text allowFontScaling={false} style={[styles.textVerified, {color: notVerified ? colors.danger : colors.white}]}>
-              {notVerified ? "Not Verified" : "Verified"}
-            </Text>
+            {isShort ? null : <Text allowFontScaling={false} style={styles.textVerified}>
+              Verified
+            </Text>}
+            
           </View>
   )
 }
@@ -22,20 +23,21 @@ const TextBoxVerified = ({ notVerified, style }) => {
 const styles = StyleSheet.create({
     containerVerified: {
         alignSelf: "center",
-        marginEnd: staticDimensions.marginHorizontal,
-        borderRadius: 4,
+        marginEnd: 10,
+        borderRadius: 6,
         paddingVertical: 6,
         paddingHorizontal: 8,
+        backgroundColor: colors.daclen_success_light,
         flexDirection: "row",
-        alignItems: "center",
+        alignItems: "self",
       },
       textVerified: {
         backgroundColor: "transparent",
         alignSelf: "center",
-        fontSize: staticDimensions?.isSmallScreen ? 10 : 12,
-        height: "100%",
+        color: colors.daclen_success,
+        fontSize: 12,
         marginStart: 4,
-        fontFamily: "PlusJakartaSans-Medium",
+        fontFamily: "Poppins",
       },
       verified: {
         backgroundColor: "transparent",

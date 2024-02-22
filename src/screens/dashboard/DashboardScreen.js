@@ -15,7 +15,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { colors } from "../../../styles/base";
+import { colors } from "../../styles/base";
 import Header from "../../../components/dashboard/Header";
 import {
   clearUserData,
@@ -28,7 +28,7 @@ import {
   convertInvoiceNumbertoRegDate,
   convertInvoiceNumbertoJoinDate,
   getLaporanSaldo,
-} from "../../../axios/user";
+} from "../../axios/user";
 import DashboardUser from "../../../components/dashboard/components/DashboardUser";
 import DashboardStats from "../../../components/dashboard/components/DashboardStats";
 import { getObjectAsync, setObjectAsync } from "../../../components/asyncstorage";
@@ -44,17 +44,17 @@ import DashboardVerification from "../../../components/dashboard/components/Dash
 import DashboardCreatePIN from "../../../components/dashboard/components/DashboardCreatePIN";
 import DashboardUpgrade from "../../../components/dashboard/components/DashboardUpgrade";
 import DashboardTimer from "../../../components/dashboard/components/DashboardTimer";
-import { updateReduxHomePDFFiles } from "../../../axios/home";
-import { checkNumberEmpty } from "../../../axios";
-import { convertDateISOStringtoDisplayDate } from "../../../axios/profile";
+import { updateReduxHomePDFFiles } from "../../axios/home";
+import { checkNumberEmpty } from "../../axios";
+import { convertDateISOStringtoDisplayDate } from "../../axios/profile";
 import {
   APRINDA_ID,
   APRINDA_MOCK,
   VIOLETTA_ID,
   VIOLETTA_MOCK,
-} from "../../../axios/constants/mockup";
-import { recruitmenttarget } from "../../../axios/constants";
-import { getPDFFiles } from "../../../axios/pdf";
+} from "../../axios/constants/mockup";
+import { recruitmenttarget } from "../../axios/constants";
+import { getPDFFiles } from "../../axios/pdf";
 import CenteredView from "../../components/view/CenteredView";
 
 const defaultTotalRekrutmen = {
@@ -328,14 +328,18 @@ const DashboardScreen = (props) => {
     }
   }
 
+  /*
+
+     
+  */
+
   return (
     <CenteredView style={styles.container}>
-      <ImageBackground
+       <ImageBackground
         source={require("../../assets/profilbg.png")}
         style={styles.background}
         resizeMode="cover"
       />
-
       <Header
         username={currentUser?.name}
         lockStatus={profileLock}
@@ -509,7 +513,6 @@ const DashboardScreen = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: "100%",
     backgroundColor: "transparent",
   },
   containerError: {

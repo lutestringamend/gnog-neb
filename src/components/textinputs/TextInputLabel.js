@@ -7,9 +7,11 @@ import {
   TouchableOpacity,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { colors, staticDimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import Checkbox from "../checkbox/Checkbox";
 import TextBoxVerified from "../textbox/TextBoxVerified";
+
+const height =  50 * dimensions.fullWidthAdjusted / 430;
 
 const TextInputLabel = (props) => {
   const {
@@ -35,19 +37,21 @@ const TextInputLabel = (props) => {
     hideClose,
   } = props;
   //const [active, setActive] = useState(false);
+
+  const [isPasswordSecure, setIsPasswordSecure] = useState(true);
   const [notApplicable, setNotApplicable] = useState(false);
 
   useEffect(() => {
     if (notApplicable) {
-      setText("Not Applicable");
+      onChangeText("Not Applicable");
     } else if (!notApplicable && value === "Not Applicable") {
-      setText("");
+      onChangeText("");
     }
   }, [notApplicable]);
 
-  function setText(text) {
-    if (!(props?.setText === undefined || props?.setText === null)) {
-      props?.setText(text);
+  function onChangeText(text) {
+    if (!(props?.onChangeText === undefined || props?.onChangeText === null)) {
+      props?.onChangeText(text);
     }
   }
 
@@ -87,12 +91,12 @@ const TextInputLabel = (props) => {
           styles.containerText,
           {
             backgroundColor:
-              disabled || notApplicable || verified
-                ? colors.daclen_green_light : active  ? colors.daclen_blue_textinput 
+              disabled || notApplicable
+                ? colors.daclen_grey_light : active  ? colors.daclen_blue_textinput 
                 : colors.white,
             borderColor:
-              disabled || notApplicable || verified
-                ? colors.daclen_grey_placeholder
+              disabled || notApplicable
+                ? colors.daclen_grey_placeholder : error ? colors.daclen_danger
                 : active
                     ? colors.daclen_blue_light_border
                     : colors.daclen_grey_placeholder,
@@ -104,7 +108,7 @@ const TextInputLabel = (props) => {
          
           <TextInput
             allowFontScaling={false}
-            secureTextEntry={secureTextEntry}
+            secureTextEntry={secureTextEntry && isPasswordSecure}
             editable={notApplicable || disabled || verified ? false : true}
             inputMode={inputMode ? inputMode : "text"}
             placeholder={placeholder ? placeholder : ""}
@@ -122,14 +126,25 @@ const TextInputLabel = (props) => {
               },
               style ? style : null,
             ]}
-            value={value}
+            value={value ? value : ""}
             onChangeText={(text) => {
-              setText(text);
+              onChangeText(text);
             }}
           />
         </View>
 
-        {error ?
+        {secureTextEntry ? <TouchableOpacity
+           onPress={() =>
+            setIsPasswordSecure((isPasswordSecure) => !isPasswordSecure)
+          }
+          >
+            <MaterialCommunityIcons
+              name={isPasswordSecure ? "eye" : "eye-off"}
+              size={20}
+              color={colors.daclen_black_old}
+              style={styles.arrow}
+            />
+          </TouchableOpacity> : error ?
         <MaterialCommunityIcons
         name="alert-circle-outline"
         size={20}
@@ -141,7 +156,7 @@ const TextInputLabel = (props) => {
         ) : !(value === null || value === "" || hideClose || disabled) ? (
           <TouchableOpacity
             onPress={() => {
-              setText("");
+              onChangeText("");
             }}
           >
             <MaterialCommunityIcons
@@ -234,11 +249,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   containerText: {
-    borderRadius: 8,
-    paddingVertical: 4,
+    borderRadius: 12,
     borderWidth: 0.5,
-    height: 50,
-    borderColor: colors.grey_separator,
+    height,
+    borderColor: colors.daclen_grey_placeholder,
     flexDirection: "row",
     alignItems: "center",
   },

@@ -1252,7 +1252,7 @@ export function register(authData, deviceToken) {
       deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN,
     );
 
-    let isDevUser = isUserDevServer(authData?.name);
+    let isDevUser = false;
     const newServerUrl = isDevUser ? devhttp : mainhttp;
     let url = `${newServerUrl}${userregister}`;
     console.log("register", {
@@ -1343,7 +1343,7 @@ export function login(email, password, resetPIN, deviceToken) {
       deviceToken ? deviceToken : TEMP_DEV_DEVICE_TOKEN,
     );
 
-    let isDevUser = isUserDevServer(email);
+    let isDevUser = false;
     const newServerUrl = isDevUser ? devhttp : mainhttp;
     let url = `${newServerUrl}${loginlink}`;
     /*if (email === "jasonlimanjaya" && Platform.OS === "android") {

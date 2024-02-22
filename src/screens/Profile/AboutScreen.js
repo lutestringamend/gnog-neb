@@ -4,7 +4,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  SafeAreaView,
   View,
   Linking,
   TouchableOpacity,

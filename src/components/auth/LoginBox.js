@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  ActivityIndicator,
 } from "react-native";
 
 import { connect } from "react-redux";
@@ -14,11 +13,12 @@ import {
   eliminateSpaceFromString,
   resetPassword,
   setAuthData,
-} from "../../axios/user";
-import { colors } from "../../styles/base";
-import { getObjectAsync } from "../asyncstorage";
-import { ASYNC_USER_PREVIOUS_USERNAME } from "../asyncstorage/constants";
+} from "../../../axios/user";
+import { colors, staticDimensions } from "../../styles/base";
+import { getObjectAsync } from "../..//asyncstorage";
+import { ASYNC_USER_PREVIOUS_USERNAME } from "../../asyncstorage/constants";
 import TextInputLabel from "../textinputs/TextInputLabel";
+import EmptySpinner from "../empty/EmptySpinner";
 
 function LoginBox(props) {
   const [previousUsername, setPreviousUsername] = useState(null);
@@ -51,11 +51,7 @@ function LoginBox(props) {
 
   if (previousUsername === null) {
     return (
-      <ActivityIndicator
-        size="large"
-        color={colors.daclen_orange}
-        style={styles.spinner}
-      />
+      <EmptySpinner />
     );
   }
 
@@ -100,10 +96,6 @@ function LoginBox(props) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingHorizontal: 10,
-    paddingTop: 10,
-    paddingBottom: 20,
     backgroundColor: "transparent",
   },
   containerVertical: {
@@ -120,8 +112,8 @@ const styles = StyleSheet.create({
   },
   textChange: {
     backgroundColor: "transparent",
-    color: colors.daclen_blue,
-    fontSize: 14,
+    color: colors.daclen_blue_link,
+    fontSize: 12,
     fontFamily: "Poppins",
   },
   textInput: {
@@ -130,13 +122,9 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 10,
     marginTop: 2,
-    marginBottom: 10,
+    marginBottom: staticDimensions.marginHorizontal,
     fontFamily: "Poppins",
     fontSize: 14,
-  },
-  spinner: {
-    alignSelf: "center",
-    marginVertical: 20,
   },
 });
 
