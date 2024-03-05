@@ -400,7 +400,7 @@ const DashboardScreen = (props) => {
             onPress={() => navigation.navigate("CreatePIN")}
             style={styles.containerModal}
           />
-        ) : profileLock !== true ? (
+        ) : profileLock === true ? (
           <DashboardContainer
             header="Masukkan PIN"
             content={<DashboardLock receiveOTP={(e) => receiveOTP(e)} />}
