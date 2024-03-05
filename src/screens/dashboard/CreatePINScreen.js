@@ -12,7 +12,7 @@ import { bindActionCreators } from "redux";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors } from "../../../styles/base";
-import OTPInput from "../../../components/OTP/OTPInput";
+import OTPInput from "../../components/OTP/OTPInput";
 import {
   updateReduxProfileLockStatus,
   updateReduxProfilePIN,

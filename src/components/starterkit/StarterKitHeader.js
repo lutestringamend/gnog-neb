@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Platform } from "react-native";
 import { Image } from "expo-image";
 
-import { colors, dimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import { ProfileHeaderUserData } from "../../../components/profile/constants";
-import { staticDimensions } from "../../styles/base";
 import { capitalizeFirstLetter } from "../../axios/cart";
 
 const width = dimensions.fullWidthAdjusted;
@@ -74,11 +73,14 @@ export default function StarterKitHeader(props) {
             </View>
 
             <View style={styles.containerVertical}>
+
+            {currentUser?.status ? (
+                <Text allowFontScaling={false} style={styles.text}>{`${capitalizeFirstLetter(currentUser?.status)} Daclen`}</Text>
+              ) : null}
+
             <Text allowFontScaling={false} style={styles.textName}>{userData?.displayName}</Text>
               
-              {currentUser?.status ? (
-                <Text allowFontScaling={false} style={[styles.text, { marginTop: 1 }]}>{`${capitalizeFirstLetter(currentUser?.status)} Daclen`}</Text>
-              ) : null}
+              
              
             </View>
 

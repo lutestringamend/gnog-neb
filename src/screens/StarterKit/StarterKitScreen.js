@@ -532,8 +532,8 @@ function StarterKitScreen(props) {
           </View>
 
           <View style={styles.containerContent}>
-          <ScrollView style={styles.containerScroll} contentContainerStyle={[styles.containerScrollContent, {
-            minHeight: activeTab === STARTER_KIT_FLYER_PRODUK || activeTab === STARTER_KIT_VIDEO_PRODUK  ? 4 * dimensions.fullHeight : dimensions.fullHeight,
+          <ScrollView keyboardShouldPersistTaps="always" style={styles.containerScroll} contentContainerStyle={[styles.containerScrollContent, {
+            minHeight: activeTab === STARTER_KIT_FLYER_PRODUK || activeTab === STARTER_KIT_VIDEO_PRODUK  ? 4 * dimensions.fullHeight : 0.8 * dimensions.fullHeight,
           }]}>
 
             {token === null ||
@@ -657,7 +657,6 @@ const styles = StyleSheet.create({
     borderTopEndRadius: (20 * dimensions.fullWidth) / 430,
   },
   containerScroll: {
-    flex: 1,
     width: dimensions.fullWidth,
     backgroundColor: "transparent",
   },

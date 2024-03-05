@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-  SafeAreaView,
   StyleSheet,
-  Text,
-  ActivityIndicator,
   ScrollView,
   RefreshControl,
 } from "react-native";
@@ -20,6 +17,11 @@ import {
 import { getObjectAsync } from "../../../components/asyncstorage";
 import { ASYNC_NOTIFICATIONS_KEY } from "../../../components/asyncstorage/constants";
 import NotificationItem from "../../../components/notifications/NotificationItem";
+import CenteredView from "../../components/view/CenteredView";
+import EmptySpinner from "../../components/empty/EmptySpinner";
+import { dimensions } from "../../styles/base";
+import AlertBox from "../../components/alert/AlertBox";
+import EmptyPlaceholder from "../../components/empty/EmptyPlaceholder";
 
 const NotificationsScreen = (props) => {
   const { currentUser, notificationsArray } = props;
@@ -63,14 +65,9 @@ const NotificationsScreen = (props) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {error ? <Text allowFontScaling={false} style={styles.textError}>{error}</Text> : null}
+    <CenteredView title="Notifikasi" style={styles.container}>
       {loading || notificationsArray === null ? (
-        <ActivityIndicator
-          size="large"
-          color={colors.daclen_orange}
-          style={styles.spinner}
-        />
+        <EmptySpinner minHeight={dimensions.fullHeight * 0.9} />
       ) : (
         <ScrollView
           style={styles.containerFlatlist}
@@ -85,7 +82,7 @@ const NotificationsScreen = (props) => {
         currentUser?.id === undefined ||
         currentUser?.id === null || notificationsArray?.length === undefined ||
           notificationsArray?.length < 1 ? (
-            <Text allowFontScaling={false} style={styles.textUid}>Tidak ada notifikasi tersedia</Text>
+            <EmptyPlaceholder text="Tidak ada notifikasi tersedia" minHeight={dimensions.fullHeight * 0.9} />
           ) : (
             <FlashList
               estimatedItemSize={10}
@@ -104,7 +101,8 @@ const NotificationsScreen = (props) => {
           )}
         </ScrollView>
       )}
-    </SafeAreaView>
+      <AlertBox text={error} onClose={() => setError(null)} />
+    </CenteredView>
   );
 };
 
@@ -116,28 +114,6 @@ const styles = StyleSheet.create({
   },
   containerFlatlist: {
     flex: 1,
-  },
-  textError: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: colors.daclen_light,
-    fontFamily: "Poppins-SemiBold",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: colors.daclen_danger,
-    textAlign: "center",
-  },
-  textUid: {
-    fontSize: 12,
-    color: colors.daclen_gray,
-    marginHorizontal: 12,
-    marginVertical: 20,
-    textAlign: "center",
-    fontFamily: "Poppins",
-  },
-  spinner: {
-    marginTop: 20,
-    alignSelf: "center",
   },
 });
 

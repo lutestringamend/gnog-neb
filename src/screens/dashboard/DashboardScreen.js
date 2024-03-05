@@ -1,22 +1,11 @@
 import React, { useState, useEffect } from "react";
-import {
-  ScrollView,
-  View,
-  StyleSheet,
-  Text,
-  ActivityIndicator,
-  ImageBackground,
-  RefreshControl,
-  TouchableOpacity,
-} from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-//import * as Sharing from "expo-sharing";
-
+import { ScrollView, View, StyleSheet, RefreshControl } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { useNavigation } from "@react-navigation/native";
 
-import { colors } from "../../styles/base";
-import Header from "../../../components/dashboard/Header";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
+import DashboardHeader from "../../components/dashboard/DashboardHeader";
 import {
   clearUserData,
   getCurrentUser,
@@ -31,17 +20,16 @@ import {
 } from "../../axios/user";
 import DashboardUser from "../../../components/dashboard/components/DashboardUser";
 import DashboardStats from "../../../components/dashboard/components/DashboardStats";
-import { getObjectAsync, setObjectAsync } from "../../../components/asyncstorage";
+import {
+  getObjectAsync,
+  setObjectAsync,
+} from "../../../components/asyncstorage";
 import {
   ASYNC_USER_HPV_KEY,
   ASYNC_USER_REGISTER_SNAP_TOKEN_KEY,
 } from "../../../components/asyncstorage/constants";
-import DashboardButtons from "../../../components/dashboard/components/DashboardButtons";
-//import DashboardBottom from "./components/DashboardBottom";
-import DashboardLock from "../../../components/dashboard/components/DashboardLock";
-import DashboardLogout from "../../../components/dashboard/components/DashboardLogout";
-import DashboardVerification from "../../../components/dashboard/components/DashboardVerification";
-import DashboardCreatePIN from "../../../components/dashboard/components/DashboardCreatePIN";
+import DashboardButtons from "../../components/dashboard/DashboardButtons";
+import DashboardLock from "../../components/dashboard/DashboardLock";
 import DashboardUpgrade from "../../../components/dashboard/components/DashboardUpgrade";
 import DashboardTimer from "../../../components/dashboard/components/DashboardTimer";
 import { updateReduxHomePDFFiles } from "../../axios/home";
@@ -56,10 +44,21 @@ import {
 import { recruitmenttarget } from "../../axios/constants";
 import { getPDFFiles } from "../../axios/pdf";
 import CenteredView from "../../components/view/CenteredView";
+import DashboardContainer from "../../components/dashboard/DashboardContainer";
+import AlertBox from "../../components/alert/AlertBox";
+import EmptySpinner from "../../components/empty/EmptySpinner";
+import DashboardSaldo from "../../components/dashboard/DashboardSaldo";
+
+const topMargin = (32 * dimensions.fullWidthAdjusted) / 430;
 
 const defaultTotalRekrutmen = {
   showHPV: 0,
   childrenSize: 0,
+};
+
+const DefaultMessage = {
+  text: null,
+  isError: false,
 };
 
 const DashboardScreen = (props) => {
@@ -76,11 +75,9 @@ const DashboardScreen = (props) => {
     saldoAkumulasi,
     pdfFiles,
   } = props;
+  const navigation = useNavigation();
 
-  const [message, setMessage] = useState({
-    text: null,
-    isError: false,
-  });
+  const [message, setMessage] = useState(DefaultMessage);
   //const [pinLoading, setPinLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchingToken, setFetchingToken] = useState(false);
@@ -110,7 +107,10 @@ const DashboardScreen = (props) => {
       currentUser?.id === null ||
       (currentUser?.status !== undefined && currentUser?.status !== null) ||
       currentUser?.level === "spv" ||
-      currentUser?.status_member === "supervisor" || (currentUser?.name === "daclen" && currentUser?.level === "super_user" && currentUser?.id === 2)
+      currentUser?.status_member === "supervisor" ||
+      (currentUser?.name === "daclen" &&
+        currentUser?.level === "super_user" &&
+        currentUser?.id === 2)
     ) {
       try {
         setRegDate(new Date(currentUser?.join_date));
@@ -303,7 +303,7 @@ const DashboardScreen = (props) => {
       props.updateReduxProfileLockStatus(false);
     } else {
       setMessage({
-        text: "PIN salah. Tekan Reset PIN jika Anda lupa PIN.",
+        text: "PIN yang Anda masukkan salah.",
         isError: true,
       });
       //setPinLoading(false);
@@ -328,58 +328,17 @@ const DashboardScreen = (props) => {
     }
   }
 
-  /*
-
-     
-  */
+  const closeError = () => {
+    if (hpvError) {
+      fetchHPV();
+    } else {
+      setMessage(DefaultMessage);
+    }
+  };
 
   return (
     <CenteredView style={styles.container}>
-       <ImageBackground
-        source={require("../../assets/profilbg.png")}
-        style={styles.background}
-        resizeMode="cover"
-      />
-      <Header
-        username={currentUser?.name}
-        lockStatus={profileLock}
-        onLockPress={() => onLockPress()}
-      />
-
-      {(message?.text === null || message?.text === "") &&
-      hpvError === null ? null : (
-        <TouchableOpacity
-          onPress={() => fetchHPV()}
-          style={[
-            styles.containerError,
-            {
-              backgroundColor:
-                hpvError !== null
-                  ? colors.daclen_blue
-                  : message?.isError
-                    ? colors.daclen_red
-                    : colors.daclen_green,
-            },
-          ]}
-          disabled={hpvError === null}
-        >
-          {hpvError === null ? null : (
-            <MaterialCommunityIcons
-              name="refresh"
-              size={20}
-              color={colors.daclen_light}
-              style={styles.refresh}
-            />
-          )}
-          <Text allowFontScaling={false} style={styles.textError}>
-            {hpvError === null
-              ? message?.text === null || message?.text === ""
-                ? ""
-                : message?.text
-              : "Refresh Catatan Akun"}
-          </Text>
-        </TouchableOpacity>
-      )}
+      
       <ScrollView
         style={styles.scrollView}
         refreshControl={
@@ -389,10 +348,21 @@ const DashboardScreen = (props) => {
           />
         }
       >
+        <DashboardHeader
+        username={currentUser?.name}
+        onLockPress={() => onLockPress()}
+      />
+        
         {currentUser === null ||
         currentUser?.id === undefined ||
         currentUser?.name === undefined ? (
-          <DashboardLogout />
+          <DashboardContainer
+            header="Login"
+            text="Login / Register untuk menggunakan aplikasi Daclen"
+            buttonText="Login"
+            onPress={() => navigation.navigate("Login")}
+            style={styles.containerModal}
+          />
         ) : (currentUser?.join_date === undefined ||
             currentUser?.join_date === null ||
             currentUser?.target_rekrutmen_latest === undefined ||
@@ -400,30 +370,43 @@ const DashboardScreen = (props) => {
           !(
             currentUser?.level === "spv" ||
             currentUser?.status_member === "supervisor"
-          ) && !(currentUser?.name === "daclen" && currentUser?.level === "super_user" && currentUser?.id === 2) ? (
+          ) &&
+          !(
+            currentUser?.name === "daclen" &&
+            currentUser?.level === "super_user" &&
+            currentUser?.id === 2
+          ) ? (
           <DashboardUpgrade
             registerSnapToken={registerSnapToken}
             fetchingToken={fetchingToken}
             loadData={() => loadUpgradeData()}
           />
-        ) : currentUser?.nomor_telp_verified_at === null ||
-          currentUser?.nomor_telp_verified_at === "" ? (
-          <DashboardVerification />
         ) : profilePIN === null || profilePIN === "" ? (
-          <DashboardCreatePIN />
+          <DashboardContainer
+            header="PIN"
+            text="Anda perlu membuat PIN 4 digit untuk mengamankan halaman Profil"
+            buttonText="Buat PIN"
+            onPress={() => navigation.navigate("CreatePIN")}
+            style={styles.containerModal}
+          />
         ) : profileLock === true ? (
-          <DashboardLock receiveOTP={(e) => receiveOTP(e)} />
+          <DashboardContainer
+            header="Masukkan PIN"
+            content={<DashboardLock receiveOTP={(e) => receiveOTP(e)} />}
+            buttonText="Reset PIN"
+            onPress={() =>
+              navigation.navigate("Login", {
+                resetPIN: true,
+              })
+            }
+            style={styles.containerModal}
+          />
         ) : (
-          <View style={styles.scrollView}>
-            <DashboardUser
-              currentUser={currentUser}
-              profilePicture={profilePicture}
+          <View style={styles.containerInside}>
+            <DashboardSaldo
+              {...currentUser}
               mockData={mockData}
-              saldoAkumulasi={
-                currentUser?.total_komisi_user
-                  ? currentUser?.total_komisi_user
-                  : saldoAkumulasi
-              }
+              style={[styles.containerModal, { top: 0, marginBottom: staticDimensions.marginHorizontal }]}
               refreshSaldo={() => props.getLaporanSaldo(currentUser?.id, token)}
             />
             <DashboardStats
@@ -439,6 +422,7 @@ const DashboardScreen = (props) => {
               userId={currentUser?.id}
               username={currentUser?.name}
               pdfFiles={pdfFiles}
+              openCountdown={() => setShowTimerModal(true)}
               setMessage={(text, isError) =>
                 setMessage({
                   text,
@@ -449,11 +433,7 @@ const DashboardScreen = (props) => {
           </View>
         )}
         {profileLock === undefined || profileLock === null ? (
-          <ActivityIndicator
-            size="large"
-            color={colors.daclen_light}
-            style={styles.spinner}
-          />
+          <EmptySpinner minHeight={dimensions.fullHeight * 0.75} />
         ) : null}
       </ScrollView>
 
@@ -489,6 +469,13 @@ const DashboardScreen = (props) => {
           total_rekrutmen={total_rekrutmen}
         />
       )}
+      <AlertBox
+        text={hpvError ? "Refresh catatan akun sekarang." : message.text}
+        closeText={hpvError ? "Refresh" : null}
+        success={!message.isError}
+        onClose={() => closeError()}
+        style={{ bottom: 100 }}
+      />
     </CenteredView>
   );
 };
@@ -513,45 +500,24 @@ const DashboardScreen = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "transparent",
+    backgroundColor: colors.daclen_grey_light,
   },
-  containerError: {
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  background: {
-    position: "absolute",
-    zIndex: 0,
-    top: 0,
-    start: 0,
-    width: "100%",
-    height: "100%",
+  containerModal: {
+    marginHorizontal: staticDimensions.marginHorizontal,
+    zIndex: 6,
+    top: -topMargin,
   },
   scrollView: {
     flex: 1,
-    width: "100%",
+    width: dimensions.fullWidthAdjusted,
     backgroundColor: "transparent",
-    zIndex: 1,
   },
-  textError: {
-    fontSize: 14,
-    fontFamily: "Poppins-SemiBold",
+  containerInside: {
     backgroundColor: "transparent",
-    color: colors.daclen_light,
-    textAlignVertical: "center",
-    textAlign: "center",
-  },
-  spinner: {
-    alignSelf: "center",
-    marginVertical: 20,
-  },
-  refresh: {
-    alignSelf: "center",
-    marginEnd: 10,
-  },
+    zIndex: 6,
+    top: -topMargin,
+    minHeight: dimensions.fullHeight,
+  }
 });
 
 const mapStateToProps = (store) => ({

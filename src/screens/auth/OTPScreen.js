@@ -18,7 +18,7 @@ import { bindActionCreators } from "redux";
 
 import { validateOTP, getCurrentUser } from "../../../axios/user";
 import { colors, staticDimensions } from "../../styles/base";
-import OTPInput from "../../../components/OTP/OTPInput";
+import OTPInput from "../../components/OTP/OTPInput";
 import { openCheckout } from "../../utils/checkout";
 import BSPopup from "../../components/bottomsheets/BSPopup";
 

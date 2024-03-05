@@ -69,7 +69,7 @@ const PhotoItem = (props) => {
 const styles = StyleSheet.create({
   containerImage: {
     backgroundColor: colors.daclen_grey_light,
-    marginHorizontal: staticDimensions.marginHorizontal / 2,
+    marginHorizontal: 8,
     borderRadius: 6,
     alignSelf: "center",
   },

@@ -15,7 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { colors, staticDimensions } from "../../styles/base";
-import OTPInput from "../../../components/OTP/OTPInput";
+import OTPInput from "../../components/OTP/OTPInput";
 import BSPopup from "../../components/bottomsheets/BSPopup";
 import {
   postRequestAuthOTP,

@@ -1,9 +1,19 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { colors } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 
-const OTPInput = ({ code, setCode, maximumLength, setIsPinReady, style, boxStyle, fontSize }) => {
+const ratio = dimensions.fullWidthAdjusted / 430;
+
+const OTPInput = ({
+  code,
+  setCode,
+  maximumLength,
+  setIsPinReady,
+  style,
+  boxStyle,
+  fontSize,
+}) => {
   const boxArray = new Array(maximumLength).fill(0);
   const inputRef = useRef();
 
@@ -24,6 +34,7 @@ const OTPInput = ({ code, setCode, maximumLength, setIsPinReady, style, boxStyle
       setIsPinReady(false);
     };
   }, [code]);
+
   const boxDigit = (_, index) => {
     const emptyInput = "";
     const digit = code[index] || emptyInput;
@@ -43,11 +54,14 @@ const OTPInput = ({ code, setCode, maximumLength, setIsPinReady, style, boxStyle
         ]}
         key={index}
       >
-        <Text allowFontScaling={false}
+        <Text
+          allowFontScaling={false}
           style={[
             styles.SplitBoxText,
-            isInputBoxFocused && isValueFocused ? { color: colors.daclen_light } : null,
-            { fontSize: fontSize ? fontSize : 24 },
+            isInputBoxFocused && isValueFocused
+              ? { color: colors.black }
+              : null,
+            { fontSize: (fontSize ? fontSize : 20) * ratio },
           ]}
         >
           {digit}
@@ -92,24 +106,24 @@ const styles = StyleSheet.create({
     opacity: 0,
   },
   SplitBoxes: {
-    borderColor: colors.daclen_gray,
-    backgroundColor: colors.daclen_light,
-    borderWidth: 2,
-    borderRadius: 5,
-    padding: 10,
+    borderColor: colors.daclen_dark,
+    backgroundColor: "transparent",
+    borderWidth: 1,
+    borderRadius: 10 * ratio,
     justifyContent: "center",
     alignItems: "center",
-    width: 72,
-    height: 72,
+    width: 60 * ratio,
+    height: 60 * ratio,
+    marginHorizontal: staticDimensions.marginHorizontal / 4,
   },
   SplitBoxesFocused: {
-    borderColor: colors.daclen_light,
-    backgroundColor: colors.daclen_blue,
+    borderColor: colors.daclen_dark,
+    backgroundColor: colors.daclen_grey_light,
   },
   SplitBoxText: {
     textAlign: "center",
-    fontFamily: "Poppins-Bold",
-    color: colors.daclen_graydark,
+    fontFamily: "Poppins-Medium",
+    color: colors.black,
   },
 });
 

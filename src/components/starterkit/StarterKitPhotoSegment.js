@@ -5,6 +5,7 @@ import {
   Text,
   Dimensions,
   FlatList,
+  ScrollView,
 } from "react-native";
 
 import { colors, staticDimensions, dimensions, bottomNav } from "../../styles/base";
@@ -12,6 +13,7 @@ import PhotoItem from "./PhotoItem";
 import Button from "../Button/Button";
 
 const width = dimensions.fullWidth - (2 * staticDimensions.marginHorizontal);
+const itemWidth = 160 * dimensions.fullWidthAdjusted / 430;
 
 const StarterKitPhotoSegment = (props) => {
   const { title, photos, index, isLast, navigation, selected, selectMode, unit } =
@@ -57,26 +59,24 @@ const StarterKitPhotoSegment = (props) => {
         
 
         <View style={styles.containerCarousel}>
-          <FlatList
-            estimatedItemSize={10}
-            horizontal={true}
-            data={photos}
-            contentContainerStyle={styles.containerFlatlist}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item, index }) => (
+          <ScrollView nestedScrollEnabled keyboardShouldPersistTaps='always' scrollEnabled horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={[styles.containerFlatlist, { minWidth: (staticDimensions.marginHorizontal * 2) + photos?.length * (itemWidth + 16)}]}
+          >
+            {photos.map((item, index) => (
               <PhotoItem
                 selected={
                   selected.find(({ id }) => item?.id === id) ? true : false
                 }
                 navigation={navigation}
+                key={index}
                 item={item}
                 index={index}
                 selectMode={selectMode}
                 onLongPress={() => onLongPress(item)}
                 onPress={() => onPress(item, index)}
               />
-            )}
-          />
+            ))}
+          </ScrollView>
+          
         </View>
 
         <View
@@ -134,8 +134,8 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     justifyContent: "space-between",
     marginTop: 4 * dimensions.fullWidth / 430,
-    marginHorizontal: staticDimensions.marginHorizontal,
-    marginBottom: 16,
+    marginHorizontal: staticDimensions.marginHorizontal / 2,
+    marginBottom: staticDimensions.marginHorizontal,
   },
   containerVertical: {
     backgroundColor: "transparent",
@@ -143,6 +143,7 @@ const styles = StyleSheet.create({
   containerFlatlist: {
     backgroundColor: "transparent",
     borderRadius: 6,
+    flexDirection: "row",
     overflow: "hidden",
   },
   containerCarousel: {
@@ -155,11 +156,10 @@ const styles = StyleSheet.create({
   button: {
     position: "absolute",
     zIndex: 2,
-    bottom: 0,
-    end: 0,
+    bottom: -(staticDimensions.marginHorizontal / 2),
+    end: -staticDimensions.marginHorizontal,
     height: 30 * dimensions.fullWidthAdjusted / 430,
     borderRadius: 6 * dimensions.fullWidthAdjusted / 430,
-    marginTop: staticDimensions.marginHorizontal,
     alignSelf: "flex-end",
   },
   textName: {
@@ -171,14 +171,6 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Light",
     fontSize: 12 * dimensions.fullWidthAdjusted / 430,
     color: colors.black,
-  },
-  textButton: {
-    fontFamily: "Poppins",
-    fontSize: 14,
-    color: colors.daclen_black,
-    textAlign: "center",
-    textAlignVertical: "center",
-    alignSelf: "center",
   },
   icon: {
     alignSelf: "center",
