@@ -2,6 +2,7 @@ import Axios from "../index";
 
 import {
   mediakitkategori,
+  mediakitkategorithumbnail,
   mediakitphoto,
   mediakitvideo,
   tokoonlineurlshort,
@@ -401,6 +402,44 @@ export function getMediaKitVideos(token, products) {
       });
   };
 }
+
+export const getMediaKitKategoriThumbnail = async (token) => {
+  if (token === undefined || token === null) {
+    return {
+      result: null,
+      error: "Anda perlu login",
+    };
+  }
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  };
+
+  try {
+    const response = await Axios.get(mediakitkategorithumbnail, config).catch(
+      (error) => {
+        console.error(error);
+        sentryLog(error);
+        return {
+          result: null,
+          error: error.toString(),
+        };
+      }
+    );
+      console.log("getMediaKitKategoriThumbnail", response?.data);
+    
+  } catch (e) {
+    console.error("getMediaKitKategori error", e);
+    sentryLog(e);
+    return {
+      result: null,
+      error: e.toString(),
+    };
+  }
+};
+
 
 export const getMediaKitKategori = async (token) => {
   if (token === undefined || token === null) {

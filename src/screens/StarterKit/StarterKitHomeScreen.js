@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -22,11 +22,19 @@ import {
 } from "../../../components/mediakit/constants";
 import StarterKitHomeButton from "../../../components/mediakit/home/StarterKitHomeButton";
 import { staticDimensions } from "../../styles/base";
+import { getMediaKitKategoriThumbnail } from "../../axios/mediakit";
 
 const screenWidth = Dimensions.get("window").width;
 
 const StarterKitHomeScreen = (props) => {
-  const { currentUser, mediaKitPhotos, flyerMengajak, mediaKitVideos, videosMengajak } = props;
+  const { token, currentUser, mediaKitPhotos, flyerMengajak, mediaKitVideos, videosMengajak } = props;
+
+  /*useEffect(() => {
+    if (token === null) {
+      return;
+    }
+    getMediaKitKategoriThumbnail(token);
+  }, [token]);*/
 
   function setActiveTab(e) {
     if (props?.setActiveTab === undefined || props?.setActiveTab === null) {
