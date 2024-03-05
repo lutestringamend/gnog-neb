@@ -127,7 +127,7 @@ function BonusRootScreen(props) {
   }
 
   return (
-    <CenteredView title="Syarat Bonus Roote" style={styles.container}>
+    <CenteredView title="Syarat Bonus Root" style={styles.container}>
 
       {loading ? (
         <EmptySpinner />

@@ -77,7 +77,7 @@
       "softwareKeyboardLayoutMode": "resize",
       "useNextNotificationsApi": true,
       "userInterfaceStyle": "light",
-      "versionCode": 91
+      "versionCode": 92
     },
     "web": {
       "favicon": "./assets/favicon.png"

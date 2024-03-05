@@ -5,11 +5,9 @@ import {
   TouchableOpacity,
   Text,
   Linking,
-  Platform,
-  Share,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import * as Clipboard from "expo-clipboard";
+//import * as Clipboard from "expo-clipboard";
 import { useNavigation } from "@react-navigation/native";
 
 import { colors, dimensions, staticDimensions } from "../../styles/base";
@@ -29,17 +27,6 @@ import {
   webreferral,
 } from "../../axios/constants";
 import {
-  dashboardbuttonsdefaultborderradius,
-  dashboardbuttonsdefaultborderwidth,
-  dashboardbuttonsdefaultfontsize,
-  dashboardbuttonsdefaultheight,
-  dashboardbuttonsdefaulticonsize,
-  dashboardbuttonsdefaultmarginbottom,
-  dashboardbuttonsdefaultpaddinghorizontal,
-  dashboardbuttonsdefaultpaddingvertical,
-  dashboardbuttonsdefaultscreenwidth,
-  dashboardbuttonsdefaultwidth,
-  dashboardbuttonsmaxratio,
   kataloghadiahtag,
   kodeetiktag,
   penjelasanbisnistag,
@@ -51,11 +38,11 @@ export const DashButton = (props) => {
   /*if (props?.disabled) {
     return null;
   }*/
-  const { pdfFiles, tag, disabled } = props;
+  const { icon, text, caption, pdfFiles, tag, disabled, style, iconText, iconStyle } = props;
 
   return (
     <TouchableOpacity
-      style={styles.button}
+      style={[styles.button, style ? style : null]}
       onPress={() => props?.onPress()}
       disabled={
         disabled ||
@@ -72,10 +59,14 @@ export const DashButton = (props) => {
             ) === null))
       }
     >
-      <View style={styles.containerIcon}>
-        {props?.icon ? (
+      <View style={[styles.containerIcon, iconStyle ? iconStyle : null]}>
+        {iconText ? 
+        <Text allowFontScaling={false} style={styles.textIcon}>
+          {iconText}
+        </Text>
+        : icon ? (
           <MaterialCommunityIcons
-            name={props?.icon}
+            name={icon}
             size={25 * ratio}
             color={colors.black}
           />
@@ -83,17 +74,22 @@ export const DashButton = (props) => {
       </View>
 
       <View style={styles.containerText}>
-        {props?.text ? (
+        {text ? (
           <Text allowFontScaling={false} style={styles.textHeader}>
-            {props?.text}
+            {text}
           </Text>
         ) : null}
-        {props?.caption ? (
+        {caption ? (
           <Text allowFontScaling={false} style={styles.text}>
-            {props?.caption}
+            {caption}
           </Text>
         ) : null}
       </View>
+      <MaterialCommunityIcons
+            name="chevron-right"
+            size={35 * ratio}
+            color={colors.black}
+          />
     </TouchableOpacity>
   );
 };
@@ -123,7 +119,7 @@ const DashboardButtons = (props) => {
       sentryLog(error);
       copytoClipboard();
     }
-  };*/
+  };
 
   const copytoClipboard = async () => {
     await Clipboard.setStringAsync(`${personalwebsiteurl}${username}`);
@@ -136,7 +132,7 @@ const DashboardButtons = (props) => {
     if (!(props?.setMessage === undefined || props?.setMessage === null)) {
       props?.setMessage("Link Toko Online tersalin ke Clipboard", false);
     }
-  };
+  };*/
 
   function openDaclenCare() {
     let template = adminWAnonusertemplate;
@@ -304,6 +300,7 @@ const styles = StyleSheet.create({
   containerText: {
     marginStart: 14 * ratio,
     backgroundColor: "transparent",
+    flex: 1,
   },
   textHeader: {
     fontSize: 14 * ratio,
@@ -313,10 +310,16 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 12 * ratio,
-    fontFamily: "Poppins-Medium",
+    fontFamily: "Poppins",
     backgroundColor: "transparent",
     color: colors.black,
     marginTop: 2,
+  },
+  textIcon: {
+    fontSize: 32 * ratio,
+    fontFamily: "Poppins-ExtraBold",
+    backgroundColor: "transparent",
+    color: colors.daclen_black,
   },
 });
 

@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { ScrollView, View, StyleSheet, RefreshControl } from "react-native";
+import {
+  ScrollView,
+  View,
+  StyleSheet,
+  RefreshControl,
+  TouchableOpacity,
+  Text,
+} from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { useNavigation } from "@react-navigation/native";
@@ -28,7 +35,9 @@ import {
   ASYNC_USER_HPV_KEY,
   ASYNC_USER_REGISTER_SNAP_TOKEN_KEY,
 } from "../../../components/asyncstorage/constants";
-import DashboardButtons from "../../components/dashboard/DashboardButtons";
+import DashboardButtons, {
+  DashButton,
+} from "../../components/dashboard/DashboardButtons";
 import DashboardLock from "../../components/dashboard/DashboardLock";
 import DashboardUpgrade from "../../../components/dashboard/components/DashboardUpgrade";
 import DashboardTimer from "../../../components/dashboard/components/DashboardTimer";
@@ -41,15 +50,17 @@ import {
   VIOLETTA_ID,
   VIOLETTA_MOCK,
 } from "../../axios/constants/mockup";
-import { recruitmenttarget } from "../../axios/constants";
+import { monthNames, recruitmenttarget } from "../../axios/constants";
 import { getPDFFiles } from "../../axios/pdf";
 import CenteredView from "../../components/view/CenteredView";
 import DashboardContainer from "../../components/dashboard/DashboardContainer";
 import AlertBox from "../../components/alert/AlertBox";
 import EmptySpinner from "../../components/empty/EmptySpinner";
 import DashboardSaldo from "../../components/dashboard/DashboardSaldo";
+import { formatPrice } from "../../axios/cart";
 
-const topMargin = (32 * dimensions.fullWidthAdjusted) / 430;
+const ratio = dimensions.fullWidthAdjusted / 430;
+const topMargin = 32 * ratio;
 
 const defaultTotalRekrutmen = {
   showHPV: 0,
@@ -88,6 +99,7 @@ const DashboardScreen = (props) => {
   });
   const [regDate, setRegDate] = useState(null);
   const [hpvError, setHpvError] = useState(null);
+  const [oldStats, setOldStats] = useState(false);
   const [mockData, setMockData] = useState(null);
 
   /*const [isSharingAvailable, setSharingAvailable] = useState(false);
@@ -338,7 +350,6 @@ const DashboardScreen = (props) => {
 
   return (
     <CenteredView style={styles.container}>
-      
       <ScrollView
         style={styles.scrollView}
         refreshControl={
@@ -349,10 +360,10 @@ const DashboardScreen = (props) => {
         }
       >
         <DashboardHeader
-        username={currentUser?.name}
-        onLockPress={() => onLockPress()}
-      />
-        
+          username={currentUser?.name}
+          onLockPress={() => onLockPress()}
+        />
+
         {currentUser === null ||
         currentUser?.id === undefined ||
         currentUser?.name === undefined ? (
@@ -389,7 +400,7 @@ const DashboardScreen = (props) => {
             onPress={() => navigation.navigate("CreatePIN")}
             style={styles.containerModal}
           />
-        ) : profileLock === true ? (
+        ) : profileLock !== true ? (
           <DashboardContainer
             header="Masukkan PIN"
             content={<DashboardLock receiveOTP={(e) => receiveOTP(e)} />}
@@ -406,18 +417,123 @@ const DashboardScreen = (props) => {
             <DashboardSaldo
               {...currentUser}
               mockData={mockData}
-              style={[styles.containerModal, { top: 0, marginBottom: staticDimensions.marginHorizontal }]}
+              style={[styles.containerModal, { top: 0 }]}
               refreshSaldo={() => props.getLaporanSaldo(currentUser?.id, token)}
             />
-            <DashboardStats
-              currentUser={currentUser}
-              hpv={hpv}
-              regDate={regDate}
-              recruitmentTimer={recruitmentTimer}
-              mockData={mockData}
-              onDatePress={() => onDatePress()}
-              showTimerModal={() => setShowTimerModal(true)}
+            <TouchableOpacity
+              onPress={() => setOldStats((oldStats) => !oldStats)}
+            >
+              <Text allowFontScaling={false} style={styles.textHeader}>
+                Overview
+              </Text>
+            </TouchableOpacity>
+
+            {oldStats ? (
+              <DashboardStats
+                currentUser={currentUser}
+                hpv={hpv}
+                regDate={regDate}
+                recruitmentTimer={recruitmentTimer}
+                mockData={mockData}
+                onDatePress={() => onDatePress()}
+                showTimerModal={() => setShowTimerModal(true)}
+              />
+            ) : (
+              <View style={styles.containerHorizontal}>
+                <DashboardContainer
+                  header={
+                    checkNumberEmpty(currentUser?.total_nominal_penjualan)
+                      ? formatPrice(
+                          checkNumberEmpty(
+                            currentUser?.total_nominal_penjualan,
+                          ),
+                        )
+                      : "Rp 0"
+                  }
+                  content={
+                    <View style={styles.containerText}>
+                      <Text allowFontScaling={false} style={styles.text}>
+                        Jumlah Total Transaksi
+                      </Text>
+                      <Text allowFontScaling={false} style={styles.text}>
+                        Anda memiliki{" "}
+                        <Text
+                          style={{ fontFamily: "Poppins-SemiBold" }}
+                        >{`${checkNumberEmpty(
+                          currentUser?.jumlah_invoice,
+                        )} invoice`}</Text>{" "}
+                        di bulan {monthNames[new Date().getMonth()]}{" "}
+                        {new Date().getFullYear().toString()}
+                      </Text>
+                    </View>
+                  }
+                  buttonText="Transaksi"
+                  onPress={() => navigation.navigate("History")}
+                  style={{ flex: 1, minHeight: 200 * ratio }}
+                />
+                <DashboardContainer
+                  header={`Reseller & Agen`}
+                  content={
+                    <View
+                      style={[styles.containerText, { width: 120 * ratio }]}
+                    >
+                      <Text allowFontScaling={false} style={styles.text}>
+                        Anda memiliki{" "}
+                        <Text
+                          style={{ fontFamily: "Poppins-SemiBold" }}
+                        >{`${checkNumberEmpty(
+                          currentUser?.jumlah_agen,
+                        )} Agen`}</Text>{" "}
+                        dan{" "}
+                        <Text
+                          style={{ fontFamily: "Poppins-SemiBold" }}
+                        >{`${checkNumberEmpty(
+                          currentUser?.jumlah_reseller,
+                        )} Reseller`}</Text>
+                      </Text>
+                    </View>
+                  }
+                  buttonText="Detil"
+                  onPress={() => navigation.navigate("UserRootsScreen")}
+                  maxTextWidth={120}
+                  style={{
+                    minHeight: 200 * ratio,
+                    maxWidth: 160 * ratio,
+                    marginStart: staticDimensions.marginHorizontal / 2,
+                  }}
+                />
+              </View>
+            )}
+
+            {currentUser?.bonus_level_user ? (
+              <DashButton
+                iconStyle={{ borderRadius: 8 * ratio, borderWidth: 0 }}
+                text="Bonus Level Jaringan"
+                iconText="A"
+                caption="Anda memiliki bonus level jaringan "
+                style={{ marginHorizontal: staticDimensions.marginHorizontal }}
+                onPress={() => navigation.navigate("BonusRootScreen")}
+              />
+            ) : null}
+
+            <Text allowFontScaling={false} style={styles.textHeader}>
+              History
+            </Text>
+
+            <DashboardContainer
+              header="Saldo"
+              text="Lihat riwayat saldo Anda, dari saldo masuk hingga saldo keluar."
+              buttonText="Lihat Selengkapnya"
+              onPress={() => navigation.navigate("SaldoReportScreen")}
+              style={{
+                marginHorizontal: staticDimensions.marginHorizontal,
+              }}
             />
+
+            <Text allowFontScaling={false} style={styles.textHeader}>
+              More Information
+            </Text>
+
             <DashboardButtons
               userId={currentUser?.id}
               username={currentUser?.name}
@@ -517,7 +633,34 @@ const styles = StyleSheet.create({
     zIndex: 6,
     top: -topMargin,
     minHeight: dimensions.fullHeight,
-  }
+  },
+  containerHorizontal: {
+    backgroundColor: "transparent",
+    marginHorizontal: staticDimensions.marginHorizontal,
+    marginBottom: staticDimensions.marginHorizontal / 2,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  containerText: {
+    backgroundColor: "transparent",
+    flex: 1,
+  },
+  textHeader: {
+    fontSize: 18 * ratio,
+    fontFamily: "Poppins-SemiBold",
+    backgroundColor: "transparent",
+    color: colors.black,
+    marginVertical: staticDimensions.marginHorizontal / 2,
+    marginHorizontal: staticDimensions.marginHorizontal,
+  },
+  text: {
+    fontSize: 12 * ratio,
+    fontFamily: "Poppins",
+    backgroundColor: "transparent",
+    color: colors.black,
+    maxWidth: 150 * ratio,
+    marginTop: staticDimensions.marginHorizontal / 2,
+  },
 });
 
 const mapStateToProps = (store) => ({

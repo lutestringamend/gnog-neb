@@ -6,7 +6,7 @@ import Button from "../Button/Button";
 const ratio = dimensions.fullWidthAdjusted / 430;
 
 const DashboardContainer = (props) => {
-  const { header, text, content, buttonText, disabled, loading, style } = props;
+  const { header, text, content, buttonText, disabled, loading, style, maxTextWidth } = props;
 
   function onPress() {
     if (props?.onPress === undefined || props?.onPress === null) {
@@ -18,7 +18,7 @@ const DashboardContainer = (props) => {
   return (
     <View style={[styles.container, style ? style : null]}>
       {header ? (
-        <Text allowFontScaling={false} style={styles.textHeader}>
+        <Text allowFontScaling={false} style={[styles.textHeader, { width: (maxTextWidth ? maxTextWidth : 220) * ratio }]}>
           {header}
         </Text>
       ) : null}
@@ -62,7 +62,6 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-SemiBold",
     backgroundColor: "transparent",
     color: colors.black,
-    width: 220 * ratio,
   },
   text: {
     fontSize: 12 * ratio,

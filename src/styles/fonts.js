@@ -4,4 +4,5 @@ export const defaultpoppins = {
     "Poppins-Light": require("../assets/fonts/Poppins-Light.ttf"),
     "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
     "Poppins-SemiBold": require("../assets/fonts/Poppins-SemiBold.ttf"),
+    "Poppins-ExtraBold": require("../assets/fonts/Poppins-ExtraBold.ttf"),
 };
