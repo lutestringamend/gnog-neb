@@ -2,12 +2,12 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import DashboardMain from "../screens/dashboard/DashboardScreen";
-import HomeScreen from "../../components/home/Home";
 import ShopScreen from "../screens/Shop/ShopScreen";
 import StarterKitScreen from "../screens/StarterKit/StarterKitScreen";
 import ProfileScreen from "../screens/Profile/ProfileScreen";
 
-import { colors, bottomNav, staticDimensions, dimensions } from "../styles/base";
+
+import { bottomNav, staticDimensions, dimensions } from "../styles/base";
 import TabBarIcon from "../components/bottomnav/TabBarIcon";
 
 const Tab = createBottomTabNavigator();

@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     padding: 14 * ratio,
     justifyContent: "space-between",
+    alignItems: "flex-start",
     minHeight: 153 * ratio,
   },
   button: {

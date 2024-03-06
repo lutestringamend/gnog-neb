@@ -24,6 +24,8 @@ import CompleteRegistrationScreen from "./screens/auth/CompleteRegistrationScree
 
 import OpenMidtransScreen from "./screens/checkout/OpenMidtransScreen";
 import WithdrawalScreen from "./screens/saldo/WithdrawalScreen";
+import WithdrawalConfirmationScreen from "./screens/saldo/WithdrawalConfirmationScreen";
+
 import WebviewScreen from "./screens/webview/WebviewScreen";
 import FAQScreen from "./screens/Profile/FAQScreen";
 import AboutScreen from "./screens/Profile/AboutScreen";
@@ -164,6 +166,11 @@ export const Screens = [
     name: "Withdrawal",
     screen: WithdrawalScreen,
     options: { ...options, title: "Penarikan Saldo" },
+  },
+  {
+    name: "WithdrawalConfirmation",
+    screen: WithdrawalConfirmationScreen,
+    options,
   },
   {
     name: "CheckoutItem",

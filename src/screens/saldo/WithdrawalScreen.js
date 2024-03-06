@@ -1,49 +1,31 @@
 import React, { useState, useEffect } from "react";
-import {
-  SafeAreaView,
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-  ScrollView,
-  TextInput,
-} from "react-native";
+import { StyleSheet, View, Text, ScrollView } from "react-native";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+//import { bindActionCreators } from "redux";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors, staticDimensions } from "../../../styles/base";
-import { checkNumberEmpty } from "../../../axios";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { checkNumberEmpty } from "../../axios";
 import { withdrawalexplanation } from "../../../components/dashboard/constants";
 import {
   SALDO_ADMIN_FEE,
   SALDO_WITHDRAWAL_MINIMUM,
-} from "../../../axios/constants";
-import {
-  storePenarikanSaldo,
-  updateReduxUserRiwayatSaldo,
-} from "../../../axios/user";
+} from "../../axios/constants";
 import { openWhatsapp } from "../../../components/whatsapp/Whatsapp";
 import {
   adminWA,
   adminWAbankdetailstemplate,
-  contactadminicon,
 } from "../../../components/profile/constants";
-import { formatPrice } from "../../../axios/cart";
-import { setObjectAsync } from "../../../components/asyncstorage";
-import { ASYNC_USER_RIWAYAT_PENARIKAN } from "../../../components/asyncstorage/constants";
+import { formatPrice } from "../../axios/cart";
 import CenteredView from "../../components/view/CenteredView";
-import AlertBox from "../../components/alert/AlertBox";
+import Separator from "../../components/Separator";
+import TextInputLabel from "../../components/textinputs/TextInputLabel";
+import Button from "../../components/Button/Button";
 
 const WithdrawalScreen = (props) => {
   const [amount, setAmount] = useState("");
   const [misc, setMisc] = useState("");
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [desc, setDesc] = useState(false);
+  const [amountError, setAmountError] = useState(null);
 
   const { token, currentUser, riwayatSaldo } = props;
   const navigation = useNavigation();
@@ -62,20 +44,30 @@ const WithdrawalScreen = (props) => {
   }, [token, currentUser]);
 
   useEffect(() => {
+    if (amount === "") {
+      setAmountError(null);
+      return;
+    }
     if (isNaN(amount)) {
-      setError("Masukkan nominal yang benar.");
+      setAmountError("Masukkan nominal yang benar.");
+    } else if (parseInt(amount) < SALDO_WITHDRAWAL_MINIMUM) {
+      setAmountError(
+        `Minimal penarikan ${formatPrice(SALDO_WITHDRAWAL_MINIMUM)}`,
+      );
+    } else if (
+      parseInt(amount) + SALDO_ADMIN_FEE >
+      checkNumberEmpty(currentUser?.komisi_user?.total)
+    ) {
+      setAmountError(
+        `Di luar batas maksimal penarikan ${formatPrice(
+          checkNumberEmpty(currentUser?.komisi_user?.total) - SALDO_ADMIN_FEE,
+        )}`,
+      );
     } else {
-      setError(null);
+      setAmountError(null);
     }
   }, [amount]);
 
-  useEffect(() => {
-    if (loading && riwayatSaldo === null) {
-      setLoading(true);
-      setSuccess(true);
-      setError("Permintaan penarikan sudah tercatat di Riwayat Penarikan.");
-    }
-  }, [riwayatSaldo]);
 
   function editBankDetails() {
     /*navigation.navigate("EditProfile", {
@@ -86,119 +78,152 @@ const WithdrawalScreen = (props) => {
     openWhatsapp(adminWA, template);
   }
 
-  const submit = async () => {
+  const submit = () => {
     /*Linking.openURL(websaldo);
     navigation.goBack();*/
-    setLoading(true);
-    const result = await storePenarikanSaldo(
-      token,
-      (parseInt(amount) + parseInt(SALDO_ADMIN_FEE)).toString(),
-      currentUser?.id,
-    );
-    console.log("storePenarikanSaldo result", result);
-    if (
-      result === undefined ||
-      result === null ||
-      result?.data === undefined ||
-      result?.data === null
-    ) {
-      setSuccess(false);
-      setError(
-        `Gagal mengajukan permintaan penarikan.${
-          result?.error ? `\n${result?.error}` : ""
-        }`,
-      );
-    } else {
-      setObjectAsync(ASYNC_USER_RIWAYAT_PENARIKAN, null);
-      props.updateReduxUserRiwayatSaldo(null);
-      setSuccess(true);
-      setError("Permintaan penarikan saldo telah diterima.");
-    }
-    setLoading(false);
+    navigation.navigate("WithdrawalConfirmation", {
+      amount: parseInt(amount),
+    });
   };
 
   return (
     <CenteredView title="Tarik Saldo" style={styles.container}>
-      <ScrollView style={styles.container}>
-        <Text
-          allowFontScaling={false}
-          style={[styles.textCompulsory, { fontSize: 16 }]}
-        >
-          Masukkan Jumlah Penarikan
-        </Text>
-        <Text allowFontScaling={false} style={[styles.text, { marginTop: 2 }]}>
-          {`(Minimal Penarikan ${formatPrice(
-            SALDO_WITHDRAWAL_MINIMUM,
-          )}, Biaya Admin ${formatPrice(SALDO_ADMIN_FEE)})`}
-        </Text>
-        <View style={styles.containerTextHorizontal}>
-          <Text allowFontScaling={false} style={styles.textCurrency}>
-            Rp
-          </Text>
-          <TextInput
-            value={amount}
-            placeholder="0"
-            style={[
-              styles.textInput,
-              {
-                marginTop: 0,
-                marginStart: 6,
-                alignSelf: "center",
-                flex: 1,
-              },
-            ]}
-            inputMode="numeric"
-            onChangeText={(amount) => setAmount(amount)}
-          />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.containerScroll}
+      >
+        <View style={styles.containerGrey}>
+          <View style={styles.containerTopBox}>
+            {currentUser?.komisi_user ? (
+              <View style={styles.containerHorizontal}>
+                <Text allowFontScaling={false} style={styles.text}>
+                  Total saldo
+                </Text>
+                <Text allowFontScaling={false} style={styles.textCurrency}>
+                  {currentUser?.komisi_user?.total
+                    ? formatPrice(
+                        checkNumberEmpty(currentUser?.komisi_user?.total),
+                      )
+                    : "Rp 0"}
+                </Text>
+              </View>
+            ) : null}
+
+            <View style={[styles.containerHorizontal, { marginTop: 10 }]}>
+              <Text allowFontScaling={false} style={styles.text}>
+                Jumlah penarikan
+              </Text>
+              <Text allowFontScaling={false} style={styles.text}>
+                - {amount ? formatPrice(parseInt(amount)) : "Rp 0"}
+              </Text>
+            </View>
+            <View style={[styles.containerHorizontal, { marginTop: 4 }]}>
+              <Text allowFontScaling={false} style={styles.text}>
+                Biaya admin
+              </Text>
+              <Text allowFontScaling={false} style={styles.text}>
+                - {formatPrice(SALDO_ADMIN_FEE)}
+              </Text>
+            </View>
+
+            <Separator
+              thickness={1}
+              color={colors.daclen_grey_placeholder}
+              style={{ marginTop: 10 }}
+            />
+
+            {currentUser?.komisi_user ? (
+              <View style={[styles.containerHorizontal, { marginTop: 10 }]}>
+                <Text allowFontScaling={false} style={styles.text}>
+                  Total setelah penarikan
+                </Text>
+                <Text allowFontScaling={false} style={styles.textCurrency}>
+                  {checkNumberEmpty(amount) >=
+                  checkNumberEmpty(currentUser?.komisi_user?.total) -
+                    SALDO_ADMIN_FEE
+                    ? "Rp 0"
+                    : formatPrice(
+                        checkNumberEmpty(currentUser?.komisi_user?.total) -
+                          SALDO_ADMIN_FEE -
+                          checkNumberEmpty(amount),
+                      )}
+                </Text>
+              </View>
+            ) : null}
+          </View>
         </View>
+
+        <TextInputLabel
+          label="Jumlah penarikan"
+          placeholder="Minimal 50000"
+          value={amount}
+          error={amountError}
+          onChangeText={(amount) => setAmount(amount)}
+          inputMode="numeric"
+          containerStyle={styles.textInput}
+        />
+
+        <TextInputLabel
+          label="Catatan"
+          placeholder="Tuliskan catatan"
+          value={misc}
+          onChangeText={(misc) => setMisc(misc)}
+          containerStyle={styles.textInput}
+          textContainerStyle={{ height: 100 }}
+          style={{ height: 96, textAlignVertical: "top" }}
+        />
+
+        <Separator
+          thickness={1}
+          style={{ margin: staticDimensions.marginHorizontal }}
+          color={colors.daclen_grey_placeholder}
+        />
+
+        {currentUser?.detail_user === undefined ||
+        currentUser?.detail_user?.nomor_rekening === undefined ||
+        currentUser?.detail_user?.nomor_rekening === null ||
+        currentUser?.detail_user?.nomor_rekening === "" ||
+        currentUser?.detail_user?.bank === undefined ||
+        currentUser?.detail_user?.bank?.nama === undefined ||
+        currentUser?.detail_user?.bank?.nama === null ||
+        currentUser?.detail_user?.bank?.nama === "" ? null : (
+          <View style={styles.containerVertical}>
+            <View style={styles.containerHorizontal}>
+              <Text allowFontScaling={false} style={styles.text}>
+                <Text style={{ width: 150 }}>Bank</Text>
+                {":"}
+              </Text>
+              <Text allowFontScaling={false} style={styles.textName}>
+                {currentUser?.detail_user?.bank?.nama}
+              </Text>
+            </View>
+
+            <View style={[styles.containerHorizontal, { marginTop: 4 }]}>
+              <Text allowFontScaling={false} style={styles.text}>
+                <Text style={{ width: 150 }}>Nomor Rekening</Text>
+                {":"}
+              </Text>
+              <Text allowFontScaling={false} style={styles.textName}>
+                {currentUser?.detail_user?.nomor_rekening}
+              </Text>
+            </View>
+          </View>
+        )}
 
         <Text
           allowFontScaling={false}
           style={[
-            styles.textRemaining,
+            styles.textName,
             {
-              color:
-                amount !== "" &&
-                (parseInt(amount) < SALDO_WITHDRAWAL_MINIMUM ||
-                  parseInt(amount) + SALDO_ADMIN_FEE >
-                    checkNumberEmpty(currentUser?.komisi_user?.total))
-                  ? colors.daclen_red
-                  : colors.daclen_blue,
+              marginTop: 16,
+              marginHorizontal: staticDimensions.marginHorizontal,
             },
           ]}
-        >{`Saldo Anda sekarang ${
-          currentUser?.komisi_user
-            ? currentUser?.komisi_user?.total
-              ? formatPrice(currentUser?.komisi_user?.total)
-              : "Rp 0"
-            : "Rp 0"
-        }${
-          amount === ""
-            ? ""
-            : parseInt(amount) < SALDO_WITHDRAWAL_MINIMUM
-              ? `\nMinimal penarikan ${formatPrice(SALDO_WITHDRAWAL_MINIMUM)}`
-              : parseInt(amount) + SALDO_ADMIN_FEE <=
-                  checkNumberEmpty(currentUser?.komisi_user?.total)
-                ? `\nSaldo akan berkurang ${formatPrice(
-                    parseInt(amount) + SALDO_ADMIN_FEE,
-                  )}`
-                : `\nMaksimal penarikan ${formatPrice(
-                    checkNumberEmpty(currentUser?.komisi_user?.total) -
-                      SALDO_ADMIN_FEE,
-                  )} di luar biaya admin ${formatPrice(SALDO_ADMIN_FEE)}`
-        }`}</Text>
-
-        <Text allowFontScaling={false} style={styles.text}>
-          Catatan (opsional)
+        >
+          Syarat dan Ketentuan Penarikan Saldo
         </Text>
-        <TextInput
-          value={misc}
-          style={[styles.textInput, { height: 60, textAlignVertical: "top" }]}
-          onChangeText={(misc) => setMisc(misc)}
-        />
-
-        <Text allowFontScaling={false} style={styles.textCompulsory}>
-          Penarikan ke
+        <Text allowFontScaling={false} style={styles.textExplanation}>
+          {withdrawalexplanation}
         </Text>
 
         {currentUser?.detail_user === undefined ||
@@ -209,140 +234,25 @@ const WithdrawalScreen = (props) => {
         currentUser?.detail_user?.bank?.nama === undefined ||
         currentUser?.detail_user?.bank?.nama === null ||
         currentUser?.detail_user?.bank?.nama === "" ? (
-          <TouchableOpacity
+          <Button
             onPress={() => editBankDetails()}
-            style={[
-              styles.button,
-              { backgroundColor: colors.daclen_blue, marginTop: 4 },
-            ]}
-          >
-            <Text allowFontScaling={false} style={styles.textButton}>
-              Lengkapi Keterangan Rekening
-            </Text>
-          </TouchableOpacity>
+            style={styles.button}
+            text="Lengkapi Keterangan Rekening"
+          />
         ) : (
-          <View style={styles.containerItem}>
-            <Text allowFontScaling={false} style={styles.textBankName}>
-              {currentUser?.detail_user?.bank?.nama}
-            </Text>
-            <Text
-              allowFontScaling={false}
-              style={[styles.textEntry, { fontFamily: "Poppins-Bold" }]}
-            >
-              {currentUser?.detail_user?.nomor_rekening}
-            </Text>
-            {currentUser?.detail_user?.cabang_bank ? (
-              <Text allowFontScaling={false} style={styles.textEntry}>
-                {currentUser?.detail_user?.cabang_bank}
-              </Text>
-            ) : null}
-
-            <TouchableOpacity
-              onPress={() => editBankDetails()}
-              style={styles.containerHorizontal}
-            >
-              <MaterialCommunityIcons
-                name={contactadminicon}
-                size={16}
-                color={colors.daclen_green_dark}
-              />
-              <Text allowFontScaling={false} style={styles.textEdit}>
-                Perubahan Keterangan Rekening
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        <TouchableOpacity
-          style={styles.containerHeader}
-          onPress={() => setDesc((desc) => !desc)}
-        >
-          <Text
-            allowFontScaling={false}
-            style={[
-              styles.textCompulsory,
-              {
-                alignSelf: "center",
-                marginTop: 0,
-                flex: 1,
-                marginHorizontal: 0,
-                marginEnd: 10,
-              },
-            ]}
-          >
-            Syarat dan Ketentuan Penarikan Saldo
-          </Text>
-          {desc ? (
-            <MaterialCommunityIcons
-              name="chevron-up"
-              size={24}
-              style={{ alignSelf: "center" }}
-            />
-          ) : (
-            <MaterialCommunityIcons
-              name="chevron-down"
-              size={24}
-              style={{ alignSelf: "center" }}
-            />
-          )}
-        </TouchableOpacity>
-
-        {desc ? (
-          <Text allowFontScaling={false} style={styles.textExplanation}>
-            {withdrawalexplanation}
-          </Text>
-        ) : null}
-
-        {currentUser?.detail_user === undefined ||
-        currentUser?.detail_user?.nomor_rekening === undefined ||
-        currentUser?.detail_user?.nomor_rekening === null ||
-        currentUser?.detail_user?.nomor_rekening === "" ||
-        currentUser?.detail_user?.bank === undefined ||
-        currentUser?.detail_user?.bank?.nama === undefined ||
-        currentUser?.detail_user?.bank?.nama === null ||
-        currentUser?.detail_user?.bank?.nama === "" ? null : (
-          <TouchableOpacity
+          <Button
             onPress={() => submit()}
-            style={[
-              styles.button,
-              {
-                backgroundColor:
-                  loading ||
-                  amount === "" ||
-                  parseInt(amount) < SALDO_WITHDRAWAL_MINIMUM ||
-                  parseInt(amount) + SALDO_ADMIN_FEE >
-                    checkNumberEmpty(currentUser?.komisi_user?.total)
-                    ? colors.daclen_gray
-                    : colors.daclen_yellow_new,
-                marginTop: 32,
-                marginBottom: staticDimensions.pageBottomPadding / 2,
-              },
-            ]}
+            style={styles.button}
             disabled={
-              loading ||
               amount === "" ||
               parseInt(amount) < SALDO_WITHDRAWAL_MINIMUM ||
               parseInt(amount) + SALDO_ADMIN_FEE >
                 checkNumberEmpty(currentUser?.komisi_user?.total)
             }
-          >
-            {loading ? (
-              <ActivityIndicator
-                size="small"
-                color={colors.daclen_light}
-                style={{ alignSelf: "center" }}
-              />
-            ) : (
-              <Text allowFontScaling={false} style={styles.textButton}>
-                Kirim Permintaan
-              </Text>
-            )}
-          </TouchableOpacity>
+            text="Konfirmasi"
+          />
         )}
-
-        <View style={styles.containerBottom} />
       </ScrollView>
-      <AlertBox text={error} success={success} onClose={() => setError(null)} />
     </CenteredView>
   );
 };
@@ -352,125 +262,64 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
     width: "100%",
-    height: "100%",
   },
-  containerItem: {
-    alignItems: "flex-start",
-    marginHorizontal: 20,
-    marginTop: 4,
-    backgroundColor: colors.daclen_offgreen,
-    padding: 12,
-    borderRadius: 6,
+  containerScroll: {
+    backgroundColor: "transparent",
+    minHeight: dimensions.fullHeight,
+    paddingBottom: 100,
+  },
+  containerGrey: {
+    backgroundColor: colors.daclen_grey_light,
+    padding: staticDimensions.marginHorizontal,
+  },
+  containerTopBox: {
+    backgroundColor: colors.white,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 18,
   },
   containerHorizontal: {
     backgroundColor: "transparent",
     flexDirection: "row",
-    marginTop: 8,
+    justifyContent: "space-between",
     alignItems: "center",
   },
-  containerTextHorizontal: {
+  containerVertical: {
     backgroundColor: "transparent",
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  containerBottom: {
-    backgroundColor: "transparent",
-    height: staticDimensions.pageBottomPadding / 2,
-  },
-  containerHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "transparent",
-    marginTop: 24,
-    marginHorizontal: 20,
+    marginHorizontal: staticDimensions.marginHorizontal,
   },
   button: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 2,
-    marginHorizontal: 20,
-    zIndex: 4,
+    height: (50 * dimensions.fullWidthAdjusted) / 430,
+    marginHorizontal: staticDimensions.marginHorizontal,
   },
-  textButton: {
+  textName: {
+    color: colors.black,
     fontSize: 14,
     fontFamily: "Poppins-SemiBold",
-    color: colors.daclen_black,
-  },
-  textCompulsory: {
-    color: colors.daclen_orange,
-    fontSize: 14,
-    fontFamily: "Poppins-Bold",
-    marginHorizontal: 20,
-    marginTop: 24,
   },
   textCurrency: {
-    color: colors.daclen_bg,
-    fontSize: 16,
-    fontFamily: "Poppins-SemiBold",
-    alignSelf: "center",
-    marginStart: 20,
+    color: colors.black,
+    fontSize: 18,
+    fontFamily: "Poppins-Bold",
   },
   text: {
-    color: colors.daclen_gray,
+    color: colors.black,
     fontSize: 12,
-    fontFamily: "Poppins-Bold",
-    marginHorizontal: 20,
-    marginTop: 12,
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: colors.daclen_gray,
-    borderRadius: 4,
-    padding: 10,
-    marginTop: 2,
-    marginHorizontal: 20,
     fontFamily: "Poppins",
-    fontSize: 16,
-  },
-  textError: {
-    fontSize: 14,
-    fontFamily: "Poppins-Bold",
-    color: colors.white,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: colors.daclen_danger,
-    textAlign: "center",
-  },
-  textBankName: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 16,
-    color: colors.daclen_blue,
-    marginBottom: 4,
-  },
-  textEdit: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 12,
-    color: colors.daclen_green_dark,
-    marginStart: 4,
-  },
-  textEntry: {
-    fontFamily: "Poppins",
-    fontSize: 14,
-    color: colors.daclen_black,
-    marginBottom: 2,
-  },
-  textRemaining: {
-    color: colors.daclen_blue,
-    fontSize: 12,
-    fontFamily: "Poppins-SemiBold",
-    marginHorizontal: 20,
-    height: 48,
-    marginTop: 8,
   },
   textExplanation: {
-    color: colors.daclen_gray,
-    fontFamily: "Poppins",
-    fontSize: 12,
-    marginHorizontal: 20,
+    color: colors.black,
+    fontSize: 11,
+    fontFamily: "Poppins-Light",
+    marginTop: 4,
+    marginHorizontal: staticDimensions.marginHorizontal,
+    textAlign: "justify",
+    marginBottom: staticDimensions.marginHorizontal,
+  },
+  textInput: {
+    marginHorizontal: staticDimensions.marginHorizontal,
+    marginTop: 16,
+    marginBottom: 0,
   },
 });
 
@@ -480,12 +329,12 @@ const mapStateToProps = (store) => ({
   riwayatSaldo: store.userState.riwayatSaldo,
 });
 
-const mapDispatchProps = (dispatch) =>
+/*const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
       updateReduxUserRiwayatSaldo,
     },
     dispatch,
-  );
+  );*.*/
 
-export default connect(mapStateToProps, mapDispatchProps)(WithdrawalScreen);
+export default connect(mapStateToProps, null)(WithdrawalScreen);
