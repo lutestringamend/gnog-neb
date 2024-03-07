@@ -6,7 +6,6 @@ import ShopScreen from "../screens/Shop/ShopScreen";
 import StarterKitScreen from "../screens/StarterKit/StarterKitScreen";
 import ProfileScreen from "../screens/Profile/ProfileScreen";
 
-
 import { bottomNav, staticDimensions, dimensions } from "../styles/base";
 import TabBarIcon from "../components/bottomnav/TabBarIcon";
 

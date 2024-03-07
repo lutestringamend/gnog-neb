@@ -10,7 +10,6 @@ import HomeScreen from "./screens/Home/HomeScreen";
 
 import History from "./screens/history/HistoryScreen";
 import Dashboard from "./screens/dashboard/DashboardScreen";
-import HistoryCheckoutScreen from "./components/history/Checkout";
 import CheckoutItemScreen from "./screens/history/CheckoutItemScreen";
 import DeliveryItemScreen from "./screens/history/DeliveryItemScreen";
 import ProductScreen from "./screens/product/ProductScreen";
@@ -98,11 +97,6 @@ export const Screens = [
     name: "History",
     screen: History,
     options: { ...options, title: "Riwayat Transaksi" },
-  },
-  {
-    name: "HistoryCheckout",
-    screen: HistoryCheckoutScreen,
-    options: { ...options, title: "Riwayat Checkout" },
   },
   {
     name: "Product",

@@ -1,11 +1,19 @@
 import { StatusBar, Platform, Dimensions } from "react-native";
 
+export const MAX_SCREEN_WIDTH = 450;
+
+export const dimensions = {
+  fullHeight: Dimensions.get("window").height,
+  fullWidth: Dimensions.get("window").width,
+  fullWidthAdjusted: Dimensions.get("window").width > MAX_SCREEN_WIDTH ? MAX_SCREEN_WIDTH : Dimensions.get("window").width,
+}
+
 export const staticDimensions = {
   statusBarPadding: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-  marginHorizontal: 25,
-  authMarginHorizontal: 25,
+  marginHorizontal: 25 * dimensions.fullWidthAdjusted / 430,
+  authMarginHorizontal: 25 * dimensions.fullWidthAdjusted / 430,
   smallScreenWidth: 390,
-  maxScreenWidth: 450,
+  maxScreenWidth: MAX_SCREEN_WIDTH,
   isSmallScreen: Dimensions.get("window").width < 390,
   dashboardBoxHorizontalMargin: 5,
   pageBottomPadding: 100,
@@ -19,11 +27,7 @@ export const staticDimensions = {
   shopMaxWidth: 450,
 }
 
-export const dimensions = {
-  fullHeight: Dimensions.get("window").height,
-  fullWidth: Dimensions.get("window").width,
-  fullWidthAdjusted: Dimensions.get("window").width > staticDimensions.maxScreenWidth ? staticDimensions.maxScreenWidth : Dimensions.get("window").width,
-}
+
 
 export const colors = {
   daclen_black: "#212529",
@@ -43,10 +47,17 @@ export const colors = {
   daclen_grey_search_container: "#E4E4EE",
   daclen_success_border: "#85C2A4",
   daclen_success_light: "#CCE9D9",
+  daclen_green_background: "#A8D5BF",
+  daclen_green: "#198754",
   daclen_danger: "#dc3545",
   daclen_danger_border: "#EE959C",
   daclen_danger_light: "#F9D5D6",
+  daclen_danger_background: "#F3B5B9",
+  daclen_red_delete: "#E25562",
+  daclen_red_light: "#E25562",
   daclen_orange: "#FF6F00",
+  daclen_yellow_background: "#FEEEA0",
+
 
   daclen_yellow_new: "#f8c133",
   daclen_bg: "#0a0a0a",
@@ -71,7 +82,6 @@ export const colors = {
   daclen_red: "#dc3545",
   daclen_indigo: "#6610f2",
   daclen_pink: "#d63384",
-  daclen_green: "#198754",
   daclen_teal: "#20c997",
   daclen_cyan: "#0dcaf0",
   daclen_gray: "#6c757d",
