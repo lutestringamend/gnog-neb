@@ -46,6 +46,7 @@ export const colors = {
   daclen_grey_container_background: "#D9D9D9",
   daclen_grey_search_container: "#E4E4EE",
   daclen_grey_background: "#CCCCCC",
+  daclen_grey_icon: "#44494D",
   daclen_success_border: "#85C2A4",
   daclen_success_light: "#CCE9D9",
   daclen_green_background: "#A8D5BF",

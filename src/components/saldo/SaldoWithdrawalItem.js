@@ -13,16 +13,17 @@ import { colors } from "../../../styles/base";
 import Separator from "../Separator";
 import { capitalizeFirstLetter, formatPrice } from "../../../axios/cart";
 
-const SaldoWithdrawalItem = ({ item }) => {
+const SaldoWithdrawalItem = (props) => {
+  const { status, tanggal_dibuat, tanggal_diubah, tanggal_penarikan, jumlah, bank, nomor_rekening, biaya_admin, jumlah_yang_diminta, foto_bukti_transfer_url } = props;
   return (
     <View style={styles.containerSaldo}>
-      {item?.status ? (
+      {status ? (
         <View style={styles.containerHeader}>
           <MaterialCommunityIcons
-            name={item?.status === "selesai" ? "check-bold" : "progress-clock"}
+            name={status === "selesai" ? "check-bold" : "progress-clock"}
             size={24}
             color={
-              item?.status === "selesai"
+              status === "selesai"
                 ? colors.daclen_black
                 : colors.daclen_gray
             }
@@ -34,77 +35,77 @@ const SaldoWithdrawalItem = ({ item }) => {
               styles.textTitle,
               {
                 color:
-                  item?.status === "selesai"
+                  status === "selesai"
                     ? colors.daclen_black
                     : colors.daclen_gray,
               },
             ]}
           >
-            {`Penarikan ${capitalizeFirstLetter(item?.status)}`}
+            {`Penarikan ${capitalizeFirstLetter(status)}`}
           </Text>
           <Text allowFontScaling={false} style={styles.textDate}>
             {moment(
-              item?.tanggal_dibuat
-                ? item?.tanggal_dibuat
-                : item?.tanggal_diubah
-                ? item?.tanggal_diubah
-                : item?.tanggal_penarikan
+              tanggal_dibuat
+                ? tanggal_dibuat
+                : tanggal_diubah
+                ? tanggal_diubah
+                : tanggal_penarikan
             ).format("DD MMMM YYYY")}
           </Text>
         </View>
       ) : null}
       <View style={styles.containerDescHorizontal}>
         <View style={styles.containerDescVertical}>
-          {item?.bank === undefined ||
-          item?.bank === null ||
-          item?.nomor_rekening === undefined ||
-          item?.nomor_rekening === null ? null : (
+          {bank === undefined ||
+          bank === null ||
+          nomor_rekening === undefined ||
+          nomor_rekening === null ? null : (
             <Text allowFontScaling={false} style={styles.textReferral}>
-              {`${item?.bank?.nama}\n${item?.nomor_rekening}`}
+              {`${bank?.nama}\n${nomor_rekening}`}
             </Text>
           )}
 
-          {item?.jumlah_yang_diminta ? (
+          {jumlah_yang_diminta ? (
             <Text
               allowFontScaling={false}
               style={styles.textReferral}
             >{`Jumlah Penarikan: ${formatPrice(
-              item?.jumlah_yang_diminta
+              jumlah_yang_diminta
             )}`}</Text>
           ) : null}
 
-          {item?.biaya_admin ? (
+          {biaya_admin ? (
             <Text
               allowFontScaling={false}
               style={styles.textReferral}
-            >{`Biaya Admin: ${formatPrice(item?.biaya_admin)}`}</Text>
+            >{`Biaya Admin: ${formatPrice(biaya_admin)}`}</Text>
           ) : null}
 
-          {item?.jumlah ? (
+          {jumlah ? (
             <Text
               allowFontScaling={false}
               style={[
                 styles.textTotalPoint,
                 {
                   color:
-                    item?.status === "selesai"
+                    status === "selesai"
                       ? colors.daclen_blue
                       : colors.daclen_gray,
                 },
               ]}
             >
               {`${
-                item?.status === "selesai"
+                status === "selesai"
                   ? "Jumlah Diterima:"
                   : "Jumlah Akan Diterima:"
-              } ${item?.jumlah <= 0 ? "Rp 0" : formatPrice(item?.jumlah)}`}
+              } ${jumlah <= 0 ? "Rp 0" : formatPrice(jumlah)}`}
             </Text>
           ) : null}
         </View>
 
-        {item?.foto_bukti_transfer_url ? (
+        {foto_bukti_transfer_url ? (
           <TouchableOpacity
-            onPress={() => Linking.openURL(item?.foto_bukti_transfer_url)}
+            onPress={() => Linking.openURL(foto_bukti_transfer_url)}
             style={styles.button}
           >
             <Text allowFontScaling={false} style={styles.textButton}>

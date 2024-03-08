@@ -4,13 +4,9 @@ import {
   StyleSheet,
   View,
   Text,
-  TouchableOpacity,
-  ActivityIndicator,
   ScrollView,
   RefreshControl,
-  Linking,
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
@@ -26,10 +22,8 @@ import {
   clearAuthError,
   deriveUserKey,
 } from "../../../axios/user";
-import { colors, staticDimensions } from "../../../styles/base";
-import { ErrorView } from "../../components/webview/WebviewChild";
+import { colors, staticDimensions } from "../../styles/base";
 import HistoryTabItem from "../../../components/history/HistoryTabItem";
-import { websaldo } from "../../../axios/constants";
 import {
   saldohistoryicon,
   saldohistorytab,
@@ -42,55 +36,24 @@ import {
   ASYNC_USER_RIWAYAT_PENARIKAN,
   ASYNC_USER_RIWAYAT_SALDO,
 } from "../../../components/asyncstorage/constants";
-import SaldoHistoryItem from "../../components/saldo/SaldoHistoryItem";
 import SaldoWithdrawalItem from "../../components/saldo/SaldoWithdrawalItem";
 import CenteredView from "../../components/view/CenteredView";
+import EmptyPlaceholder from "../../components/empty/EmptyPlaceholder";
+import EmptySpinner from "../../components/empty/EmptySpinner";
+import SaldoDayContainer from "../../components/saldo/SaldoDayContainer";
+import { organizeListByTanggalDibuat } from "../../utils/saldo";
 
-const WithdrawalButton = ({ disabled }) => {
-  const navigation = useNavigation();
-  function openWithdrawal() {
-    navigation.navigate("Withdrawal");
-    //onOpenExternalLink();
-  }
-  return (
-    <View style={styles.containerButton}>
-      <TouchableOpacity
-        onPress={() => openWithdrawal()}
-        style={[
-          styles.button,
-          {
-            backgroundColor: disabled
-              ? colors.daclen_gray
-              : colors.daclen_yellow_new,
-          },
-        ]}
-        disabled={disabled}
-      >
-        <MaterialCommunityIcons
-          name="cash-refund"
-          size={14}
-          color={colors.daclen_black}
-          style={{ alignSelf: "center" }}
-        />
-        <Text allowFontScaling={false} style={styles.textButton}>
-          Tarik Saldo
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
 
 const SaldoReportScreen = (props) => {
   const { token, currentUser, saldo, authError, riwayatSaldo } = props;
+  const navigation = useNavigation();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [allowWithdraw, setAllowWithdraw] = useState(null);
-  const [activeTab, setActiveTab] = useState(withdrawalhistorytab);
-  const navigation = useNavigation();
-
-  function onOpenExternalLink() {
-    Linking.openURL(websaldo);
-  }
+  const [activeTab, setActiveTab] = useState(saldohistorytab);
+  const [organizedList, setOrganizedList] = useState([]);
+  
 
   try {
     useEffect(() => {
@@ -102,7 +65,12 @@ const SaldoReportScreen = (props) => {
     }, []);
 
     useEffect(() => {
-      if (token === undefined || token === null || currentUser === undefined || currentUser === null) {
+      if (
+        token === undefined ||
+        token === null ||
+        currentUser === undefined ||
+        currentUser === null
+      ) {
         return;
       }
       refreshPage();
@@ -120,6 +88,15 @@ const SaldoReportScreen = (props) => {
       props.updateReduxUserSaldo([]);
       //checkAsyncStorageSaldo();
     }, [authError]);
+
+    useEffect(() => {
+      if (saldo === null) {
+        return;
+      }
+      let organized = organizeListByTanggalDibuat(saldo, true);
+      //console.log("organized", organized);
+      setOrganizedList(organized);
+    }, [saldo]);
 
     /*const checkAsyncStorageSaldo = async () => {
       if (activeTab === withdrawalhistorytab && riwayatSaldo === null) {
@@ -212,7 +189,7 @@ const SaldoReportScreen = (props) => {
         refreshSaldoPage();
         if (saldo !== null) {
           setObjectAsync(ASYNC_USER_RIWAYAT_SALDO, saldo);
-          console.log("redux saldo", saldo);
+          console.log("redux saldo", saldo?.length);
         }
       }
     }
@@ -229,44 +206,12 @@ const SaldoReportScreen = (props) => {
       }
     }
 
+    const openSaldoDetails = (e) => {
+      console.log(e);
+    }
+
     return (
-      <CenteredView style={styles.container}>
-        <View style={styles.containerHeader}>
-          <TouchableOpacity
-            style={styles.arrow}
-            onPress={() => navigation.goBack()}
-          >
-            <MaterialCommunityIcons
-              name="arrow-left"
-              size={24}
-              color={colors.daclen_light}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
-          <Text allowFontScaling={false} style={styles.textHeader}>
-            Saldo
-          </Text>
-          <WithdrawalButton disabled={!allowWithdraw} />
-          <TouchableOpacity
-            style={styles.containerIcon}
-            onPress={() => manualRefresh()}
-          >
-            {loading ? (
-              <ActivityIndicator
-                size={24}
-                color={colors.daclen_light}
-                style={styles.icon}
-              />
-            ) : (
-              <MaterialCommunityIcons
-                name="refresh"
-                size={24}
-                color={colors.daclen_light}
-                style={styles.icon}
-              />
-            )}
-          </TouchableOpacity>
-        </View>
+      <CenteredView style={styles.container} title="Riwayat Saldo">
         <View style={styles.tabView}>
           <HistoryTabItem
             activeTab={activeTab}
@@ -310,7 +255,8 @@ const SaldoReportScreen = (props) => {
         ) : null}
 
         <ScrollView
-          style={styles.containerFlatlist}
+          style={styles.container}
+          contentContainerStyle={styles.containerScroll}
           refreshControl={
             <RefreshControl
               refreshing={loading}
@@ -319,49 +265,41 @@ const SaldoReportScreen = (props) => {
           }
         >
           {error ? (
-            <ErrorView
-              error={`Mohon membuka website Daclen untuk membaca Laporan Saldo${
-                error ? `\n${error}` : ""
-              }`}
-              onOpenExternalLink={() => onOpenExternalLink()}
+            <EmptyPlaceholder
+              title="Riwayat Saldo"
+              text="Mohon membuka website Daclen untuk melihat riwayat saldo."
             />
           ) : token === null || currentUser?.id === undefined ? (
-            <Text allowFontScaling={false} style={styles.textUid}>
-                Sedang mengecek saldo Anda...
-              </Text>
+            <EmptySpinner />
           ) : activeTab === withdrawalhistorytab ? (
-            riwayatSaldo?.length === undefined || riwayatSaldo?.length < 1 ? (
-              <Text allowFontScaling={false} style={styles.textUid}>
-                Anda belum memiliki Riwayat Penarikan Saldo.
-              </Text>
-            ) : (
-              <FlashList
-                estimatedItemSize={10}
-                numColumns={1}
-                horizontal={false}
-                data={riwayatSaldo}
-                contentContainerStyle={{
-                  paddingBottom: staticDimensions.pageBottomPadding,
-                }}
-                renderItem={({ item }) => <SaldoWithdrawalItem item={item} />}
+            riwayatSaldo === null ? (
+              <EmptySpinner />
+            ) : riwayatSaldo?.length < 1 ? (
+              <EmptyPlaceholder
+                title="Riwayat Saldo"
+                text="Riwayat penarikan saldo Anda kosong."
               />
+            ) : (
+              riwayatSaldo.map((item, index) => (
+                <SaldoWithdrawalItem key={index} {...item} />
+              ))
             )
           ) : activeTab === saldohistorytab ? (
-            saldo?.length === undefined || saldo?.length < 1 ? (
-              <Text allowFontScaling={false} style={styles.textUid}>
-                Anda belum memiliki Riwayat Saldo.
-              </Text>
-            ) : (
-              <FlashList
-                estimatedItemSize={15}
-                numColumns={1}
-                horizontal={false}
-                data={saldo}
-                contentContainerStyle={{
-                  paddingBottom: staticDimensions.pageBottomPadding,
-                }}
-                renderItem={({ item }) => <SaldoHistoryItem item={item} />}
+            saldo === null ? (
+              <EmptySpinner />
+            ) : saldo?.length < 1 || organizedList?.length < 1 ? (
+              <EmptyPlaceholder
+                title="Riwayat Saldo"
+                text="Riwayat saldo anda kosong."
               />
+            ) : (
+              organizedList.map((item, index) => (
+                <SaldoDayContainer key={index}
+                header={item?.date}
+                isLast={index >= organizedList?.length - 1}
+                list={item?.itemList}
+                onPress={(e) => openSaldoDetails(e)}  />
+              ))
             )
           ) : null}
         </ScrollView>
@@ -372,11 +310,10 @@ const SaldoReportScreen = (props) => {
     sentryLog(e);
     return (
       <SafeAreaView style={styles.container}>
-        <ErrorView
-          error={`Mohon membuka website Daclen untuk membaca Laporan Saldo\n${e.toString()}`}
-          onOpenExternalLink={() => onOpenExternalLink()}
+        <EmptyPlaceholder
+          title="Riwayat Saldo"
+          text="Mohon membuka website Daclen untuk melihat riwayat saldo."
         />
-        {token === null || currentUser === null ? null : <WithdrawalButton />}
       </SafeAreaView>
     );
   }
@@ -385,7 +322,7 @@ const SaldoReportScreen = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.daclen_grey_light,
     width: "100%",
   },
   tabView: {
@@ -415,9 +352,10 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     alignSelf: "center",
   },
-  containerFlatlist: {
+  containerScroll: {
     flex: 1,
     backgroundColor: "transparent",
+    paddingBottom: 100,
   },
   containerItem: {
     flex: 1,
@@ -435,15 +373,6 @@ const styles = StyleSheet.create({
     color: colors.daclen_light,
     alignSelf: "center",
     flex: 1,
-  },
-  textUid: {
-    fontFamily: "Poppins",
-    fontSize: 12,
-    marginVertical: 20,
-    textAlign: "center",
-    padding: 10,
-    color: colors.daclen_gray,
-    marginHorizontal: 10,
   },
   image: {
     flex: 1,

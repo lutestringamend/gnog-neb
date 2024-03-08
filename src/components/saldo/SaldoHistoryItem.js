@@ -1,110 +1,127 @@
 import React, { memo } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import moment from "moment";
 
-import { colors } from "../../../styles/base";
-import Separator from "../Separator";
+import { colors } from "../../styles/base";
 import { formatPrice } from "../../../axios/cart";
 import { checkSaldoMutationType } from "../../../axios/user";
+import { dimensions, staticDimensions } from "../../styles/base";
+import { checkNumberEmpty } from "../../axios/cart";
 
-const SaldoHistoryItem = ({ item }) => {
+const ratio = dimensions.fullWidthAdjusted / 430;
+
+const SaldoHistoryItem = (props) => {
+  const { status, saldo, keterangan, biaya_admin, checkout, total_saldo } =
+    props;
+
+  function onPress() {
+    if (props?.onPress === undefined || props?.onPress === null) {
+      return;
+    }
+    props?.onPress();
+  }
+
   return (
-    <View style={styles.containerSaldo}>
-      {item?.status ? (
-        <View style={styles.containerHeader}>
+    <TouchableOpacity onPress={() => onPress()} style={styles.containerSaldo}>
+      <View style={styles.containerHeader}>
+        <View style={styles.containerIcon}>
           <MaterialCommunityIcons
-            name={
-              item?.saldo > 0 
-                ? "cash-plus"
-                : item?.saldo < 0
-                ? "cash-minus"
-                : "cash"
-            }
-            size={24}
-            color={colors.daclen_black}
-            style={styles.icon}
+            name={saldo > 0 ? "cash-plus" : saldo < 0 ? "cash-minus" : "cash"}
+            size={20 * ratio}
+            color={colors.daclen_grey_icon}
           />
-          <Text
-            allowFontScaling={false}
-            style={styles.textTitle}
-          >
-            {item?.status}
-          </Text>
-          <Text allowFontScaling={false} style={styles.textDate}>
-            {moment(
-              item?.tanggal_dibuat
-                ? item?.tanggal_dibuat
-                : item?.tanggal_diubah
-                ? item?.tanggal_diubah
-                : item?.tanggal_penarikan
-            ).format("DD MMMM YYYY")}
-          </Text>
         </View>
-      ) : null}
-      <View style={styles.containerDescHorizontal}>
-      <View style={styles.containerDescVertical}>
 
-
-        {item?.keterangan || item?.nomor_invoice ? (
-          <Text allowFontScaling={false} style={styles.textReferral}>{`${
-            item?.keterangan ? `${item?.keterangan}\n` : ""
-          }${
-            item?.nomor_invoice ? item?.nomor_invoice?.invoice ? `Nomor Invoice ${item?.nomor_invoice?.invoice}` : `Nomor Invoice ${item?.nomor_invoice}` : ""
-          }`}</Text>
-        ) : null}
-
-        {item?.total_saldo === undefined ||
-        item?.total_saldo === null ? null : (
-          <Text allowFontScaling={false} style={styles.textTotalPoint}>
-            {`Sisa Saldo: ${
-              item?.total_saldo <= 0 ? "Rp 0" : formatPrice(item?.total_saldo)
-            }`}
-          </Text>
-        )}
-      </View>
-
-      {item?.saldo === undefined ||
-        item?.saldo === null ||
-        item?.saldo === 0 ? null : (
+        <View
+          style={[
+            styles.containerDescVertical,
+            { flex: 1, marginHorizontal: 10 * ratio },
+          ]}
+        >
           <Text
             allowFontScaling={false}
             style={[
-              styles.textPoint,
+              styles.textPrice,
               {
                 color:
-                  checkSaldoMutationType(item) < 0 ? colors.daclen_red : colors.daclen_blue,
+                  checkNumberEmpty(saldo) === 0
+                    ? colors.black
+                    : checkSaldoMutationType(props) < 0
+                      ? colors.daclen_danger
+                      : colors.daclen_green,
               },
             ]}
           >
-            {formatPrice(Math.abs(item?.saldo))}
+            {checkNumberEmpty(saldo) === 0
+              ? "Rp 0"
+              : `${checkSaldoMutationType(props) < 0 ? "-" : "+"}${formatPrice(
+                  Math.abs(saldo),
+                )}`}
           </Text>
-        )}
+          <Text allowFontScaling={false} style={styles.textStatus}>
+            {keterangan ? keterangan : "Tidak ada perubahan saldo"}
+          </Text>
+        </View>
+        <MaterialCommunityIcons
+          name="chevron-right"
+          size={24 * ratio}
+          color={colors.black}
+        />
       </View>
-      
-      <Separator thickness={2} style={{ marginTop: 20 }} />
-    </View>
+      <View style={styles.containerDescHorizontal}>
+        <Text allowFontScaling={false} style={styles.textType}>
+          {`${status}${
+            checkout !== null
+              ? " • Transaksi"
+              : biaya_admin !== null
+                ? " • Tarik Saldo"
+                : ""
+          }`}
+        </Text>
+        <View style={styles.containerDescVertical}>
+          <Text allowFontScaling={false} style={styles.textLight}>
+            Sisa saldo
+          </Text>
+          <Text allowFontScaling={false} style={styles.textBalance}>
+            {total_saldo <= 0 ? "Rp 0" : formatPrice(total_saldo)}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   containerSaldo: {
     backgroundColor: colors.white,
-    width: "100%",
+    width: dimensions.fullWidthAdjusted - 2 * staticDimensions.marginHorizontal,
+    maxHeight: 120 * ratio,
+    borderRadius: 12 * ratio,
+    padding: 10 * ratio,
+    elevation: 4,
+    alignSelf: "center",
+    marginBottom: 10 * ratio,
   },
   containerHeader: {
+    backgroundColor: "transparent",
     flexDirection: "row",
+  },
+  containerIcon: {
+    backgroundColor: colors.daclen_grey_light,
+    width: 40 * ratio,
+    height: 40 * ratio,
+    borderRadius: 20 * ratio,
+    justifyContent: "center",
     alignItems: "center",
-    marginTop: 10,
-    marginHorizontal: 10,
   },
   containerDescVertical: {
-    flex: 1,
     backgroundColor: "transparent",
   },
   containerDescHorizontal: {
     flexDirection: "row",
-    marginHorizontal: 10,
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 4 * ratio,
   },
   containerPoints: {
     marginHorizontal: 10,
@@ -112,42 +129,30 @@ const styles = StyleSheet.create({
   icon: {
     alignSelf: "center",
   },
-  textTitle: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 14,
-    color: colors.daclen_black,
-    marginStart: 10,
-    flex: 1,
+  textPrice: {
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 18 * ratio,
   },
-  textPoint: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 16,
-    color: colors.daclen_orange,
-  },
-  textDate: {
+  textStatus: {
     fontFamily: "Poppins",
-    fontSize: 12,
-    color: colors.daclen_gray,
-    marginStart: 6,
-    alignSelf: "center",
+    fontSize: 12 * ratio,
+    marginTop: 4 * ratio,
+    color: colors.black,
   },
-  textReferral: {
-    fontFamily: "Poppins",
-    fontSize: 12,
-    color: colors.daclen_gray,
-    marginTop: 4,
+  textType: {
+    fontFamily: "Poppins-Light",
+    fontSize: 11 * ratio,
+    color: colors.black,
   },
-  textCheckout: {
-    fontFamily: "Poppins",
-    fontSize: 14,
-    color: colors.daclen_blue,
-    marginTop: 2,
+  textLight: {
+    fontFamily: "Poppins-Light",
+    fontSize: 11 * ratio,
+    color: colors.daclen_grey_placeholder,
   },
-  textTotalPoint: {
-    fontSize: 14,
-    fontFamily: "Poppins-Bold",
-    color: colors.daclen_gray,
-    marginTop: 6,
+  textBalance: {
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 14 * ratio,
+    color: colors.black,
   },
 });
 
