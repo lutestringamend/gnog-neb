@@ -5,12 +5,11 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
-  Platform,
 } from "react-native";
 import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-import { colors } from "../../styles/base";
+import { colors, dimensions } from "../../styles/base";
 import { phonenotverified } from "../../../components/dashboard/constants";
 import {
   capitalizeFirstLetter,
@@ -18,7 +17,9 @@ import {
   formatPrice,
 } from "../../../axios/cart";
 import { checkVerification } from "../../screens/userroot/UserRootScreen";
-import { godlevelusername } from "../../../axios/constants";
+import { godlevelusername } from "../../axios/constants";
+
+const ratio = dimensions.fullWidthAdjusted / 430;
 
 export function VerticalLine({ style }) {
   return <View style={[styles.verticalLine, style]} />;
@@ -143,103 +144,78 @@ const UserRootItem = ({
             {
               marginVertical: isCurrentUser || isParent ? 0 : 12,
             },
-            isCurrentUser
-              ? { borderTopEndRadius: 6, borderBottomEndRadius: 6 }
-              : {
-                  borderRadius: 6,
-                  overflow: "hidden",
-                },
           ]}
           disabled={userData?.name === godlevelusername}
         >
-          <View
-            style={[
-              styles.containerPhoto,
-              isCurrentUser
-                ? null
-                : {
-                    borderTopStartRadius: 6,
-                    borderBottomStartRadius: 6,
-                    overflow: "hidden",
-                  },
-            ]}
-          >
-            <Image
-              source={
-                userData?.foto
-                  ? userData?.foto
-                  : require("../../../assets/user.png")
-              }
-              style={[
-                styles.photo,
-                isCurrentUser
-                  ? null
-                  : {
-                      borderTopStartRadius: 6,
-                      borderBottomStartRadius: 6,
-                      overflow: "hidden",
-                    },
-              ]}
-              alt={userData?.name ? userData?.name : ""}
-              contentFit="contain"
-              placeholder={null}
-              transition={100}
-            />
-            {userData?.name === godlevelusername ? null : (
-              <Text allowFontScaling={false} style={styles.textStatus}>
-                {status
-                  ? capitalizeFirstLetter(status)
-                  : userData?.status
-                    ? capitalizeFirstLetter(userData?.status)
-                    : hpvStatus
-                      ? capitalizeFirstLetter(hpvStatus)
-                      : ""}
+          <View style={[styles.containerHorizontal, { alignItems: "center" }]}>
+            <View style={styles.containerPhoto}>
+              {userData?.foto ? (
+                <Image
+                  source={userData?.foto}
+                  style={styles.photo}
+                  alt={userData?.name ? userData?.name : ""}
+                  contentFit="contain"
+                  placeholder={null}
+                  transition={100}
+                />
+              ) : null}
+            </View>
+            <View style={styles.containerVertical}>
+              <Text allowFontScaling={false} style={styles.textHeader}>
+                {userData?.name === godlevelusername
+                  ? "Daclen"
+                  : userData?.name}
               </Text>
-            )}
+              <Text allowFontScaling={false} style={styles.text}>
+                {userData?.name === godlevelusername
+                  ? "Daclen"
+                  : `${isCurrentUser ? "Saya • " : ""}${
+                      status
+                        ? capitalizeFirstLetter(status)
+                        : userData?.status
+                          ? capitalizeFirstLetter(userData?.status)
+                          : hpvStatus
+                            ? capitalizeFirstLetter(hpvStatus)
+                            : ""
+                    }`}
+              </Text>
+            </View>
+            <View style={styles.containerArrow}>
+              <MaterialCommunityIcons
+                name="chevron-right"
+                size={24 * ratio}
+                color={colors.white}
+              />
+            </View>
           </View>
 
-          <View style={styles.containerMain}>
-            <View style={styles.containerHeader}>
-              <Text
-                allowFontScaling={false}
-                style={[
-                  styles.textHeader,
-                  {
-                    fontSize: userData?.name?.length > 12 ? 10 : 12,
-                  },
-                ]}
-              >
-                {userData?.name}
-              </Text>
-            </View>
-            <View style={styles.containerValue}>
-              <Text allowFontScaling={false} style={styles.text}>
-                {`${isCurrentUser ? "Saya\n" : ""}${
-                  isCurrentUser || isParent
-                    ? ""
-                    : `Penjualan: ${checkNumberEmpty(
-                        userData?.jumlah_penjualan,
-                      )} produk\n${
-                        checkNumberEmpty(userData?.total_penjualan) > 0
-                          ? formatPrice(
-                              checkNumberEmpty(userData?.total_penjualan),
-                            )
-                          : "Rp 0"
-                      }\nRekrutmen: ${userData?.target_tercapai ? checkNumberEmpty(userData?.target_tercapai) : checkNumberEmpty(userData?.rekrutmen)} orang`
-                }`}
-              </Text>
-            </View>
-            {userData?.name === godlevelusername ? null : (
-              <View style={styles.containerInfo}>
-                <Text style={styles.textInfo}>Info</Text>
-                <MaterialCommunityIcons
-                  name="chevron-right"
-                  size={12}
-                  color={colors.daclen_gray}
-                />
-              </View>
-            )}
-          </View>
+          <Text allowFontScaling={false} style={styles.textInfo}>
+            <Text
+              allowFontScaling={false}
+              style={{ fontFamily: "Poppins-SemiBold" }}
+            >
+              {`${checkNumberEmpty(userData?.jumlah_penjualan)} produk`}
+            </Text>
+            {" terjual senilai "}
+            <Text
+              allowFontScaling={false}
+              style={{ fontFamily: "Poppins-SemiBold" }}
+            >
+              {checkNumberEmpty(userData?.total_penjualan)
+                ? formatPrice(checkNumberEmpty(userData?.total_penjualan))
+                : "Rp 0"}
+            </Text>
+            {" dan "}
+            <Text
+              allowFontScaling={false}
+              style={{ fontFamily: "Poppins-SemiBold" }}
+            >
+              {`${userData?.target_tercapai
+                ? checkNumberEmpty(userData?.target_tercapai)
+                : checkNumberEmpty(userData?.rekrutmen)} orang`}
+            </Text>
+            {" direkrut"}
+          </Text>
         </TouchableOpacity>
 
         {isCurrentUser ||
@@ -312,24 +288,37 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   containerTouchable: {
-    backgroundColor: "transaprent",
-    flexDirection: "row",
-    alignItems: "center",
-    height: 80,
+    backgroundColor: colors.daclen_grey_container,
+    minHeight: 120 * ratio,
+    minWidth: 240 * ratio,
+    padding: 12 * ratio,
+    borderRadius: 12 * ratio,
+    overflow: "hidden",
     elevation: 4,
   },
   containerPhoto: {
-    height: 120,
+    width: 40 * ratio,
+    height: 40 * ratio,
+    borderRadius: 20 * ratio,
     alignSelf: "center",
-    backgroundColor: "transparent",
+    overflow: "hidden",
+    backgroundColor: colors.daclen_grey_container_background,
   },
-  containerMain: {
+  photo: {
+    width: 40 * ratio,
+    height: 40 * ratio,
+    borderRadius: 20 * ratio,
     backgroundColor: "transparent",
-    height: 80,
+    overflow: "hidden",
   },
   containerHorizontal: {
     backgroundColor: "transparent",
     flexDirection: "row",
+  },
+  containerVertical: {
+    backgroundColor: "transparent",
+    marginHorizontal: 12 * ratio,
+    flex: 1,
   },
   containerExpand: {
     justifyContent: "center",
@@ -338,86 +327,47 @@ const styles = StyleSheet.create({
   },
   verticalLine: {
     height: "100%",
-    width: 2,
+    width: 4 * ratio,
     alignSelf: "flex-start",
-    backgroundColor: colors.daclen_light,
+    backgroundColor: colors.daclen_grey_container,
   },
   horizontalLine: {
     width: 24,
-    height: 2,
-    backgroundColor: colors.daclen_light,
-  },
-  containerHeader: {
-    alignItems: "center",
-    justifyContent: "flex-start",
-    backgroundColor: colors.daclen_black,
-    borderTopEndRadius: 6,
-    paddingStart: 6,
-    paddingEnd: 48,
-    height: 24,
-  },
-  containerInfo: {
-    position: "absolute",
-    bottom: 2,
-    end: 2,
-    backgroundColor: "transparent",
-    zIndex: 2,
-    flexDirection: "row",
-    alignItems: "center",
+    height: 4 * ratio,
+    backgroundColor: colors.daclen_grey_container,
   },
   containerFlatlist: {
     justifyContent: "flex-start",
     backgroundColor: "transparent",
     paddingEnd: 60,
   },
-  containerValue: {
-    backgroundColor: colors.daclen_light,
-    paddingHorizontal: 6,
-    borderBottomEndRadius: 6,
-    height: 96,
-    overflow: "hidden",
+  containerArrow: {
+    backgroundColor: colors.black,
+    width: 30 * ratio,
+    height: 30 * ratio,
+    borderRadius: 15 * ratio,
+    justifyContent: "center",
+    alignItems: "center",
   },
   textHeader: {
-    fontSize: 12,
+    fontSize: 11 * ratio,
     fontFamily: "Poppins-SemiBold",
-    width: "100%",
-    textAlignVertical: "center",
-    marginVertical: 4,
-    color: colors.daclen_light,
+    color: colors.black,
   },
   text: {
-    fontSize: 9,
-    color: colors.daclen_black,
-    fontFamily: "Poppins",
+    fontSize: 11 * ratio,
+    color: colors.daclen_grey_placeholder,
+    fontFamily: "Poppins-Light",
     backgroundColor: "transparent",
-    marginEnd: 20,
   },
   textInfo: {
-    fontSize: 10,
-    color: colors.daclen_gray,
+    fontSize: 12 * ratio,
+    color: colors.black,
     fontFamily: "Poppins",
     backgroundColor: "transparent",
-    marginEnd: 1,
-  },
-  textStatus: {
-    position: "absolute",
-    zIndex: 6,
-    end: 0,
-    top: 80,
-    height: 20,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    backgroundColor: colors.daclen_blue,
-    color: colors.daclen_light,
-    borderTopStartRadius: 4,
-    fontSize: 10,
-    fontFamily: "Poppins-SemiBold",
-  },
-  photo: {
-    width: 80,
-    height: 120,
-    backgroundColor: colors.daclen_light,
-    overflow: "hidden",
+    marginTop: 12 * ratio,
+    maxWidth: 210 * ratio,
+    flex: 1,
   },
 });
 

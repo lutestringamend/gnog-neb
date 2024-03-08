@@ -20,6 +20,7 @@ const CenteredView = (props) => {
       {title ? (
         <HeaderBar
           title={title}
+          {...props}
           style={{
             width: dimensions.fullWidthAdjusted,
             marginHorizontal:

@@ -157,7 +157,7 @@ const HeaderBar = (props) => {
           <MaterialCommunityIcons
             name={rightIcon}
             color={colors.white}
-            size={20}
+            size={25}
           />
         </TouchableOpacity>
       ) : null}
@@ -208,8 +208,8 @@ const styles = StyleSheet.create({
   },
   rightImage: {
     backgroundColor: "transparent",
-    width: 12,
-    height: 12,
+    width: 25,
+    height: 25,
   }
 });
 

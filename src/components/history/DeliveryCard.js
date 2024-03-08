@@ -1,7 +1,6 @@
 import React from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
-/*import { Image } from "expo-image";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";*/
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { colors, dimensions, staticDimensions } from "../../styles/base";
 import TextBoxStatus from "../textbox/TextBoxStatus";
@@ -54,44 +53,27 @@ const DeliveryCard = (props) => {
               }
             />
           </View>
+          <Text allowFontScaling={false} style={styles.textName}>
+              Nomor Resi
+            </Text>
+        </View>
+
+        <Text style={[styles.textName, { color: colors.black }]}>
+          {`Ekspedisi ${nama_kurir ? nama_kurir : ""}`}
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => onPress()}
+        style={[styles.containerVertical, { justifyContent: "space-between", alignItems: "flex-end" }]}
+      >
           {tgl_pengiriman ? (
             <Text allowFontScaling={false} style={styles.textName}>
-              {`Dikirim pada ${convertDDMMYYYtoDateDisplay(
+              {`Dikirim ${convertDDMMYYYtoDateDisplay(
                 tgl_pengiriman,
                 true,
               )}`}
             </Text>
           ) : null}
-        </View>
-
-        <Text style={[styles.textName, { color: colors.black }]}>
-          {nama_kurir ? nama_kurir : ""}
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
-
-/*
-<TouchableOpacity
-        onPress={() => onPress()}
-        style={[styles.containerVertical, { alignItems: "center" }]}
-      >
-        <View style={styles.containerPhoto}>
-          {keranjang ? (
-            keranjang?.produk ? (
-              keranjang?.produk[0] ? (
-                keranjang?.produk[0]?.foto_url ? (
-                  <Image
-                    source={keranjang?.produk[0]?.foto_url}
-                    contentFit="contain"
-                    style={styles.photo}
-                  />
-                ) : null
-              ) : null
-            ) : null
-          ) : null}
-        </View>
         <View style={[styles.containerHorizontal, { marginTop: 10 * ratio }]}>
           <Text
             allowFontScaling={false}
@@ -107,6 +89,12 @@ const DeliveryCard = (props) => {
           />
         </View>
       </TouchableOpacity>
+    </View>
+  );
+};
+
+/*
+
 */
 
 const styles = StyleSheet.create({
@@ -117,7 +105,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     borderRadius: 12 * ratio,
     padding: 12 * ratio,
-    height: 140 * ratio,
+    height: 88 * ratio,
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 10 * ratio,
@@ -129,20 +117,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     flexDirection: "row",
     alignItems: "center",
-  },
-  containerPhoto: {
-    backgroundColor: colors.daclen_grey_light,
-    width: 80 * ratio,
-    height: 80 * ratio,
-    borderRadius: 6 * ratio,
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden",
-  },
-  photo: {
-    width: 70 * ratio,
-    height: 70 * ratio,
-    backgroundColor: "transparent",
   },
   textHeader: {
     backgroundColor: "transparent",

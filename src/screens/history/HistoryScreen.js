@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 
 import Checkout from "../../components/history/HistoryList";
 import Delivery from "../../components/history/DeliveryList";
@@ -21,9 +21,7 @@ export default function HistoryScreen() {
         tabList={[checkoutItem, deliveryItem]}
         onPress={(e) => setActiveTab(e)}
       />
-      <View style={styles.container}>
-        {activeTab === deliveryItem ? <Delivery /> : <Checkout />}
-      </View>
+     {activeTab === deliveryItem ? <Delivery /> : <Checkout />}
     </CenteredView>
   );
 }

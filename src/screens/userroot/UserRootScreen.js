@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from "react";
 import {
-  SafeAreaView,
   View,
   StyleSheet,
   RefreshControl,
   Text,
-  ActivityIndicator,
-  ImageBackground,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import UserRootItem, { VerticalLine } from "../../components/userroot/UserRootItem";
+import UserRootItem, {
+  VerticalLine,
+} from "../../components/userroot/UserRootItem";
 import UserRootModal from "../../components/modal/UserRootModal";
-import { colors, staticDimensions } from "../../styles/base";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import {
   getHPV,
   showHPV,
@@ -33,6 +31,10 @@ import {
 } from "../../../axios/constants";
 import { checkNumberEmpty } from "../../../axios/cart";
 import CenteredView from "../../components/view/CenteredView";
+import AlertBox from "../../components/alert/AlertBox";
+import EmptyPlaceholder from "../../components/empty/EmptyPlaceholder";
+import EmptySpinner from "../../components/empty/EmptySpinner";
+import Button from "../../components/Button/Button";
 /*import UserRootHeaderItem from "./UserRootHeaderItem";
 import { notverified, userverified } from "./constants";*/
 
@@ -42,6 +44,8 @@ const defaultModal = {
   isVerified: true,
   isParent: false,
 };
+
+const now = new Date();
 
 export function checkVerification(userData) {
   if (
@@ -208,7 +212,6 @@ const UserRootScreen = (props) => {
       console.error(e);
       setSelfData(null);
     }
-    
   };
 
   const fetchSelfHPV = async (newSelfData) => {
@@ -234,11 +237,12 @@ const UserRootScreen = (props) => {
   }
 
   function switchTree() {
-    if (tree?.length === numRoots) {
-      setTree(devuserroottree.data.children);
+    setTree(devuserroottree.data.children);
+    /*if (tree?.length === numRoots) {
+      
     } else {
       setTree(hpv?.data?.children[0]?.children);
-    }
+    }*/
   }
 
   function concatHPVArray(id, data) {
@@ -276,19 +280,8 @@ const UserRootScreen = (props) => {
         </View>
   */
 
-  return (
-    <CenteredView title="Agen & Reseller" style={styles.container}>
-      <ImageBackground
-        source={require("../../assets/profilbg.png")}
-        style={styles.background}
-        resizeMode="cover"
-      />
-      {error ? (
-        <Text allowFontScaling={false} style={styles.textError}>
-          {error}
-        </Text>
-      ) : (
-        <TouchableOpacity
+  /*
+ <TouchableOpacity
           onPress={() => switchTree()}
           style={styles.containerLeader}
           disabled={currentUser?.id !== 8054}
@@ -338,8 +331,15 @@ const UserRootScreen = (props) => {
             )}
           </TouchableOpacity>
         </TouchableOpacity>
-      )}
+        */
 
+  return (
+    <CenteredView
+      title="Agen & Reseller"
+      style={styles.container}
+      rightIcon="refresh"
+      onRightIconPress={() => refreshChildren()}
+    >
       <ScrollView
         style={styles.scrollView}
         showsHorizontalScrollIndicator={true}
@@ -351,6 +351,9 @@ const UserRootScreen = (props) => {
           />
         }
       >
+        <Text allowFontScaling={false} style={styles.textHeader}>
+          {`${monthNames[now.getMonth()]} ${now.getFullYear()}`}
+        </Text>
         <View style={styles.containerMain}>
           <UserRootItem
             userData={{
@@ -401,40 +404,13 @@ const UserRootScreen = (props) => {
           />
           {loading ? (
             tree === null ? (
-              <TouchableOpacity
+              <Button
                 onPress={() => fetchHPV()}
-                style={[
-                  styles.button,
-                  {
-                    backgroundColor: loading
-                      ? "transparent"
-                      : colors.daclen_orange,
-                  },
-                ]}
-              >
-                {loading ? (
-                  <ActivityIndicator
-                    color={colors.daclen_light}
-                    size="small"
-                    style={styles.spinner}
-                  />
-                ) : (
-                  <MaterialCommunityIcons
-                    name="refresh"
-                    size={20}
-                    color={colors.daclen_light}
-                  />
-                )}
-                <Text allowFontScaling={false} style={styles.textButton}>
-                  {loading ? "Loading..." : "Refresh Agen & Reseller"}
-                </Text>
-              </TouchableOpacity>
-            ) : (
-              <ActivityIndicator
-                color={colors.daclen_light}
-                size="large"
-                style={[styles.spinner, { marginVertical: 32 }]}
+                loading={loading}
+                text="Refresh"
               />
+            ) : (
+              <EmptySpinner minHeight={dimensions.fullHeight * 0.25} />
             )
           ) : numRoots > 0 ? (
             <View style={styles.containerFlatlist}>
@@ -465,9 +441,15 @@ const UserRootScreen = (props) => {
               ))}
             </View>
           ) : (
-            <Text allowFontScaling={false} style={styles.textUid}>
-              Jaringan Anda masih kosong
-            </Text>
+            <TouchableOpacity
+              onPress={() => switchTree()}
+              disabled={currentUser?.id !== 8054}
+            >
+              <EmptyPlaceholder
+                text="Jaringan Anda masih kosong"
+                minHeight={dimensions.fullHeight * 0.25}
+              />
+            </TouchableOpacity>
           )}
         </View>
       </ScrollView>
@@ -484,6 +466,7 @@ const UserRootScreen = (props) => {
           concatHPVArray={(id, data) => concatHPVArray(id, data)}
         />
       ) : null}
+      <AlertBox text={error} onClose={() => setError(null)} />
     </CenteredView>
   );
 };
@@ -492,15 +475,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: colors.daclen_bg,
-  },
-  background: {
-    position: "absolute",
-    zIndex: 0,
-    top: 0,
-    start: 0,
-    width: "100%",
-    height: "100%",
+    backgroundColor: colors.daclen_grey_light,
   },
   containerHorizontal: {
     width: "100%",
@@ -514,9 +489,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "transparent",
     paddingBottom: staticDimensions.pageBottomPadding,
-    paddingTop: 24,
-    marginBottom: 10,
-    marginHorizontal: 12,
+    marginStart: staticDimensions.marginHorizontal,
   },
   containerRefresh: {
     alignSelf: "center",
@@ -532,33 +505,6 @@ const styles = StyleSheet.create({
     zIndex: 2,
     flexDirection: "row",
     alignItems: "center",
-  },
-  button: {
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    marginHorizontal: 12,
-    marginTop: 20,
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-    backgroundColor: colors.daclen_blue,
-  },
-  textButton: {
-    fontSize: 14,
-    fontFamily: "Poppins-SemiBold",
-    color: colors.daclen_light,
-    marginStart: 10,
-  },
-  textError: {
-    fontSize: 14,
-    fontFamily: "Poppins-SemiBold",
-    color: colors.white,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: colors.daclen_danger,
-    textAlign: "center",
   },
   scrollView: {
     flex: 1,
@@ -576,14 +522,13 @@ const styles = StyleSheet.create({
     flex: 1,
     color: colors.daclen_light,
   },
-  textUid: {
+  textHeader: {
     fontFamily: "Poppins-SemiBold",
-    fontSize: 12,
-    marginVertical: 20,
+    fontSize: 18,
+    marginVertical: 16,
     textAlign: "center",
-    padding: 10,
-    color: colors.daclen_light,
-    marginHorizontal: 10,
+    width: "100%",
+    color: colors.black,
   },
   parent: {
     width: 32,

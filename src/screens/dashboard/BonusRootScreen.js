@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
-  SafeAreaView,
   StyleSheet,
   View,
   Text,
-  TouchableOpacity,
-  ActivityIndicator,
   ScrollView,
   RefreshControl,
   Platform,
@@ -21,10 +18,9 @@ import {
   getSyaratRoot,
   clearSyaratRoot,
   clearAuthError,
-} from "../../../axios/user";
+} from "../../axios/user";
 
-import { colors, staticDimensions } from "../../../styles/base";
-import HistoryTabItem from "../../../components/history/HistoryTabItem";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 import {
   bonusfirstroot,
   bonusrootlevelcolors,
@@ -33,11 +29,16 @@ import {
   pvtitle,
   rpvtitle,
 } from "../../../components/dashboard/constants";
-import BonusRootItem, { VerticalLine } from "../../../components/dashboard/BonusRootItem";
-import { ErrorView } from "../../components/webview/WebviewChild";
-import { websyaratbonus } from "../../../axios/constants";
+import BonusRootItem, {
+  VerticalLine,
+} from "../../components/bonusroot/BonusRootItem";
+import { websyaratbonus } from "../../axios/constants";
 import CenteredView from "../../components/view/CenteredView";
 import EmptySpinner from "../../components/empty/EmptySpinner";
+import Button from "../../components/Button/Button";
+import EmptyPlaceholder from "../../components/empty/EmptyPlaceholder";
+
+const ratio = dimensions.fullWidthAdjusted / 430;
 
 function BonusRootScreen(props) {
   const { token, syaratRoot, authError } = props;
@@ -128,191 +129,157 @@ function BonusRootScreen(props) {
 
   return (
     <CenteredView title="Syarat Bonus Root" style={styles.container}>
-
       {loading ? (
         <EmptySpinner />
       ) : token === null || activeTab === null ? (
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text allowFontScaling={false} style={styles.textUid}>
-            Anda harus Login / Register untuk membaca Syarat Bonus Root
-          </Text>
-        </TouchableOpacity>
+        <EmptyPlaceholder
+          title="Syarat Bonus Root"
+          text="Anda harus Login dahulu untuk membaca Syarat Bonus Root"
+        />
       ) : syaratRoot?.length === undefined || syaratRoot?.length < 1 ? (
-        <ErrorView
-          error="Mohon membuka website Daclen untuk membaca Syarat Bonus"
-          onOpenExternalLink={() => onOpenExternalLink()}
+        <EmptyPlaceholder
+          title="Syarat Bonus Root"
+          text="Mohon membuka website Daclen untuk membaca Syarat Bonus"
         />
       ) : (
-        <View style={styles.container}>
-          <View style={styles.tabView}>
-            <FlatList
-              horizontal={true}
-              data={syaratRoot}
-              style={styles.containerFlatlist}
-              renderItem={({ item, index }) => (
-                <HistoryTabItem
-                  activeTab={activeTab}
-                  name={index}
-                  title={item?.level}
-                  style={styles.containerTabItem}
-                  backgroundColor={bonusrootlevelcolors[index]}
-                  selectedColor={colors.daclen_blue}
-                  marginEnd={10}
-                  icon="account-multiple"
-                  onPress={() => setActiveTab(index)}
-                />
-              )}
+        <ScrollView
+          style={styles.containerFlatlist}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={() => refreshPage()}
             />
-          </View>
-          <ScrollView
-            style={styles.containerFlatlist}
-            refreshControl={
-              <RefreshControl
-                refreshing={loading}
-                onRefresh={() => refreshPage()}
+          }
+        >
+          <View style={styles.containerHeader}>
+            <View style={styles.tabView}>
+              <FlatList
+                horizontal={true}
+                data={syaratRoot}
+                style={styles.containerFlatlist}
+                renderItem={({ item, index }) => (
+                  <Button
+                    text={item?.level}
+                    style={styles.containerTabItem}
+                    onPress={() => setActiveTab(index)}
+                  />
+                )}
               />
-            }
-          >
+            </View>
             <View style={styles.containerTable}>
-              <Text allowFontScaling={false}
-                style={[
-                  styles.textTableHeader,
-                  { color: bonusrootlevelcolors[activeTab] },
-                ]}
-              >
+              <Text allowFontScaling={false} style={styles.textTableHeader}>
                 Syarat Bonus Root Level {syaratRoot[activeTab]?.level}
               </Text>
-              <View style={styles.containerSpec}>
-                <Text allowFontScaling={false} style={styles.textSpecHeader}>{pvtitle}</Text>
-                <Text allowFontScaling={false}
-                  style={[
-                    styles.textSpec,
-                    { color: bonusrootlevelcolors[activeTab] },
-                  ]}
-                >
+              <View style={[styles.containerSpec, { marginTop: 10 }]}>
+                <Text allowFontScaling={false} style={styles.textSpecHeader}>
+                  {pvtitle}
+                </Text>
+                <Text allowFontScaling={false} style={styles.textSpec}>
                   {syaratRoot[activeTab]?.pv}
                 </Text>
               </View>
 
               <View style={styles.containerSpec}>
-                <Text allowFontScaling={false} style={styles.textSpecHeader}>{bonusfirstroot}</Text>
-                <Text allowFontScaling={false}
-                  style={[
-                    styles.textSpec,
-                    { color: bonusrootlevelcolors[activeTab] },
-                  ]}
-                >
-                  {syaratRoot[activeTab]?.bonus_1
-                    ? syaratRoot[activeTab]?.bonus_1
-                    : "0"}
-                  {" %"}
+                <Text allowFontScaling={false} style={styles.textSpecHeader}>
+                  {bonusfirstroot}
+                </Text>
+                <Text allowFontScaling={false} style={styles.textSpec}>
+                  {`${
+                    syaratRoot[activeTab]?.bonus_1
+                      ? syaratRoot[activeTab]?.bonus_1
+                      : "0"
+                  }%`}
                 </Text>
               </View>
               <View style={styles.containerSpec}>
-                <Text allowFontScaling={false} style={styles.textSpecHeader}>{bonussecondroot}</Text>
-                <Text allowFontScaling={false}
-                  style={[
-                    styles.textSpec,
-                    { color: bonusrootlevelcolors[activeTab] },
-                  ]}
-                >
-                  {syaratRoot[activeTab]?.bonus_2
-                    ? syaratRoot[activeTab]?.bonus_2
-                    : "0"}
-                  {" %"}
+                <Text allowFontScaling={false} style={styles.textSpecHeader}>
+                  {bonussecondroot}
+                </Text>
+                <Text allowFontScaling={false} style={styles.textSpec}>
+                  {`${
+                    syaratRoot[activeTab]?.bonus_2
+                      ? syaratRoot[activeTab]?.bonus_2
+                      : "0"
+                  }%`}
                 </Text>
               </View>
             </View>
+          </View>
 
-            <View style={styles.containerMain}>
-              <BonusRootItem
-                isParent={true}
-                title={hpvtitle}
-                content={syaratRoot[activeTab]?.hpv}
-                color={bonusrootlevelcolors[activeTab]}
-                isLastItem={false}
-                onPress={() => console.log(rootTree)}
-              />
-              <View style={styles.containerFlatlistTree}>
-                {syaratRoot[activeTab]?.rpv?.length > 0 ? (
-                  <VerticalLine
-                    style={{
-                      height: 32,
-                      backgroundColor: bonusrootlevelcolors[activeTab],
-                    }}
-                  />
-                ) : null}
-                {rootTree?.length === undefined || rootTree?.length < 1 ? (
-                  <ActivityIndicator
-                    size="large"
-                    color={colors.daclen_gray}
-                    style={{ alignSelf: "center", marginVertical: 20 }}
-                  />
-                ) : (
-                  rootTree.map((level) => (
-                    <View key={level?.key} style={styles.containerRootChildren}>
-                      <View style={styles.containerRootHeader}>
-                        <VerticalLine
-                          style={{
-                            height:
-                              level?.key >= rootTree?.length ? "52%" : "100%",
-                            backgroundColor: bonusrootlevelcolors[activeTab],
-                          }}
-                        />
-                        <View
-                          style={[
-                            styles.horizontalLine,
-                            {
-                              backgroundColor: bonusrootlevelcolors[activeTab],
-                            },
-                          ]}
-                        />
-                        <Text allowFontScaling={false}
-                          style={[
-                            styles.textRootHeader,
-                            {
-                              backgroundColor: bonusrootlevelcolors[activeTab],
-                            },
-                          ]}
+          <View style={styles.containerMain}>
+            <BonusRootItem
+              isParent={true}
+              title={hpvtitle}
+              content={syaratRoot[activeTab]?.hpv}
+              color={bonusrootlevelcolors[activeTab]}
+              isLastItem={false}
+              onPress={() => console.log(rootTree)}
+            />
+            <View style={styles.containerFlatlistTree}>
+              {syaratRoot[activeTab]?.rpv?.length > 0 ? (
+                <VerticalLine
+                  style={{
+                    height: 32,
+                    marginStart: staticDimensions.marginHorizontal / 2,
+                  }}
+                />
+              ) : null}
+              {rootTree?.length === undefined || rootTree?.length < 1 ? (
+                <EmptySpinner />
+              ) : (
+                rootTree.map((level) => (
+                  <View key={level?.key} style={styles.containerRootChildren}>
+                    <View style={styles.containerRootHeader}>
+                      <VerticalLine
+                        style={{
+                          height:
+                            level?.key >= rootTree?.length ? "52%" : "100%",
+                        }}
+                      />
+                      <View style={styles.horizontalLine} />
+                      <View style={styles.containerLevel}>
+                        <Text
+                          allowFontScaling={false}
+                          style={styles.textRootHeader}
                         >
                           Level {level?.key}
                         </Text>
                       </View>
-                      <View style={styles.containerRootContent}>
-                        <VerticalLine
-                          style={{
-                            height: "100%",
-                            backgroundColor:
-                              level?.key >= rootTree?.length
-                                ? "white"
-                                : bonusrootlevelcolors[activeTab],
-                          }}
-                        />
-                        <FlatList
-                          numColumns={1}
-                          horizontal={false}
-                          style={styles.containerFlatlistChildren}
-                          data={level?.levelChildren}
-                          renderItem={({ item, index }) => (
-                            <BonusRootItem
-                              isParent={false}
-                              title={rpvtitle}
-                              content={item?.rpv}
-                              isLastItem={
-                                index >= level?.levelChildren?.length - 1
-                              }
-                              color={bonusrootlevelcolors[activeTab]}
-                            />
-                          )}
-                        />
-                      </View>
                     </View>
-                  ))
-                )}
-              </View>
+                    <View style={styles.containerRootContent}>
+                      <VerticalLine
+                        style={{
+                          height: "100%",
+                          backgroundColor:
+                            level?.key >= rootTree?.length
+                              ? "transparent"
+                              : colors.daclen_grey_container,
+                        }}
+                      />
+                      <FlatList
+                        numColumns={1}
+                        horizontal={false}
+                        style={styles.containerFlatlistChildren}
+                        data={level?.levelChildren}
+                        renderItem={({ item, index }) => (
+                          <BonusRootItem
+                            isParent={false}
+                            title={rpvtitle}
+                            content={item?.rpv}
+                            isLastItem={
+                              index >= level?.levelChildren?.length - 1
+                            }
+                            color={bonusrootlevelcolors[activeTab]}
+                          />
+                        )}
+                      />
+                    </View>
+                  </View>
+                ))
+              )}
             </View>
-          </ScrollView>
-        </View>
+          </View>
+        </ScrollView>
       )}
     </CenteredView>
   );
@@ -321,26 +288,32 @@ function BonusRootScreen(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: colors.white,
     width: "100%",
   },
   containerFlatlist: {
     width: "100%",
     backgroundColor: "transparent",
   },
+  containerHeader: {
+    backgroundColor: colors.daclen_grey_light,
+    paddingHorizontal: staticDimensions.marginHorizontal,
+    paddingVertical: staticDimensions.marginHorizontal / 2,
+  },
   containerMain: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: colors.white,
     paddingBottom: staticDimensions.pageBottomPadding,
-    marginVertical: 10,
-    marginHorizontal: 12,
+    marginVertical: 20,
+    marginHorizontal: staticDimensions.marginHorizontal,
   },
   containerRootChildren: {
-    backgroundColor: "white",
+    backgroundColor: "transparent",
+    marginStart: staticDimensions.marginHorizontal / 2,
   },
   containerRootContent: {
     flexDirection: "row",
-    backgroundColor: "white",
+    backgroundColor: "transparent",
   },
   containerFlatlistTree: {
     backgroundColor: "transparent",
@@ -353,6 +326,7 @@ const styles = StyleSheet.create({
   },
   containerTabItem: {
     paddingHorizontal: 20,
+    marginEnd: 10,
   },
   containerRootHeader: {
     flexDirection: "row",
@@ -360,76 +334,68 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   containerTable: {
-    width: "90%",
+    width: dimensions.fullWidthAdjusted - 2 * staticDimensions.marginHorizontal,
     alignSelf: "center",
-    borderRadius: 2,
-    backgroundColor: "transparent",
-    marginVertical: 20,
-    marginHorizontal: 10,
-    borderWidth: 1,
-    borderColor: colors.daclen_gray,
+    borderRadius: 12 * ratio,
+    backgroundColor: colors.white,
+    marginVertical: staticDimensions.marginHorizontal,
+    padding: staticDimensions.marginHorizontal / 2,
+    minHeight: 150 * ratio,
+    justifyContent: "space-between",
   },
   containerSpec: {
-    backgroundColor: "white",
+    backgroundColor: "transparent",
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "space-between",
     alignItems: "center",
-    borderColor: colors.daclen_gray,
-    borderTopWidth: 1,
+  },
+  containerLevel: {
+    backgroundColor: colors.daclen_grey_container,
+    height: 40 * ratio,
+    width: 180 * ratio,
+    borderRadius: 12 * ratio,
+    overflow: "hidden",
+    justifyContent: "center",
+    paddingHorizontal: 12 * ratio,
+    elevation: 4,
   },
   tabView: {
     width: "100%",
-    backgroundColor: colors.daclen_light,
+    backgroundColor: "transparent",
     flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
-    borderColor: colors.daclen_gray,
+    alignItems: "center",
   },
   horizontalLine: {
     width: 8,
-    height: 2,
-    backgroundColor: colors.daclen_red,
+    height: 4 * ratio,
+    backgroundColor: colors.daclen_grey_container,
   },
   textTableHeader: {
-    width: "100%",
-    backgroundColor: "transparent",
-    textAlign: "center",
-    fontSize: 16,
-    padding: 10,
+    color: colors.black,
+    fontSize: 18 * ratio,
     fontFamily: "Poppins-SemiBold",
   },
   textRootHeader: {
-    paddingVertical: 10,
-    paddingHorizontal: 32,
-    color: colors.daclen_light,
-    borderTopStartRadius: 6,
-    borderBottomEndRadius: 6,
-    borderTopEndRadius: 6,
-    fontSize: 16,
+    fontSize: 14 * ratio,
     fontFamily: "Poppins-SemiBold",
-    textAlign: "center",
+    color: colors.black,
+    backgroundColor: "transparent",
   },
   textSpecHeader: {
-    flex: 1,
-    padding: 10,
-    fontFamily: "Poppins", 
-    fontSize: 12,
-    borderEndWidth: 1,
     backgroundColor: "transparent",
-    borderColor: colors.daclen_gray,
-    color: colors.daclen_graydark,
+    fontFamily: "Poppins",
+    fontSize: 12 * ratio,
+    color: colors.black,
   },
   textSpec: {
-    flex: 1,
-    padding: 10,
     fontFamily: "Poppins-SemiBold",
-    fontSize: 14,
+    fontSize: 12 * ratio,
     backgroundColor: "transparent",
-    color: colors.daclen_black,
+    color: colors.black,
   },
   textUid: {
-    fontFamily: "Poppins", fontSize: 16,
+    fontFamily: "Poppins",
+    fontSize: 16,
     marginVertical: 20,
     textAlign: "center",
     padding: 10,
@@ -451,7 +417,7 @@ const mapDispatchProps = (dispatch) =>
       clearSyaratRoot,
       clearAuthError,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchProps)(BonusRootScreen);

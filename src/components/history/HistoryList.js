@@ -190,7 +190,6 @@ function HistoryList(props) {
         onMomentumScrollBegin={() => setEndReachedCalledDuringMomentum(false)}
         onEndReachedThreshold={0.2}
         onEndReached={() => onEndReached()}
-        nestedScrollEnabled={false}
         style={styles.container}
         contentContainerStyle={styles.containerScroll}
         refreshControl={
