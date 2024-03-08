@@ -384,7 +384,7 @@ const UserRootScreen = (props) => {
             isVerified={true}
             hpvArray={hpvArray}
           />
-          <VerticalLine style={{ height: 32, marginStart: 80 }} />
+          <VerticalLine style={{ height: 32, marginStart: staticDimensions.marginHorizontal / 2 }} />
           <UserRootItem
             userData={{
               ...selfData,

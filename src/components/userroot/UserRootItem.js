@@ -180,42 +180,49 @@ const UserRootItem = ({
                     }`}
               </Text>
             </View>
-            <View style={styles.containerArrow}>
-              <MaterialCommunityIcons
-                name="chevron-right"
-                size={24 * ratio}
-                color={colors.white}
-              />
-            </View>
+            {userData?.name === godlevelusername ? null : (
+              <View style={styles.containerArrow}>
+                <MaterialCommunityIcons
+                  name="chevron-right"
+                  size={24 * ratio}
+                  color={colors.white}
+                />
+              </View>
+            )}
           </View>
-
-          <Text allowFontScaling={false} style={styles.textInfo}>
-            <Text
-              allowFontScaling={false}
-              style={{ fontFamily: "Poppins-SemiBold" }}
-            >
-              {`${checkNumberEmpty(userData?.jumlah_penjualan)} produk`}
-            </Text>
-            {" terjual senilai "}
-            <Text
-              allowFontScaling={false}
-              style={{ fontFamily: "Poppins-SemiBold" }}
-            >
-              {checkNumberEmpty(userData?.total_penjualan)
-                ? formatPrice(checkNumberEmpty(userData?.total_penjualan))
-                : "Rp 0"}
-            </Text>
-            {" dan "}
-            <Text
-              allowFontScaling={false}
-              style={{ fontFamily: "Poppins-SemiBold" }}
-            >
-              {`${userData?.target_tercapai
-                ? checkNumberEmpty(userData?.target_tercapai)
-                : checkNumberEmpty(userData?.rekrutmen)} orang`}
-            </Text>
-            {" direkrut"}
-          </Text>
+          <View style={styles.containerInfo}>
+            {userData?.name === godlevelusername ? null : (
+              <Text allowFontScaling={false} style={styles.textInfo}>
+                <Text
+                  allowFontScaling={false}
+                  style={{ fontFamily: "Poppins-SemiBold" }}
+                >
+                  {`${checkNumberEmpty(userData?.jumlah_penjualan)} produk`}
+                </Text>
+                {" terjual senilai "}
+                <Text
+                  allowFontScaling={false}
+                  style={{ fontFamily: "Poppins-SemiBold" }}
+                >
+                  {checkNumberEmpty(userData?.total_penjualan)
+                    ? formatPrice(checkNumberEmpty(userData?.total_penjualan))
+                    : "Rp 0"}
+                </Text>
+                {" dan "}
+                <Text
+                  allowFontScaling={false}
+                  style={{ fontFamily: "Poppins-SemiBold" }}
+                >
+                  {`${
+                    userData?.target_tercapai
+                      ? checkNumberEmpty(userData?.target_tercapai)
+                      : checkNumberEmpty(userData?.rekrutmen)
+                  } orang`}
+                </Text>
+                {" direkrut"}
+              </Text>
+            )}
+          </View>
         </TouchableOpacity>
 
         {isCurrentUser ||
@@ -349,6 +356,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  containerInfo: {
+    backgroundColor: "transparent",
+    marginTop: 12 * ratio,
+    maxWidth: 210 * ratio,
+    flex: 1,
+  },
   textHeader: {
     fontSize: 11 * ratio,
     fontFamily: "Poppins-SemiBold",
@@ -365,9 +378,6 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontFamily: "Poppins",
     backgroundColor: "transparent",
-    marginTop: 12 * ratio,
-    maxWidth: 210 * ratio,
-    flex: 1,
   },
 });
 
