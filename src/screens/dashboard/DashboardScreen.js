@@ -371,6 +371,7 @@ const DashboardScreen = (props) => {
             header="Login"
             text="Login / Register untuk menggunakan aplikasi Daclen"
             buttonText="Login"
+            buttonWidth={100 * ratio}
             onPress={() => navigation.navigate("Login")}
             style={styles.containerModal}
           />
@@ -397,6 +398,7 @@ const DashboardScreen = (props) => {
             header="PIN"
             text="Anda perlu membuat PIN 4 digit untuk mengamankan halaman Profil"
             buttonText="Buat PIN"
+            buttonWidth={120 * ratio}
             onPress={() => navigation.navigate("CreatePIN")}
             style={styles.containerModal}
           />
@@ -405,6 +407,7 @@ const DashboardScreen = (props) => {
             header="Masukkan PIN"
             content={<DashboardLock receiveOTP={(e) => receiveOTP(e)} />}
             buttonText="Reset PIN"
+            buttonWidth={120 * ratio}
             onPress={() =>
               navigation.navigate("Login", {
                 resetPIN: true,
@@ -468,8 +471,9 @@ const DashboardScreen = (props) => {
                     </View>
                   }
                   buttonText="Transaksi"
+                  buttonWidth={100 * ratio}
                   onPress={() => navigation.navigate("History")}
-                  style={{ flex: 1, minHeight: 200 * ratio }}
+                  style={{ flex: 5, minHeight: 200 * ratio }}
                 />
                 <DashboardContainer
                   header={`Reseller & Agen`}
@@ -494,11 +498,12 @@ const DashboardScreen = (props) => {
                     </View>
                   }
                   buttonText="Detil"
+                  buttonWidth={100 * ratio}
                   onPress={() => navigation.navigate("UserRootsScreen")}
                   maxTextWidth={120}
                   style={{
+                    flex: 4,
                     minHeight: 200 * ratio,
-                    maxWidth: 160 * ratio,
                     marginStart: staticDimensions.marginHorizontal / 2,
                   }}
                 />
@@ -520,15 +525,29 @@ const DashboardScreen = (props) => {
               History
             </Text>
 
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.containerHorizontalItems}>
             <DashboardContainer
               header="Saldo"
               text="Lihat riwayat saldo Anda, dari saldo masuk hingga saldo keluar."
               buttonText="Lihat Selengkapnya"
+              buttonWidth={185 * ratio}
               onPress={() => navigation.navigate("SaldoReportScreen")}
               style={{
                 marginHorizontal: staticDimensions.marginHorizontal,
               }}
             />
+            <DashboardContainer
+              header="Poin"
+              text="Lihat riwayat poin Anda, dari transaksi, rekrutmen dan penukaran."
+              buttonText="Lihat Selengkapnya"
+              buttonWidth={185 * ratio}
+              onPress={() => navigation.navigate("SaldoReportScreen")}
+              style={{
+                marginEnd: staticDimensions.marginHorizontal,
+              }}
+            />
+            </ScrollView>
+            
 
             <Text allowFontScaling={false} style={styles.textHeader}>
               More Information
@@ -537,7 +556,6 @@ const DashboardScreen = (props) => {
             <DashboardButtons
               userId={currentUser?.id}
               username={currentUser?.name}
-              pdfFiles={pdfFiles}
               openCountdown={() => setShowTimerModal(true)}
               setMessage={(text, isError) =>
                 setMessage({
@@ -638,6 +656,11 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     marginHorizontal: staticDimensions.marginHorizontal,
     marginBottom: staticDimensions.marginHorizontal / 2,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  containerHorizontalItems: {
+    backgroundColor: "transparent",
     flexDirection: "row",
     alignItems: "center",
   },

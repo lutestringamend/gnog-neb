@@ -122,7 +122,7 @@ import {
   countdownred,
   saldokeluartag,
   saldomasuktag,
-} from "../../components/dashboard/constants";
+} from "../../src/constants/dashboard";
 import axios from "axios";
 
 export const resetPassword = () => {

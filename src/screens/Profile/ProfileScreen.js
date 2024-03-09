@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
   containerItems: {
     flex: 1,
     top: -1,
-    minHeight: dimensions.fullHeight,
+    minHeight: dimensions.fullHeight * 1.25,
     backgroundColor: colors.white,
     paddingTop: staticDimensions.marginHorizontal,
     paddingHorizontal: staticDimensions.marginHorizontal,

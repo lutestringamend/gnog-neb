@@ -9,7 +9,7 @@ import {
   PV_CONSTANT,
   RECRUITMENT_BONUS_VALUE,
   SALES_COMMISSION,
-} from "./constants";
+} from "../constants/dashboard";
 
 export const createVueFixedMonthlyProjections = (
   numMembers,

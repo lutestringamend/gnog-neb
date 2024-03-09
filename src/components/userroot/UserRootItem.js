@@ -10,7 +10,7 @@ import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { colors, dimensions } from "../../styles/base";
-import { phonenotverified } from "../../../components/dashboard/constants";
+import { phonenotverified } from "../../constants/dashboard";
 import {
   capitalizeFirstLetter,
   checkNumberEmpty,

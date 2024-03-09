@@ -18,7 +18,7 @@ import {
   dashboardonboardingtext1,
   dashboardonboardingtext2,
   dashboardonboardingtext3,
-} from "../constants";
+} from "../../../src/constants/dashboard";
 
 const DashboardUpgrade = (props) => {
   const navigation = useNavigation();

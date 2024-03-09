@@ -6,7 +6,7 @@ import Button from "../Button/Button";
 const ratio = dimensions.fullWidthAdjusted / 430;
 
 const DashboardContainer = (props) => {
-  const { header, text, content, buttonText, disabled, loading, style, maxTextWidth } = props;
+  const { header, text, content, buttonText, disabled, loading, style, maxTextWidth, buttonWidth } = props;
 
   function onPress() {
     if (props?.onPress === undefined || props?.onPress === null) {
@@ -18,7 +18,7 @@ const DashboardContainer = (props) => {
   return (
     <View style={[styles.container, style ? style : null]}>
       {header ? (
-        <Text allowFontScaling={false} style={[styles.textHeader, { width: (maxTextWidth ? maxTextWidth : 220) * ratio }]}>
+        <Text allowFontScaling={false} style={[styles.textHeader, { width: (maxTextWidth ? maxTextWidth : 220) * ratio, }]}>
           {header}
         </Text>
       ) : null}
@@ -34,7 +34,7 @@ const DashboardContainer = (props) => {
           text={buttonText}
           disabled={disabled}
           loading={loading}
-          style={styles.button}
+          style={[styles.button, buttonWidth ? { width: buttonWidth, paddingHorizontal: 0 } : null]}
           fontSize={14 * ratio}
           onPress={() => onPress()}
         />

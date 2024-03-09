@@ -22,14 +22,14 @@ import {
   clearAuthError,
   deriveUserKey,
 } from "../../../axios/user";
-import { colors, staticDimensions } from "../../styles/base";
+import { colors } from "../../styles/base";
 import HistoryTabItem from "../../../components/history/HistoryTabItem";
 import {
   saldohistoryicon,
   saldohistorytab,
   withdrawalhistoryicon,
   withdrawalhistorytab,
-} from "../../../components/dashboard/constants";
+} from "../../constants/dashboard";
 import { sentryLog } from "../../../sentry";
 import { setObjectAsync } from "../../../components/asyncstorage";
 import {

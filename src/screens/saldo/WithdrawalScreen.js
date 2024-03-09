@@ -6,7 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import { colors, dimensions, staticDimensions } from "../../styles/base";
 import { checkNumberEmpty } from "../../axios";
-import { withdrawalexplanation } from "../../../components/dashboard/constants";
+import { withdrawalexplanation } from "../../constants/dashboard";
 import {
   SALDO_ADMIN_FEE,
   SALDO_WITHDRAWAL_MINIMUM,

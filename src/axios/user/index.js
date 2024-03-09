@@ -122,7 +122,7 @@ import {
   countdownred,
   saldokeluartag,
   saldomasuktag,
-} from "../../../components/dashboard/constants";
+} from "../../constants/dashboard";
 import axios from "axios";
 
 export const resetPassword = () => {
@@ -512,7 +512,7 @@ export function getLaporanPoin(id, token) {
 
     Axioss.get(url, config)
       .then((response) => {
-        const data = response.data;
+        const data = response?.data?.data;
         dispatch({ type: USER_POINTS_STATE_CHANGE, data });
       })
       .catch((error) => {

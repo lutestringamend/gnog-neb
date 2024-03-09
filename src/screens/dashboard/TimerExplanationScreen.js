@@ -1,16 +1,15 @@
 import React from "react";
 import {
-  SafeAreaView,
   ScrollView,
   View,
   Text,
   StyleSheet,
   Image,
 } from "react-native";
-import { colors, staticDimensions } from "../../../styles/base";
-import { timereplanationtext } from "../../../components/dashboard/constants";
-import { convertDateMilisecondstoDisplayDate } from "../../../axios/profile";
-import { recruitmenttarget } from "../../../axios/constants";
+import { colors, staticDimensions } from "../../styles/base";
+import { timereplanationtext } from "../../constants/dashboard";
+import { convertDateMilisecondstoDisplayDate } from "../../axios/profile";
+import { recruitmenttarget } from "../../axios/constants";
 import CenteredView from "../../components/view/CenteredView";
 
 const TimerExplanation = (props) => {

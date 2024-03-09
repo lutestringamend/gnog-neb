@@ -6,6 +6,7 @@ import {
   Text,
   Linking,
 } from "react-native";
+import { connect } from "react-redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 //import * as Clipboard from "expo-clipboard";
 import { useNavigation } from "@react-navigation/native";
@@ -30,7 +31,7 @@ import {
   kataloghadiahtag,
   kodeetiktag,
   penjelasanbisnistag,
-} from "../../../components/dashboard/constants";
+} from "../../constants/dashboard";
 
 const ratio = dimensions.fullWidthAdjusted / 430;
 
@@ -171,11 +172,11 @@ const DashboardButtons = (props) => {
         ({ judul }) => judul.toLowerCase() === tag.toLowerCase(),
       );
       if (!(data === undefined || data === null)) {
-        navigation.navigate("PDFViewer", {
+        /*navigation.navigate("PDFViewer", {
           title: tag,
           uri: data?.file,
-        });
-        //Linking.openURL(data?.file);
+        });*/
+        Linking.openURL(data?.file);
       }
     } catch (e) {
       console.error(e);
@@ -207,7 +208,6 @@ const DashboardButtons = (props) => {
         caption="Baca penjelasan bisnis Daclen."
         icon="help-rhombus"
         onPress={() => openPDFFile(penjelasanbisnistag)}
-        pdfFiles={pdfFiles}
         tag={penjelasanbisnistag}
       />
       <DashButton
@@ -227,7 +227,6 @@ const DashboardButtons = (props) => {
         caption="Lihat katalog hadiah Daclen."
         icon="gift"
         onPress={() => openPDFFile(kataloghadiahtag)}
-        pdfFiles={pdfFiles}
         tag={kataloghadiahtag}
       />
       <DashButton
@@ -235,7 +234,6 @@ const DashboardButtons = (props) => {
         caption="Baca kode etik Daclen."
         icon="file-document-multiple"
         onPress={() => openPDFFile(kodeetiktag)}
-        pdfFiles={pdfFiles}
         tag={kodeetiktag}
       />
       <DashButton
@@ -323,4 +321,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DashboardButtons;
+const mapStateToProps = (store) => ({
+  pdfFiles: store.homeState.pdfFiles,
+});
+
+export default connect(mapStateToProps, null)(DashboardButtons);

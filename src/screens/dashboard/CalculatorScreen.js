@@ -1,6 +1,5 @@
-import React, { createFactory, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  SafeAreaView,
   View,
   StyleSheet,
   Text,
@@ -10,18 +9,19 @@ import {
   ToastAndroid,
 } from "react-native";
 
-import { colors, dimensions } from "../../../styles/base";
-import TextInputLabel from "../../../components/textinputs/TextInputLabel";
-import { checkNumberEmpty, formatPrice } from "../../../axios/cart";
-import { createFixedMonthlyProjections, createVueFixedMonthlyProjections } from "../../../components/dashboard";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
+import TextInputLabel from "../../components/textinputs/TextInputLabel";
+import { checkNumberEmpty, formatPrice } from "../../axios/cart";
+import { createFixedMonthlyProjections, createVueFixedMonthlyProjections } from "../../utils/dashboard";
 import {
   LEVEL_LABELS,
   MAX_MEMBERS_RECRUITED,
   MAX_MONTHLY_SALES,
   MIN_MONTHLY_SALES,
   SIMULATOR_DISCLAIMER,
-} from "../../../components/dashboard/constants";
+} from "../../constants/dashboard";
 import CenteredView from "../../components/view/CenteredView";
+import Button from "../../components/Button/Button";
 
 const tableWidth = dimensions.fullWidth - 24;
 
@@ -192,22 +192,12 @@ const CalculatorScreen = () => {
           onChangeText={(numMonths) => setInputs({ ...inputs, numMonths })}
         />
 
-        <TouchableOpacity
-          onPress={() => makeProjections()}
-          style={[
-            styles.button,
-            {
-              backgroundColor: eligible
-                ? colors.daclen_yellow_new
-                : colors.daclen_gray,
-            },
-          ]}
-          disabled={!eligible}
-        >
-          <Text allowFontScaling={false} style={styles.textButton}>
-            Hitung
-          </Text>
-        </TouchableOpacity>
+        <Button
+           onPress={() => makeProjections()}
+           style={styles.button}
+           disabled={!eligible}
+           text="Simulasi"
+        />
 
         {projection === null ||
         projection?.length === undefined ||
@@ -354,7 +344,7 @@ const styles = StyleSheet.create({
   containerScroll: {
     backgroundColor: "transparent",
     paddingVertical: 24,
-    paddingHorizontal: 12,
+    paddingHorizontal: staticDimensions.marginHorizontal,
   },
   containerTable: {
     alignSelf: "center",
@@ -416,18 +406,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   button: {
-    alignItems: "center",
-    justifyContent: "center",
     marginVertical: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-  },
-  textButton: {
-    fontSize: 14,
-    fontFamily: "Poppins-SemiBold",
-    color: colors.daclen_black,
   },
 });
 

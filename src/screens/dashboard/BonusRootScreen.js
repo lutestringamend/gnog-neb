@@ -28,7 +28,7 @@ import {
   hpvtitle,
   pvtitle,
   rpvtitle,
-} from "../../../components/dashboard/constants";
+} from "../../constants/dashboard";
 import BonusRootItem, {
   VerticalLine,
 } from "../../components/bonusroot/BonusRootItem";

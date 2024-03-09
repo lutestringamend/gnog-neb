@@ -31,7 +31,7 @@ import {
   countdownred,
   countdownseconds,
   countdowntitle,
-} from "../constants";
+} from "../../../src/constants/dashboard";
 import { recruitmenttarget } from "../../../axios/constants";
 
 const screenWidth = Dimensions.get("window").width;

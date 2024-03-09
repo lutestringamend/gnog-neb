@@ -1,12 +1,14 @@
 import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Platform } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
+import { connect } from "react-redux";
 
 import { colors, dimensions, staticDimensions } from "../../styles/base";
 import { Linking } from "react-native";
 
-const ProfileMenuItem = ({ text, textSecondary, icon, webKey, screen, onItemClick, url }) => {
+const ProfileMenuItem = (props) => {
+  const { pdfFiles, text, textSecondary, icon, webKey, screen, onItemClick, url } = props;
   const navigation = useNavigation();
 
   const openScreen = () => {
@@ -74,4 +76,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProfileMenuItem;
+const mapStateToProps = (store) => ({
+  pdfFiles: store.homeState.pdfFiles,
+});
+
+export default connect(mapStateToProps, null)(ProfileMenuItem);
