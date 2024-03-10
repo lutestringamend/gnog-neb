@@ -51,6 +51,7 @@ import {
 import CenteredView from "../../components/view/CenteredView";
 import EmptySpinner from "../../components/empty/EmptySpinner";
 import AlertBox from "../../components/alert/AlertBox";
+import { privacypolicy } from "../../../components/profile/constants";
 
 function FillAddress(props) {
   const [address, setAddress] = useState(AddressData);
@@ -503,6 +504,25 @@ function FillAddress(props) {
   return (
     <CenteredView title="Isi Alamat" style={styles.container}>
       <ScrollView style={styles.scrollView}>
+      <Text allowFontScaling={false}
+            style={[styles.textUid, { textAlign: "center", marginBottom: 12 }]}
+          >
+            Mohon mengisi alamat lengkap yang akan digunakan untuk informasi
+            Checkout Anda dan pengiriman barang. Informasi ini akan dibagikan ke
+            kurir pengiriman sebagai pihak ketiga apabila Anda telah melunasi
+            Checkout.
+          </Text>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Webview", {
+                webKey: "privacy",
+                text: privacypolicy,
+              })
+            }
+            disabled={loading}
+          >
+            <Text allowFontScaling={false} style={styles.textChange}>Baca {privacypolicy}</Text>
+          </TouchableOpacity>
         {Platform.OS === "ios" ? null : (
           <TouchableOpacity
             onPress={() => openLocationPin()}

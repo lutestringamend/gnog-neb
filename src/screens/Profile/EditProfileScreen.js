@@ -42,13 +42,12 @@ import {
   birthdateplaceholder,
   bankinfodescset,
 } from "../../../components/profile/constants";
-import { colors, blurhash, staticDimensions } from "../../../styles/base";
+import { colors, staticDimensions } from "../../../styles/base";
 import { intiialPermissions, checkMediaPermissions } from "../../../components/media";
 import BSMedia from "../../components/bottomsheets/BSMedia";
 import { setObjectAsync } from "../../../components/asyncstorage";
 import { ASYNC_USER_CURRENTUSER_KEY } from "../../../components/asyncstorage/constants";
 import {
-  convertDateObjecttoDisplayLocaleDate,
   convertDisplayLocaleDatetoDateObject,
 } from "../../../axios/profile";
 import CenteredView from "../../components/view/CenteredView";

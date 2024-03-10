@@ -199,8 +199,8 @@ const styles = StyleSheet.create({
   textRightButton: {
     backgroundColor: "transparent",
     color: colors.white,
-    fontFamily: "Poppins",
-    fontSize: 12,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 12 * dimensions.fullWidthAdjusted / 430,
   },
   thickBorderBottom: {
     borderColor: colors.daclen_grey_light,

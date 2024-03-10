@@ -1,20 +1,17 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
+import { bottomNav, staticDimensions, dimensions } from "../styles/base";
+import TabBarIcon from "../components/bottomnav/TabBarIcon";
 import DashboardMain from "../screens/dashboard/DashboardScreen";
 import ShopScreen from "../screens/Shop/ShopScreen";
 import StarterKitScreen from "../screens/StarterKit/StarterKitScreen";
 import ProfileScreen from "../screens/Profile/ProfileScreen";
 
-import PointReportScreen from "../screens/point/PointReportScreen";
-
-import { bottomNav, staticDimensions, dimensions } from "../styles/base";
-import TabBarIcon from "../components/bottomnav/TabBarIcon";
-
 const Tab = createBottomTabNavigator();
 
 export default function TabNavigator(props) {
-  const { isLogin, isActive, recruitmentTimer } = props;
+  //const { isLogin, isActive, recruitmentTimer } = props;
   return (
     <Tab.Navigator
       initialRouteName="Home"
