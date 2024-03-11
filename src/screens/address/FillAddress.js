@@ -1,16 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-  ScrollView,
-  SafeAreaView,
-  Platform,
-} from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { View, TextInput, StyleSheet, Text, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import RBSheet from "react-native-raw-bottom-sheet";
 
@@ -31,12 +20,21 @@ import {
   updateReduxUserAddresses,
   incrementReduxUserAddresses,
 } from "../../../axios/user";
-import AddressData, { AddressInputNamesData } from "../../../components/address/AddressData";
+import AddressData, {
+  AddressInputNamesData,
+} from "../../../components/address/AddressData";
 import BSTextInput from "../../components/bottomsheets/BSTextInput";
 import BSContainer from "../../components/bottomsheets/BSContainer";
-import { selectprovinsi, selectkota, selectkecamatan } from "../../../components/address/constants";
+import {
+  selectprovinsi,
+  selectkota,
+  selectkecamatan,
+} from "../../../components/address/constants";
 import { colors, staticDimensions } from "../../../styles/base";
-import { getObjectAsync, setObjectAsync } from "../../../components/asyncstorage";
+import {
+  getObjectAsync,
+  setObjectAsync,
+} from "../../../components/asyncstorage";
 import {
   ASYNC_RAJAONGKIR_KECAMATAN_KEY,
   ASYNC_RAJAONGKIR_KOTA_KEY,
@@ -52,12 +50,19 @@ import CenteredView from "../../components/view/CenteredView";
 import EmptySpinner from "../../components/empty/EmptySpinner";
 import AlertBox from "../../components/alert/AlertBox";
 import { privacypolicy } from "../../../components/profile/constants";
+import TextBox from "../../components/textbox/TextBox";
+import { FILL_ADDRESS_DESC } from "../../constants/strings";
+import Button from "../../components/Button/Button";
+import TextInputLabel from "../../components/textinputs/TextInputLabel";
+import TextInputButton from "../../components/textinputs/TextInputButton";
+import { phone_regex } from "../../axios/constants";
 
 function FillAddress(props) {
   const [address, setAddress] = useState(AddressData);
   const [loading, setLoading] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [errors, setErrors] = useState(AddressData);
 
   const [bottomList, setBottomList] = useState([]);
   const [bottomTitle, setBottomTitle] = useState("");
@@ -227,6 +232,33 @@ function FillAddress(props) {
     }
   }, [props.rajaongkir?.kecamatan]);
 
+  useEffect(() => {
+    let newErrors = { ...errors };
+
+    if (
+      !isDefault &&
+      !(address?.nama_depan === "" || address?.nama_depan?.length < 3)
+    ) {
+      newErrors = { ...newErrors, nama_depan: "" };
+    }
+    if (phone_regex.test(address?.nomor_telp)) {
+      newErrors = { ...newErrors, nomor_telp: "" };
+    }
+    if (address?.provinsi_id !== "") {
+      newErrors = { ...newErrors, provinsi_id: "" };
+    }
+    if (address?.kota_id !== "") {
+      newErrors = { ...newErrors, kota_id: "" };
+    }
+    if (address?.kecamatan_id === "") {
+      newErrors = { ...newErrors, kecamatan_id: "" };
+    }
+    if (!(address?.alamat === "" || address?.alamat?.length < 3)) {
+      newErrors = { ...newErrors, alamat: "" };
+    }
+    setErrors(newErrors);
+  }, [address]);
+
   function openBottomSheet(key, arrayList, title) {
     setLoading(false);
     setBottomList(arrayList);
@@ -272,12 +304,12 @@ function FillAddress(props) {
           token,
           "kota",
           "provinsi_id",
-          address?.provinsi_id
+          address?.provinsi_id,
         );
         props.updateReduxRajaOngkirWithKey("kota", newData);
       } else {
         const match = storageKota.find(
-          ({ provinsi_id }) => provinsi_id === address?.provinsi_id
+          ({ provinsi_id }) => provinsi_id === address?.provinsi_id,
         );
         if (
           match === undefined ||
@@ -290,7 +322,7 @@ function FillAddress(props) {
             token,
             "kota",
             "provinsi_id",
-            address?.provinsi_id
+            address?.provinsi_id,
           );
           props.updateReduxRajaOngkirWithKey("kota", newData);
         } else {
@@ -320,12 +352,12 @@ function FillAddress(props) {
           token,
           "kecamatan",
           "kota_id",
-          address?.kota_id
+          address?.kota_id,
         );
         props.updateReduxRajaOngkirWithKey("kecamatan", newData);
       } else {
         const match = storageKota.find(
-          ({ kota_id }) => kota_id === address?.kota_id
+          ({ kota_id }) => kota_id === address?.kota_id,
         );
         if (
           match === undefined ||
@@ -338,7 +370,7 @@ function FillAddress(props) {
             token,
             "kecamatan",
             "kota_id",
-            address?.kota_id
+            address?.kota_id,
           );
           props.updateReduxRajaOngkirWithKey("kecamatan", newData);
         } else {
@@ -444,19 +476,26 @@ function FillAddress(props) {
 
   const updateUserAddressData = async () => {
     try {
-      if (address?.nama_depan === "") {
-        setError("Nama Depan harus diisi");
-      } else if (address?.alamat === "") {
-        setError("Alamat harus diisi");
+      if (
+        (address?.nama_depan === "" || address?.nama_depan?.length < 3) &&
+        !isDefault
+      ) {
+        setErrors({ ...AddressData, nama_depan: "Nama Depan wajib diisi." });
+      } else if (!phone_regex.test(address?.nomor_telp)) {
+        setErrors({
+          ...AddressData,
+          nomor_telp: "Harap isi nomor telepon yang valid.",
+        });
       } else if (address?.provinsi_id === "") {
-        setError("Provinsi harus dipilih");
+        setErrors({ ...AddressData, provinsi_id: "Provinsi wajib diisi." });
       } else if (address?.kota_id === "") {
-        setError("Kota / Kabupaten harus dipilih");
+        setErrors({ ...AddressData, kota_id: "Kota / Kabupaten wajib diisi." });
       } else if (address?.kecamatan_id === "") {
-        setError("Kecamatan harus dipiilh");
-      } else if (address?.nomor_telp === "") {
-        setError("Nomor Telepon harus diisi");
+        setErrors({ ...AddressData, kecamatan_id: "Kecamatan wajib diisi." });
+      } else if (address?.alamat === "" || address?.alamat?.length < 3) {
+        setErrors({ ...AddressData, alamat: "Alamat Lengkap wajib diisi." });
       } else if (!loading && token !== null && currentUser?.id !== undefined) {
+        setErrors(AddressData);
         setSuccess(true);
         setLoading(true);
 
@@ -501,29 +540,8 @@ function FillAddress(props) {
     props.updateReduxUserAddresses(newAddresses);
   };
 
-  return (
-    <CenteredView title="Isi Alamat" style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-      <Text allowFontScaling={false}
-            style={[styles.textUid, { textAlign: "center", marginBottom: 12 }]}
-          >
-            Mohon mengisi alamat lengkap yang akan digunakan untuk informasi
-            Checkout Anda dan pengiriman barang. Informasi ini akan dibagikan ke
-            kurir pengiriman sebagai pihak ketiga apabila Anda telah melunasi
-            Checkout.
-          </Text>
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("Webview", {
-                webKey: "privacy",
-                text: privacypolicy,
-              })
-            }
-            disabled={loading}
-          >
-            <Text allowFontScaling={false} style={styles.textChange}>Baca {privacypolicy}</Text>
-          </TouchableOpacity>
-        {Platform.OS === "ios" ? null : (
+  /*
+{Platform.OS === "ios" ? null : (
           <TouchableOpacity
             onPress={() => openLocationPin()}
             style={[
@@ -553,214 +571,140 @@ function FillAddress(props) {
             <Text allowFontScaling={false} style={styles.textButton}>Tentukan di Peta</Text>
           </TouchableOpacity>
         )}
+  */
+
+  return (
+    <CenteredView title="Isi Alamat" style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <TextBox
+          text={FILL_ADDRESS_DESC}
+          linkText={`Baca ${privacypolicy}`}
+          onPress={() =>
+            navigation.navigate("Webview", {
+              webKey: "privacy",
+              text: privacypolicy,
+            })
+          }
+          style={{ margin: staticDimensions.marginHorizontal }}
+        />
 
         {isDefault ? null : (
           <View style={styles.containerVertical}>
-            <Text allowFontScaling={false} style={[styles.textCompulsory]}>Nama Depan Penerima*</Text>
-            <TextInput
+            <TextInputLabel
+              label="Nama Depan Penerima"
+              compulsory
               value={address?.nama_depan}
-              style={[
-                styles.textInput,
-                {
-                  backgroundColor:
-                    address.nama_depan === null || address.nama_depan === ""
-                      ? colors.daclen_lightgrey
-                      : colors.white,
-                },
-              ]}
+              inputMode="decimal"
+              error={errors?.nama_depan}
               onChangeText={(nama_depan) =>
                 setAddress({ ...address, nama_depan })
               }
-              editable={!isDefault}
             />
-            <Text allowFontScaling={false} style={styles.text}>Nama Belakang Penerima (opsional)</Text>
-            <TextInput
+
+            <TextInputLabel
+              label="Nama Belakang Penerima"
               value={address?.nama_belakang}
-              style={styles.textInput}
+              error={errors?.nama_belakang}
               onChangeText={(nama_belakang) =>
                 setAddress({ ...address, nama_belakang })
               }
-              editable={!isDefault}
             />
-          </View>
-        )}
 
-        {isDefault ? null : (
-          <View style={styles.containerVertical}>
-            <Text allowFontScaling={false} style={styles.textCompulsory}>Nomor Telepon*</Text>
-            <TextInput
+            <TextInputLabel
+              label="Nomor Telepon"
+              compulsory
+              placeholder="08xxxxxxxxx"
               value={address?.nomor_telp}
-              style={[
-                styles.textInput,
-                {
-                  backgroundColor:
-                    address.nomor_telp === null || address.nomor_telp === ""
-                      ? colors.daclen_lightgrey
-                      : colors.white,
-                },
-              ]}
               inputMode="decimal"
+              error={errors?.nomor_telp}
               onChangeText={(nomor_telp) =>
                 setAddress({ ...address, nomor_telp })
               }
-              editable={!isDefault}
             />
           </View>
         )}
 
-        <Text allowFontScaling={false} style={styles.textCompulsory}>Alamat Lengkap*</Text>
-        <TextInput
-          value={address?.alamat}
-          style={[
-            styles.textInput,
-            {
-              backgroundColor:
-                address.alamat === null || address.alamat === ""
-                  ? colors.daclen_lightgrey
-                  : colors.white,
-            },
-          ]}
-          onChangeText={(alamat) => setAddress({ ...address, alamat })}
-        />
-        <Text allowFontScaling={false} style={styles.textCompulsory}>Provinsi*</Text>
-        <BSTextInput
-          disabled={loading}
-          onPress={() => openProvinsi()}
-          value={inputNames.provinsi}
-          style={[
-            styles.textInput,
-            {
-              backgroundColor:
-                inputNames.provinsi === null || inputNames.provinsi === ""
-                  ? colors.daclen_lightgrey
-                  : colors.white,
-            },
-          ]}
-          onChangeText={(provinsi_id) =>
-            setAddress({ ...address, provinsi_id })
-          }
-        />
-        <Text allowFontScaling={false} style={styles.textCompulsory}>Kota/Kabupaten*</Text>
-        <BSTextInput
-          disabled={loading || props.rajaongkir?.provinsi === null}
-          onPress={() => openKota()}
-          value={
-            inputNames.kota === null || inputNames.kota === ""
-              ? props.rajaongkir?.provinsi === null
-                ? "Pilih Provinsi terlebih dahulu"
-                : "Tekan untuk memilih"
-              : inputNames.kota
-          }
-          style={[
-            styles.textInput,
-            {
-              backgroundColor:
-                inputNames.kota === null || inputNames.kota === ""
-                  ? colors.daclen_lightgrey
-                  : colors.white,
-            },
-          ]}
-          onChangeText={(kota_id) => setAddress({ ...address, kota_id })}
-        />
-        <Text allowFontScaling={false} style={styles.textCompulsory}>Kecamatan*</Text>
-        <BSTextInput
-          disabled={
-            loading ||
-            props.rajaongkir?.provinsi === null ||
-            props.rajaongkir?.kota === null
-          }
-          onPress={() => openKecamatan()}
-          value={
-            inputNames.kecamatan === null || inputNames.kecamatan === ""
-              ? props.rajaongkir?.provinsi === null
-                ? "Pilih Provinsi terlebih dahulu"
-                : props.rajaongkir?.kota === null
-                ? "Pilih Kota/Kabupaten terlebih dahulu"
-                : "Tekan untuk memilih"
-              : inputNames.kecamatan
-          }
-          style={[
-            styles.textInput,
-            {
-              backgroundColor:
-                inputNames.kecamatan === null || inputNames.kecamatan === ""
-                  ? colors.daclen_lightgrey
-                  : colors.white,
-            },
-          ]}
-          onChangeText={(kecamatan_id) =>
-            setAddress({ ...address, kecamatan_id })
-          }
-        />
-        <Text allowFontScaling={false} style={styles.text}>Kode Pos (opsional)</Text>
-        <TextInput
-          value={address?.kode_pos}
-          style={styles.textInput}
-          inputMode="decimal"
-          onChangeText={(kode_pos) => setAddress({ ...address, kode_pos })}
-        />
-
-        <TouchableOpacity
-          onPress={() => updateUserAddressData()}
-          style={[
-            styles.button,
-            loading && { backgroundColor: colors.daclen_gray },
-          ]}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator
-              size="small"
-              color={colors.daclen_light}
-              style={{ alignSelf: "center" }}
-            />
-          ) : (
-            <MaterialCommunityIcons
-              name="cursor-pointer"
-              size={18}
-              color={colors.daclen_light}
-            />
-          )}
-          <Text allowFontScaling={false} style={styles.textButton}>Simpan Alamat</Text>
-        </TouchableOpacity>
-
-        {isDefault || isRealtime || isNew ? null : (
-          <TouchableOpacity
-            onPress={() => deleteAddressData()}
-            style={[
-              styles.button,
-              {
-                backgroundColor: loading
-                  ? colors.daclen_gray
-                  : colors.daclen_red,
-                marginVertical: 0,
-              },
-            ]}
+        <View style={styles.containerVertical}>
+          <TextInputButton
+            label="Provinsi"
+            onPress={() => openProvinsi()}
             disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator
-                size="small"
-                color={colors.daclen_light}
-                style={{ alignSelf: "center" }}
-              />
-            ) : (
-              <MaterialCommunityIcons
-                name="delete"
-                size={18}
-                color={colors.daclen_light}
-              />
-            )}
-            <Text allowFontScaling={false} style={styles.textButton}>Hapus Alamat</Text>
-          </TouchableOpacity>
-        )}
+            compulsory
+            value={inputNames.provinsi}
+            error={errors?.provinsi_id}
+          />
 
-        <View style={styles.containerBottom} />
+          {inputNames.provinsi ? (
+            <TextInputButton
+              label="Kota / Kabupaten"
+              disabled={loading || props.rajaongkir?.provinsi === null}
+              onPress={() => openKota()}
+              compulsory
+              value={
+                inputNames.kota === null || inputNames.kota === ""
+                  ? inputNames.provinsi === null || inputNames.provinsi === ""
+                    ? "Pilih Provinsi terlebih dahulu"
+                    : "Pilih Kota / Kabupaten"
+                  : inputNames.kota
+              }
+              error={errors?.kota_id}
+            />
+          ) : null}
+
+          {inputNames.provinsi && inputNames.kota ? (
+            <TextInputButton
+              disabled={
+                loading ||
+                props.rajaongkir?.provinsi === null ||
+                props.rajaongkir?.kota === null
+              }
+              onPress={() => openKecamatan()}
+              value={
+                inputNames.kecamatan === null || inputNames.kecamatan === ""
+                  ? inputNames.provinsi === null || inputNames.provinsi === ""
+                    ? "Pilih Provinsi terlebih dahulu"
+                    : props.rajaongkir?.kota === null
+                      ? "Pilih Kota/Kabupaten terlebih dahulu"
+                      : "Pilih Kecamatan"
+                  : inputNames.kecamatan
+              }
+              compulsory
+              error={errors?.kecamatan_id}
+            />
+          ) : null}
+
+          <TextInputLabel
+            label="Alamat Lengkap"
+            compulsory
+            value={address?.alamat}
+            error={errors?.alamat}
+            onChangeText={(alamat) => setAddress({ ...address, alamat })}
+          />
+
+          <TextInputLabel
+            label="Kode Pos"
+            error={errors?.kode_pos}
+            value={address?.kode_pos}
+            inputMode="decimal"
+            onChangeText={(kode_pos) => setAddress({ ...address, kode_pos })}
+          />
+        </View>
+
+        <Button
+          text="Simpan Alamat"
+          loading={loading}
+          onPress={() => updateUserAddressData()}
+          style={styles.button}
+        />
+        <Button
+          text="Hapus Alamat"
+          inverted
+          fontColor={colors.daclen_danger}
+          onPress={() => deleteAddressData()}
+          style={styles.button}
+        />
       </ScrollView>
 
-      {loading ? (
-       <EmptySpinner style={styles.containerLoading} />
-      ) : null}
       <AlertBox text={error} success={success} onClose={() => setError(null)} />
       <RBSheet ref={rbSheet} openDuration={250} height={400}>
         <BSContainer
@@ -791,87 +735,17 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    backgroundColor: "transparent",
     paddingTop: 10,
     paddingBottom: staticDimensions.pageBottomPadding,
   },
-  containerLoading: {
-    width: "100%",
-    height: "100%",
-    zIndex: 6,
-    position: "absolute",
-    top: 0,
-    start: 0,
-    backgroundColor: colors.daclen_light,
-    opacity: 0.8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   containerVertical: {
     backgroundColor: "transparent",
-  },
-  containerPrivacy: {
-    marginBottom: 20,
-    backgroundColor: "transparent",
-    alignItems: "center",
-  },
-  containerBottom: {
-    backgroundColor: "transparent",
-    height: staticDimensions.pageBottomPadding / 2,
-  },
-  text: {
-    marginHorizontal: 20,
-    color: colors.daclen_gray,
-    fontSize: 12,
-    fontFamily: "Poppins-Bold",
-  },
-  textCompulsory: {
-    color: colors.daclen_orange,
-    fontSize: 12,
-    fontFamily: "Poppins-Bold",
-    marginHorizontal: 20,
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: colors.daclen_gray,
-    marginHorizontal: 20,
-    borderRadius: 4,
-    padding: 10,
-    marginTop: 2,
-    marginBottom: 20,
-    fontFamily: "Poppins", fontSize: 14,
+    paddingHorizontal: staticDimensions.marginHorizontal,
   },
   button: {
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    marginHorizontal: 20,
-    borderRadius: 4,
-    marginVertical: 20,
-    elevation: 3,
-    backgroundColor: colors.daclen_black,
-  },
-  textError: {
-    fontSize: 14,
-    fontFamily: "Poppins-Bold",
-    color: colors.white,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: colors.daclen_danger,
-    textAlign: "center",
-  },
-  textButton: {
-    fontSize: 16,
-    fontFamily: "Poppins-Bold",
-    color: colors.white,
-    marginStart: 10,
-  },
-  textUid: {
-    fontFamily: "Poppins", fontSize: 12,
-    color: colors.daclen_gray,
-    marginHorizontal: 20,
-    textAlign: "center",
+    marginHorizontal: staticDimensions.marginHorizontal,
+    marginBottom: staticDimensions.marginHorizontal,
   },
 });
 
@@ -894,7 +768,7 @@ const mapDispatchProps = (dispatch) =>
       incrementReduxUserAddresses,
       updateReduxRajaOngkirWithKey,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchProps)(FillAddress);

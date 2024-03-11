@@ -1,13 +1,7 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { colors, staticDimensions } from "../../styles/base";
-import Checkbox from "../checkbox/Checkbox";
+import { colors, staticDimensions, dimensions } from "../../styles/base";
 import TextBoxVerified from "../textbox/TextBoxVerified";
 
 const TextInputButton = (props) => {
@@ -15,7 +9,6 @@ const TextInputButton = (props) => {
     label,
     compulsory,
     verified,
-    showNotApplicable,
     value,
     note,
     error,
@@ -29,15 +22,6 @@ const TextInputButton = (props) => {
     arrow,
     style,
   } = props;
-  const [notApplicable, setNotApplicable] = useState(false);
-
-  useEffect(() => {
-    if (notApplicable) {
-      setText("Not Applicable");
-    } else if (!notApplicable && value === "Not Applicable") {
-      setText("");
-    }
-  }, [notApplicable]);
 
   function onPress() {
     if (!(props?.onPress === undefined || props?.onPress === null)) {
@@ -49,28 +33,32 @@ const TextInputButton = (props) => {
     <View style={[styles.container, containerStyle ? containerStyle : null]}>
       <TouchableOpacity
         onPress={() => onPress()}
+        disabled={disabled}
         style={[
           styles.containerText,
           {
-            backgroundColor:
-              disabled || notApplicable || verified
-                ? colors.grey_textinput_disabled
+            backgroundColor: disabled
+              ? colors.daclen_grey_light
+              : verified
+                ? colors.daclen_success_light
                 : colors.white,
             borderColor: error
-              ? colors.danger
-              : disabled || notApplicable || verified
-                ? colors.grey_textinput_border
-                : colors.grey_box,
+              ? colors.daclen_danger
+              : colors.daclen_grey_placeholder,
           },
           textContainerStyle ? textContainerStyle : null,
         ]}
       >
         <View style={styles.containerVertical}>
-          {label && !(value === null || value === "") ? (
-            <View style={[styles.containerHorizontal, { marginBottom: 2 }]}>
+          {label ? (
+            <View style={[styles.containerHorizontal, { marginBottom: 1 }]}>
               <Text
                 allowFontScaling={false}
-                style={[styles.text, labelStyle ? labelStyle : null]}
+                style={[
+                  styles.text,
+                  { fontSize: value ? 10 : 12 },
+                  labelStyle ? labelStyle : null,
+                ]}
               >
                 {label}
               </Text>
@@ -87,7 +75,7 @@ const TextInputButton = (props) => {
               {
                 color: verified
                   ? colors.buttonTextDisabled
-                  : notApplicable || disabled
+                  : disabled
                     ? colors.grey_textinput_disabled
                     : colors.textBlack,
               },
@@ -99,13 +87,20 @@ const TextInputButton = (props) => {
           </Text>
         </View>
 
-        {verified ? (
+        {error ? (
+          <MaterialCommunityIcons
+            name="alert-circle-outline"
+            size={20}
+            color={colors.daclen_danger}
+            style={styles.arrow}
+          />
+        ) : verified ? (
           <TextBoxVerified />
         ) : (
           <MaterialCommunityIcons
             name={arrow ? arrow : "chevron-down"}
-            size={16}
-            color={colors.grey_box}
+            size={20}
+            color={colors.daclen_grey_placeholder}
             style={styles.arrow}
           />
         )}
@@ -122,58 +117,19 @@ const TextInputButton = (props) => {
             },
           ]}
         >
-          {note || error ? (
+          {error ? (
             <Text
               allowFontScaling={false}
               style={[
                 styles.text,
                 {
-                  color: error ? colors.danger : colors.bottomNavInactive,
-                  flex: 1,
+                  color: colors.daclen_danger,
                 },
               ]}
             >
-              {error ? error : note}
+              {error}
             </Text>
           ) : null}
-
-          {maxCharacter ? (
-            <Text
-              allowFontScaling={false}
-              style={[
-                styles.text,
-                {
-                  textAlign: "right",
-                  color: error ? colors.danger : colors.bottomNavInactive,
-                },
-                labelStyle ? labelStyle : null,
-              ]}
-            >
-              {`${
-                value ? (value?.length ? value?.length : "0") : "0"
-              }/${maxCharacter}`}
-            </Text>
-          ) : null}
-        </View>
-      ) : null}
-      {showNotApplicable ? (
-        <View style={[styles.containerHorizontal, { marginTop: 6 }]}>
-          <Checkbox
-            width={12}
-            height={12}
-            active={notApplicable}
-            onPress={() => setNotApplicable((notApplicable) => !notApplicable)}
-          />
-          <Text
-            allowFontScaling={false}
-            style={[
-              styles.text,
-              { marginStart: 6 },
-              labelStyle ? labelStyle : null,
-            ]}
-          >
-            {"Not Applicable"}
-          </Text>
         </View>
       ) : null}
     </View>
@@ -191,45 +147,42 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   containerText: {
-    borderRadius: 8,
+    borderRadius: (12 * dimensions.fullWidthAdjusted) / 430,
     paddingVertical: 4,
     borderWidth: 0.5,
-    height: 50,
-    borderColor: colors.grey_separator,
+    height: (50 * dimensions.fullWidthAdjusted) / 430,
+    borderColor: colors.daclen_box_grey,
     flexDirection: "row",
     alignItems: "center",
   },
   containerVertical: {
     backgroundColor: "transparent",
-    marginHorizontal: staticDimensions.marginHorizontal,
+    marginHorizontal: staticDimensions.marginHorizontal / 2,
     flex: 1,
   },
   textInput: {
     backgroundColor: "transparent",
-    fontSize: 14,
-    fontFamily: "PlusJakartaSans-Regular",
-    lineHeight: 20,
-    letterSpacing: 0.25,
+    fontSize: 11,
+    fontFamily: "Poppins-Light",
   },
   text: {
     backgroundColor: "transparent",
-    color: colors.bottomNavInactive,
-    fontSize: 10,
-    lineHeight: 14,
-    fontFamily: "PlusJakartaSans-Regular",
+    color: colors.black,
+    fontSize: 12,
+    fontFamily: "Poppins",
     alignSelf: "center",
   },
   textCompulsory: {
     backgroundColor: "transparent",
     alignSelf: "flex-start",
-    color: colors.danger,
+    color: colors.black,
     fontSize: 8,
     fontFamily: "PlusJakartaSans-Medium",
   },
   arrow: {
     backgroundColor: "transparent",
     alignSelf: "center",
-    marginEnd: staticDimensions.marginHorizontal,
+    marginEnd: staticDimensions.marginHorizontal / 2,
   },
 });
 

@@ -80,8 +80,10 @@ const TextInputLabel = (props) => {
           {
             backgroundColor:
               disabled || notApplicable
-                ? colors.daclen_grey_light : verified ? colors.daclen_success_light 
-                : colors.white,
+                ? colors.daclen_grey_light
+                : verified
+                  ? colors.daclen_success_light
+                  : colors.white,
             borderColor: error
               ? colors.daclen_danger
               : colors.daclen_grey_placeholder,
@@ -107,8 +109,8 @@ const TextInputLabel = (props) => {
               color: verified
                 ? colors.daclen_grey_placeholder
                 : notApplicable || disabled
-                ? colors.daclen_
-                : colors.daclen_label_grey,
+                  ? colors.daclen_grey_light
+                  : colors.daclen_label_grey,
             },
             style ? style : null,
           ]}
@@ -132,12 +134,14 @@ const TextInputLabel = (props) => {
               }}
             />
           </TouchableOpacity>
-        ) : error ? (<MaterialCommunityIcons
-          name="alert-circle-outline"
-          size={20}
-          color={colors.daclen_danger}
-          style={styles.check}
-        /> ) : verified ? (
+        ) : error ? (
+          <MaterialCommunityIcons
+            name="alert-circle-outline"
+            size={20}
+            color={colors.daclen_danger}
+            style={styles.check}
+          />
+        ) : verified ? (
           shortVerified ? (
             <MaterialCommunityIcons
               name="check-bold"
@@ -176,14 +180,11 @@ const TextInputLabel = (props) => {
             >
               {error}
             </Text>
-          ) : notes ? 
-          <Text
-              allowFontScaling={false}
-              style={[styles.text, { flex: 1 }]}
-            >
+          ) : notes ? (
+            <Text allowFontScaling={false} style={[styles.text, { flex: 1 }]}>
               {notes}
             </Text>
-          : null}
+          ) : null}
 
           {maxCharacter ? (
             <Text
@@ -241,10 +242,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   containerText: {
-    borderRadius: 12 * dimensions.fullWidthAdjusted / 430,
+    borderRadius: (12 * dimensions.fullWidthAdjusted) / 430,
     paddingVertical: 4,
     borderWidth: 0.5,
-    height: 50 * dimensions.fullWidthAdjusted / 430,
+    height: (50 * dimensions.fullWidthAdjusted) / 430,
     borderColor: colors.daclen_box_grey,
     flexDirection: "row",
     alignItems: "center",
@@ -254,7 +255,7 @@ const styles = StyleSheet.create({
     marginEnd: 10,
   },
   textInput: {
-    marginHorizontal: 8,
+    marginHorizontal: staticDimensions.marginHorizontal / 2,
     backgroundColor: "transparent",
     fontSize: 12,
     fontFamily: "Poppins-Light",
@@ -278,12 +279,12 @@ const styles = StyleSheet.create({
   arrow: {
     backgroundColor: "transparent",
     alignSelf: "center",
-    marginEnd: 10,
+    marginEnd: staticDimensions.marginHorizontal / 2,
   },
   check: {
     backgroundColor: "transparent",
     alignSelf: "center",
-    marginHorizontal: 10,
+    marginHorizontal: staticDimensions.marginHorizontal / 2,
   },
 });
 

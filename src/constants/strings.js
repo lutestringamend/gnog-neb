@@ -1,0 +1,1 @@
+export const FILL_ADDRESS_DESC = `Mohon mengisi alamat lengkap yang akan digunakan untuk informasi Checkout Anda dan pengiriman barang. Informasi ini akan dibagikan ke kurir pengiriman sebagai pihak ketiga apabila Anda telah melunasi Checkout.`;
