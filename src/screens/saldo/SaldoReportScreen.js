@@ -98,7 +98,7 @@ const SaldoReportScreen = (props) => {
         return;
       }
       let organized = organizeListByTanggalDibuat(saldo, true);
-      //console.log("organized", organized);
+      console.log("organized", organized);
       setOrganizedList(organized);
     }, [saldo]);
 

@@ -142,7 +142,7 @@ const WithdrawalConfirmationScreen = (props) => {
           >
             <View style={[styles.containerVertical, { flex: 1 }]}>
               <Text allowFontScaling={false} style={styles.text}>
-                Jumlah penarikan
+                Jumlah diterima
               </Text>
               <Text
                 allowFontScaling={false}

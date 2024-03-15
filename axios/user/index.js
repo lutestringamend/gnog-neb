@@ -466,12 +466,13 @@ export function getLaporanSaldo(id, token) {
         Accept: "application/json",
       },
     };
-    const url = laporansaldo + "/" + id.toString();
+    const url = laporansaldo + "/" + id.toString() + "?page=3";
     console.log("getLaporanSaldo", url);
 
     Axioss.get(url, config)
       .then((response) => {
         const data = response?.data?.data.reverse();
+        console.log("getLaporanSaldo response", response?.data);
         dispatch({ type: USER_SALDO_STATE_CHANGE, data });
         try {
           let newTotal = 0;

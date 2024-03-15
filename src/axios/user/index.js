@@ -472,6 +472,7 @@ export function getLaporanSaldo(id, token) {
     Axioss.get(url, config)
       .then((response) => {
         const data = response?.data?.data.reverse();
+        console.log("getLaporanSaldo response", data);
         dispatch({ type: USER_SALDO_STATE_CHANGE, data });
         try {
           let newTotal = 0;

@@ -514,7 +514,7 @@ const DashboardScreen = (props) => {
               <DashButton
                 iconStyle={{ borderRadius: 8 * ratio, borderWidth: 0 }}
                 text="Bonus Level Jaringan"
-                iconText="A"
+                iconText={currentUser?.bonus_level_user?.setting_bonus_level ? currentUser?.bonus_level_user?.setting_bonus_level?.level : "-"}
                 caption="Anda memiliki bonus level jaringan "
                 style={{ marginHorizontal: staticDimensions.marginHorizontal }}
                 onPress={() => navigation.navigate("BonusRootScreen")}
