@@ -30,8 +30,7 @@ import ImageLargeWatermarkModel from "../../../components/media/ImageLargeWaterm
 import { STARTER_KIT_FLYER_MENGAJAK_TAG,
   STARTER_KIT_FLYER_PRODUK_TAG,
   videoplayerportraitiosheight,
-  videoplayerportraitpanelandroidheight, } from "../../../components/mediakit/constants";
-import HeaderBar from "../../components/Header/HeaderBar";
+  videoplayerportraitpanelandroidheight, } from "../../constants/starterkit";
 import AlertBox from "../../components/alert/AlertBox";
 import CenteredView from "../../components/view/CenteredView";
 //import { getFileName } from "../media";

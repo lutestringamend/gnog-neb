@@ -31,7 +31,7 @@ import {
   STARTER_KIT_VIDEO_MENGAJAK_FILE_NAME,
   STARTER_KIT_VIDEO_MENGAJAK_TAG,
   STARTER_KIT_VIDEO_PRODUK_FILE_NAME,
-} from "../mediakit/constants";
+} from "../../src/axios/constants/starterkit";
 
 const iPhoneScaleFactorTwo = [
   "iphone se",

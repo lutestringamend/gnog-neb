@@ -5,7 +5,7 @@ import {
   STARTER_KIT_DEFAULT_FONT_SIZE,
   STARTER_KIT_DEFAULT_ICON_HEIGHT,
   STARTER_KIT_DEFAULT_ICON_WIDTH,
-} from "../constants";
+} from "../../../src/axios/constants/starterkit";
 
 const StarterKitHomeButton = (props) => {
   const { text, icon, style, fontSize, disabled } = props;

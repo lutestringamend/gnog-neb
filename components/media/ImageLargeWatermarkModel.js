@@ -2,17 +2,17 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 
-import { blurhash, colors } from "../../styles/base";
+import { colors } from "../../styles/base";
 import {
   vwmarktextnamecharlimit,
   vwmarktextphonecharlimit,
   wmarkhorizontalmargin,
-} from "../mediakit/constants";
+  STARTER_KIT_FLYER_PRODUK_TAG,
+} from "../../src/constants/starterkit";
 import {
   tokoonlineurlshort,
   personalwebsiteurlshort,
 } from "../../axios/constants";
-import { STARTER_KIT_FLYER_PRODUK_TAG } from "../mediakit/constants";
 
 function ImageLargeWatermarkModel(props) {
   const {

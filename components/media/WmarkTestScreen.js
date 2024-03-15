@@ -1,7 +1,7 @@
 import React from 'react'
 import { Dimensions, SafeAreaView, View, Platform } from 'react-native'
 import VideoLargeWatermarkModel from './VideoLargeWatermarkModel'
-import { videoplayerportraitiosheight, videoplayerportraitpanelandroidheight, vwmarkdefaultsourceheight, vwmarkdefaultsourcewidth } from '../mediakit/constants'
+import { videoplayerportraitiosheight, videoplayerportraitpanelandroidheight, vwmarkdefaultsourceheight, vwmarkdefaultsourcewidth } from '../../src/constants/starterkit'
 import { tokoonlineurlshort } from '../../axios/constants'
 import { colors } from '../../styles/base'
 

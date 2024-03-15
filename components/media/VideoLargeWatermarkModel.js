@@ -17,7 +17,7 @@ import {
   vwmarkurlmargintop,
   vwmarkurlpaddinghorizontal,
   vwmarkurlpaddingvertical,
-} from "../mediakit/constants";
+} from "../../src/constants/starterkit";
 import VWatermarkModel2 from "./VWatermarkModel2";
 
 function VideoLargeWatermarkModel(props) {

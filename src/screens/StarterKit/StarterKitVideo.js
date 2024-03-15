@@ -31,7 +31,7 @@ import VideosFlatlist from "../../components/starterkit/VideosFlatlist";
 import {
   STARTER_KIT_VIDEO_MENGAJAK_TAG,
   STARTER_KIT_VIDEO_PRODUK_TAG,
-} from "../../../components/mediakit/constants";
+} from "../../axios/constants/starterkit";
 import EmptySpinner from "../../components/empty/EmptySpinner";
 import EmptyPlaceholder from "../../components/empty/EmptyPlaceholder";
 import { staticDimensions } from "../../styles/base";
@@ -193,7 +193,7 @@ const StarterKitVideo = (props) => {
                 <StarterKitVideoSegment
                   index={index}
                   isLast={index === videoKeys?.length - 1}
-                  key={item}
+                  key={index}
                   title={item}
                   videos={mediaKitVideos[item]}
                   refreshing={refreshing}

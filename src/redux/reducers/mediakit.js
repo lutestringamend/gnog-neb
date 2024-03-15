@@ -15,9 +15,11 @@ import {
   MEDIA_KIT_PHOTOS_MULTIPLE_SAVE_STATE_CHANGE,
   MEDIA_KIT_TUTORIALS_STATE_CHANGE,
   MEDIA_KIT_FLYER_SELECTION_STATE_CHANGE,
+  MEDIA_KIT_HOME_STATE_CHANGE,
 } from "../constants";
 
 const initialState = {
+  home: null,
   photos: null,
   photosUri: [],
   flyerMengajak: null,
@@ -40,6 +42,11 @@ const initialState = {
 
 export const mediakit = (state = initialState, action) => {
   switch (action.type) {
+    case MEDIA_KIT_HOME_STATE_CHANGE:
+      return {
+        ...state,
+        home: action.data,
+      };
     case MEDIA_KIT_WATERMARK_DATA_STATE_CHANGE:
       return {
         ...state,

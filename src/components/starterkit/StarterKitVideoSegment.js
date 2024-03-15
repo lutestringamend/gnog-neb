@@ -3,7 +3,7 @@ import { StyleSheet, View, Text } from "react-native";
 
 import { colors, staticDimensions, bottomNav, dimensions } from "../../styles/base";
 import VideosFlatlist from "./VideosFlatlist";
-import { STARTER_KIT_VIDEO_PRODUK_TAG } from "../../../components/mediakit/constants";
+import { STARTER_KIT_VIDEO_PRODUK_TAG } from "../../axios/constants/starterkit";
 
 const width = dimensions.fullWidth - (2 * staticDimensions.marginHorizontal);
 
@@ -23,6 +23,7 @@ const StarterKitVideoSegment = (props) => {
         style={[
           styles.containerScroll,
           {
+            marginTop: index === 0 ? staticDimensions.marginHorizontal : 0,
             marginBottom: isLast ? bottomNav.height + 3 * staticDimensions.marginHorizontal : staticDimensions.marginHorizontal,
           },
         ]}
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
   },
   textName: {
     fontFamily: "Poppins",
-    fontSize: 18,
+    fontSize: 16,
     color: colors.black,
   },
   textNum: {

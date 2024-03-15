@@ -50,10 +50,10 @@ const styles = StyleSheet.create({
     padding: 14 * ratio,
     justifyContent: "space-between",
     alignItems: "flex-start",
-    minHeight: 153 * ratio,
+    minHeight: 160 * ratio,
   },
   button: {
-    height: 40 * ratio,
+    height: 38 * ratio,
     borderRadius: 100 * ratio,
     alignSelf: "flex-end",
     paddingHorizontal: staticDimensions.marginHorizontal * ratio,
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Light",
     backgroundColor: "transparent",
     color: colors.black,
-    width: 220 * ratio,
+    maxWidth: 220 * ratio,
   },
 });
 

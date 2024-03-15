@@ -51,7 +51,7 @@ const StarterKitFlyerMengajak = (props) => {
     let newMaxPage = Math.ceil(photos?.length / itemLimit) - 1;
     setPage(0);
     setMaxPage(newMaxPage);
-    console.log("FlyerMengajak photos", photos, newMaxPage);
+    console.log("FlyerMengajak photos", photos?.length, newMaxPage);
   }, [photos]);
 
   useEffect(() => {

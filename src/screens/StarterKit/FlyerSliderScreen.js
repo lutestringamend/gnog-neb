@@ -31,12 +31,12 @@ import {
   STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE,
   STARTER_KIT_FLYER_MENGAJAK_TAG,
   STARTER_KIT_FLYER_PRODUK_TAG,
-} from "../../../components/mediakit/constants";
+} from "../../constants/starterkit";
 import {
   calculateFlyerDisplayHeight,
   calculateFlyerDisplayWidth,
   calculateResizedImageDimensions,
-} from "../../../components/mediakit";
+} from "../../utils/starterkit";
 import { checkNumberEmpty } from "../../../axios";
 import HeaderBar from "../../components/Header/HeaderBar";
 import AlertBox from "../../components/alert/AlertBox";

@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
-  View,
   Text,
-  SafeAreaView,
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
@@ -11,14 +9,14 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { useNavigation } from "@react-navigation/native";
 
-import { colors } from "../../../styles/base";
+import { colors } from "../../styles/base";
 import OTPInput from "../../components/OTP/OTPInput";
 import {
   updateReduxProfileLockStatus,
   updateReduxProfilePIN,
-} from "../../../axios/user";
-import { setObjectAsync } from "../../../components/asyncstorage";
-import { ASYNC_USER_PROFILE_PIN_KEY } from "../../../components/asyncstorage/constants";
+} from "../../axios/user";
+import { setObjectAsync } from "../../asyncstorage";
+import { ASYNC_USER_PROFILE_PIN_KEY } from "../../asyncstorage/constants";
 import CenteredView from "../../components/view/CenteredView";
 
 const CreatePINScreen = (props) => {
@@ -83,15 +81,7 @@ const CreatePINScreen = (props) => {
   return (
     <CenteredView title="Buat PIN" style={styles.containerLock}>
       <Text
-        style={[
-          styles.textLockHeader,
-          {
-            color:
-              newPIN === null || newPIN === ""
-                ? colors.daclen_black
-                : colors.daclen_orange,
-          },
-        ]}
+        style={styles.textLockHeader}
       >
         {newPIN === null || newPIN === ""
           ? "Masukkan PIN 4 Digit Baru"
@@ -112,7 +102,7 @@ const CreatePINScreen = (props) => {
       {loading ? (
         <ActivityIndicator
           size="large"
-          color={colors.daclen_orange}
+          color={colors.black}
           style={styles.spinner}
         />
       ) : null}
@@ -133,16 +123,16 @@ const styles = StyleSheet.create({
   },
   textLockHeader: {
     fontSize: 16,
-    fontFamily: "Poppins-SemiBold",
-    color: colors.daclen_black,
+    fontFamily: "Poppins",
+    color: colors.black,
     textAlign: "center",
     marginTop: 32,
     marginHorizontal: 20,
   },
   textSubheader: {
-    fontFamily: "Poppins", fontSize: 14,
-    color: colors.daclen_red,
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins", 
+    fontSize: 12,
+    color: colors.daclen_danger,
     textAlign: "center",
     marginHorizontal: 20,
   },

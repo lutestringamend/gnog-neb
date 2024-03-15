@@ -31,6 +31,13 @@ import {
   STARTER_KIT_VIDEO_MENGAJAK_TAG,
   STARTER_KIT_VIDEO_PRODUK_TAG,
 } from "../../constants/starterkit";
+import {
+  STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE,
+  STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE,
+  STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE,
+  STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE,
+} from "../constants/starterkit";
+import { processStarterKitHome } from "../../utils/starterkit";
 
 export function clearMediaKitData() {
   return (dispatch) => {
@@ -180,8 +187,8 @@ export function setWatermarkDatafromCurrentUser(currentUser, isOriginal) {
     name = currentUser?.detail_user?.wm_nama
       ? currentUser?.detail_user?.wm_nama
       : currentUser?.detail_user?.nama_depan
-      ? currentUser?.detail_user?.nama_depan
-      : name;
+        ? currentUser?.detail_user?.nama_depan
+        : name;
     phone = currentUser?.detail_user?.wm_nomor_telepon
       ? currentUser?.detail_user?.wm_nomor_telepon
       : phone;
@@ -225,8 +232,8 @@ export const getVideoProductData = (item, products) => {
         foto: data?.thumbnail
           ? data?.thumbnail
           : data?.foto
-          ? data?.foto
-          : null,
+            ? data?.foto
+            : null,
       };
     } else if (
       item?.produk?.id === undefined ||
@@ -418,6 +425,7 @@ export const getMediaKitKategoriThumbnail = async (token) => {
   };
 
   try {
+    console.log("getMediaKitKategoriThumbnail", mediakitkategorithumbnail);
     const response = await Axios.get(mediakitkategorithumbnail, config).catch(
       (error) => {
         console.error(error);
@@ -426,10 +434,67 @@ export const getMediaKitKategoriThumbnail = async (token) => {
           result: null,
           error: error.toString(),
         };
-      }
+      },
     );
-      console.log("getMediaKitKategoriThumbnail", response?.data);
-    
+
+    let flyers = [];
+    let videos = [];
+    if (
+      response?.data?.[STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE] !== undefined
+    ) {
+      flyers.push(
+        processStarterKitHome(
+          STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE,
+          response?.data?.[STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE],
+        ),
+      );
+    }
+    if (
+      response?.data?.[STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE] !== undefined
+    ) {
+      flyers.push(
+        processStarterKitHome(
+          STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE,
+          response?.data?.[STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE],
+        ),
+      );
+    }
+    if (
+      response?.data?.[STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE] !== undefined
+    ) {
+      videos.push(
+        processStarterKitHome(
+          STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE,
+          response?.data?.[STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE],
+        ),
+      );
+    }
+    if (
+      response?.data?.[STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE] !== undefined
+    ) {
+      videos.push(
+        processStarterKitHome(
+          STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE,
+          response?.data?.[STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE],
+        ),
+      );
+    }
+
+    return {
+      result: [
+        {
+          title: "Flyer",
+          unit: "Foto",
+          items: flyers,
+        },
+        {
+          title: "Video",
+          unit: "Video",
+          items: videos,
+        },
+      ],
+      error: null,
+    };
   } catch (e) {
     console.error("getMediaKitKategori error", e);
     sentryLog(e);
@@ -439,7 +504,6 @@ export const getMediaKitKategoriThumbnail = async (token) => {
     };
   }
 };
-
 
 export const getMediaKitKategori = async (token) => {
   if (token === undefined || token === null) {
@@ -465,11 +529,11 @@ export const getMediaKitKategori = async (token) => {
           result: null,
           error: error.toString(),
         };
-      }
+      },
     );
 
     const responseData = response.data?.data;
-    console.log("getMediaKitKategori response", responseData);
+    //console.log("getMediaKitKategori response", responseData);
     if (
       responseData === undefined ||
       responseData === null ||

@@ -33,16 +33,16 @@ import { overwriteWatermarkVideos } from "../../../components/media";
 import {
   getObjectAsync,
   setObjectAsync,
-} from "../../../components/asyncstorage";
+} from "../../asyncstorage";
 import { colors, dimensions } from "../../styles/base";
 import StarterKitFlyerProduk from "./StarterKitFlyerProduk";
 import StarterKitVideo from "./StarterKitVideo";
-import { sentryLog } from "../../../sentry";
+import { sentryLog } from "../../sentry";
 import {
   ASYNC_MEDIA_FLYER_MENGAJAK_KEY,
   ASYNC_MEDIA_WATERMARK_DATA_KEY,
   ASYNC_MEDIA_WATERMARK_PHOTOS_KEY,
-} from "../../../components/asyncstorage/constants";
+} from "../../asyncstorage/constants";
 import {
   STARTER_KIT_FLYER_PRODUK,
   STARTER_KIT_FLYER_MENGAJAK,
@@ -55,17 +55,13 @@ import {
   STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE,
   STARTER_KIT_VIDEO_MENGAJAK,
   STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE,
-  DefaultSelected,
   FLYER_SELECTION_LIMIT,
   STARTER_KIT_VIDEO_MENGAJAK_TAG,
-  STARTER_KIT_VIDEO_PRODUK_TAG,
   STARTER_KIT_PERSONAL_WEBSITE,
-  STARTER_KIT_PERSONAL_WEBSITE_ICON,
   STARTER_KIT_REFERRAL,
-  STARTER_KIT_REFERRAL_ICON,
   STARTER_KIT_TOKO_ONLINE_DESC,
-  STARTER_KIT_TOKO_ONLINE_ICON,
   STARTER_KIT_TOKO_ONLINE_TEXT,
+  STARTER_KIT_VIDEO_PRODUK_TAG,
 } from "../../constants/starterkit";
 import StarterKitHomeScreen from "./StarterKitHomeScreen";
 import StarterKitModal from "../../components/modal/StarterKitModal";
@@ -431,19 +427,10 @@ function StarterKitScreen(props) {
 
   const openWatermarkSettings = () => {
     navigation.navigate("WatermarkSettings", {
-      urlTitle:
-        activeTab === STARTER_KIT_FLYER_PRODUK
-          ? STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE
-          : activeTab === STARTER_KIT_FLYER_MENGAJAK
-            ? STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE
-            : activeTab === STARTER_KIT_VIDEO_PRODUK
-              ? STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE
-              : activeTab === STARTER_KIT_VIDEO_MENGAJAK
-                ? STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE
-                : null,
+      urlTitle: activeTab,
       urlEndpoint:
-        activeTab === STARTER_KIT_FLYER_PRODUK ||
-        activeTab === STARTER_KIT_VIDEO_PRODUK
+        activeTab === STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE ||
+        activeTab === STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE
           ? tokoonlineurlshort
           : personalwebsiteurlshort,
     });
@@ -476,11 +463,11 @@ function StarterKitScreen(props) {
               />
             )}
 
-            {(activeTab === STARTER_KIT_FLYER_MENGAJAK &&
+            {(activeTab === STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE &&
               !(
                 flyerMengajak?.length === undefined || flyerMengajak?.length < 1
               )) ||
-            (activeTab === STARTER_KIT_FLYER_PRODUK &&
+            (activeTab === STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE &&
               !(photoKeys?.length === undefined || photoKeys?.length < 1)) ? (
               <StarterKitPanelButton
                 icon={selectMode ? "content-save-all" : "select-multiple"}
@@ -489,8 +476,8 @@ function StarterKitScreen(props) {
                   photoLoading ||
                   videoLoading ||
                   (selectMode &&
-                    (activeTab === STARTER_KIT_FLYER_PRODUK ||
-                      activeTab === STARTER_KIT_FLYER_MENGAJAK) &&
+                    (activeTab === STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE ||
+                      activeTab === STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE) &&
                     (flyerSelection?.length === undefined ||
                       flyerSelection?.length < 1))
                 }
@@ -533,7 +520,7 @@ function StarterKitScreen(props) {
 
           <View style={styles.containerContent}>
           <ScrollView keyboardShouldPersistTaps="always" style={styles.containerScroll} contentContainerStyle={[styles.containerScrollContent, {
-            minHeight: activeTab === STARTER_KIT_FLYER_PRODUK || activeTab === STARTER_KIT_VIDEO_PRODUK  ? 4 * dimensions.fullHeight : 0.8 * dimensions.fullHeight,
+            minHeight: activeTab === STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE || activeTab === STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE  ? 4 * dimensions.fullHeight : 0.8 * dimensions.fullHeight,
           }]}>
 
             {token === null ||
@@ -555,21 +542,21 @@ function StarterKitScreen(props) {
               ) : null
             ) : watermarkData === null ? (
             <EmptySpinner />
-            ) : activeTab === STARTER_KIT_VIDEO_PRODUK ||
-              activeTab === STARTER_KIT_VIDEO_MENGAJAK ? (
+            ) : activeTab === STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE ||
+              activeTab === STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE? (
               <StarterKitVideo
                 watermarkData={watermarkData}
                 userId={currentUser?.id}
                 token={token}
                 loading={videoLoading}
                 jenis_video={
-                  activeTab === STARTER_KIT_VIDEO_MENGAJAK
+                  activeTab === STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE
                     ? STARTER_KIT_VIDEO_MENGAJAK_TAG
                     : STARTER_KIT_VIDEO_PRODUK_TAG
                 }
                 refreshPage={() => refreshVideos()}
               />
-            ) : activeTab === STARTER_KIT_FLYER_PRODUK ? (
+            ) : activeTab === STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE ? (
               <StarterKitFlyerProduk
                 userId={currentUser?.id}
                 loading={photoLoading}
@@ -588,7 +575,7 @@ function StarterKitScreen(props) {
                 selected={flyerSelection}
                 setSelected={(isAdd, e) => setSelected(isAdd, e)}
               />
-            ) : activeTab === STARTER_KIT_FLYER_MENGAJAK ? (
+            ) : activeTab === STARTER_KIT_FLYER_MENGAJAK_CASE_SENSITIVE ? (
               <FlyerMengajak
                 photos={flyerMengajak}
                 refreshing={photoLoading}

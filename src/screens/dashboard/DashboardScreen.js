@@ -529,7 +529,7 @@ const DashboardScreen = (props) => {
             <DashboardContainer
               header="Saldo"
               text="Lihat riwayat saldo Anda, dari saldo masuk hingga saldo keluar."
-              buttonText="Lihat Selengkapnya"
+              buttonText="Selengkapnya"
               buttonWidth={185 * ratio}
               onPress={() => navigation.navigate("SaldoReportScreen")}
               style={{
@@ -539,7 +539,7 @@ const DashboardScreen = (props) => {
             <DashboardContainer
               header="Poin"
               text="Lihat riwayat poin Anda, dari transaksi, rekrutmen dan penukaran."
-              buttonText="Lihat Selengkapnya"
+              buttonText="Selengkapnya"
               buttonWidth={185 * ratio}
               onPress={() => navigation.navigate("SaldoReportScreen")}
               style={{

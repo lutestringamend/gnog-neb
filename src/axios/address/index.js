@@ -248,7 +248,7 @@ export const fetchRajaOngkir = async (token, key, param, id) => {
     const data = response?.data?.data;
     if (key === "provinsi") {
       await setObjectAsync(ASYNC_RAJAONGKIR_PROVINSI_KEY, data);
-      console.log("storage provinsi saved", JSON.stringify(data));
+      console.log("storage provinsi saved");
       return null;
     } else if (key === "kota") {
       let storageKota = await getObjectAsync(ASYNC_RAJAONGKIR_KOTA_KEY);

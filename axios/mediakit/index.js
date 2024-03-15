@@ -29,7 +29,7 @@ import {
   STARTER_KIT_FLYER_PRODUK_TAG,
   STARTER_KIT_VIDEO_MENGAJAK_TAG,
   STARTER_KIT_VIDEO_PRODUK_TAG,
-} from "../../components/mediakit/constants";
+} from "../../src/axios/constants/starterkit";
 
 export function clearMediaKitData() {
   return (dispatch) => {
@@ -430,7 +430,6 @@ export const getMediaKitKategori = async (token) => {
     );
 
     const responseData = response.data?.data;
-    console.log("getMediaKitKategori response", responseData);
     if (
       responseData === undefined ||
       responseData === null ||

@@ -13,7 +13,7 @@ import {
   vwmarktextphonefontsize,
   vwmarktextphonestart,
   vwmarktextphonetop,
-} from "../mediakit/constants";
+} from "../../src/constants/starterkit";
 
 function VWatermarkModel(props) {
   const { watermarkData, ratio, style } = props;

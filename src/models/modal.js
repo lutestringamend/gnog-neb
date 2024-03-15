@@ -3,7 +3,7 @@ export const ModalModel = {
     title: "",
     text: "",
     image: require("../assets/verified.png"),
-    modalAspectRatio: 298 / 292,
+    modalAspectRatio: 298 / 306,
     imageAspectRatio: 266 / 100,
     hideClose: true,
 }

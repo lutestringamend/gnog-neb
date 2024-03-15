@@ -1,40 +1,62 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
   View,
   Dimensions,
+  RefreshControl,
+  Text,
 } from "react-native";
 import { connect } from "react-redux";
-import {
-  STARTER_KIT_FLYER_MENGAJAK,
-  STARTER_KIT_FLYER_MENGAJAK_ICON,
-  STARTER_KIT_FLYER_MENGAJAK_TEXT,
-  STARTER_KIT_FLYER_PRODUK,
-  STARTER_KIT_FLYER_PRODUK_ICON,
-  STARTER_KIT_FLYER_PRODUK_TEXT,
-  STARTER_KIT_VIDEO_MENGAJAK,
-  STARTER_KIT_VIDEO_MENGAJAK_ICON,
-  STARTER_KIT_VIDEO_MENGAJAK_TEXT,
-  STARTER_KIT_VIDEO_PRODUK,
-  STARTER_KIT_VIDEO_PRODUK_ICON,
-  STARTER_KIT_VIDEO_PRODUK_TEXT,
-} from "../../../components/mediakit/constants";
-import StarterKitHomeButton from "../../../components/mediakit/home/StarterKitHomeButton";
-import { staticDimensions } from "../../styles/base";
-import { getMediaKitKategoriThumbnail } from "../../axios/mediakit";
+import { bindActionCreators } from "redux";
 
-const screenWidth = Dimensions.get("window").width;
+import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { getMediaKitKategoriThumbnail } from "../../axios/mediakit";
+import { updateReduxMediaKitHome } from "../../utils/starterkit";
+import EmptySpinner from "../../components/empty/EmptySpinner";
+import AlertBox from "../../components/alert/AlertBox";
+import StarterKitPhotoSegment from "../../components/starterkit/StarterKitPhotoSegment";
+import Separator from "../../components/Separator";
+
+const ratio = dimensions.fullWidthAdjusted / 430;
 
 const StarterKitHomeScreen = (props) => {
-  const { token, currentUser, mediaKitPhotos, flyerMengajak, mediaKitVideos, videosMengajak } = props;
+  const { token, currentUser, home } = props;
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(null);
 
-  /*useEffect(() => {
-    if (token === null) {
+  useEffect(() => {
+    if (home === null && token !== null) {
+      fetchData();
       return;
     }
-    getMediaKitKategoriThumbnail(token);
-  }, [token]);*/
+    if (refreshing) {
+      setRefreshing(false);
+    }
+    //console.log("redux mediakit home", home);
+  }, [home]);
+
+  const fetchData = async () => {
+    let result = await getMediaKitKategoriThumbnail(token);
+    console.log("reult", result);
+    if (
+      result === undefined ||
+      result === null ||
+      result?.result === undefined ||
+      result?.result === null
+    ) {
+      setError(
+        result?.error ? result?.error : "Tidak bisa membuka Starter Kit.",
+      );
+    } else {
+      props.updateReduxMediaKitHome(result?.result);
+    }
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchData();
+  };
 
   function setActiveTab(e) {
     if (props?.setActiveTab === undefined || props?.setActiveTab === null) {
@@ -45,36 +67,45 @@ const StarterKitHomeScreen = (props) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.container}>
-        <View style={[styles.containerHorizontal, {marginTop: 24}]}>
-          <StarterKitHomeButton
-            onPress={() => setActiveTab(STARTER_KIT_FLYER_PRODUK)}
-            icon={STARTER_KIT_FLYER_PRODUK_ICON}
-            text={STARTER_KIT_FLYER_PRODUK_TEXT}
-            style={{ marginEnd: 10, flex: 1 / 2 }}
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => onRefresh()}
           />
-          <StarterKitHomeButton
-            onPress={() => setActiveTab(STARTER_KIT_VIDEO_PRODUK)}
-            icon={STARTER_KIT_VIDEO_PRODUK_ICON}
-            text={STARTER_KIT_VIDEO_PRODUK_TEXT}
-            style={{ marginStart: 10, flex: 1 / 2 }}
-          />
-        </View>
-        <View style={styles.containerHorizontal}>
-          <StarterKitHomeButton
-            onPress={() => setActiveTab(STARTER_KIT_FLYER_MENGAJAK)}
-            icon={STARTER_KIT_FLYER_MENGAJAK_ICON}
-            text={STARTER_KIT_FLYER_MENGAJAK_TEXT}
-            style={{ marginEnd: 10, flex: 1 / 2 }}
-          />
-          <StarterKitHomeButton
-            onPress={() => setActiveTab(STARTER_KIT_VIDEO_MENGAJAK)}
-            icon={STARTER_KIT_VIDEO_MENGAJAK_ICON}
-            text={STARTER_KIT_VIDEO_MENGAJAK_TEXT}
-            style={{ marginStart: 10, flex: 1 / 2 }}
-          />
-        </View>
+        }
+      >
+        {home === null ? (
+          <EmptySpinner />
+        ) : (
+          <View style={styles.containerInside}>
+            {home?.map((item, index) => (
+              <View key={index} style={styles.containerItem}>
+                <View style={styles.containerTitle}>
+                  <Text allowFontScaling={false} style={styles.textTitle}>
+                    {item?.title}
+                  </Text>
+                  <View style={styles.containerLine} />
+                </View>
+                {item?.items === undefined || item?.items?.length < 1
+                  ? null
+                  : item?.items.map((segment, i) => (
+                      <StarterKitPhotoSegment
+                        key={i}
+                        {...segment}
+                        unit={item?.unit}
+                        openSegmentScreen={() => setActiveTab(segment?.title)}
+                        isLast={false}
+                      />
+                    ))}
+              </View>
+            ))}
+          </View>
+        )}
+        <View style={styles.containerBottom} />
       </ScrollView>
+      <AlertBox text={error} onClose={() => setError(null)} />
     </View>
   );
 };
@@ -85,30 +116,51 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     width: "100%",
   },
-  containerHorizontal: {
-    width:
-      screenWidth > staticDimensions.shopMaxWidth
-        ? staticDimensions.shopMaxWidth
-        : screenWidth,
-    paddingHorizontal: 12,
-    marginVertical: 20,
-    flexDirection: "row",
-    alignSelf: "center",
+  containerInside: {
     backgroundColor: "transparent",
+    minHeight: dimensions.fullHeight,
+    paddingTop: staticDimensions.marginHorizontal,
+  },
+  containerItem: {
+    backgroundColor: "transparent",
+    marginBottom: staticDimensions.marginHorizontal,
+  },
+  containerTitle: {
+    backgroundColor: "transparent",
+    marginHorizontal: staticDimensions.marginHorizontal,
+    marginBottom: 10 * ratio,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  containerLine: {
+    flex: 1,
+    backgroundColor: colors.black,
+    height: 1,
   },
   containerBottom: {
-    height: staticDimensions.pageBottomPadding / 2,
+    height: staticDimensions.pageBottomPadding,
     backgroundColor: "transparent",
+  },
+  textTitle: {
+    fontFamily: "Poppins",
+    color: colors.black,
+    fontSize: 18 * ratio,
+    marginEnd: staticDimensions.marginHorizontal / 2,
   },
 });
 
 const mapStateToProps = (store) => ({
   token: store.userState.token,
   currentUser: store.userState.currentUser,
-  mediaKitPhotos: store.mediaKitState.photos,
-  mediaKitVideos: store.mediaKitState.videos,
-  flyerMengajak: store.mediaKitState.flyerMengajak,
-  videosMengajak: store.mediaKitState.videosMengajak,
+  home: store.mediaKitState.home,
 });
 
-export default connect(mapStateToProps, null)(StarterKitHomeScreen);
+const mapDispatchProps = (dispatch) =>
+  bindActionCreators(
+    {
+      updateReduxMediaKitHome,
+    },
+    dispatch,
+  );
+
+export default connect(mapStateToProps, mapDispatchProps)(StarterKitHomeScreen);
