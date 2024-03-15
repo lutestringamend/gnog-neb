@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, RefreshControl, FlatList } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { dimensions, staticDimensions } from "../../styles/base";
@@ -105,7 +105,7 @@ const StarterKitFlyerProduk = (props) => {
     }
 
     return (
-      <View style={styles.container}>
+      <ScrollView style={styles.container} contentContainerStyle={{ minHeight: 4 * dimensions.fullHeight }}>
         <View style={styles.containerMain}>
           {loading || photos === undefined || photos === null ? (
             <EmptySpinner />
@@ -150,7 +150,7 @@ const StarterKitFlyerProduk = (props) => {
           text={error}
           onClose={() => setError(null)}
         />
-      </View>
+      </ScrollView>
     );
   } catch (e) {
     sentryLog(e);

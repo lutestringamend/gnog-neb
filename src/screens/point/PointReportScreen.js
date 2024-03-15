@@ -18,7 +18,7 @@ function PointReportScreen(props) {
   const navigation = useNavigation();
 
   const [organizedList, setOrganizedList] = useState([]);
-  const [refreshing, setRefreshing] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   /*const [referralData, setReferralData] = useState([]);*/
 

@@ -170,7 +170,7 @@ const WithdrawalScreen = (props) => {
           onChangeText={(misc) => setMisc(misc)}
           containerStyle={styles.textInput}
           textContainerStyle={{ height: 100 }}
-          style={{ height: 96, textAlignVertical: "top" }}
+          style={{ height: 96, paddingVertical: 10, textAlignVertical: "top" }}
         />
 
         <Separator

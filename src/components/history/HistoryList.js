@@ -38,6 +38,7 @@ function HistoryList(props) {
   const { token, checkouts, checkout, checkoutPageNumber } = props;
   const navigation = useNavigation();
 
+  const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [onEndReachedCalledDuringMomentum, setEndReachedCalledDuringMomentum] =
     useState(true);
@@ -60,6 +61,9 @@ function HistoryList(props) {
       setPaginationLoading(false);
     }
     //console.log("redux checkouts", checkouts?.length);
+    if (refreshing) {
+      setRefreshing(false);
+    }
   }, [checkouts]);
 
   useEffect(() => {
@@ -95,6 +99,7 @@ function HistoryList(props) {
   };
 
   const refreshScreen = () => {
+    setRefreshing(true);
     props.getCheckouts(token, 1);
     props.updateReduxHistoryCheckoutsPageNumber(1);
   };
@@ -194,7 +199,7 @@ function HistoryList(props) {
         contentContainerStyle={styles.containerScroll}
         refreshControl={
           <RefreshControl
-            refreshing={loading}
+            refreshing={refreshing}
             onRefresh={() => refreshScreen()}
           />
         }
@@ -239,8 +244,6 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   containerScroll: {
-    flex: 1,
-    width: "100%",
     backgroundColor: "transparent",
   },
   activityControl: {

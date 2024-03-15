@@ -48,6 +48,7 @@ const SaldoReportScreen = (props) => {
   const { token, currentUser, saldo, authError, riwayatSaldo } = props;
   const navigation = useNavigation();
 
+  const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [allowWithdraw, setAllowWithdraw] = useState(null);
@@ -74,6 +75,9 @@ const SaldoReportScreen = (props) => {
         return;
       }
       refreshPage();
+      if (refreshing) {
+        setRefreshing(false);
+      }
     }, [token, currentUser, activeTab, saldo, riwayatSaldo]);
 
     useEffect(() => {
@@ -198,7 +202,7 @@ const SaldoReportScreen = (props) => {
       if (loading) {
         return;
       }
-      setLoading(true);
+      setRefreshing(true);
       if (activeTab === withdrawalhistorytab) {
         props.getRiwayatPenarikanSaldo(currentUser?.id, token);
       } else if (activeTab === saldohistorytab) {
@@ -210,9 +214,14 @@ const SaldoReportScreen = (props) => {
       console.log(e);
     }
 
+/*
+
+       
+*/
+
     return (
       <CenteredView style={styles.container} title="Riwayat Saldo">
-        <View style={styles.tabView}>
+         <View style={styles.tabView}>
           <HistoryTabItem
             activeTab={activeTab}
             name={withdrawalhistorytab}
@@ -259,7 +268,7 @@ const SaldoReportScreen = (props) => {
           contentContainerStyle={styles.containerScroll}
           refreshControl={
             <RefreshControl
-              refreshing={loading}
+              refreshing={refreshing}
               onRefresh={() => manualRefresh()}
             />
           }
@@ -353,9 +362,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   containerScroll: {
-    flex: 1,
     backgroundColor: "transparent",
-    paddingBottom: 100,
   },
   containerItem: {
     flex: 1,

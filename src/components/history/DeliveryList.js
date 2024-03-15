@@ -34,6 +34,7 @@ function DeliveryList(props) {
   const navigation = useNavigation();
 
   const [organizedList, setOrganizedList] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [paginationLoading, setPaginationLoading] = useState(false);
   const [onEndReachedCalledDuringMomentum, setEndReachedCalledDuringMomentum] =
@@ -52,6 +53,9 @@ function DeliveryList(props) {
     }
     if (paginationLoading) {
       setPaginationLoading(false);
+    }
+    if (refreshing) {
+      setRefreshing(false);
     }
     //console.log("redux deliveries", deliveries?.length);
   }, [deliveries]);
@@ -89,6 +93,7 @@ function DeliveryList(props) {
   };
 
   const refreshScreen = () => {
+    setRefreshing(true);
     props.getDeliveries(token, 1);
     props.updateReduxHistoryDeliveriesPageNumber(1);
   };
@@ -125,7 +130,7 @@ function DeliveryList(props) {
         contentContainerStyle={styles.containerScroll}
         refreshControl={
           <RefreshControl
-            refreshing={loading}
+            refreshing={refreshing}
             onRefresh={() => refreshScreen()}
           />
         }
@@ -169,8 +174,6 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   containerScroll: {
-    flex: 1,
-    width: "100%",
     backgroundColor: "transparent",
   },
   activityControl: {

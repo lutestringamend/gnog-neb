@@ -525,29 +525,32 @@ const DashboardScreen = (props) => {
               History
             </Text>
 
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.containerHorizontalItems}>
-            <DashboardContainer
-              header="Saldo"
-              text="Lihat riwayat saldo Anda, dari saldo masuk hingga saldo keluar."
-              buttonText="Selengkapnya"
-              buttonWidth={185 * ratio}
-              onPress={() => navigation.navigate("SaldoReportScreen")}
-              style={{
-                marginHorizontal: staticDimensions.marginHorizontal,
-              }}
-            />
-            <DashboardContainer
-              header="Poin"
-              text="Lihat riwayat poin Anda, dari transaksi, rekrutmen dan penukaran."
-              buttonText="Selengkapnya"
-              buttonWidth={185 * ratio}
-              onPress={() => navigation.navigate("SaldoReportScreen")}
-              style={{
-                marginEnd: staticDimensions.marginHorizontal,
-              }}
-            />
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.containerHorizontalItems}
+            >
+              <DashboardContainer
+                header="Saldo"
+                text="Lihat riwayat saldo Anda, dari saldo masuk hingga saldo keluar."
+                buttonText="Selengkapnya"
+                buttonWidth={185 * ratio}
+                onPress={() => navigation.navigate("SaldoReportScreen")}
+                style={{
+                  marginHorizontal: staticDimensions.marginHorizontal,
+                }}
+              />
+              <DashboardContainer
+                header="Poin"
+                text="Lihat riwayat poin Anda, dari transaksi, rekrutmen dan penukaran."
+                buttonText="Selengkapnya"
+                buttonWidth={185 * ratio}
+                onPress={() => navigation.navigate("PointReportScreen")}
+                style={{
+                  marginEnd: staticDimensions.marginHorizontal,
+                }}
+              />
             </ScrollView>
-            
 
             <Text allowFontScaling={false} style={styles.textHeader}>
               More Information

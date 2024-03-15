@@ -519,9 +519,7 @@ function StarterKitScreen(props) {
           </View>
 
           <View style={styles.containerContent}>
-          <ScrollView keyboardShouldPersistTaps="always" style={styles.containerScroll} contentContainerStyle={[styles.containerScrollContent, {
-            minHeight: activeTab === STARTER_KIT_FLYER_PRODUK_CASE_SENSITIVE || activeTab === STARTER_KIT_VIDEO_PRODUK_CASE_SENSITIVE  ? 4 * dimensions.fullHeight : 0.8 * dimensions.fullHeight,
-          }]}>
+          
 
             {token === null ||
             currentUser === null ||
@@ -599,7 +597,7 @@ function StarterKitScreen(props) {
                 setActiveTab={(e) => setActiveTab(e)}
               />
             )}
-          </ScrollView>
+        
 
           </View>
 
@@ -640,6 +638,7 @@ const styles = StyleSheet.create({
     width: dimensions.fullWidth,
     backgroundColor: colors.white,
     marginTop: panelHeight / 2,
+    paddingTop: panelHeight / 2,
     borderTopStartRadius: (20 * dimensions.fullWidth) / 430,
     borderTopEndRadius: (20 * dimensions.fullWidth) / 430,
   },
