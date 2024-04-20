@@ -22,13 +22,11 @@ function CartOld(props) {
   const {
     cart,
     token,
-    currentUser,
     produk_id,
     iconSize,
     textSize,
     cartError,
     isShop,
-    navigation,
   } = props;
 
   useEffect(() => {
@@ -79,7 +77,7 @@ function CartOld(props) {
     }
   };
 
-  function onShopButtonPress() {
+  /*function onShopButtonPress() {
     if (token === null && !(navigation === undefined || navigation === null)) {
       navigation.navigate("Login");
     } else if (isShop && (currentUser?.isActive === undefined || currentUser?.isActive === null || !currentUser?.isActive)) {
@@ -90,7 +88,7 @@ function CartOld(props) {
     } else {
       modifyCart(true);
     }
-  }
+  }*/
 
   if (isShop && itemSize < 1) {
     return null;
@@ -155,13 +153,13 @@ function CartOld(props) {
       >
         {loading ? (
           <ActivityIndicator
-            size="small"
-            color={colors.daclen_gray}
+            size={textSize ? textSize : 16 * globalUIRatio}
+            color={colors.daclen_grey_placeholder}
             style={{ alignSelf: "center" }}
           />
         ) : (
           <Text allowFontScaling={false}
-            style={[styles.textCart, { fontFamily: "Poppins", fontSize: textSize ? textSize : 16 * globalUIRatio }]}
+            style={[styles.textCart, { fontSize: textSize ? textSize : 16 * globalUIRatio }]}
           >
             {itemSize}
           </Text>

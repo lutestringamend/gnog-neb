@@ -94,7 +94,7 @@ export default function CartAction(props) {
         }
         style={{
           minWidth: 160 * globalUIRatio,
-          borderRadius: 24 * globalUIRatio,
+          borderRadius: 100 * globalUIRatio,
         }}
       />
     </View>

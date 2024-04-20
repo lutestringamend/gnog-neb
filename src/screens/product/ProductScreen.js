@@ -23,7 +23,7 @@ import {
   checkNumberEmpty,
   alterKeranjang,
   clearKeranjang,
-} from "../../../axios/cart";
+} from "../../axios/cart";
 import CenteredView from "../../components/view/CenteredView";
 import EmptySpinner from "../../components/empty/EmptySpinner";
 import TabClose from "../../components/tabs/TabClose";
@@ -127,8 +127,16 @@ function ProductScreen(props) {
   };
 
   const loadCart = () => {
-    setCartLoading(true);
-    props.alterKeranjang(token, tempCart);
+    /*setCartLoading(true);
+    props.alterKeranjang(token, tempCart);*/
+    openCheckout(
+      navigation,
+      false,
+      token,
+      currentUser,
+      cart?.jumlah_produk,
+      null,
+    );
   };
 
   return (
@@ -167,7 +175,9 @@ function ProductScreen(props) {
               product?.tag_produk?.length < 1 ? null : (
                 <View style={styles.containerCategory}>
                   {product?.tag_produk.map(({ nama }, index) => (
-                    <View key={nama} style={styles.containerTag}>
+                    <View key={nama} style={[styles.containerTag, {
+                      marginEnd: index >= product?.tag_produk?.length - 1 ? 0 : 8 * globalUIRatio,
+                    }]}>
                       <Text
                         allowFontScaling={false}
                         numberOfLines={1}
@@ -242,19 +252,7 @@ function ProductScreen(props) {
         cart?.jumlah_produk < 1) &&
         tempCartSize < 1) ? null : (
         <TouchableOpacity
-          style={[
-            styles.containerCheckout,
-            {
-              backgroundColor:
-                tempCartSize < 1 ||
-                cart === null ||
-                cart?.jumlah_produk === undefined ||
-                cart?.jumlah_produk === null ||
-                tempCartSize === parseInt(cart?.jumlah_produk)
-                  ? colors.daclen_grey_placeholder
-                  : colors.daclen_black,
-            },
-          ]}
+          style={styles.containerCheckout}
           onPress={() => loadCart()}
         >
           {cartLoading ? (
@@ -281,6 +279,20 @@ function ProductScreen(props) {
     </CenteredView>
   );
 }
+
+/*
+containercheckout background
+{
+              backgroundColor:
+                tempCartSize < 1 ||
+                cart === null ||
+                cart?.jumlah_produk === undefined ||
+                cart?.jumlah_produk === null ||
+                tempCartSize === parseInt(cart?.jumlah_produk)
+                  ? colors.daclen_grey_placeholder
+                  : colors.daclen_black,
+            },
+*/
 
 const styles = StyleSheet.create({
   container: {
@@ -340,6 +352,7 @@ const styles = StyleSheet.create({
     width: 80 * globalUIRatio,
     height: 80 * globalUIRatio,
     borderRadius: 40 * globalUIRatio,
+    backgroundColor: colors.daclen_black,
   },
   containerTag: {
     height: 30 * globalUIRatio,
@@ -370,7 +383,7 @@ const styles = StyleSheet.create({
   textCategory: {
     fontFamily: "Poppins-SemiBold",
     fontSize: 14,
-    color: colors.daclen_ligh,
+    color: colors.white,
     paddingEnd: 20,
   },
   textTag: {

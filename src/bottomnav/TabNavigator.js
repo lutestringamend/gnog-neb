@@ -7,6 +7,7 @@ import DashboardMain from "../screens/dashboard/DashboardScreen";
 import ShopScreen from "../screens/Shop/ShopScreen";
 import StarterKitScreen from "../screens/StarterKit/StarterKitScreen";
 import ProfileScreen from "../screens/Profile/ProfileScreen";
+import CheckoutScreen from "../screens/checkout/CheckoutScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -34,7 +35,7 @@ export default function TabNavigator(props) {
       <Tab.Screen
         name="Home"
         key="Home"
-        component={DashboardMain}
+        component={CheckoutScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <TabBarIcon title="Home" iconName="home" focused={focused} />

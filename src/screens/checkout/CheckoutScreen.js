@@ -7,7 +7,6 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
@@ -27,6 +26,7 @@ import {
   overhaulReduxCart,
   overhaulReduxTempCart,
   processPhoneNumberforCheckout,
+  getKeranjang,
   checkNumberEmpty,
 } from "../../axios/cart";
 import { callMasterkurir, getKurirData } from "../../axios/courier";
@@ -107,12 +107,14 @@ function CheckoutScreen(props) {
   const rbSenderName = useRef();
   const navigation = useNavigation();
 
+
   useEffect(() => {
     if (token === undefined || token === null) {
       return;
     }
     props.getCurrentUser(token);
-  }, [token]);
+    props.getKeranjang(token);
+  }, []);
 
   useEffect(() => {
     if (
@@ -858,20 +860,16 @@ function CheckoutScreen(props) {
             cart === null ||
             cart?.length === undefined ||
             cart?.length < 1 ? null : (
-              <FlashList
-                estimatedItemSize={10}
-                numColumns={1}
-                horizontal={false}
-                data={cart}
-                contentContainerStyle={styles.containerFlatlist}
-                renderItem={({ item }, index) => (
+              <View style={styles.containerFlatlist}>
+                {cart?.map((item, index) => (
                   <CartItem
-                    item={item}
-                    isCart={true}
-                    isLast={index >= cart?.length - 1}
+                  key={index}
+                  item={item}
+                  isCart={true}
+                  isLast={index >= cart?.length - 1}
                   />
-                )}
-              />
+                ))}
+                </View>
             )}
 
             <CartDetails
@@ -1061,6 +1059,7 @@ const mapDispatchProps = (dispatch) =>
       clearUserData,
       getCurrentUser,
       clearKeranjang,
+      getKeranjang,
       storeCheckout,
       callMasterkurir,
       getKurirData,
