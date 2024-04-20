@@ -12,8 +12,8 @@ export const globalUIRatio = dimensions.fullWidthAdjusted / 430;
 
 export const staticDimensions = {
   statusBarPadding: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-  marginHorizontal: 25 * dimensions.fullWidthAdjusted / 430,
-  authMarginHorizontal: 25 * dimensions.fullWidthAdjusted / 430,
+  marginHorizontal: 25 * globalUIRatio,
+  authMarginHorizontal: 25 * globalUIRatio,
   smallScreenWidth: 390,
   maxScreenWidth: MAX_SCREEN_WIDTH,
   isSmallScreen: Dimensions.get("window").width < 390,
@@ -49,6 +49,7 @@ export const colors = {
   daclen_grey_search_container: "#E4E4EE",
   daclen_grey_background: "#CCCCCC",
   daclen_grey_icon: "#44494D",
+  daclen_grey_bottom_bar : "#EBEBE3",
   daclen_success_border: "#85C2A4",
   daclen_success_light: "#CCE9D9",
   daclen_green_background: "#A8D5BF",
@@ -61,7 +62,6 @@ export const colors = {
   daclen_red_light: "#E25562",
   daclen_orange: "#FF6F00",
   daclen_yellow_background: "#FEEEA0",
-
 
   daclen_yellow_new: "#f8c133",
   daclen_bg: "#0a0a0a",

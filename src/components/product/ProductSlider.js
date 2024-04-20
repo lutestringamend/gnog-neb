@@ -11,7 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 //import { ImageSlider } from "react-native-image-slider-banner";
 import { connect } from "react-redux";
 
-import { colors, blurhash, dimensions } from "../../styles/base";
+import { colors, blurhash, dimensions, globalUIRatio } from "../../styles/base";
 import { sentryLog } from "../../../sentry";
 
 const width = dimensions.fullWidthAdjusted;
@@ -89,7 +89,7 @@ function ProductSlider(props) {
             style={styles.containerSlider}
             onPress={() => openImageViewer()}
           >
-            <ActivityIndicator size="large" color={colors.daclen_gray} style={styles.spinner} />
+            <ActivityIndicator size={20 * globalUIRatio} color={colors.daclen_gray} style={styles.spinner} />
             <Image
               style={styles.largeImage}
               source={mainPhoto}
@@ -104,11 +104,14 @@ function ProductSlider(props) {
           <View style={styles.containerFlatlist}>
             <FlashList
               estimatedItemSize={10}
+              showsHorizontalScrollIndicator={false}
               horizontal={true}
               data={photos}
-              renderItem={({ item }) => (
+              renderItem={({ item, index }) => (
                 <TouchableOpacity
-                  style={styles.containerItem}
+                  style={[styles.containerItem, {
+                    marginEnd: index >= photos?.length - 1 ? 0 : 8 * globalUIRatio,
+                  }]}
                   onPress={() => openPhoto(item?.img)}
                 >
                   <ActivityIndicator size="small" color={colors.daclen_gray} style={styles.spinner} />
@@ -133,57 +136,30 @@ function ProductSlider(props) {
   }
 }
 
-/*
-{mainPhoto ? (
-          
-        ) : (
-          <ImageSlider
-            data={photos}
-            autoPlay={true}
-            caroselImageContainerStyle={{ aspectRatio }}
-            caroselImageStyle={{
-              width: "100%",
-              height: "100%" / aspectRatio,
-              resizeMode: "contain",
-            }}
-            indicatorContainerStyle={{ bottom: 10 }}
-            activeIndicatorStyle={{ backgroundColor: colors.daclen_orange }}
-            inActiveIndicatorStyle={{ backgroundColor: colors.daclen_light }}
-            timer={3000}
-            onClick={(item) => openProduct(item?.id)}
-            style={{ margin: 0, padding: 0, width: "100%" }}
-          />
-        )}
-*/
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    width,
     backgroundColor: "transparent",
   },
   containerSlider: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.daclen_grey_light,
     width,
     height: width,
     justifyContent: "center",
     alignItems: "center",
   },
   containerFlatlist: {
-    width: "100%",
-    paddingVertical: 1,
-    borderColor: colors.daclen_gray,
-    backgroundColor: colors.daclen_light,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderRadius: 2,
+    width: dimensions.fullWidthAdjusted,
+    backgroundColor: colors.white,
+    marginVertical: 8 * globalUIRatio,
   },
   containerItem: {
-    backgroundColor: colors.white,
-    width: 60 * dimensions.fullWidthAdjusted / 430,
-    height: 60 * dimensions.fullWidthAdjusted / 430,
-    borderColor: colors.daclen_lightgrey,
-    borderStartWidth: 1,
-    borderEndWidth: 1,
+    backgroundColor: colors.daclen_grey_light,
+    width: 80 * globalUIRatio,
+    height: 80 * globalUIRatio,
+    borderRadius: 10 * globalUIRatio,
+    overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -200,9 +176,9 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   imageList: {
-    width: 60 * dimensions.fullWidthAdjusted / 430,
-    height: 60 * dimensions.fullWidthAdjusted / 430,
-    backgroundColor: colors.white,
+    backgroundColor: colors.daclen_grey_light,
+    width: 80 * globalUIRatio,
+    height: 80 * globalUIRatio,
     position: "absolute",
     top: 0,
     start: 0,
@@ -211,6 +187,11 @@ const styles = StyleSheet.create({
   spinner: {
     backgroundColor: "transparent",
     alignSelf: "center",
+    position: "absolute",
+    top: (width - 20) / 2,
+    bottom: (width - 20) / 2,
+    start: (width - 20) / 2,
+    height: (width - 20) / 2,
   },
 });
 

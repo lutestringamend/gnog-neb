@@ -72,6 +72,7 @@ const Button = (props) => {
       ) : (
         <Text
           allowFontScaling={false}
+          numberOfLines={1}
           style={[
             styles.text,
             {

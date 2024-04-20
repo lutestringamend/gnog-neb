@@ -130,10 +130,6 @@ function ShopScreen(props) {
     }
   }, [cartError]);
 
-  useEffect(() => {
-    console.log("products", products);
-  }, [products]);
-
   async function getStorageProducts() {
     const asyncProducts = await getObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY);
     if (
@@ -383,10 +379,9 @@ const styles = StyleSheet.create({
   containerTopBar: {
     backgroundColor: "transparent",
     marginHorizontal: staticDimensions.marginHorizontal,
-    marginTop: 57 * ratio,
   },
   containerHeader: {
-    marginBottom: 16 * ratio,
+    marginVertical: 16 * ratio,
     backgroundColor: "transparent",
     alignItems: "center",
     flexDirection: "row",
@@ -428,7 +423,7 @@ const styles = StyleSheet.create({
   containerFlatlistBottom: {
     backgroundColor: "transparent",
     paddingHorizontal: staticDimensions.marginHorizontal,
-    paddingBottom: 200 * ratio,
+    paddingBottom: 100 * ratio,
   },
   containerHorizontal: {
     flexDirection: "row",

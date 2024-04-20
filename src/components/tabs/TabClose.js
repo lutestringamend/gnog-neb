@@ -4,7 +4,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { colors, globalUIRatio } from "../../styles/base";
 
 const TabClose = (props) => {
-  const { backgroundColor, color, width, icon, disabled, style } = props;
+  const { backgroundColor, color, width, iconSize, icon, disabled, style } = props;
 
   function onPress() {
     if (props?.onPress === undefined || props?.onPress === null) {
@@ -32,7 +32,7 @@ const TabClose = (props) => {
       <MaterialCommunityIcons
         name={icon ? icon : "close-thick"}
         color={color ? color : colors.daclen_black}
-        size={width ? (15 * width) / 20 : 15 * globalUIRatio}
+        size={iconSize ? iconSize : width ? (15 * width) / 20 : 15 * globalUIRatio}
       />
     </TouchableOpacity>
   );

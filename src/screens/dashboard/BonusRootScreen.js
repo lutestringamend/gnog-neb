@@ -154,7 +154,8 @@ function BonusRootScreen(props) {
           <View style={styles.containerHeader}>
             <View style={styles.tabView}>
               <FlatList
-                horizontal={true}
+                horizontal
+                showsHorizontalScrollIndicator={false}
                 data={syaratRoot}
                 style={styles.containerFlatlist}
                 renderItem={({ item, index }) => (

@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  SafeAreaView,
   StyleSheet,
   View,
   Text,
@@ -9,26 +8,27 @@ import {
   ActivityIndicator,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-//import RBSheet from "react-native-raw-bottom-sheet";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { useNavigation } from "@react-navigation/native";
 import { getObjectAsync } from "../../../components/asyncstorage";
 
+import { colors, staticDimensions, globalUIRatio } from "../../styles/base";
 import { showProduct } from "../../../axios/product";
-import Cart from "../../../components/cart/Cart";
 import ProductSlider from "../../components/product/ProductSlider";
 import ProductDesc from "../../components/product/ProductDesc";
-/*import ProductModal from "../modal/ProductModal";
-import useModal from "../../hook/useModal";
-import BSPopup from "../bottomsheets/BSPopup";
-import BSProductBenefit from "../bottomsheets/BSProductBenefit";*/
 import { openCheckout } from "../../utils/checkout";
-import { colors, staticDimensions } from "../../../styles/base";
 import { ASYNC_MEDIA_WATERMARK_PHOTOS_KEY } from "../../../components/asyncstorage/constants";
-import { checkNumberEmpty, alterKeranjang, clearKeranjang } from "../../../axios/cart";
+import {
+  checkNumberEmpty,
+  alterKeranjang,
+  clearKeranjang,
+} from "../../../axios/cart";
 import CenteredView from "../../components/view/CenteredView";
 import EmptySpinner from "../../components/empty/EmptySpinner";
+import TabClose from "../../components/tabs/TabClose";
+import Button from "../../components/Button/Button";
+import CartOld from "../../components/cart/CartOld";
 
 function ProductScreen(props) {
   const [product, setProduct] = useState(null);
@@ -36,7 +36,6 @@ function ProductScreen(props) {
   const [mediaPhotos, setMediaPhotos] = useState(null);
   const [tempCartSize, setTempCartSize] = useState(0);
   const [cartLoading, setCartLoading] = useState(false);
-  //const rbSheet = useRef();
   const { token, currentUser, cart, tempCart } = props;
   const name = props.route.params?.nama;
   const navigation = useNavigation();
@@ -51,7 +50,7 @@ function ProductScreen(props) {
 
   useEffect(() => {
     const check = props.productItems.find(
-      ({ id }) => id === props.route.params?.id
+      ({ id }) => id === props.route.params?.id,
     );
 
     if (check === undefined) {
@@ -103,14 +102,14 @@ function ProductScreen(props) {
         token,
         currentUser,
         tempCartSize > 0 ? tempCartSize : cart?.jumlah_produk,
-        null
+        null,
       );
     }
   }, [cart]);
 
   const checkAsyncProductMediaKitData = async (name) => {
     const storagePhotos = await getObjectAsync(
-      ASYNC_MEDIA_WATERMARK_PHOTOS_KEY
+      ASYNC_MEDIA_WATERMARK_PHOTOS_KEY,
     );
     if (!(storagePhotos === undefined || storagePhotos === null)) {
       setMediaPhotos(storagePhotos[name]);
@@ -133,65 +132,91 @@ function ProductScreen(props) {
   };
 
   return (
-    <CenteredView title={name} style={styles.container}>
+    <CenteredView style={styles.container}>
       {product === null || loading ? (
-       <EmptySpinner />
+        <EmptySpinner />
       ) : (
         <ScrollView style={styles.scrollView}>
           <ProductSlider id={product?.id} title={name} />
+          <TabClose
+            onPress={() => navigation.goBack()}
+            width={50 * globalUIRatio}
+            iconSize={25 * globalUIRatio}
+            style={styles.buttonClose}
+          />
           <View style={styles.containerInfo}>
-            <Text allowFontScaling={false} style={styles.text}>
+            <Text
+              allowFontScaling={false}
+              numberOfLines={1}
+              style={styles.text}
+            >
               {name ? name : product?.nama ? product?.nama : ""}
             </Text>
+            <Text
+              allowFontScaling={false}
+              numberOfLines={1}
+              style={styles.textPrice}
+            >
+              Rp {product?.harga_currency}
+            </Text>
+
             <View style={styles.containerTitle}>
-              <Text allowFontScaling={false} style={styles.textPrice}>
-                Rp {product?.harga_currency}
-              </Text>
+              {product?.tag_produk === undefined ||
+              product?.tag_produk === null ||
+              product?.tag_produk?.length === undefined ||
+              product?.tag_produk?.length < 1 ? null : (
+                <View style={styles.containerCategory}>
+                  {product?.tag_produk.map(({ nama }, index) => (
+                    <View key={nama} style={styles.containerTag}>
+                      <Text
+                        allowFontScaling={false}
+                        numberOfLines={1}
+                        style={[
+                          styles.textTag,
+                          {
+                            marginEnd:
+                              index >= product?.tag_produk?.length - 1
+                                ? 0
+                                : 8 * globalUIRatio,
+                          },
+                        ]}
+                      >
+                        {nama}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              )}
               {token === null ||
               currentUser === null ||
               currentUser?.id === undefined ||
               currentUser?.isActive === undefined ||
               currentUser?.isActive === null ||
               !currentUser?.isActive ? null : (
-                <Cart produk_id={product?.id} />
+                <CartOld produk_id={product?.id} />
               )}
             </View>
-
-            {product?.tag_produk === undefined ||
-            product?.tag_produk === null ||
-            product?.tag_produk?.length === undefined ||
-            product?.tag_produk?.length < 1 ? null : (
-              <View style={styles.containerCategory}>
-                <Text allowFontScaling={false} style={styles.textCategory}>
-                  Kategori
-                </Text>
-                {product?.tag_produk.map(({ nama }) => (
-                  <Text
-                    allowFontScaling={false}
-                    key={nama}
-                    style={styles.textTag}
-                  >
-                    {nama}
-                  </Text>
-                ))}
-              </View>
-            )}
 
             {mediaPhotos === null ||
             mediaPhotos?.length === undefined ||
             mediaPhotos?.length < 1 ? null : (
-              <TouchableOpacity onPress={() => openPhotosSegment()}>
-                <View style={styles.containerBenefit}>
-                  <MaterialCommunityIcons
-                    name="image-multiple"
-                    size={20}
-                    color="white"
-                  />
-                  <Text allowFontScaling={false} style={styles.textBenefit}>
-                    Foto Promosi
-                  </Text>
-                </View>
-              </TouchableOpacity>
+              <Button
+                inverted
+                text="Foto Promosi"
+                icon="image-multiple"
+                onPress={() => openPhotosSegment()}
+                bordered
+                borderColor={colors.daclen_black}
+                fontSize={12 * globalUIRatio}
+                iconSize={12 * globalUIRatio}
+                style={{
+                  width: 150 * globalUIRatio,
+                  height: 40 * globalUIRatio,
+                  marginVertical: 10 * globalUIRatio,
+                  paddingHorizontal: 20 * globalUIRatio,
+                  borderRadius: 20 * globalUIRatio,
+                }}
+              />
             )}
 
             <ProductDesc
@@ -226,28 +251,28 @@ function ProductScreen(props) {
                 cart?.jumlah_produk === undefined ||
                 cart?.jumlah_produk === null ||
                 tempCartSize === parseInt(cart?.jumlah_produk)
-                  ? colors.daclen_gray
-                  : colors.daclen_blue,
+                  ? colors.daclen_grey_placeholder
+                  : colors.daclen_black,
             },
           ]}
           onPress={() => loadCart()}
         >
           {cartLoading ? (
             <ActivityIndicator
-              size="small"
-              color={colors.daclen_light}
+              size={40 * globalUIRatio}
+              color={colors.white}
               style={styles.spinner}
             />
           ) : (
             <MaterialCommunityIcons
               name="cart"
-              size={32}
-              color={colors.daclen_light}
+              size={40 * globalUIRatio}
+              color={colors.white}
             />
           )}
 
           <View style={styles.containerNumber}>
-            <Text allowFontScaling={false} style={styles.textNumber}>
+            <Text allowFontScaling={false} numberOfLines={1} style={styles.textNumber}>
               {tempCartSize > 0 ? tempCartSize : cart?.jumlah_produk}
             </Text>
           </View>
@@ -256,37 +281,6 @@ function ProductScreen(props) {
     </CenteredView>
   );
 }
-
-/*
-            {product?.poin_produk !== null && (
-              <TouchableOpacity onPress={() => rbSheet.current.open()}>
-                <View style={styles.containerBenefit}>
-                  <MaterialCommunityIcons
-                    name="hand-coin"
-                    size={20}
-                    color="white"
-                  />
-                  <Text allowFontScaling={false} style={styles.textBenefit}>Keuntungan</Text>
-                </View>
-              </TouchableOpacity>
-            )}
-
-            <RBSheet ref={rbSheet} openDuration={250} height={300}>
-        <BSPopup
-          title="Keuntungan"
-          content={
-            <BSProductBenefit
-              poin={product?.poin_produk?.poin}
-              komisi={product?.poin_produk?.komisi}
-              harga_value={product?.harga}
-            />
-          }
-          buttonNegative={null}
-          closeThis={() => rbSheet.current.close()}
-          onPress={null}
-        />
-      </RBSheet>
-*/
 
 const styles = StyleSheet.create({
   container: {
@@ -304,7 +298,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     backgroundColor: "transparent",
-    paddingBottom: staticDimensions.pageBottomPadding,
+    paddingBottom: staticDimensions.pageBottomPadding / 2,
   },
   containerTitle: {
     flexDirection: "row",
@@ -317,73 +311,75 @@ const styles = StyleSheet.create({
   containerCategory: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  containerBenefit: {
-    flexDirection: "row",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: colors.daclen_orange,
-    marginVertical: 14,
-    borderRadius: 4,
-    alignSelf: "flex-start",
+    flex: 1,
+    marginEnd: 8 * globalUIRatio,
   },
   containerNumber: {
     position: "absolute",
-    end: 10,
-    top: 10,
+    end: 10 * globalUIRatio,
+    top: 10 * globalUIRatio,
     elevation: 12,
-    padding: 2,
-    backgroundColor: colors.daclen_orange,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    padding: 2 * globalUIRatio,
+    backgroundColor: colors.daclen_danger,
+    width: 20 * globalUIRatio,
+    height: 20 * globalUIRatio,
+    borderRadius: 10 * globalUIRatio,
+    justifyContent: "center",
+    alignItems: "center",
   },
   containerImage: {
     flex: 1 / 3,
   },
   containerCheckout: {
     position: "absolute",
-    end: 12,
-    bottom: 40,
+    end: staticDimensions.marginHorizontal,
+    bottom: 40 * globalUIRatio,
     elevation: 10,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.daclen_green,
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: 80 * globalUIRatio,
+    height: 80 * globalUIRatio,
+    borderRadius: 40 * globalUIRatio,
+  },
+  containerTag: {
+    height: 30 * globalUIRatio,
+    paddingHorizontal: 16 * globalUIRatio,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.daclen_grey_light,
+    borderRadius: 6 * globalUIRatio,
+  },
+  buttonClose: {
+    backgroundColor: "transparent",
+    position: "absolute",
+    top: staticDimensions.marginHorizontal,
+    start: staticDimensions.marginHorizontal,
+    zIndex: 100,
   },
   text: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 20,
+    fontFamily: "Poppins-Light",
+    fontSize: 24 * globalUIRatio,
     color: colors.daclen_black,
-    marginVertical: 10,
   },
   textPrice: {
-    flex: 1,
-    fontFamily: "Poppins",
-    fontSize: 16,
-    marginBottom: 10,
-    color: colors.daclen_orange,
     fontFamily: "Poppins-SemiBold",
+    fontSize: 18 * globalUIRatio,
+    marginVertical: 10 * globalUIRatio,
+    color: colors.daclen_black,
   },
   textCategory: {
     fontFamily: "Poppins-SemiBold",
     fontSize: 14,
-    color: colors.daclen_gray,
+    color: colors.daclen_ligh,
     paddingEnd: 20,
   },
   textTag: {
-    fontSize: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    fontSize: 12 * globalUIRatio,
     textAlign: "center",
-    fontFamily: "Poppins-SemiBold",
-    backgroundColor: colors.daclen_green,
-    color: colors.daclen_light,
-    borderRadius: 2,
-    marginVertical: 2,
-    marginEnd: 4,
+    textAlignVertical: "center",
+    fontFamily: "Poppins",
+    backgroundColor: "transparent",
+    color: colors.daclen_black,
   },
   textUid: {
     fontFamily: "Poppins",
@@ -392,16 +388,9 @@ const styles = StyleSheet.create({
     color: colors.daclen_gray,
   },
   textNumber: {
-    fontSize: 12,
+    fontSize: 11 * globalUIRatio,
     fontFamily: "Poppins-SemiBold",
     color: colors.white,
-    textAlign: "center",
-  },
-  textBenefit: {
-    color: colors.white,
-    fontSize: 14,
-    marginStart: 10,
-    fontFamily: "Poppins-SemiBold",
     textAlign: "center",
   },
 });
@@ -421,7 +410,7 @@ const mapDispatchProps = (dispatch) =>
       alterKeranjang,
       clearKeranjang,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchProps)(ProductScreen);

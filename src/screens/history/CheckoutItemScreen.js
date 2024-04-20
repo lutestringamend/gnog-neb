@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
-  SafeAreaView,
   StyleSheet,
   View,
   Text,
-  ActivityIndicator,
   ScrollView,
   RefreshControl,
   TouchableOpacity,
@@ -15,8 +13,8 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import CartItem from "../../../components/cart/CartItem";
-import CartDetails from "../../../components/cart/CartDetails";
+import CartItem from "../../components/cart/CartItem";
+import CartDetails from "../../components/cart/CartDetails";
 import CartAction from "../../components/cart/CartAction";
 import Separator from "../../components/Separator";
 import { colors } from "../../../styles/base";

@@ -6,16 +6,14 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
+import { colors, globalUIRatio } from "../../styles/base";
 import { postKeranjang, deleteKeranjang } from "../../axios/cart";
-import { colors } from "../../styles/base";
-
 import { MAXIMUM_ITEM_PER_PRODUCT } from "../../redux/constants";
+
 
 function CartOld(props) {
   const [loading, setLoading] = useState(false);
@@ -68,7 +66,7 @@ function CartOld(props) {
     } else {
       console.log("modifyCart " + produk_id + " isAdd " + isAdd.toString());
       if (isAdd) {
-        if (itemSize <= MAXIMUM_ITEM_PER_PRODUCT) {
+        if (itemSize < MAXIMUM_ITEM_PER_PRODUCT) {
           setLoading(true);
           props.postKeranjang(token, produk_id, 1);
         }
@@ -95,7 +93,8 @@ function CartOld(props) {
   }
 
   if (isShop && itemSize < 1) {
-    return (
+    return null;
+    /*return (
       <TouchableOpacity
         style={styles.container}
         onPress={() => onShopButtonPress()}
@@ -119,7 +118,7 @@ function CartOld(props) {
           </Text>
         )}
       </TouchableOpacity>
-    );
+    );*/
   }
 
   if (token === null) {
@@ -132,18 +131,16 @@ function CartOld(props) {
         style={[
           styles.cartIcon,
           {
-            height: textSize ? textSize + 20 : 36,
-            borderTopStartRadius: 4,
-            borderBottomStartRadius: 4,
+            height: iconSize ? iconSize : 30 * globalUIRatio,
           },
         ]}
+        disabled={loading || itemSize <= 0}
         onPress={() => modifyCart(false)}
       >
         <MaterialCommunityIcons
-          name="minus"
-          size={iconSize ? iconSize : 16}
-          disabled={loading}
-          color={colors.daclen_gray}
+          name="minus-circle-outline"
+          size={iconSize ? iconSize : 30 * globalUIRatio}
+          color={itemSize <= 0 ? colors.daclen_grey_placeholder : colors.daclen_black}
         />
       </TouchableOpacity>
 
@@ -151,8 +148,8 @@ function CartOld(props) {
         style={[
           styles.containerNumber,
           {
-            width: textSize ? textSize + 24 : 40,
-            height: textSize ? textSize + 20 : 36,
+            width: iconSize ? 30 * iconSize / 25 : 35 * globalUIRatio,
+            height: iconSize ? iconSize : 30 * globalUIRatio,
           },
         ]}
       >
@@ -164,7 +161,7 @@ function CartOld(props) {
           />
         ) : (
           <Text allowFontScaling={false}
-            style={[styles.textCart, { fontFamily: "Poppins", fontSize: textSize ? textSize : 16 }]}
+            style={[styles.textCart, { fontFamily: "Poppins", fontSize: textSize ? textSize : 16 * globalUIRatio }]}
           >
             {itemSize}
           </Text>
@@ -175,18 +172,16 @@ function CartOld(props) {
         style={[
           styles.cartIcon,
           {
-            height: textSize ? textSize + 20 : 36,
-            borderTopEndRadius: 4,
-            borderBottomEndRadius: 4,
+            height: iconSize ? iconSize : 30 * globalUIRatio,
           },
         ]}
+        disabled={loading || itemSize >= MAXIMUM_ITEM_PER_PRODUCT}
         onPress={() => modifyCart(true)}
       >
         <MaterialCommunityIcons
-          name="plus"
-          size={iconSize ? iconSize : 16}
-          disabled={loading}
-          color={colors.daclen_gray}
+          name="plus-circle-outline"
+          size={iconSize ? iconSize : 30 * globalUIRatio}
+          color={itemSize >= MAXIMUM_ITEM_PER_PRODUCT ? colors.daclen_grey_placeholder : colors.daclen_black}
         />
       </TouchableOpacity>
     </View>
@@ -198,22 +193,18 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     flexDirection: "row",
     alignItems: "center",
-    elevation: 6,
   },
   cartIcon: {
     backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
-    padding: 2,
-    borderWidth: 1,
-    borderColor: colors.daclen_gray,
   },
   containerNumber: {
     backgroundColor: "transparent",
     justifyContent: "center",
     alignItems: "center",
-    borderColor: colors.daclen_gray,
-    borderTopWidth: 1,
+    marginHorizontal: 8 * globalUIRatio,
+    borderColor: colors.daclen_grey_placeholder,
     borderBottomWidth: 1,
   },
   textCart: {
@@ -223,16 +214,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     textAlignVertical: "center",
     alignSelf: "center",
-    fontFamily: "Poppins", fontSize: 16,
-    zIndex: 4,
-  },
-  textButton: {
-    fontFamily: "Poppins", fontSize: 14,
-    color: colors.daclen_black,
-    textAlign: "center",
-    textAlignVertical: "center",
-    alignSelf: "center",
-  },
+    fontFamily: "Poppins", 
+  }
 });
 
 const mapStateToProps = (store) => ({

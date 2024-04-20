@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  SafeAreaView,
   StyleSheet,
   View,
   Text,
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
-  Platform,
-  ToastAndroid,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -17,7 +14,12 @@ import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { clearUserData, getCurrentUser, getRiwayatPenarikanSaldo } from "../../../axios/user";
+import { colors, globalUIRatio, staticDimensions } from "../../styles/base";
+import {
+  clearUserData,
+  getCurrentUser,
+  getRiwayatPenarikanSaldo,
+} from "../../axios/user";
 import {
   clearKeranjang,
   formatPrice,
@@ -26,15 +28,12 @@ import {
   overhaulReduxTempCart,
   processPhoneNumberforCheckout,
   checkNumberEmpty,
-} from "../../../axios/cart";
-import { callMasterkurir, getKurirData } from "../../../axios/courier";
-import { clearHistoryData } from "../../../axios/history";
-
-import CartItem from "../../../components/cart/CartItem";
-import CartDetails from "../../../components/cart/CartDetails";
+} from "../../axios/cart";
+import { callMasterkurir, getKurirData } from "../../axios/courier";
+import { clearHistoryData } from "../../axios/history";
+import CartItem from "../../components/cart/CartItem";
+import CartDetails from "../../components/cart/CartDetails";
 import CartAction from "../../components/cart/CartAction";
-import Separator from "../../components/Separator";
-import { colors, staticDimensions } from "../../../styles/base";
 import {
   checkoutdefaultsendername,
   checkoutdefaultsendernameoption,
@@ -46,9 +45,9 @@ import CheckoutSenderName from "../../../components/main/CheckoutSenderName";
 import { sentryLog } from "../../../sentry";
 import { ASYNC_HISTORY_CHECKOUT_KEY } from "../../../components/asyncstorage/constants";
 import { setObjectAsync } from "../../../components/asyncstorage";
-import { devhttp, mainhttp } from "../../../axios/constants";
 import CenteredView from "../../components/view/CenteredView";
 import EmptySpinner from "../../components/empty/EmptySpinner";
+import AlertBox from "../../components/alert/AlertBox";
 
 const defaultSaldo = {
   used: 0,
@@ -83,6 +82,7 @@ function CheckoutScreen(props) {
     temp: checkoutdefaultsendername,
   });
 
+  const [cartNum, setCartNum] = useState(0);
   const [points, setPoints] = useState(0);
   const [weight, setWeight] = useState(0);
   const [weightVolume, setWeightVolume] = useState(0);
@@ -215,12 +215,12 @@ function CheckoutScreen(props) {
           ) {
             retrieveDeliveryServices(
               currentAddress?.provinsi,
-              currentAddress?.kota
+              currentAddress?.kota,
             );
           } else {
             retrieveDeliveryServices(
               customAddress?.provinsi,
-              customAddress?.kota
+              customAddress?.kota,
             );
           }
         }
@@ -278,7 +278,7 @@ function CheckoutScreen(props) {
         customAddress?.kecamatan?.name
           ? `, ${customAddress?.kecamatan?.name}`
           : ""
-      }  ${customAddress?.kode_pos}`
+      }  ${customAddress?.kode_pos}`,
     );
     setAddressComplete(true);
     console.log("customAddress", customAddress);
@@ -380,9 +380,9 @@ function CheckoutScreen(props) {
 
   useEffect(() => {
     if (deliveryFee > 0) {
-      setTotalPrice(props.cart.subtotal + deliveryFee);
+      setTotalPrice(props.cart?.subtotal + deliveryFee);
     } else {
-      setTotalPrice(props.cart.subtotal);
+      setTotalPrice(props.cart?.subtotal);
     }
   }, [deliveryFee]);
 
@@ -445,7 +445,7 @@ function CheckoutScreen(props) {
         console.log(
           "redux checkoutError",
           checkoutError,
-          checkoutError?.response?.data?.message
+          checkoutError?.response?.data?.message,
         );
       } catch (e) {
         console.error(e);
@@ -477,6 +477,18 @@ function CheckoutScreen(props) {
     }
     console.log("checkoutJson", checkoutJson);
   }, [checkoutJson]);
+
+  useEffect(() => {
+    let num = 0;
+    try {
+      for (let c of cart) {
+        num += checkNumberEmpty(c?.jumlah);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setCartNum(num);
+  }, [cart]);
 
   const openCheckoutErrorDetails = () => {
     try {
@@ -520,7 +532,7 @@ function CheckoutScreen(props) {
         currentAddress?.kecamatan?.name
           ? `, ${currentAddress?.kecamatan?.name}`
           : ""
-      } ${currentAddress?.kode_pos}`
+      } ${currentAddress?.kode_pos}`,
     );
     setAddressComplete(true);
     console.log("currentAddress set", currentAddress);
@@ -546,8 +558,8 @@ function CheckoutScreen(props) {
             email: currentUser?.email
               ? currentUser?.email
               : currentAddress?.email
-              ? currentAddress?.email
-              : "",
+                ? currentAddress?.email
+                : "",
             provinsi,
             kota,
             kecamatan: {
@@ -587,8 +599,7 @@ function CheckoutScreen(props) {
   };
 
   const backHome = () => {
-    console.log("backHome");
-    navigation.navigate("Main");
+    navigation.goBack();
   };
 
   const openAddress = () => {
@@ -652,7 +663,7 @@ function CheckoutScreen(props) {
       //console.log("createCheckoutJson courier", courier);
       let user = {
         pakai_saldo: checkNumberEmpty(saldo.used) > 0 ? true : false,
-      }
+      };
       //saldo: (saldo.available - saldo.used).toString(),
       console.log("checkout user", user);
 
@@ -674,7 +685,9 @@ function CheckoutScreen(props) {
           nama_penerima: senderName.final
             ? senderName.final
             : "Daclen Official",
-          nomor_telp: detail_checkout?.nomor_telp ? processPhoneNumberforCheckout(detail_checkout?.nomor_telp) : "",
+          nomor_telp: detail_checkout?.nomor_telp
+            ? processPhoneNumberforCheckout(detail_checkout?.nomor_telp)
+            : "",
         },
         user,
       };
@@ -709,7 +722,7 @@ function CheckoutScreen(props) {
   function onPressRadioButtonCourier(radioButtonsArray) {
     try {
       const chosenCourier = radioButtonsArray.find(
-        ({ selected }) => selected === true
+        ({ selected }) => selected === true,
       );
       setCourierLoading(true);
       setCourierSlug(chosenCourier?.value);
@@ -721,7 +734,7 @@ function CheckoutScreen(props) {
   function onPressRadioButtonService(radioButtonsArray) {
     try {
       const chosenService = radioButtonsArray.find(
-        ({ selected }) => selected === true
+        ({ selected }) => selected === true,
       );
       setCourierService(props.couriers[parseInt(chosenService?.value)]);
     } catch (e) {
@@ -744,7 +757,7 @@ function CheckoutScreen(props) {
   function onPressRadioButtonSenderName(radioButtonsArray) {
     try {
       const chosenName = radioButtonsArray.find(
-        ({ selected }) => selected === true
+        ({ selected }) => selected === true,
       );
       setSenderName({ final: chosenName?.value, temp: chosenName?.value });
     } catch (e) {
@@ -762,27 +775,39 @@ function CheckoutScreen(props) {
 
   return (
     <CenteredView title="Checkout" style={styles.container}>
-      {error ? (
-        <TouchableOpacity onPress={() => openCheckoutErrorDetails}>
-          <Text allowFontScaling={false} style={styles.textError}>
-            {error}
-          </Text>
-        </TouchableOpacity>
-      ) : null}
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={{
+          paddingBottom: staticDimensions.marginHorizontal,
+        }}
+      >
         <TouchableOpacity
           onPress={() => openAddress()}
           style={styles.containerHeader}
         >
-          <MaterialCommunityIcons
-            name="map-plus"
-            size={20}
-            color={colors.daclen_blue}
-          />
           <View style={styles.containerTitle}>
-            <Text allowFontScaling={false} style={styles.textAddressHeader}>
+            <MaterialCommunityIcons
+              name="map"
+              size={20 * globalUIRatio}
+              color={colors.daclen_black}
+            />
+            <Text
+              allowFontScaling={false}
+              numberOfLines={1}
+              style={[
+                styles.textAddressHeader,
+                {
+                  flex: 1,
+                },
+              ]}
+            >
               Pilih Alamat Pengiriman
             </Text>
+          </View>
+
+          <View
+            style={[styles.containerTitle, { marginTop: 10 * globalUIRatio }]}
+          >
             <Text
               allowFontScaling={false}
               style={[
@@ -794,50 +819,60 @@ function CheckoutScreen(props) {
                 ? displayAddress
                 : "Alamat Pengiriman belum dipilih"}
             </Text>
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={24 * globalUIRatio}
+              color={colors.black}
+              style={styles.arrowAddress}
+            />
           </View>
-          <MaterialCommunityIcons
-            name="chevron-right"
-            size={28}
-            color={colors.daclen_blue}
-            style={styles.arrowAddress}
-          />
         </TouchableOpacity>
-        <Separator thickness={10} />
 
         {props.cart === null ? (
           <ActivityIndicator
             size="large"
-            color={colors.daclen_orange}
+            color={colors.daclen_grey_placeholder}
             style={{ alignSelf: "center", marginVertical: 20 }}
           />
         ) : (
           <View
             style={[
               styles.container,
-              { paddingBottom: staticDimensions.pageBottomPadding },
+              { paddingBottom: staticDimensions.pageBottomPadding / 2 },
             ]}
           >
-            <View style={styles.containerFlatlist}>
-              {cart === undefined ||
-              cart === null ||
-              cart?.length === undefined ||
-              cart?.length < 1 ? (
-                <Text allowFontScaling={false} style={styles.textUid}>
-                  Tidak ada Checkout
-                </Text>
-              ) : (
-                <FlashList
-                  estimatedItemSize={10}
-                  numColumns={1}
-                  horizontal={false}
-                  data={cart}
-                  renderItem={({ item }) => (
-                    <CartItem item={item} isCart={true} />
-                  )}
-                />
-              )}
-            </View>
-            <Separator thickness={5} />
+            <Text
+              allowFontScaling={false}
+              numberOfLines={1}
+              style={[
+                styles.textAddressHeader,
+                {
+                  marginHorizontal: staticDimensions.marginHorizontal,
+                  marginBottom: 8 * globalUIRatio,
+                },
+              ]}
+            >
+              {`${cartNum} item di keranjang`}
+            </Text>
+            {cart === undefined ||
+            cart === null ||
+            cart?.length === undefined ||
+            cart?.length < 1 ? null : (
+              <FlashList
+                estimatedItemSize={10}
+                numColumns={1}
+                horizontal={false}
+                data={cart}
+                contentContainerStyle={styles.containerFlatlist}
+                renderItem={({ item }, index) => (
+                  <CartItem
+                    item={item}
+                    isCart={true}
+                    isLast={index >= cart?.length - 1}
+                  />
+                )}
+              />
+            )}
 
             <CartDetails
               isCart={true}
@@ -863,7 +898,7 @@ function CheckoutScreen(props) {
                   ? formatPrice(
                       (checkoutsubtotalcommissionpercentage *
                         props.cart?.subtotal) /
-                        100
+                        100,
                     )
                   : 0
               }
@@ -873,13 +908,6 @@ function CheckoutScreen(props) {
               allowSaldo={allowSaldo}
               totalPrice={totalPrice}
             />
-
-            <Separator thickness={10} />
-            <Text allowFontScaling={false} style={styles.textUid}>
-              Data personal Anda akan digunakan untuk proses pemesanan dalam
-              membantu kenyamanan Anda melalui aplikasi ini, dan keperluan lain
-              yang dijelaskan dalam syarat dan ketentuan kami.
-            </Text>
           </View>
         )}
       </ScrollView>
@@ -895,9 +923,11 @@ function CheckoutScreen(props) {
         />
       )}
 
-      {afterCheckout ? (
-        <EmptySpinner style={styles.containerLoading} /> 
+      {error ? (
+        <AlertBox text={error} onClose={() => openCheckoutErrorDetails()} />
       ) : null}
+
+      {afterCheckout ? <EmptySpinner style={styles.containerLoading} /> : null}
 
       <RBSheet
         ref={rbSenderName}
@@ -947,7 +977,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     width: "100%",
-    backgroundColor: "white",
+    backgroundColor: colors.white,
   },
   scrollView: {
     flex: 1,
@@ -965,14 +995,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   containerHeader: {
-    paddingHorizontal: 10,
-    paddingVertical: 12,
-    backgroundColor: colors.daclen_light,
-    flexDirection: "row",
+    paddingHorizontal: 20 * globalUIRatio,
+    paddingVertical: 12 * globalUIRatio,
+    margin: staticDimensions.marginHorizontal,
+    backgroundColor: colors.daclen_grey_light,
+    borderRadius: 12 * globalUIRatio,
+    minHeight: 120 * globalUIRatio,
   },
   containerTitle: {
-    flex: 1,
-    marginStart: 10,
+    backgroundColor: "transparent",
+    flexDirection: "row",
+    alignItems: "center",
   },
   containerFlatlist: {
     justifyContent: "flex-start",
@@ -981,32 +1014,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   textAddressHeader: {
-    fontSize: 14,
-    fontFamily: "Poppins-Bold",
-    color: colors.daclen_blue,
-    marginBottom: 6,
+    marginStart: 10 * globalUIRatio,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 14 * globalUIRatio,
+    color: colors.daclen_black,
   },
   textAddressDetail: {
-    fontFamily: "Poppins",
-    fontSize: 12,
-    color: colors.daclen_gray,
-  },
-  textUid: {
-    fontFamily: "Poppins",
-    fontSize: 12,
-    marginVertical: 20,
-    color: colors.daclen_gray,
-    marginHorizontal: 20,
-    textAlign: "center",
-  },
-  textError: {
-    fontSize: 14,
-    fontFamily: "Poppins-SemiBold",
-    color: colors.white,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: colors.daclen_danger,
-    textAlign: "center",
+    flex: 1,
+    fontFamily: "Poppins-Light",
+    fontSize: 11 * globalUIRatio,
+    color: colors.black,
   },
   textDisclaimer: {
     backgroundColor: "transparent",
@@ -1018,7 +1035,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   arrowAddress: {
-    marginStart: 10,
+    marginStart: 10 * globalUIRatio,
     alignSelf: "center",
   },
 });
@@ -1052,7 +1069,7 @@ const mapDispatchProps = (dispatch) =>
       overhaulReduxTempCart,
       getRiwayatPenarikanSaldo,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchProps)(CheckoutScreen);

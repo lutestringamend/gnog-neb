@@ -3,9 +3,8 @@ import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 //import RenderHTML from "react-native-render-html";
 
-import Separator from "../Separator";
-import { colors, staticDimensions } from "../../../styles/base";
-import { formatProductDescription } from "../../../axios/product";
+import { colors, globalUIRatio, staticDimensions } from "../../styles/base";
+import { formatProductDescription } from "../../axios/product";
 
 export default function ProductDesc(props) {
   const deskripsi = props?.deskripsi ? props?.deskripsi : null;
@@ -21,39 +20,20 @@ export default function ProductDesc(props) {
     setContent(formatProductDescription(deskripsi));
   }, [deskripsi]);
 
-  /*useEffect(() => {
-    console.log("productdesc content", content);
-  }, [content]);*/
-
-  /*useEffect(() => {
-    if (props?.deskripsi === undefined || props?.deskripsi === null || !desc) {
-      setContent("");
-    } else {
-      setContent(props?.deskripsi);
-    }
-  }, [desc]);*/
 
   return (
     <View style={styles.container}>
-      <Separator thickness={2} />
       <TouchableOpacity onPress={() => setDesc((desc) => !desc)}>
         <View style={styles.containerHeader}>
-          <Text allowFontScaling={false} style={styles.textHeader}>
+          <Text allowFontScaling={false} numberOfLines={1} style={styles.textHeader}>
             Deskripsi
           </Text>
-          {desc ? (
-            <MaterialCommunityIcons
-              name="chevron-up"
-              size={24}
-              color={colors.daclen_gray}
+          <MaterialCommunityIcons
+              name={desc ? "chevron-up" : "chevron-down"}
+              size={24 * globalUIRatio}
+              color={colors.daclen_black}
             />
-          ) : (
-            <MaterialCommunityIcons
-              name="chevron-down"
-              size={24}
-              color={colors.daclen_gray}
-            />
-          )}
+         
         </View>
       </TouchableOpacity>
 
@@ -74,32 +54,23 @@ export default function ProductDesc(props) {
         </View>
       ) : null}
 
-      <Separator thickness={2} />
       <TouchableOpacity onPress={() => setSpec((spec) => !spec)}>
         <View style={styles.containerHeader}>
-          <Text allowFontScaling={false} style={styles.textHeader}>
+          <Text allowFontScaling={false} numberOfLines={1} style={styles.textHeader}>
             Spesifikasi
           </Text>
-          {spec ? (
-            <MaterialCommunityIcons
-              name="chevron-up"
+          <MaterialCommunityIcons
+              name={spec ? "chevron-up" : "chevron-down"}
               size={24}
-              color={colors.daclen_gray}
+              color={colors.daclen_black}
             />
-          ) : (
-            <MaterialCommunityIcons
-              name="chevron-down"
-              size={24}
-              color={colors.daclen_gray}
-            />
-          )}
         </View>
       </TouchableOpacity>
 
       {spec ? (
         <View style={styles.containerVertical}>
           <View style={styles.containerSpec}>
-            <Text allowFontScaling={false} style={styles.textSpecHeader}>
+            <Text allowFontScaling={false} style={styles.textSpec}>
               Dimensi
             </Text>
             <Text allowFontScaling={false} style={styles.textSpec}>
@@ -108,7 +79,7 @@ export default function ProductDesc(props) {
           </View>
 
           <View style={styles.containerSpec}>
-            <Text allowFontScaling={false} style={styles.textSpecHeader}>
+            <Text allowFontScaling={false} style={styles.textSpec}>
               Berat
             </Text>
             <Text allowFontScaling={false} style={styles.textSpec}>
@@ -135,8 +106,7 @@ export default function ProductDesc(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginVertical: 10,
-    backgroundColor: colors.white,
+    backgroundColor: "transparent",
   },
   containerDesc: {
     backgroundColor: "transparent",
@@ -156,45 +126,39 @@ const styles = StyleSheet.create({
     height: staticDimensions.pageBottomPadding / 2,
   },
   containerSpec: {
-    backgroundColor: colors.daclen_light,
+    backgroundColor: "transparent",
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
-    marginHorizontal: 10,
-    borderColor: colors.daclen_gray,
-    borderWidth: 1,
+    marginHorizontal: staticDimensions.marginHorizontal,
+    borderBottomWidth: 1,
+    borderColor: colors.daclen_grey_placeholder,
   },
   textHeader: {
     flex: 1,
-    fontSize: 14,
-    fontFamily: "Poppins-SemiBold",
-    color: colors.daclen_gray,
+    fontSize: 18 * globalUIRatio,
+    fontFamily: "Poppins-Light",
+    color: colors.black,
   },
   textDesc: {
     fontFamily: "Poppins",
-    fontSize: 12,
+    fontSize: 11 * globalUIRatio,
     backgroundColor: "transparent",
     textAlign: "justify",
-    color: colors.daclen_gray,
+    lineHeight: 20 * globalUIRatio,
+    color: colors.black,
     marginBottom: 10,
   },
   textDescStrong: {
     marginTop: 6,
-    fontSize: 13,
+    fontSize: 13 * globalUIRatio,
     fontFamily: "Poppins-SemiBold",
-  },
-  textSpecHeader: {
-    flex: 1,
-    padding: 8,
-    fontSize: 12,
-    fontFamily: "Poppins-SemiBold",
-    color: colors.daclen_graydark,
   },
   textSpec: {
     flex: 1,
     padding: 8,
-    fontFamily: "Poppins",
-    fontSize: 12,
+    fontFamily: "Poppins-Light",
+    fontSize: 11 * globalUIRatio,
     color: colors.daclen_black,
   },
   arrow: {

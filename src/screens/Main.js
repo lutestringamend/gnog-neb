@@ -679,20 +679,6 @@ function Main(props) {
   }
 }
 
-/*
-<SafeAreaView style={styles.container}>
-          <ImageBackground
-            source={require("../assets/profilbg.png")}
-            style={styles.background}
-            resizeMode="cover"
-          />
-          <Top
-            token={token}
-            currentUser={currentUser}
-            recruitmentTimer={recruitmentTimer}
-          />
-        </SafeAreaView>
-*/
 
 const styles = StyleSheet.create({
   container: {
