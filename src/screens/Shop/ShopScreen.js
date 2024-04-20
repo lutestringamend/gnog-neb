@@ -15,11 +15,7 @@ import { bindActionCreators } from "redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 
-import {
-  colors,
-  staticDimensions,
-  dimensions,
-} from "../../styles/base";
+import { colors, staticDimensions, dimensions } from "../../styles/base";
 import ShopItem from "../../components/shop/ShopItem";
 import { getObjectAsync } from "../../asyncstorage";
 import { ASYNC_PRODUCTS_ARRAY_KEY } from "../../asyncstorage/constants";
@@ -34,12 +30,14 @@ import {
 import AlertBox from "../../components/alert/AlertBox";
 import EmptySpinner from "../../components/empty/EmptySpinner";
 import EmptyPlaceholder from "../../components/empty/EmptyPlaceholder";
-import { TEMP_SHOP_CATEGORIES } from "../../models/shop";
-import ShopCategory from "../../components/shop/ShopCategory";
 import ShopSearch from "../../components/shop/ShopSearch";
 import CenteredView from "../../components/view/CenteredView";
+import TabClose from "../../components/tabs/TabClose";
+import { PRODUCT_CATEGORIES } from "../../constants/product";
+import TabButton from "../../components/tabs/TabButton";
 
-const headerHeight = (60 * dimensions.fullWidthAdjusted) / 430;
+const ratio = dimensions.fullWidthAdjusted / 430;
+const headerHeight = 50 * ratio;
 
 function ShopScreen(props) {
   const [storageProducts, setStorageProducts] = useState(null);
@@ -132,6 +130,10 @@ function ShopScreen(props) {
     }
   }, [cartError]);
 
+  useEffect(() => {
+    console.log("products", products);
+  }, [products]);
+
   async function getStorageProducts() {
     const asyncProducts = await getObjectAsync(ASYNC_PRODUCTS_ARRAY_KEY);
     if (
@@ -202,11 +204,17 @@ function ShopScreen(props) {
                 ? bottomNav.height + staticDimensions.marginHorizontal
                 : 0,
           },
+
+
+                <Text allowFontScaling={false} style={styles.textHeader}>
+                  Produk
+                </Text>
   */
 
   return (
     <CenteredView style={styles.container}>
-       <View style={styles.containerHeader}>
+      <View style={styles.containerTopBar}>
+        <View style={styles.containerHeader}>
           <ShopSearch height={headerHeight} />
 
           {currentUser?.level === "spv" ||
@@ -242,7 +250,7 @@ function ShopScreen(props) {
                       : "cart"
                   }
                   size={(25 * headerHeight) / 60}
-                  color={colors.white}
+                  color={colors.daclen_black}
                 />
               )}
 
@@ -267,97 +275,98 @@ function ShopScreen(props) {
             </TouchableOpacity>
           )}
         </View>
-
-        <ScrollView style={styles.containerScroll}>
-          {props.searchFilter === null || props.searchFilter === "" ? 
-          <View style={styles.containerCategory}>
-          <Text
-            allowFontScaling={false}
-            style={[
-              styles.textHeader,
-              {
-                color: colors.white,
-                marginHorizontal: staticDimensions.marginHorizontal,
-                marginBottom: 10,
-              },
-            ]}
-          >
-            Kategori Produk
-          </Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.containerCategoryScroll}
-          >
-            {TEMP_SHOP_CATEGORIES.map((item, index) => (
-              <ShopCategory key={index} {...item} />
-            ))}
-          </ScrollView>
-        </View>
-          : null}
-          
-
-          <View style={styles.containerFlatlist}>
-            {loading ? (
-              <EmptySpinner />
-            ) : category === "" && props.products.length < 1 ? (
-              <EmptyPlaceholder
-                title="Shop Kosong"
-                text="Tidak ada produk tersedia."
-                minHeight={dimensions.fullHeight * 0.5}
-              />
-            ) : props.searchFilter !== null && products.length < 1 ? (
-              <EmptyPlaceholder
-                title="Hasil Pencarian Kosong"
-                text={`Tidak menemukan produk dari kata pencarian "${props.searchFilter}".`}
-                minHeight={dimensions.fullHeight * 0.5}
-              />
-            ) : category !== "" && products.length < 1 ? (
-              <EmptyPlaceholder
-                title="Shop Kosong"
-                text="Tidak ada produk tersedia di kategori ini."
-                minHeight={dimensions.fullHeight * 0.5}
-              />
-            ) : (
-              <View style={styles.containerList}>
-                <Text allowFontScaling={false} style={styles.textHeader}>
-                  Produk
-                </Text>
-                <FlashList
-                  estimatedItemSize={productpaginationnumber}
-                  numColumns={2}
-                  horizontal={false}
-                  showsVerticalScrollIndicator={false}
-                  data={
-                    props?.searchFilter === null ||
-                    props?.searchFilter === "" ||
-                    products?.length === undefined ||
-                    products?.length < 1
-                      ? props.products
-                      : products
-                  }
-                  contentContainerStyle={styles.containerFlatlistBottom}
-                  renderItem={({ item, index }) => (
-                    <ShopItem
-                      id={index}
-                      index={index}
-                      {...item}
-                      foto_url={
-                        item?.thumbnail_url
-                          ? item?.thumbnail_url
-                          : item?.foto_url
-                            ? item?.foto_url
-                            : require("../../assets/favicon.png")
-                      }
-                    />
-                  )}
-                />
-              </View>
-            )}
-          </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.containerCategory}
+          contentContainerStyle={styles.containerCategoryScroll}
+        >
+          <TabClose
+            color={colors.white}
+            style={{ marginEnd: 10 * ratio }}
+            onPress={() => setCategory("")}
+          />
+          {PRODUCT_CATEGORIES.map((item, index) => (
+            <TabButton
+              key={index}
+              text={item}
+              color={colors.white}
+              selected={category === item}
+              onPress={() => setCategory(item)}
+              style={{ marginEnd: 10 * ratio }}
+            />
+          ))}
         </ScrollView>
+        <Text allowFontScaling={false} style={styles.textNumber}>
+          {`${checkNumberEmpty(
+            (props?.searchFilter === null || props?.searchFilter === "") &&
+              category === ""
+              ? props?.products?.length
+              : products?.length,
+          )} produk tersedia`}
+        </Text>
+      </View>
 
-        <AlertBox text={cartError} success={false} />
+      <ScrollView style={styles.containerScroll}>
+        <View style={styles.containerFlatlist}>
+          {loading ? (
+            <EmptySpinner />
+          ) : category === "" && props.products.length < 1 ? (
+            <EmptyPlaceholder
+              title="Shop Kosong"
+              text="Tidak ada produk tersedia."
+              minHeight={dimensions.fullHeight * 0.5}
+            />
+          ) : props.searchFilter !== null && products?.length < 1 ? (
+            <EmptyPlaceholder
+              title="Hasil Pencarian Kosong"
+              text={`Tidak menemukan produk dari kata pencarian "${props.searchFilter}".`}
+              minHeight={dimensions.fullHeight * 0.5}
+            />
+          ) : category !== "" && products?.length < 1 ? (
+            <EmptyPlaceholder
+              title="Shop Kosong"
+              text="Tidak ada produk tersedia di kategori ini."
+              minHeight={dimensions.fullHeight * 0.5}
+            />
+          ) : (
+            <View style={styles.containerList}>
+              <FlashList
+                estimatedItemSize={productpaginationnumber}
+                numColumns={2}
+                horizontal={false}
+                showsVerticalScrollIndicator={false}
+                data={
+                  ((props?.searchFilter === null ||
+                    props?.searchFilter === "") &&
+                    category === "") ||
+                  products?.length === undefined ||
+                  products?.length < 1
+                    ? props.products
+                    : products
+                }
+                contentContainerStyle={styles.containerFlatlistBottom}
+                renderItem={({ item, index }) => (
+                  <ShopItem
+                    id={index}
+                    index={index}
+                    {...item}
+                    foto_url={
+                      item?.thumbnail_url
+                        ? item?.thumbnail_url
+                        : item?.foto_url
+                          ? item?.foto_url
+                          : require("../../assets/favicon.png")
+                    }
+                  />
+                )}
+              />
+            </View>
+          )}
+        </View>
+      </ScrollView>
+
+      <AlertBox text={cartError} success={false} />
     </CenteredView>
   );
 }
@@ -371,31 +380,34 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "transparent",
   },
+  containerTopBar: {
+    backgroundColor: "transparent",
+    marginHorizontal: staticDimensions.marginHorizontal,
+    marginTop: 57 * ratio,
+  },
   containerHeader: {
-    marginTop: 36,
-    marginBottom: 12,
+    marginBottom: 16 * ratio,
     backgroundColor: "transparent",
     alignItems: "center",
     flexDirection: "row",
     height: headerHeight,
-    marginHorizontal: staticDimensions.marginHorizontal,
   },
   containerCart: {
-    backgroundColor: colors.daclen_grey_placeholder,
+    backgroundColor: colors.white,
     justifyContent: "center",
     alignItems: "center",
-    marginStart: staticDimensions.marginHorizontal,
+    marginStart: 10 * ratio,
     width: headerHeight,
     height: headerHeight,
     borderRadius: headerHeight / 2,
   },
   containerCategory: {
     backgroundColor: "transparent",
-    marginBottom: staticDimensions.marginHorizontal,
+    marginBottom: 16 * ratio,
+    width: dimensions.fullWidthAdjusted - 2 * staticDimensions.marginHorizontal,
   },
   containerCategoryScroll: {
     backgroundColor: "transparent",
-    height: 180,
   },
   containerNumber: {
     backgroundColor: colors.daclen_orange,
@@ -416,7 +428,7 @@ const styles = StyleSheet.create({
   containerFlatlistBottom: {
     backgroundColor: "transparent",
     paddingHorizontal: staticDimensions.marginHorizontal,
-    paddingBottom: (320 * dimensions.fullWidthAdjusted) / 430,
+    paddingBottom: 200 * ratio,
   },
   containerHorizontal: {
     flexDirection: "row",
@@ -429,7 +441,8 @@ const styles = StyleSheet.create({
     flex: 1,
     borderTopStartRadius: 40,
     borderTopEndRadius: 40,
-    backgroundColor: colors.daclen_grey_light,
+    backgroundColor: colors.white,
+    minHeight: 0.86 * dimensions.fullHeight,
   },
 
   containerCounter: {
@@ -465,12 +478,12 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Bold",
     color: colors.white,
   },
-  image: {
-    width: 28,
-    height: 28,
-    padding: 2,
-    borderRadius: 10,
-    marginHorizontal: 6,
+  textNumber: {
+    backgroundColor: "transparent",
+    fontSize: 12 * ratio,
+    fontFamily: "Poppins-SemiBold",
+    color: colors.white,
+    marginBottom: 16 * ratio,
   },
 });
 

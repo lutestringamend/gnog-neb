@@ -4,21 +4,25 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { getStorageProductData, updateProductSearchFilter } from "../../axios/product";
-import { colors, staticDimensions } from "../../styles/base";
+import {
+  getStorageProductData,
+  updateProductSearchFilter,
+} from "../../axios/product";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
 
+const ratio = dimensions.fullWidthAdjusted / 430;
 
-function ShopSearch (props) {
+function ShopSearch(props) {
   const { searchFilter, height } = props;
   const [filter, setFilter] = useState(searchFilter ? searchFilter : "");
 
   useEffect(() => {
     if (filter !== searchFilter) {
-        if (filter === "") {
-            props.updateProductSearchFilter(null);
-        } else {
-            props.updateProductSearchFilter(filter);
-        }
+      if (filter === "") {
+        props.updateProductSearchFilter(null);
+      } else {
+        props.updateProductSearchFilter(filter);
+      }
     }
   }, [filter]);
 
@@ -27,22 +31,21 @@ function ShopSearch (props) {
       <MaterialCommunityIcons
         name="magnify"
         color={colors.daclen_grey_placeholder}
-        size={25 * height / 60}
+        size={20 * ratio}
       />
       <TextInput
-        style={[styles.textInput, { height, fontSize: height / 3 }]}
+        style={[styles.textInput, { height }]}
         value={filter}
-        onChangeText={text => setFilter(text)}
+        onChangeText={(text) => setFilter(text)}
         placeholderTextColor={colors.daclen_grey_placeholder}
         placeholder="Cari Produk"
       />
-{searchFilter === null || searchFilter === "" ? null : (
+      {searchFilter === null || searchFilter === "" ? null : (
         <TouchableOpacity onPress={() => setFilter("")}>
           <MaterialCommunityIcons
             name="close-circle"
             color={colors.daclen_grey_placeholder}
-            size={25 * height / 60}
-            style={{ marginEnd: 20 }}
+            size={20 * ratio}
           />
         </TouchableOpacity>
       )}
@@ -54,37 +57,37 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.daclen_grey_search_container,
-    paddingStart: 20,
-    height: 60,
+    backgroundColor: colors.white,
+    paddingHorizontal: 15 * ratio,
+    height: 50 * ratio,
     borderRadius: 40,
     flex: 1,
   },
   textInput: {
     flex: 1,
     alignSelf: "center",
-    marginHorizontal: staticDimensions.marginHorizontal,
-    fontFamily: "Poppins-Light", 
+    marginHorizontal: 15 * ratio,
+    fontFamily: "Poppins-Light",
     height: 60,
     textAlignVertical: "center",
-    fontSize: 20,
+    fontSize: 12 * ratio,
     color: colors.black,
     backgroundColor: "transparent",
   },
 });
 
 const mapStateToProps = (store) => ({
-    products: store.productState.products,
-    searchFilter: store.productState.searchFilter,
+  products: store.productState.products,
+  searchFilter: store.productState.searchFilter,
 });
 
 const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
-        getStorageProductData,
-        updateProductSearchFilter,
+      getStorageProductData,
+      updateProductSearchFilter,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchProps)(ShopSearch);

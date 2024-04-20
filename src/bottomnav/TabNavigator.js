@@ -14,7 +14,7 @@ export default function TabNavigator(props) {
   //const { isLogin, isActive, recruitmentTimer } = props;
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="Shop"
       tabBarOptions={{
         showLabel: false,
         style: {

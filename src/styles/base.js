@@ -8,6 +8,8 @@ export const dimensions = {
   fullWidthAdjusted: Dimensions.get("window").width > MAX_SCREEN_WIDTH ? MAX_SCREEN_WIDTH : Dimensions.get("window").width,
 }
 
+export const globalUIRatio = dimensions.fullWidthAdjusted / 430;
+
 export const staticDimensions = {
   statusBarPadding: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   marginHorizontal: 25 * dimensions.fullWidthAdjusted / 430,

@@ -37,7 +37,7 @@ const ShopItem = (props) => {
           marginStart: index % 2 === 0 ? 0 : marginInter,
           marginEnd: index % 2 === 0 ? marginInter : 0,
           marginTop: index < 2 ? 20 : 0,
-          marginBottom: 20,
+          marginBottom: 20 * screenWidth / 430,
         },
       ]}
     >

@@ -54,10 +54,20 @@ const SaldoHistoryItem = (props) => {
           >
             {checkNumberEmpty(saldo) === 0
               ? "Rp 0"
-              : (parseInt(biaya_admin) > 0 && parseInt(Math.abs(saldo)) === parseInt(biaya_admin)) ? `-${formatPrice(parseInt(biaya_admin))}` : `${checkSaldoMutationType(props) < 0 ? "-" : "+"}${formatPrice(Math.abs(saldo))}`}
+              : parseInt(biaya_admin) > 0 &&
+                  parseInt(Math.abs(saldo)) === parseInt(biaya_admin)
+                ? `-${formatPrice(parseInt(biaya_admin))}`
+                : `${
+                    checkSaldoMutationType(props) < 0 ? "-" : "+"
+                  }${formatPrice(Math.abs(saldo))}`}
           </Text>
           <Text allowFontScaling={false} style={styles.textStatus}>
-            {(status === "Saldo Keluar" && parseInt(Math.abs(saldo)) === parseInt(biaya_admin)) ? "Biaya admin penarikan saldo"  : keterangan ? keterangan : "Tidak ada perubahan saldo"}
+            {status === "Saldo Keluar" &&
+            parseInt(Math.abs(saldo)) === parseInt(biaya_admin)
+              ? "Biaya admin penarikan saldo"
+              : keterangan
+                ? keterangan
+                : "Tidak ada perubahan saldo"}
           </Text>
         </View>
         <MaterialCommunityIcons
