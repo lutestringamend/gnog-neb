@@ -11,7 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 //import { ImageSlider } from "react-native-image-slider-banner";
 import { connect } from "react-redux";
 
-import { colors, blurhash, dimensions, globalUIRatio } from "../../styles/base";
+import { colors, dimensions, globalUIRatio } from "../../styles/base";
 import { sentryLog } from "../../../sentry";
 
 const width = dimensions.fullWidthAdjusted;

@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-} from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 
 import {
   colors,
@@ -39,18 +35,12 @@ export default function CartAction(props) {
   }, [props?.buttonText]);
 
   useEffect(() => {
-    if (props?.isCart) {
-      if (props?.buttonDisabled) {
-        setColor(colors.daclen_gray);
-      } else {
-        setColor(colors.daclen_orange);
-      }
-    } else {
+    if (!props?.isCart) {
       if (loading && !props?.buttonDisabled) {
         setLoading(false);
       }
     }
-    console.log("CartAction buttonDisabled: " + props?.buttonDisabled);
+    //console.log("CartAction buttonDisabled: " + props?.buttonDisabled);
   }, [props?.buttonDisabled]);
 
   function onButtonPressed() {

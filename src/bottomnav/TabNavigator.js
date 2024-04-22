@@ -35,7 +35,7 @@ export default function TabNavigator(props) {
       <Tab.Screen
         name="Home"
         key="Home"
-        component={CheckoutScreen}
+        component={DashboardMain}
         options={{
           tabBarIcon: ({ focused }) => (
             <TabBarIcon title="Home" iconName="home" focused={focused} />

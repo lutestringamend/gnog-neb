@@ -308,7 +308,14 @@ function DashboardMain(props) {
           />
         )}
       </ScrollView>
-      <RBSheet
+      <RBSheet customStyles={{
+          wrapper: {
+            zIndex: 1,
+          },
+          container: {
+            backgroundColor: "transparent",
+          },
+        }} 
         ref={rbSheet}
         openDuration={250}
         height={popupDetail?.height ? popupDetail?.height : 370}

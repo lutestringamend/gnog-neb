@@ -10,9 +10,9 @@ import {
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { colors, globalUIRatio, staticDimensions } from "../../styles/base";
-import Button from "../Button/Button";
+import Button from "../buttons/Button";
 
-const BSPopup = (props) => {
+const BottomSheet = (props) => {
   const {
     title,
     content,
@@ -27,6 +27,7 @@ const BSPopup = (props) => {
     buttonDisabled,
     buttonLoading,
     hideClose,
+    hideHeaderPaddingBottom,
     hideContentMarginTop,
     hideSeparator,
     titleStyle,
@@ -75,6 +76,7 @@ const BSPopup = (props) => {
             styles.containerHeader,
             {
               borderBottomWidth: !headerSeparator || closeText === undefined || closeText === null ? 0 : 1,
+              paddingBottom: hideHeaderPaddingBottom ? 0 : 12,
             },
           ]}
         >
@@ -98,8 +100,8 @@ const BSPopup = (props) => {
               ) : (
                 <MaterialCommunityIcons
                   name="close"
-                  color={colors.daclen_black}
-                  size={18 * globalUIRatio}
+                  color={colors.textInputText}
+                  size={20}
                 />
               )}
             </TouchableOpacity>
@@ -110,7 +112,7 @@ const BSPopup = (props) => {
       <View
         style={[
           styles.containerInside,
-          hideContentMarginTop ? null : { marginTop: 20 * globalUIRatio },
+          hideContentMarginTop ? null : { marginTop: 12 },
         ]}
       >
         {content ? content : null}
@@ -160,8 +162,8 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: staticDimensions.maxScreenWidth,
     backgroundColor: colors.white,
-    borderTopStartRadius: 40 * globalUIRatio,
-    borderTopEndRadius: 40 * globalUIRatio,
+    borderTopStartRadius: 16,
+    borderTopEndRadius: 16,
   },
   containerInside: {
     width: "100%",
@@ -172,15 +174,16 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     flexDirection: "row",
     alignItems: "center",
+    marginTop: 24,
     paddingHorizontal: staticDimensions.marginHorizontal,
     borderBottomColor: colors.grey_shadow,
   },
   containerSeparator: {
     backgroundColor: "transparent",
     alignItems: "center",
+    height: 4,
     alignSelf: "center",
-    marginTop: 18 * globalUIRatio,
-    marginBottom: 24 * globalUIRatio,
+    marginTop: 8,
   },
   separator: {
     backgroundColor: colors.daclen_grey_container_background,
@@ -188,16 +191,20 @@ const styles = StyleSheet.create({
     height: 6 * globalUIRatio, 
   },
   textHeader: {
-    fontFamily: "Poppins-Bold",
-    color: colors.daclen_black,
-    fontSize: 18 * globalUIRatio,
-    marginEnd: 10 * globalUIRatio,
+    fontFamily: "Poppins-SemiBold",
+    color: colors.textInputText,
+    fontSize: 16,
+    marginEnd: 10,
     flex: 1,
+    lineHeight: 24,
+    letterSpacing: 0.15,
   },
   textClose: {
-    fontFamily: "Poppins-Light",
-    color: colors.daclen_danger,
-    fontSize: 11 * globalUIRatio,
+    fontFamily: "Poppins-SemiBold",
+    color: colors.danger,
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: 0.5,
   },
   button: {
     marginTop: 12,
@@ -212,4 +219,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BSPopup;
+export default BottomSheet;

@@ -706,7 +706,14 @@ function FillAddress(props) {
       </ScrollView>
 
       <AlertBox text={error} success={success} onClose={() => setError(null)} />
-      <RBSheet ref={rbSheet} openDuration={250} height={400}>
+      <RBSheet customStyles={{
+          wrapper: {
+            zIndex: 1,
+          },
+          container: {
+            backgroundColor: "transparent",
+          },
+        }}  ref={rbSheet} openDuration={250} height={400}>
         <BSContainer
           title={bottomTitle}
           list={bottomList}

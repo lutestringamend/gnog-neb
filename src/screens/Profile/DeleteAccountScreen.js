@@ -160,7 +160,14 @@ function DeleteAccountScreen(props) {
           </TouchableOpacity>
         </View>
       </ScrollView>
-      <RBSheet
+      <RBSheet customStyles={{
+          wrapper: {
+            zIndex: 1,
+          },
+          container: {
+            backgroundColor: "transparent",
+          },
+        }} 
         ref={rbSheet}
         openDuration={250}
         height={350}

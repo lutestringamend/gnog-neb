@@ -262,7 +262,14 @@ function ProfileScreen(props) {
 }
 
 /*
- <RBSheet ref={rbSheet} openDuration={250} height={350}>
+ <RBSheet customStyles={{
+          wrapper: {
+            zIndex: 1,
+          },
+          container: {
+            backgroundColor: "transparent",
+          },
+        }}  ref={rbSheet} openDuration={250} height={350}>
         <BSPopup
           title={logouttitle}
           text={logouttext}

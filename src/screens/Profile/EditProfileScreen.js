@@ -706,14 +706,28 @@ function EditProfileScreen(props) {
 
         </ScrollView>
         <AlertBox text={error} success={success} onClose={() => setError(null)} />
-        <RBSheet ref={rbSheetMedia} openDuration={250} height={300}>
+        <RBSheet customStyles={{
+          wrapper: {
+            zIndex: 1,
+          },
+          container: {
+            backgroundColor: "transparent",
+          },
+        }}  ref={rbSheetMedia} openDuration={250} height={300}>
           <BSMedia
             mediaKey="profilePicture"
             title="Ganti Profile Picture"
             closeThis={() => rbSheetMedia.current.close()}
           />
         </RBSheet>
-        <RBSheet ref={rbSheet} openDuration={250} height={250}>
+        <RBSheet customStyles={{
+          wrapper: {
+            zIndex: 1,
+          },
+          container: {
+            backgroundColor: "transparent",
+          },
+        }}  ref={rbSheet} openDuration={250} height={250}>
           <BSContainer
             title={selectbank}
             list={bottomList}
@@ -747,7 +761,14 @@ function EditProfileScreen(props) {
 }
 
 /*
-        <RBSheet ref={rbSheetAddress} openDuration={250} height={350}>
+        <RBSheet customStyles={{
+          wrapper: {
+            zIndex: 1,
+          },
+          container: {
+            backgroundColor: "transparent",
+          },
+        }}  ref={rbSheetAddress} openDuration={250} height={350}>
           <BSPopup
             title="Alamat Pengiriman Kosong"
             text="Anda harus mengisi alamat pengiriman di akun ini sebelum Anda bisa update profil Anda"

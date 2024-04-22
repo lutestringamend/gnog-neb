@@ -23,7 +23,7 @@ import { calculateSaldoAvailable, formatPrice } from "../../../axios/cart";
 import Button from "../Button/Button";
 
 export default function CartDetails(props) {
-  const { saldo, allowSaldo, saldoCut, isCart } = props;
+  const { saldo, allowSaldo, saldoCut, isCart, courierChoices, courierSlug, courierService } = props;
   const [useSaldo, setUseSaldo] = useState(false);
   const navigation = useNavigation();
 
@@ -64,10 +64,10 @@ export default function CartDetails(props) {
   };
 
   const originalDeliveryFee = isCart
-    ? props?.courierService?.cost[0]?.value.toString()
+    ? courierService?.cost[0]?.value.toString()
     : props?.priceOriginal;
   const discountedDeliveryFee = isCart
-    ? props?.courierService?.cost[0]?.biaya.toString()
+    ? courierService?.cost[0]?.biaya.toString()
     : props?.priceDiscount;
 
   function changeSenderName() {
@@ -75,6 +75,13 @@ export default function CartDetails(props) {
       return;
     }
     props?.setSenderName();
+  }
+
+  function openCourier() {
+    if (props?.openCourier === undefined || props?.openCourier === null) {
+      return;
+    }
+    props?.openCourier();
   }
 
   return (
@@ -134,45 +141,47 @@ export default function CartDetails(props) {
         </Text>
       </View>
 
-      {isCart &&
-        (props?.addressComplete ? (
-          <View style={styles.containerEntry}>
-            <Text allowFontScaling={false} style={styles.textEntryHeader}>
-              Pengiriman
-            </Text>
-            <TouchableOpacity style={styles.containerHorizontal}>
-              <Text allowFontScaling={false} style={styles.textEntry}>
-                {props?.courierService
-                  ? `${props?.courierService?.label}`
-                  : "Pilih Pengiriman"}
-              </Text>
-              {props?.courierChoices?.length > 0 && (
-                <MaterialCommunityIcons
-                  name="chevron-right"
-                  size={15 * globalUIRatio}
-                  color={colors.daclen_black}
-                  style={{
-                    alignSelf: "center",
-                    marginStart: 4 * globalUIRatio,
-                  }}
-                />
-              )}
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.containerEntry}>
-            <Text allowFontScaling={false} style={styles.textIncompleteAddress}>
-              Anda harus mengisi alamat pengiriman dahulu
-            </Text>
-            <Button
-              onPress={() => openAddress()}
-              style={styles.button}
-              text="Pilih Alamat"
+      {isCart && !props?.addressComplete ? 
+      (
+        <View style={styles.containerEntry}>
+          <Text allowFontScaling={false} style={styles.textIncompleteAddress}>
+            Anda harus mengisi alamat pengiriman dahulu
+          </Text>
+          <Button
+            onPress={() => openAddress()}
+            style={styles.button}
+            text="Pilih Alamat"
+          />
+        </View>
+      )
+      :
+       (
+        <View style={styles.containerEntry}>
+        <Text allowFontScaling={false} style={styles.textEntryHeader}>
+          Pengiriman
+        </Text>
+        <TouchableOpacity onPress={() => openCourier()} style={styles.containerHorizontal}>
+          <Text allowFontScaling={false} style={styles.textEntry}>
+            {courierChoices && courierSlug && courierService
+              ? `${courierChoices && courierSlug ? `${courierChoices.find(({ value }) => value === courierSlug)?.label} ` : ""}${courierService?.service ? courierService?.service : ""}${courierService?.cost ? courierService?.cost[0]?.etd ? ` (${courierService?.cost[0]?.etd} hari)` : "" : ""}`
+              : "Pilih Pengiriman"}
+          </Text>
+          {isCart ? (
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={15 * globalUIRatio}
+              color={colors.daclen_black}
+              style={{
+                alignSelf: "center",
+                marginStart: 4 * globalUIRatio,
+              }}
             />
-          </View>
-        ))}
+          ) : null}
+        </TouchableOpacity>
+      </View>
+       )}
 
-      {(!isCart || props?.courierService) && (
+      {(!isCart || courierService) && (
         <View style={styles.containerEntry}>
           <Text allowFontScaling={false} style={styles.textEntryHeader}>
             Biaya Pengiriman

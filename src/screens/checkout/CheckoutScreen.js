@@ -41,13 +41,14 @@ import {
   checkoutsubtotalcommissionpercentage,
 } from "../../../components/main/constants";
 import BSPopup from "../../components/bottomsheets/BSPopup";
-import CheckoutSenderName from "../../../components/main/CheckoutSenderName";
+import CheckoutSenderName from "../../components/checkout/CheckoutSenderName";
 import { sentryLog } from "../../../sentry";
 import { ASYNC_HISTORY_CHECKOUT_KEY } from "../../../components/asyncstorage/constants";
 import { setObjectAsync } from "../../../components/asyncstorage";
 import CenteredView from "../../components/view/CenteredView";
 import EmptySpinner from "../../components/empty/EmptySpinner";
 import AlertBox from "../../components/alert/AlertBox";
+import CheckoutCourierItem from "../../components/checkout/CheckoutCourierItem";
 
 const defaultSaldo = {
   used: 0,
@@ -71,6 +72,7 @@ function CheckoutScreen(props) {
   const [courier, setCourier] = useState(null);
   const [courierService, setCourierService] = useState(null);
   const [courierServices, setCourierServices] = useState([]);
+  const [courierMode, setCourierMode] = useState(0);
   //const [packaging, setPackaging] = useState(null);
   const packaging = "Box";
 
@@ -105,8 +107,8 @@ function CheckoutScreen(props) {
   } = props;
   const rbDisclaimer = useRef();
   const rbSenderName = useRef();
+  const rbCourier = useRef();
   const navigation = useNavigation();
-
 
   useEffect(() => {
     if (token === undefined || token === null) {
@@ -348,12 +350,13 @@ function CheckoutScreen(props) {
         for (let i = 0; i < props.couriers.length; i++) {
           newCourierServices.push({
             id: i.toString(),
-            label: `${props.couriers[i].service}${
-              props.couriers[i].cost[0].etd
-                ? ` (${props.couriers[i].cost[0].etd} hari)`
+            label: `${props.couriers[i]?.service}${
+              props.couriers[i]?.cost[0]?.etd
+                ? ` (${props.couriers[i]?.cost[0]?.etd} hari)`
                 : ""
-            } -- ${formatPrice(props.couriers[i].cost[0].value)}`,
+            } -- ${formatPrice(props.couriers[i]?.cost[0]?.value)}`,
             value: i.toString(),
+            costValue: props.couriers[i]?.cost[0]?.value,
           });
         }
         setCourierServices(newCourierServices);
@@ -592,8 +595,6 @@ function CheckoutScreen(props) {
 
   const clearOutDelivery = () => {
     console.log("clearOutDelivery");
-    /*setCourier(null);
-    setCourierSlug(null);*/
     setCourierService(null);
     setCourierServices([]);
     setDeliveryFee(0);
@@ -721,58 +722,76 @@ function CheckoutScreen(props) {
     }
   };
 
-  function onPressRadioButtonCourier(radioButtonsArray) {
+  function onPressRadioButtonCourier(value) {
     try {
-      const chosenCourier = radioButtonsArray.find(
-        ({ selected }) => selected === true,
-      );
-      setCourierLoading(true);
-      setCourierSlug(chosenCourier?.value);
+      if (courierSlug !== value) {
+        setCourierLoading(true);
+      }
+      setCourierSlug(value);
+      setCourierMode(1);
     } catch (e) {
       console.log(e);
     }
   }
 
-  function onPressRadioButtonService(radioButtonsArray) {
+  function onPressRadioButtonService(value) {
     try {
-      const chosenService = radioButtonsArray.find(
-        ({ selected }) => selected === true,
-      );
-      setCourierService(props.couriers[parseInt(chosenService?.value)]);
+      setCourierService(props.couriers[parseInt(value)]);
+      rbCourier.current.close();
+      setCourierMode(0);
     } catch (e) {
       console.log(e);
     }
   }
 
-  function onPressRadioButtonPackaging(radioButtonsArray) {
-    /*try {
+  /*function onPressRadioButtonPackaging(radioButtonsArray) {
+    try {
       const chosenPackaging = radioButtonsArray.find(
         ({ selected }) => selected === true
       );
       setPackaging(chosenPackaging?.value);
     } catch (e) {
       console.log(e);
-    }*/
+    }
     return;
-  }
+  }*/
 
-  function onPressRadioButtonSenderName(radioButtonsArray) {
+  function onPressRadioButtonSenderName(e) {
     try {
-      const chosenName = radioButtonsArray.find(
+      /*const chosenName = radioButtonsArray.find(
         ({ selected }) => selected === true,
       );
-      setSenderName({ final: chosenName?.value, temp: chosenName?.value });
+      setSenderName({ final: chosenName?.value, temp: chosenName?.value });*/
+      setSenderName({ final: e, temp: e });
+      rbSenderName.current.close();
     } catch (e) {
       console.log(e);
     }
   }
 
-  function changeSenderName() {
+  /*function changeSenderName() {
     setSenderName((senderName) => ({
       ...senderName,
       final: senderName.temp,
     }));
     rbSenderName.current.close();
+  }*/
+
+  function courierCloseThis() {
+    if (courierMode === 1) {
+      setCourierMode(0);
+    } else {
+      rbCourier.current.close();
+    }
+  }
+
+  function onActionPress() {
+    if (checkoutJson) {
+      rbDisclaimer.current.open();
+    } else {
+      setCourierMode(0);
+      rbCourier.current.open();
+    }
   }
 
   return (
@@ -863,13 +882,13 @@ function CheckoutScreen(props) {
               <View style={styles.containerFlatlist}>
                 {cart?.map((item, index) => (
                   <CartItem
-                  key={index}
-                  item={item}
-                  isCart={true}
-                  isLast={index >= cart?.length - 1}
+                    key={index}
+                    item={item}
+                    isCart={true}
+                    isLast={index >= cart?.length - 1}
                   />
                 ))}
-                </View>
+              </View>
             )}
 
             <CartDetails
@@ -882,15 +901,11 @@ function CheckoutScreen(props) {
               }
               senderName={senderName.final}
               setSenderName={() => rbSenderName.current.open()}
+              openCourier={() => rbCourier.current.open()}
               courierChoices={courierChoices}
-              courierServices={courierServices}
-              packaging={packaging}
-              onPressRadioButtonCourier={onPressRadioButtonCourier}
-              onPressRadioButtonService={onPressRadioButtonService}
-              onPressRadioButtonPackaging={onPressRadioButtonPackaging}
               courierSlug={courierSlug}
               courierService={courierService}
-              courierLoading={courierLoading}
+              packaging={packaging}
               cashback={
                 props.cart?.subtotal
                   ? formatPrice(
@@ -914,9 +929,9 @@ function CheckoutScreen(props) {
         <CartAction
           isCart={true}
           totalPrice={totalPrice - saldo.used}
-          buttonAction={() => rbDisclaimer.current.open()}
-          buttonText={null}
-          buttonDisabled={!allowCheckout || afterCheckout}
+          buttonAction={() => onActionPress()}
+          buttonText={checkoutJson ? null : "Pilih Pengiriman"}
+          buttonDisabled={afterCheckout}
           enableProcessing={false}
         />
       )}
@@ -928,9 +943,17 @@ function CheckoutScreen(props) {
       {afterCheckout ? <EmptySpinner style={styles.containerLoading} /> : null}
 
       <RBSheet
+        customStyles={{
+          wrapper: {
+            zIndex: 1,
+          },
+          container: {
+            backgroundColor: "transparent",
+          },
+        }}
         ref={rbSenderName}
         openDuration={250}
-        height={240}
+        height={250 * globalUIRatio}
         onClose={() =>
           setSenderName((senderName) => ({
             ...senderName,
@@ -942,6 +965,7 @@ function CheckoutScreen(props) {
           title="Ganti Nama Pengirim"
           content={
             <CheckoutSenderName
+              senderName={senderName?.temp}
               senderNameChoices={senderNameChoices}
               onPressRadioButtonSenderName={onPressRadioButtonSenderName}
             />
@@ -950,7 +974,85 @@ function CheckoutScreen(props) {
           onPress={null}
         />
       </RBSheet>
-      <RBSheet ref={rbDisclaimer} openDuration={250} height={420}>
+      <RBSheet
+        customStyles={{
+          wrapper: {
+            zIndex: 1,
+          },
+          container: {
+            backgroundColor: "transparent",
+          },
+        }}
+        ref={rbCourier}
+        openDuration={250}
+        height={
+          courierChoices?.length
+            ? (70 * courierChoices?.length + 20) * globalUIRatio
+            : 220
+        }
+        onClose={() => setCourierMode(0)}
+      >
+        <BSPopup
+          title={`Kurir${
+            courierMode === 1
+              ? ` - ${
+                  courierChoices.find(({ value }) => value === courierSlug)
+                    ?.label
+                }`
+              : ""
+          }`}
+          content={
+            courierMode === 0 ? (
+              courierChoices === undefined ||
+              courierChoices?.length === undefined ? null : (
+                courierChoices.map((item, index) => (
+                  <CheckoutCourierItem
+                    key={index}
+                    isArrow
+                    text={item?.label}
+                    onPress={() => onPressRadioButtonCourier(item?.value)}
+                  />
+                ))
+              )
+            ) : courierMode === 1 ? (
+              courierLoading ? (
+                <EmptySpinner minHeight={16 * globalUIRatio} />
+              ) : courierServices === undefined ||
+                courierServices?.length === undefined ? null : (
+                courierServices.map((item, index) => (
+                  <CheckoutCourierItem
+                    key={index}
+                    text={item?.label}
+                    onPress={() => onPressRadioButtonService(index)}
+                    selected={
+                      checkoutJson
+                        ? checkoutJson?.checkout?.kurir?.slug === courierSlug &&
+                          checkoutJson?.checkout?.kurir?.data?.cost[0]
+                            ?.value === item?.costValue
+                        : false
+                    }
+                  />
+                ))
+              )
+            ) : null
+          }
+          closeThis={() => courierCloseThis()}
+          onPress={null}
+        />
+      </RBSheet>
+      <RBSheet
+        customStyles={{
+          wrapper: {
+            zIndex: 1,
+          },
+          container: {
+            backgroundColor: "transparent",
+          },
+        }}
+        ref={rbDisclaimer}
+        openDuration={250}
+        height={420}
+      >
         <BSPopup
           title="Konfirmasi Checkout"
           content={
