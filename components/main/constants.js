@@ -8,15 +8,4 @@ export const checkoutdefaultsendernameoption = {
     selected: true,
 };
 
-export const checkoutdisclaimer = `Data personal Anda akan digunakan untuk proses
-pemesanan dalam membantu kenyamanan Anda melalui
-aplikasi ini, dan keperluan lain yang dijelaskan dalam
-syarat dan ketentuan kami.
-
-1. Silahkan cek kembali pesanan Anda dan pastikan
-alamat dan penerima yang Anda masukkan sudah
-benar.
-2. Dengan melakukan pemesanan, saya memahami
-bahwa pesanan yang sudah diproses tidak dapat
-dibatalkan.
-`;
+export const checkoutdisclaimer = `Data personal Anda akan digunakan untuk proses pemesanan dalam membantu kenyamanan Anda melalui aplikasi ini, dan keperluan lain yang dijelaskan dalam syarat dan ketentuan kami.\n\n1. Silahkan cek kembali pesanan Anda dan pastikan alamat dan penerima yang Anda masukkan sudah benar.\n2. Dengan melakukan pemesanan, saya memahami bahwa pesanan yang sudah diproses tidak dapat dibatalkan.`;

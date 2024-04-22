@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  SafeAreaView,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import RBSheet from "react-native-raw-bottom-sheet";
@@ -13,7 +14,12 @@ import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { colors, globalUIRatio, staticDimensions } from "../../styles/base";
+import {
+  colors,
+  dimensions,
+  globalUIRatio,
+  staticDimensions,
+} from "../../styles/base";
 import {
   clearUserData,
   getCurrentUser,
@@ -1051,19 +1057,19 @@ function CheckoutScreen(props) {
         }}
         ref={rbDisclaimer}
         openDuration={250}
-        height={420}
+        height={400 * globalUIRatio}
       >
         <BSPopup
           title="Konfirmasi Checkout"
           content={
-            <Text allowFontScaling={false} style={styles.textDisclaimer}>
-              {checkoutdisclaimer}
-            </Text>
+            <SafeAreaView style={styles.containerBottomSheet}>
+              <Text allowFontScaling={false} style={styles.textDisclaimer}>
+                {checkoutdisclaimer}
+              </Text>
+            </SafeAreaView>
           }
           buttonPositive="Setuju"
-          buttonPositiveColor={colors.daclen_orange}
           buttonNegative="Tutup"
-          buttonNegativeColor={colors.daclen_gray}
           closeThis={() => rbDisclaimer.current.close()}
           onPress={() => proceedCheckout()}
         />
@@ -1113,6 +1119,10 @@ const styles = StyleSheet.create({
   containerAddress: {
     flex: 1,
   },
+  containerBottomSheet: {
+    backgroundColor: "transparent",
+    marginHorizontal: staticDimensions.marginHorizontal,
+  },
   textAddressHeader: {
     marginStart: 10 * globalUIRatio,
     fontFamily: "Poppins-SemiBold",
@@ -1127,12 +1137,10 @@ const styles = StyleSheet.create({
   },
   textDisclaimer: {
     backgroundColor: "transparent",
-    color: colors.daclen_gray,
-    textAlignVertical: "center",
-    marginTop: 20,
-    marginHorizontal: 24,
-    fontFamily: "Poppins",
-    fontSize: 12,
+    color: colors.daclen_black,
+    textAlign: "justify",
+    fontFamily: "Poppins-Light",
+    fontSize: 11 * globalUIRatio,
   },
   arrowAddress: {
     marginStart: 10 * globalUIRatio,

@@ -18,11 +18,11 @@ const BSPopup = (props) => {
     content,
     closeText,
     closeTextColor,
-    buttonText,
-    buttonBackgroundColor,
-    buttonCloseText,
+    buttonPositive,
+    buttonPositiveColor,
+    buttonNegative,
     buttonCloseBorderColor,
-    buttonCloseTextColor,
+    buttonNegativeColor,
     buttonInverted,
     buttonDisabled,
     buttonLoading,
@@ -116,36 +116,36 @@ const BSPopup = (props) => {
         {content ? content : null}
       </View>
 
-      {buttonText ? (
+      {buttonPositive ? (
         <Button
-          text={buttonText}
+          text={buttonPositive}
           onPress={() => onPress()}
           loading={buttonLoading}
-          backgroundColor={
-            buttonDisabled
-              ? colors.grey_shadow
-              : buttonBackgroundColor
-                ? buttonBackgroundColor
-                : colors.buttonPrimary
+          backgroundColor={buttonPositiveColor
+                ? buttonPositiveColor
+                : colors.daclen_black
           }
-          style={[styles.button, { marginBottom: buttonCloseText ? 0 : 40 }]}
+          fontSize={14 * globalUIRatio}
+          style={[styles.button, { marginBottom: buttonNegative ? 0 : 40 * globalUIRatio,
+          }]}
           disabled={buttonDisabled}
           inverted={buttonInverted ? buttonInverted : false}
         />
       ) : null}
-      {buttonCloseText ? (
+      {buttonNegative ? (
         <Button
           inverted
           bordered
-          text={buttonCloseText}
+          text={buttonNegative}
           borderColor={
             buttonCloseBorderColor
               ? buttonCloseBorderColor
-              : colors.buttonBorder
+              : colors.daclen_black
           }
           fontColor={
-            buttonCloseTextColor ? buttonCloseTextColor : colors.buttonPrimary
+            buttonNegativeColor ? buttonNegativeColor : colors.buttonPrimary
           }
+          fontSize={14 * globalUIRatio}
           onPress={() => onSecondaryPress()}
           style={styles.buttonCancel}
         />
@@ -200,15 +200,17 @@ const styles = StyleSheet.create({
     fontSize: 11 * globalUIRatio,
   },
   button: {
-    marginTop: 12,
+    marginTop: 12 * globalUIRatio,
     marginHorizontal: staticDimensions.marginHorizontal,
-    height: 36,
+    borderRadius: 100 * globalUIRatio,
+    height: 40 * globalUIRatio
   },
   buttonCancel: {
     marginHorizontal: staticDimensions.marginHorizontal,
-    marginTop: 12,
-    marginBottom: 40,
-    height: 36,
+    marginTop: 12 * globalUIRatio,
+    marginBottom: 40 * globalUIRatio,
+    borderRadius: 100 * globalUIRatio,
+    height: 40 * globalUIRatio
   },
 });
 
