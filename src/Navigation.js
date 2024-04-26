@@ -46,9 +46,9 @@ import TutorialScreen from "./screens/StarterKit/TutorialScreen";
 import WatermarkSettingsScreen from "./screens/StarterKit/WatermarkSettingsScreen";
 import PhotosSegmentScreen from "./screens/StarterKit/PhotosSegmentScreen";
 import FlyerSliderScreen from "./screens/StarterKit/FlyerSliderScreen";
-import VideoPlayer from "../components/videoplayer/VideoPlayer";
-import VideoLogs from "../components/videoplayer/VideoLogs";
-import WmarkTestScreen from "../components/media/WmarkTestScreen";
+import VideoPlayer from "./screens/videoplayer/VideoPlayer";
+import VideoLogs from "./screens/videoplayer/VideoLogs";
+//import WmarkTestScreen from "../components/media/WmarkTestScreen";
 
 import BlogFeedScreen from "./screens/blog/BlogFeedScreen";
 import BlogScreen from "./screens/blog/BlogScreen";
@@ -285,11 +285,6 @@ export const Screens = [
     name: "VideoLogsScreen",
     screen: VideoLogs,
     options: { ...options, title: "Logs" },
-  },
-  {
-    name: "WmarkTestScreen",
-    screen: WmarkTestScreen,
-    options: { ...options, title: "Test" },
   },
   {
     name: "Tutorial",

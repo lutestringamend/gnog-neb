@@ -1,10 +1,11 @@
 import React from "react";
-import { SafeAreaView, ScrollView, Text } from "react-native";
+import { ScrollView, Text } from "react-native";
 import { colors, staticDimensions } from "../../styles/base";
+import CenteredView from "../../components/view/CenteredView";
 
 const VideoLogs = (prop) => {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <CenteredView style={{ flex: 1 }}>
       <ScrollView
         style={{ flex: 1, paddingBottom: staticDimensions.pageBottomPadding }}
       >
@@ -20,7 +21,7 @@ const VideoLogs = (prop) => {
           {prop.route.params?.text}
         </Text>
       </ScrollView>
-    </SafeAreaView>
+    </CenteredView>
   );
 };
 

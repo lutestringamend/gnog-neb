@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 
 import { colors } from "../../styles/base";
 import {
@@ -17,7 +17,7 @@ import {
   vwmarkurlmargintop,
   vwmarkurlpaddinghorizontal,
   vwmarkurlpaddingvertical,
-} from "../../src/constants/starterkit";
+} from "../../constants/starterkit";
 import VWatermarkModel2 from "./VWatermarkModel2";
 
 function VideoLargeWatermarkModel(props) {

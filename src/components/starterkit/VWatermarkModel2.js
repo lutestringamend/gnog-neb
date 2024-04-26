@@ -16,7 +16,7 @@ import {
   vwmark2texturlfontsize,
   vwmark2texturltop,
   vwmark2texturlstart,
-} from "../../src/constants/starterkit";
+} from "../../constants/starterkit";
 
 function VWatermarkModel2(props) {
   const { watermarkData, ratio, style } = props;

@@ -34,12 +34,11 @@ import {
   updateWatermarkVideo,
   overwriteWatermarkVideos,
   getiOSScaleFactor,
-} from "../media";
-//import { useScreenDimensions } from "../../hooks/useScreenDimensions";
-import { sharingOptionsMP4, sharingOptionsPNG } from "../media/constants";
+} from "../../utils/media";
+import { sharingOptionsMP4, sharingOptionsPNG } from "../../constants/media";
 import { sentryLog } from "../../sentry";
-import { getObjectAsync, setObjectAsync } from "../asyncstorage";
-import { ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY } from "../asyncstorage/constants";
+import { getObjectAsync, setObjectAsync } from "../../asyncstorage";
+import { ASYNC_MEDIA_WATERMARK_VIDEOS_SAVED_KEY } from "../../asyncstorage/constants";
 import {
   STARTER_KIT_VIDEO_MENGAJAK_CASE_SENSITIVE,
   STARTER_KIT_VIDEO_MENGAJAK_TAG,
@@ -58,8 +57,8 @@ import {
   vwmarkrenderportraitheightcompressionconstant,
   vwmarkrenderportraitwidthcompressionconstant,
   vwmarktexturlcharlimit,
-} from "../mediakit/constants";
-import VideoLargeWatermarkModel from "../media/VideoLargeWatermarkModel";
+} from "../../constants/starterkit";
+import VideoLargeWatermarkModel from "../../components/starterkit/VideoLargeWatermarkModel";
 import { getDeviceInfo } from "../../axios/user";
 import {
   personalwebsiteurlshort,
