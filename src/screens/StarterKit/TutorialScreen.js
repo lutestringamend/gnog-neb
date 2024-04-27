@@ -14,8 +14,6 @@ import {
   clearMediaKitVideosError,
   updateReduxMediaKitVideosTutorial,
 } from "../../axios/mediakit";
-import { getObjectAsync, setObjectAsync } from "../../asyncstorage";
-import { ASYNC_MEDIA_TUTORIAL_VIDEOS_KEY } from "../../asyncstorage/constants";
 import { VIDEO_TUTORIAL_TITLE } from "../../constants/starterkit";
 import CenteredView from "../../components/view/CenteredView";
 import EmptySpinner from "../../components/empty/EmptySpinner";
@@ -36,13 +34,12 @@ const TutorialScreen = (props) => {
       return;
     }
     if (tutorials === null) {
-      checkAsyncTutorial();
+      props.getTutorialVideos(token);
       return;
     }
     if (refreshing) {
       setRefreshing(false);
     }
-    setObjectAsync(ASYNC_MEDIA_TUTORIAL_VIDEOS_KEY, tutorials);
     console.log("redux tutorials", tutorials);
   }, [tutorials]);
 
@@ -55,25 +52,6 @@ const TutorialScreen = (props) => {
         : "Refresh untuk mendapatkan video Tutorial."
     );
   }, [videoError]);
-
-  const checkAsyncTutorial = async () => {
-    const storageTutorial = await getObjectAsync(
-      ASYNC_MEDIA_TUTORIAL_VIDEOS_KEY
-    );
-    if (
-      storageTutorial === undefined ||
-      storageTutorial === null ||
-      storageTutorial?.length === undefined ||
-      storageTutorial?.length < 1
-    ) {
-      props.getTutorialVideos(token);
-    } else {
-      if (refreshing) {
-        setRefreshing(false);
-      }
-      props.updateReduxMediaKitVideosTutorial(storageTutorial);
-    }
-  };
 
   const refreshPage = () => {
     setRefreshing(true);

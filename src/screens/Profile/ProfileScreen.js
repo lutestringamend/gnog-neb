@@ -182,8 +182,8 @@ function ProfileScreen(props) {
               <ProfileMenuItem
                 text="Bank"
                 icon="card"
-                screen="Login"
-                webKey="changePassword"
+                screen={null}
+                onItemClick={() => navigation.navigate("EditProfile")}
                 thickness={3}
               />
               <ProfileMenuItem

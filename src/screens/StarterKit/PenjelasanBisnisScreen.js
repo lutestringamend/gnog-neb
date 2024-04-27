@@ -14,8 +14,6 @@ import {
   clearMediaKitVideosError,
   updateReduxMediaKitPenjelasanBisnis,
 } from "../../axios/mediakit";
-import { getObjectAsync, setObjectAsync } from "../../asyncstorage";
-import { ASYNC_MEDIA_TUTORIAL_VIDEOS_KEY } from "../../asyncstorage/constants";
 import CenteredView from "../../components/view/CenteredView";
 import EmptySpinner from "../../components/empty/EmptySpinner";
 import AlertBox from "../../components/alert/AlertBox";
@@ -36,13 +34,12 @@ const PenjelasanBisnisScreen = (props) => {
       return;
     }
     if (penjelasanBisnis === null) {
-      checkAsyncTutorial();
+      props.getMediaKitPenjelasanBisnis(token);
       return;
     }
     if (refreshing) {
       setRefreshing(false);
     }
-    setObjectAsync(ASYNC_MEDIA_TUTORIAL_VIDEOS_KEY, penjelasanBisnis);
     console.log("redux penjelasanBisnis", penjelasanBisnis);
   }, [penjelasanBisnis]);
 
@@ -56,24 +53,7 @@ const PenjelasanBisnisScreen = (props) => {
     );
   }, [videoError]);
 
-  const checkAsyncTutorial = async () => {
-    const storageTutorial = await getObjectAsync(
-      ASYNC_MEDIA_TUTORIAL_VIDEOS_KEY
-    );
-    if (
-      storageTutorial === undefined ||
-      storageTutorial === null ||
-      storageTutorial?.length === undefined ||
-      storageTutorial?.length < 1
-    ) {
-      props.getMediaKitPenjelasanBisnis(token);
-    } else {
-      if (refreshing) {
-        setRefreshing(false);
-      }
-      props.updateReduxMediaKitPenjelasanBisnis(storageTutorial);
-    }
-  };
+ 
 
   const refreshPage = () => {
     setRefreshing(true);
