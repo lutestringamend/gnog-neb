@@ -16,6 +16,7 @@ import {
   MEDIA_KIT_TUTORIALS_STATE_CHANGE,
   MEDIA_KIT_FLYER_SELECTION_STATE_CHANGE,
   MEDIA_KIT_HOME_STATE_CHANGE,
+  MEDIA_KIT_PENJELASAN_BISNIS_STATE_CHANGE,
 } from "../constants";
 
 const initialState = {
@@ -28,6 +29,7 @@ const initialState = {
   videosUri: [],
   videosMengajak: null,
   tutorials: null,
+  penjelasanBisnis: null,
   fonts: [],
   colors: [],
   sizes: [],
@@ -106,6 +108,11 @@ export const mediakit = (state = initialState, action) => {
       return {
         ...state,
         tutorials: action.data,
+    };
+    case MEDIA_KIT_PENJELASAN_BISNIS_STATE_CHANGE:
+      return {
+        ...state,
+        penjelasanBisnis: action.data,
     };
     case MEDIA_KIT_FONTS_STATE_CHANGE:
       return {

@@ -114,6 +114,7 @@ export const mediakitkategori = "api/mobile/media-kit/kategori"
 export const tutorialvideo = "api/mobile/video-tutorial"
 export const getpdffiles = "api/mobile/file-pdf/index-pdf"
 export const mediakitkategorithumbnail = "api/mobile/media-kit/kategori/thumbnail"
+export const penjelasanbisnis = "api/mobile/video-penjelasan-bisnis"
 
 export const getpenukaranpoindates = "api/mobile/setting/penukaran-poin"
 export const getpenukaranpoinindexproduk = "api/mobile/penukaran-poin/index-produk"

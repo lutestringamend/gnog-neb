@@ -64,6 +64,7 @@ import {
   personalwebsiteurlshort,
   tokoonlineurlshort,
 } from "../../axios/constants";
+import { penjelasanbisnistag } from "../../constants/dashboard";
 
 const screenAR = dimensions.fullWidth / dimensions.fullHeight;
 const limitAR = 9 / 16;
@@ -235,7 +236,8 @@ function VideoPlayer(props) {
       !(
         props?.watermarkData === undefined ||
         props?.watermarkData === null ||
-        jenis_video === VIDEO_TUTORIAL_TAG
+        jenis_video === VIDEO_TUTORIAL_TAG ||
+        jenis_video === penjelasanbisnistag
       )
     ) {
       let url = `${
@@ -792,7 +794,7 @@ function VideoPlayer(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {jenis_video === VIDEO_TUTORIAL_TAG ? null : (
+      {jenis_video === VIDEO_TUTORIAL_TAG || jenis_video === penjelasanbisnistag ? null : (
         <ViewShot
           ref={waterRef}
           options={{
@@ -941,7 +943,7 @@ function VideoPlayer(props) {
               {
                 position: videoSize.isLandscape ? "absolute" : "relative",
                 width: screenWidth,
-                height:
+                height: jenis_video === penjelasanbisnistag ? screenHeight - 200 :
                   videoSize.videoOrientation === "landscape"
                     ? videoSize.videoHeight
                     : screenHeight,
@@ -955,11 +957,11 @@ function VideoPlayer(props) {
                 styles.video,
                 {
                   position: "absolute",
-                  top: screenAR >= limitAR ? videoplayermargintop : 0,
+                  top: jenis_video === penjelasanbisnistag ? 200 : screenAR >= limitAR ? videoplayermargintop : 0,
                   start: (screenWidth - videoSize.videoWidth) / 2,
                   end: (screenWidth - videoSize.videoWidth) / 2,
                   width: videoSize.videoWidth,
-                  height:
+                  height: jenis_video === penjelasanbisnistag ? screenHeight - 200 :
                     videoSize.videoOrientation === "landscape"
                       ? videoSize.videoHeight
                       : screenHeight === videoSize.videoHeight
@@ -989,11 +991,11 @@ function VideoPlayer(props) {
               onPlaybackStatusUpdate={(status) => setStatus(() => status)}
             />
 
-            {jenis_video === VIDEO_TUTORIAL_TAG ? null : watermarkLoading &&
+            {jenis_video === VIDEO_TUTORIAL_TAG || jenis_video === penjelasanbisnistag ? null : watermarkLoading &&
               Platform.OS !== "web" ? (
               <ActivityIndicator
                 size="small"
-                color={colors.daclen_orange}
+                color={colors.daclen_grey_light}
                 style={{
                   position: "absolute",
                   top: 24,
@@ -1070,7 +1072,7 @@ function VideoPlayer(props) {
             />
           </TouchableOpacity>
 
-          {jenis_video === VIDEO_TUTORIAL_TAG ? null : (
+          {jenis_video === VIDEO_TUTORIAL_TAG || jenis_video === penjelasanbisnistag ? null : (
             <TouchableOpacity
               style={[
                 videoSize.isLandscape || isTester
@@ -1131,7 +1133,7 @@ function VideoPlayer(props) {
             </TouchableOpacity>
           )}
 
-          {jenis_video === VIDEO_TUTORIAL_TAG ? null : (
+          {jenis_video === VIDEO_TUTORIAL_TAG || jenis_video === penjelasanbisnistag ? null : (
             <TouchableOpacity
               style={[
                 videoSize.isLandscape || isTester

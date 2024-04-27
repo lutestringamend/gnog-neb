@@ -2,10 +2,7 @@ import appJson from "../app.json";
 import { colors } from "../styles/base";
 
 import MainScreen from "./screens/Main";
-
-
 import LoginScreen from "./screens/auth/LoginScreen";
-
 import HomeScreen from "./screens/Home/HomeScreen";
 
 import History from "./screens/history/HistoryScreen";
@@ -43,6 +40,7 @@ import MultipleImageSaveScreen from "./screens/imageviewer/MultipleImageSaveScre
 import MultipleImageViewScreen from "./screens/imageviewer/MultipleImageViewScreen";
 import MediaKitFiles from "./screens/StarterKit/StarterKitScreen";
 import TutorialScreen from "./screens/StarterKit/TutorialScreen";
+import PenjelasanBisnisScreen from "./screens/StarterKit/PenjelasanBisnisScreen";
 import WatermarkSettingsScreen from "./screens/StarterKit/WatermarkSettingsScreen";
 import PhotosSegmentScreen from "./screens/StarterKit/PhotosSegmentScreen";
 import FlyerSliderScreen from "./screens/StarterKit/FlyerSliderScreen";
@@ -295,5 +293,10 @@ export const Screens = [
     name: "Calculator",
     screen: Calculator,
     options: { ...options, title: "Simulasi Saldo" },
+  },
+  {
+    name: "PenjelasanBisnisScreen",
+    screen: PenjelasanBisnisScreen,
+    options,
   },
 ];

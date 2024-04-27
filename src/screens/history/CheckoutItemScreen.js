@@ -31,6 +31,7 @@ import { createInvoicePDF } from "../../../axios/pdf";
 import CenteredView from "../../components/view/CenteredView";
 import AlertBox from "../../components/alert/AlertBox";
 import EmptySpinner from "../../components/empty/EmptySpinner";
+import { staticDimensions } from "../../styles/base";
 
 function CheckoutItem(props) {
   const { token, userCheckout, checkouts } = props;
@@ -186,6 +187,7 @@ function CheckoutItem(props) {
     <CenteredView title="Detil Checkout" style={styles.container}>
       <ScrollView
         style={styles.scrollView}
+        contentContainerStyle={{ paddingBottom: staticDimensions.pageBottomPadding }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -248,7 +250,6 @@ function CheckoutItem(props) {
                 </Text>
               </View>
             </View>
-            <Separator thickness={5} />
             <View style={styles.containerFlatlist}>
               {checkout.keranjang?.produk?.length < 1 ? (
                 <Text allowFontScaling={false} style={styles.textUid}>
@@ -266,7 +267,6 @@ function CheckoutItem(props) {
                 />
               )}
             </View>
-            <Separator thickness={5} />
             <CartDetails
               isCart={false}
               subtotal={checkout?.keranjang?.subtotal_currency}

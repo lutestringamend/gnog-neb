@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import {
-  SafeAreaView,
   StyleSheet,
   View,
   Text,
   FlatList,
   TouchableOpacity,
-  ActivityIndicator,
   ScrollView,
   RefreshControl,
 } from "react-native";
@@ -25,6 +23,7 @@ import DeliveryManifest from "../../components/history/DeliveryManifest";
 import { colors, dimensions } from "../../../styles/base";
 import CenteredView from "../../components/view/CenteredView";
 import EmptySpinner from "../../components/empty/EmptySpinner";
+import { staticDimensions } from "../../styles/base";
 
 function DeliveryItem(props) {
   const { delivery, token, deliveryStatus } = props;
@@ -80,6 +79,7 @@ function DeliveryItem(props) {
     <CenteredView title="Detil Pengiriman" style={styles.container}>
       <ScrollView
         style={styles.scrollView}
+        contentContainerStyle={{ paddingBottom: staticDimensions.pageBottomPadding }}
         refreshControl={
           <RefreshControl
             refreshing={loading}

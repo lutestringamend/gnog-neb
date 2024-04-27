@@ -223,11 +223,15 @@ export default function CartDetails(props) {
         </View>
       )}
 
-      <Separator
+      {isCart ? (
+        <Separator
         color={colors.daclen_grey_placeholder}
         thickness={0.5}
         style={{ marginTop: 12 * globalUIRatio }}
       />
+      ) : null}
+
+      
 
       {isCart ? (
         props?.totalPrice === undefined ||

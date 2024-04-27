@@ -32,7 +32,7 @@ const CheckoutCard = (props) => {
             </Text>
             <TextBoxStatus
               style={{ marginStart: 6 }}
-              text={capitalizeFirstLetter(status)}
+              text={status ? capitalizeFirstLetter(status) : "Belum dibayar"}
               backgroundColor={
                 status === "diproses"
                   ? colors.daclen_yellow_background
@@ -40,7 +40,7 @@ const CheckoutCard = (props) => {
                     ? colors.daclen_green_background
                     : status === "ditolak"
                       ? colors.daclen_danger_background
-                      : colors.daclen_blue_textinput
+                      : colors.daclen_button_disabled_grey
               }
               color={
                 status === "diproses"
@@ -49,7 +49,7 @@ const CheckoutCard = (props) => {
                     ? colors.daclen_green
                     : status === "ditolak"
                       ? colors.daclen_red_light
-                      : colors.daclen_blue_link
+                      : colors.white
               }
             />
           </View>

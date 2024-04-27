@@ -1,13 +1,11 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
   Text,
-  TouchableOpacity,
   ScrollView,
-  BackHandler,
 } from "react-native";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -46,6 +44,7 @@ import AlertBox from "../../components/alert/AlertBox";
 import Button from "../../components/Button/Button";
 import ModalView from "../../components/modal/ModalView";
 import { ModalModel } from "../../models/modal";
+import useBackButton from "../../hooks/useBackButton";
 
 const defaultRegisterErrorArray = {
   name: false,
@@ -85,19 +84,6 @@ function Login(props) {
   const { token, currentUser, authData, authError } = props;
   const navigation = useNavigation();
 
-  useFocusEffect(
-    useCallback(() => {
-      const backHandler = BackHandler.addEventListener(
-        "hardwareBackPress",
-        onBackPress
-      );
-      console.log("Login Screen visible, BackHandler active");
-      return () => {
-        console.log("Login Screen is not visible");
-        backHandler.remove();
-      };
-    }, [])
-  );
 
   useEffect(() => {
     if (
@@ -400,7 +386,10 @@ function Login(props) {
     } else {
       navigation.goBack();
     }
+    return true;
   };
+
+  useBackButton(onBackPress);
 
   return (
     <CenteredView style={styles.container}>

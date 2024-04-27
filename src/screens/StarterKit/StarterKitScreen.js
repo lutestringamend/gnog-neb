@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -6,10 +6,8 @@ import {
   Platform,
   ToastAndroid,
   ActivityIndicator,
-  BackHandler,
-  ScrollView,
 } from "react-native";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { isAvailableAsync } from "expo-sharing";
@@ -78,6 +76,7 @@ import {
   webreferralshort,
 } from "../../axios/constants";
 import EmptySpinner from "../../components/empty/EmptySpinner";
+import useBackButton from "../../hooks/useBackButton";
 
 const defaultModal = {
   visible: false,
@@ -113,20 +112,6 @@ function StarterKitScreen(props) {
     photosMultipleSave,
   } = props;
   const navigation = useNavigation();
-
-  useFocusEffect(
-    useCallback(() => {
-      const backHandler = BackHandler.addEventListener(
-        "hardwareBackPress",
-        onBackPress,
-      );
-      console.log("MediaKitFiles visible, BackHandler active", activeTab);
-      return () => {
-        console.log("MediaKitFiles is not visible");
-        backHandler.remove();
-      };
-    }, [activeTab]),
-  );
 
   useEffect(() => {
     const checkSharing = async () => {
@@ -338,6 +323,8 @@ function StarterKitScreen(props) {
     }
     return true;
   };
+
+  useBackButton(onBackPress);
 
   const setSelected = (isAdd, item) => {
     try {

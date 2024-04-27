@@ -5,6 +5,7 @@ import {
   mediakitkategorithumbnail,
   mediakitphoto,
   mediakitvideo,
+  penjelasanbisnis,
   tokoonlineurlshort,
   tutorialvideo,
 } from "../constants";
@@ -19,9 +20,9 @@ import {
   MEDIA_KIT_FLYER_MENGAJAK_STATE_CHANGE,
   MEDIA_KIT_VIDEOS_MENGAJAK_STATE_CHANGE,
   MEDIA_KIT_PHOTOS_MULTIPLE_SAVE_STATE_CHANGE,
-  MEDIA_KIT_FLYER_PRODUK_SELECTED_STATE_CHANGE,
   MEDIA_KIT_TUTORIALS_STATE_CHANGE,
   MEDIA_KIT_FLYER_SELECTION_STATE_CHANGE,
+  MEDIA_KIT_PENJELASAN_BISNIS_STATE_CHANGE,
 } from "../../redux/constants";
 import { sentryLog } from "../../sentry";
 import {
@@ -159,6 +160,13 @@ export function updateReduxMediaKitVideosTutorial(data) {
   };
 }
 
+export function updateReduxMediaKitPenjelasanBisnis(data) {
+  return (dispatch) => {
+    console.log("updateReduxMediaKitPenjelasanBisnis", data);
+    dispatch({ type: MEDIA_KIT_PENJELASAN_BISNIS_STATE_CHANGE, data });
+  };
+}
+
 export const filterPhotoProps = (item) => {
   return {
     id: item?.id,
@@ -274,6 +282,47 @@ export function checkVideoFileName(item) {
     console.error(e);
   }
   return item;
+}
+
+export function getMediaKitPenjelasanBisnis(token) {
+  if (token === undefined || token === null) {
+    return;
+  }
+  return (dispatch) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    };
+    Axios.get(penjelasanbisnis, config)
+      .then((response) => {
+        try {
+          const data = response?.data?.data;
+          console.log("getMediaKitPenjelasanBisnis response", data?.length);
+          if (data === null || data?.length === undefined || data?.length < 1) {
+            dispatch({ type: MEDIA_KIT_PENJELASAN_BISNIS_STATE_CHANGE, data: [] });
+            return;
+          }
+
+          dispatch({ type: MEDIA_KIT_PENJELASAN_BISNIS_STATE_CHANGE, data });
+        } catch (e) {
+          sentryLog(e);
+          dispatch({
+            type: MEDIA_KIT_VIDEOS_ERROR_STATE_CHANGE,
+            data: e.toString(),
+          });
+        }
+      })
+      .catch((error) => {
+        sentryLog(error);
+        dispatch({
+          type: MEDIA_KIT_VIDEOS_ERROR_STATE_CHANGE,
+          data: error.toString(),
+        });
+      });
+  };
 }
 
 export function getTutorialVideos(token) {
