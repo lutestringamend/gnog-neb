@@ -95,10 +95,20 @@ function EditBankDetails(props) {
         return;
       }
     }
+    if (loading) {
+      setLoading(false);
+    }
   }, [currentUser]);
 
   useEffect(() => {
-    console.log("user data", user);
+    let newErrors = { ...errors };
+    if (user?.nomor_rekening) {
+      newErrors = { ...newErrors, nomor_rekening: "" };
+    }
+    if (user?.bank_id && user?.bank_name) {
+      newErrors = { ...newErrors, bank_name: "" };
+    }
+    setErrors(newErrors);
     setLoading(false);
   }, [user]);
 
@@ -115,16 +125,6 @@ function EditBankDetails(props) {
       } else {
         setSuccess(false);
         let errorHeader = "Gagal update data user.\n";
-        switch (userUpdate?.session) {
-          case "photoError":
-            errorHeader = "Gagal upload foto\n";
-            break;
-          case "photoUri":
-            errorHeader = "URI foto\n";
-            break;
-          default:
-            break;
-        }
         setError(`${errorHeader}${userUpdate?.message}`);
       }
       setLoading(false);
@@ -156,38 +156,35 @@ function EditBankDetails(props) {
 
 
   function updateUserData() {
-    if (user?.nama_depan === "") {
-      setError("Nama Depan harus diisi");
-    } else if (user?.email === "") {
-      setError("Email harus diisi");
-    } else if (user?.tanggal_lahir === "") {
-      setError("Tanggal Lahir harus diisi");
-    } else if (user?.nomor_telp === "") {
-      setError("Nomor Telepon harus diisi");
-    } else if (
-      user?.nomor_telp?.length === undefined ||
-      user?.nomor_telp?.length < 8
+    let newErrors = { ...UserData };
+    let isComplete = true;
+
+    if 
+      (currentUser?.bank_set === undefined || !currentUser?.bank_set
     ) {
-      setError("Nomor Telepon yang anda masukkan salah");
-    } else if (
-      (currentUser?.bank_set === undefined || !currentUser?.bank_set) &&
-      (user?.bank_id === "" ||
-        user?.bank_name === "" ||
-        user?.bank_id === null ||
-        user?.bank_name === null ||
-        user?.nomor_rekening === "" ||
-        user?.nomor_rekening?.length < 6)
-    ) {
-      console.log("user", user);
-      setError("Nama Bank dan Nomor Rekening harus diisi dengan benar");
-    } else if (!loading && token !== null && currentUser?.id !== undefined) {
+      if (user?.nomor_rekening === "" ||
+      user?.nomor_rekening?.length < 6) {
+        isComplete = false;
+        newErrors = { ...newErrors, nomor_rekening: "Nomor Rekening wajib diisi"};
+      }
+      if (user?.bank_id === "" ||
+      user?.bank_name === "" ||
+      user?.bank_id === null ||
+      user?.bank_name === null ) {
+        isComplete = false;
+        newErrors = { ...newErrors, bank_name: "Nama Bank wajib diisi"};
+      }
+    }
+    setErrors(newErrors);
+    
+    if (isComplete && !loading && token !== null && currentUser?.id !== undefined) {
       setLoading(true);
       executeUploadData(currentUser?.detail_user?.foto);
     }
   }
 
 
-  const executeUploadData = (foto) => {
+  const executeUploadData = () => {
     props.updateUserData(
       currentUser?.id,
       user,
@@ -218,13 +215,7 @@ function EditBankDetails(props) {
           <TextInputLabel
             label="Nomor Rekening"
             compulsory
-            value={
-              currentUser?.bank_set
-                ? currentUser?.detail_user?.nomor_rekening
-                  ? currentUser?.detail_user?.nomor_rekening
-                  : ""
-                : user?.nomor_rekening
-            }
+            value={user?.nomor_rekening ? user?.nomor_rekening : ""}
             error={errors?.nomor_rekening}
             onChangeText={(nomor_rekening) =>
               setUser({ ...user, nomor_rekening })
@@ -241,25 +232,14 @@ function EditBankDetails(props) {
             compulsory
             disabled={loading || currentUser?.bank_set}
             onPress={() => openBottomSheet()}
-            value={
-              currentUser?.bank_set
-                ? currentUser?.detail_user?.bank?.nama
-                  ? currentUser?.detail_user?.bank?.nama
-                  : ""
-                : bankName
-            }
+            value={bankName ? bankName : ""}
             error={errors?.bank_name}
             containerStyle={styles.textInput}
           />
 
           <TextInputLabel
             label="Cabang Bank"
-            value={user?.cabang_bank ? user?.cabang_bank :
-              currentUser?.bank_set
-                ? currentUser?.detail_user?.cabang_bank
-                  ? currentUser?.detail_user?.cabang_bank
-                  : "" : ""
-            }
+            value={user?.cabang_bank ? user?.bank_name : ""}
             error={errors.cabang_bank}
             containerStyle={styles.textInput}
             onChangeText={(cabang_bank) => setUser({ ...user, cabang_bank })}

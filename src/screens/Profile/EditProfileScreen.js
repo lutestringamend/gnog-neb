@@ -51,6 +51,7 @@ import { globalUIRatio } from "../../styles/base";
 import TextInputLabel from "../../../components/textinputs/TextInputLabel";
 import TextInputButton from "../../components/textinputs/TextInputButton";
 import CheckoutCourierItem from "../../components/checkout/CheckoutCourierItem";
+import { email_regex, phone_regex } from "../../axios/constants";
 
 const defaultUploadingPhoto = {
   pending: false,
@@ -131,7 +132,21 @@ function EditProfileScreen(props) {
   }, [currentUser]);
 
   useEffect(() => {
-    console.log("user data", user);
+    //console.log("user data", user);
+    let newErrors = { ...errors };
+    if (phone_regex.test(user?.nomor_telp)) {
+      newErrors = { ...newErrors, nomor_telp: "" };
+    }
+    if (email_regex.test(user?.email)) {
+      newErrors = { ...newErrors, email: "" };
+    }
+    if (user?.nama_depan) {
+      newErrors = { ...newErrors, nama_depan: "" };
+    }
+    if (user?.tanggal_lahir) {
+      newErrors = { ...newErrors, tanggal_lahir: "" };
+    }
+    setErrors(newErrors);
     setLoading(false);
   }, [user]);
 
@@ -186,20 +201,38 @@ function EditProfileScreen(props) {
   }
 
   function updateUserData() {
-    if (user?.nama_depan === "") {
-      setError("Nama Depan harus diisi");
-    } else if (user?.email === "") {
-      setError("Email harus diisi");
-    } else if (user?.tanggal_lahir === "") {
-      setError("Tanggal Lahir harus diisi");
-    } else if (user?.nomor_telp === "") {
-      setError("Nomor Telepon harus diisi");
+    let newErrors = { ...UserData };
+    let isComplete = true;
+
+    if (user?.nomor_telp === "") {
+      isComplete = false;
+      newErrors = { ...newErrors, nomor_telp: "Nomor Telepon wajib diisi" };
     } else if (
-      user?.nomor_telp?.length === undefined ||
-      user?.nomor_telp?.length < 8
+      !phone_regex.test(user?.nomor_telp)
     ) {
-      setError("Nomor Telepon yang anda masukkan salah");
-    } else if (!loading && token !== null && currentUser?.id !== undefined) {
+      isComplete = false;
+      newErrors = { ...newErrors, nomor_telp: "Masukan Nomor Telepon yang benar" };
+    }
+    if (user?.email === "") {
+      isComplete = false;
+      newErrors = { ...newErrors, email: "Email wajib diisi" };
+    } else if (
+      !email_regex.test(user?.email)
+    ) {
+      isComplete = false;
+      newErrors = { ...newErrors, email: "Masukan Email yang benar" };
+    }
+    if (user?.nama_depan === "") {
+      isComplete = false;
+      newErrors = { ...newErrors, nama_depan: "Nama Depan wajib diisi" };
+    }
+    if (user?.tanggal_lahir === "") {
+      isComplete = false;
+      newErrors = { ...newErrors, tanggal_lahir: "Tanggal Lahir wajib diisi" };
+    }
+    setErrors(newErrors);
+    
+    if (isComplete && !loading && token !== null && currentUser?.id !== undefined) {
       setLoading(true);
       if (
         !(
@@ -263,6 +296,12 @@ function EditProfileScreen(props) {
 
   function openDatePicker() {
     setDisplayDatePicker(true);
+  }
+
+  const deleteAccount = () => {
+    if (!loading) {
+      navigation.navigate("DeleteAccount")
+    }
   }
 
   return (
@@ -439,8 +478,7 @@ function EditProfileScreen(props) {
           borderColor={colors.daclen_danger_border}
           fontColor={colors.daclen_danger}
           text="Hapus Akun Daclen"
-          disabled={loading}
-          onPress={() => navigation.navigate("DeleteAccount")}
+          onPress={() => deleteAccount()}
           style={styles.button}
         />
       </ScrollView>
@@ -460,7 +498,7 @@ function EditProfileScreen(props) {
         }}
         ref={rbSheetMedia}
         openDuration={250}
-        height={300}
+        height={300 * globalUIRatio} 
       >
         <BSMedia
           mediaKey="profilePicture"
