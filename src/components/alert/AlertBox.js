@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { colors, staticDimensions } from "../../styles/base";
+import { colors, globalUIRatio, staticDimensions } from "../../styles/base";
 import { shortenNotifDesc } from "../../utils";
 
 const AlertBox = (props) => {
@@ -88,13 +88,13 @@ const AlertBox = (props) => {
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: 24,
+    bottom: 3 * staticDimensions.marginHorizontal,
     start: staticDimensions.marginHorizontal,
     end: staticDimensions.marginHorizontal,
     zIndex: 10,
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingVertical: 12,
+    borderWidth: globalUIRatio,
+    borderRadius: 8 * globalUIRatio,
+    paddingVertical: 12 * globalUIRatio,
     paddingHorizontal: staticDimensions.marginHorizontal,
     flexDirection: "row",
     alignItems: "center",
@@ -106,25 +106,25 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: "Poppins",
-    fontSize: 12,
+    fontSize: 12 * globalUIRatio,
     color: colors.black,
     flex: 1,
   },
   textClose: {
     fontFamily: "Poppins-SemiBold",
-    fontSize: 12,
+    fontSize: 12 * globalUIRatio,
     color: colors.black,
     flex: 1,
   },
   icon: {
     backgroundColor: "transparent",
     alignSelf: "center",
-    marginEnd: 12,
+    marginEnd: 12 * globalUIRatio,
   },
   close: {
     backgroundColor: "transparent",
-    width: 16,
-    height: 16,
+    width: 16 * globalUIRatio,
+    height: 16 * globalUIRatio,
   },
 });
 

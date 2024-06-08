@@ -32,6 +32,7 @@ import FillAddressScreen from "./screens/address/FillAddress";
 import LocationPin from "./screens/address/LocationPin";
 
 import EditProfileScreen from "./screens/Profile/EditProfileScreen";
+import EditBankDetails from "./screens/Profile/EditBankDetails";
 import CameraView from "./screens/media/CameraView";
 import ImageRotateView from "./screens/media/ImageRotateView";
 
@@ -230,6 +231,11 @@ export const Screens = [
     name: "EditProfile",
     screen: EditProfileScreen,
     options: { ...options, title: "Atur Profil" },
+  },
+  {
+    name: "EditBankDetails",
+    screen: EditBankDetails,
+    options: { ...options, title: "Info Bank" },
   },
   {
     name: "DeleteAccount",

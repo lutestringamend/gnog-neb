@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { colors, dimensions, staticDimensions } from "../../styles/base";
+import { colors, dimensions, globalUIRatio, staticDimensions } from "../../styles/base";
 /*import Checkbox from "../checkbox/Checkbox";
 import { ADDRESS_NOT_APPLICABLE_LABEL } from "../../constants/strings";*/
 import TextBoxVerified from "../textbox/TextBoxVerified";
@@ -18,7 +18,6 @@ const TextInputLabel = (props) => {
     compulsory,
     verified,
     shortVerified,
-    showNotApplicable,
     secureTextEntry,
     inputMode,
     value,
@@ -59,7 +58,7 @@ const TextInputLabel = (props) => {
   return (
     <View style={[styles.container, containerStyle ? containerStyle : null]}>
       {label ? (
-        <View style={[styles.containerHorizontal, { marginBottom: 6 }]}>
+        <View style={[styles.containerHorizontal, { marginBottom: 6 * globalUIRatio }]}>
           <Text
             allowFontScaling={false}
             style={[styles.text, labelStyle ? labelStyle : null]}
@@ -126,7 +125,7 @@ const TextInputLabel = (props) => {
           >
             <MaterialCommunityIcons
               name={isPasswordSecure ? "eye" : "eye-off"}
-              size={20}
+              size={20 * globalUIRatio}
               color={colors.daclen_grey_placeholder}
               style={{
                 backgroundColor: "transparent",
@@ -137,7 +136,7 @@ const TextInputLabel = (props) => {
         ) : error ? (
           <MaterialCommunityIcons
             name="alert-circle-outline"
-            size={20}
+            size={20 * globalUIRatio}
             color={colors.daclen_danger}
             style={styles.check}
           />
@@ -145,7 +144,7 @@ const TextInputLabel = (props) => {
           shortVerified ? (
             <MaterialCommunityIcons
               name="check-bold"
-              size={20}
+              size={20 * globalUIRatio}
               color={colors.daclen_success}
               style={styles.check}
             />
@@ -155,7 +154,7 @@ const TextInputLabel = (props) => {
         ) : rightArrow ? (
           <MaterialCommunityIcons
             name="chevron-right"
-            size={20}
+            size={20 * globalUIRatio}
             color={colors.daclen_grey_placeholder}
             style={styles.arrow}
           />
@@ -167,7 +166,7 @@ const TextInputLabel = (props) => {
           style={[
             styles.containerHorizontal,
             {
-              marginTop: 6,
+              marginTop: 6 * globalUIRatio,
               justifyContent:
                 maxCharacter && !error ? "flex-end" : "flex-start",
             },
@@ -243,8 +242,8 @@ const styles = StyleSheet.create({
   },
   containerText: {
     borderRadius: (12 * dimensions.fullWidthAdjusted) / 430,
-    paddingVertical: 4,
-    borderWidth: 0.5,
+    paddingVertical: 4 * globalUIRatio,
+    borderWidth: globalUIRatio / 2,
     height: (50 * dimensions.fullWidthAdjusted) / 430,
     borderColor: colors.daclen_box_grey,
     flexDirection: "row",
@@ -252,12 +251,12 @@ const styles = StyleSheet.create({
   },
   containerEye: {
     alignSelf: "center",
-    marginEnd: 10,
+    marginEnd: 10 * globalUIRatio,
   },
   textInput: {
     marginHorizontal: staticDimensions.marginHorizontal / 2,
     backgroundColor: "transparent",
-    fontSize: 12,
+    fontSize: 12 * globalUIRatio,
     fontFamily: "Poppins-Light",
     alignSelf: "center",
     flex: 1,
@@ -265,7 +264,7 @@ const styles = StyleSheet.create({
   text: {
     backgroundColor: "transparent",
     color: colors.black,
-    fontSize: 12,
+    fontSize: 12 * globalUIRatio,
     fontFamily: "Poppins",
     alignSelf: "center",
   },
@@ -273,7 +272,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     alignSelf: "flex-start",
     color: colors.daclen_label_grey,
-    fontSize: 8,
+    fontSize: 8 * globalUIRatio,
     fontFamily: "Poppins-SemiBold",
   },
   arrow: {

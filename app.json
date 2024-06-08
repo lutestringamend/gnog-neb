@@ -2,7 +2,7 @@
   "expo": {
     "name": "Daclen",
     "slug": "daclen",
-    "version": "1.3.02",
+    "version": "1.3.10",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
     "userInterfaceStyle": "light",
@@ -25,11 +25,6 @@
       "userInterfaceStyle": "light",
       "googleServicesFile": "./GoogleService-Info.plist",
       "requireFullScreen": true,
-      "config": {
-        "googleMaps": {
-          "apiKey": "AIzaSyDyou-mzQZLl0ufczHOTWCy0_yHEUnAB34"
-        }
-      },
       "infoPlist": {
         "NSCameraUsageDescription": "This app needs Camera permission only to take a new profile picture and save it on Daclen.com.",
         "NSPhotoLibraryAddUsageDescription": "This app needs Storage permission only to save watermarked product photos and videos from Daclen.com.",

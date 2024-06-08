@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { colors, staticDimensions, dimensions } from "../../styles/base";
+import { colors, staticDimensions, dimensions, globalUIRatio } from "../../styles/base";
 import TextBoxVerified from "../textbox/TextBoxVerified";
 
 const TextInputButton = (props) => {
@@ -56,7 +56,7 @@ const TextInputButton = (props) => {
                 allowFontScaling={false}
                 style={[
                   styles.text,
-                  { fontSize: value ? 10 : 12 },
+                  { fontSize: (value ? 10 : 12) * globalUIRatio },
                   labelStyle ? labelStyle : null,
                 ]}
               >
@@ -90,7 +90,7 @@ const TextInputButton = (props) => {
         {error ? (
           <MaterialCommunityIcons
             name="alert-circle-outline"
-            size={20}
+            size={20 * globalUIRatio}
             color={colors.daclen_danger}
             style={styles.arrow}
           />
@@ -99,7 +99,7 @@ const TextInputButton = (props) => {
         ) : (
           <MaterialCommunityIcons
             name={arrow ? arrow : "chevron-down"}
-            size={20}
+            size={20 * globalUIRatio}
             color={colors.daclen_grey_placeholder}
             style={styles.arrow}
           />
@@ -111,7 +111,7 @@ const TextInputButton = (props) => {
           style={[
             styles.containerHorizontal,
             {
-              marginTop: 2,
+              marginTop: 2 * globalUIRatio,
               justifyContent:
                 maxCharacter && !error ? "flex-end" : "flex-start",
             },
@@ -139,7 +139,7 @@ const TextInputButton = (props) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "transparent",
-    marginBottom: 20,
+    marginBottom: 20 * globalUIRatio,
   },
   containerHorizontal: {
     backgroundColor: "transparent",
@@ -148,8 +148,8 @@ const styles = StyleSheet.create({
   },
   containerText: {
     borderRadius: (12 * dimensions.fullWidthAdjusted) / 430,
-    paddingVertical: 4,
-    borderWidth: 0.5,
+    paddingVertical: 4 * globalUIRatio,
+    borderWidth: globalUIRatio / 2,
     height: (50 * dimensions.fullWidthAdjusted) / 430,
     borderColor: colors.daclen_box_grey,
     flexDirection: "row",
@@ -162,13 +162,13 @@ const styles = StyleSheet.create({
   },
   textInput: {
     backgroundColor: "transparent",
-    fontSize: 11,
+    fontSize: 11 * globalUIRatio,
     fontFamily: "Poppins-Light",
   },
   text: {
     backgroundColor: "transparent",
     color: colors.black,
-    fontSize: 12,
+    fontSize: 12 * globalUIRatio,
     fontFamily: "Poppins",
     alignSelf: "center",
   },
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     alignSelf: "flex-start",
     color: colors.black,
-    fontSize: 8,
+    fontSize: 8 * globalUIRatio,
     fontFamily: "PlusJakartaSans-Medium",
   },
   arrow: {

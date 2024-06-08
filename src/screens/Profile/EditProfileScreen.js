@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   View,
-  TextInput,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -12,7 +11,6 @@ import {
 import { Image } from "expo-image";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import RBSheet from "react-native-raw-bottom-sheet";
-import RadioGroup from "react-native-radio-buttons-group";
 
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
@@ -22,37 +20,37 @@ import { bindActionCreators } from "redux";
 
 import {
   updateUserData,
-  getBank,
   updateUserPhoto,
   getCurrentUser,
   updateReduxCurrentUserData,
 } from "../../../axios/user";
-import { clearMediaData, setMediaProfilePicture } from "../../../components/media";
+import {
+  clearMediaData,
+  setMediaProfilePicture,
+} from "../../../components/media";
 import UserData from "../../../components/profile/UserData";
 import Separator from "../../components/Separator";
-import BSTextInput from "../../components/bottomsheets/BSTextInput";
-import BSContainer from "../../components/bottomsheets/BSContainer";
-//import BSPopup from "../bottomsheets/BSPopup";
 import BSDatePicker from "../../components/bottomsheets/BSDatePicker";
 import {
-  selectbank,
   privacypolicy,
-  bankinfodesc,
   genderchoices,
-  birthdateplaceholder,
-  bankinfodescset,
 } from "../../../components/profile/constants";
-import { colors, staticDimensions } from "../../../styles/base";
-import { intiialPermissions, checkMediaPermissions } from "../../../components/media";
+import { colors, dimensions, staticDimensions } from "../../styles/base";
+import {
+  intiialPermissions,
+  checkMediaPermissions,
+} from "../../../components/media";
 import BSMedia from "../../components/bottomsheets/BSMedia";
 import { setObjectAsync } from "../../../components/asyncstorage";
 import { ASYNC_USER_CURRENTUSER_KEY } from "../../../components/asyncstorage/constants";
-import {
-  convertDisplayLocaleDatetoDateObject,
-} from "../../../axios/profile";
+import { convertDisplayLocaleDatetoDateObject } from "../../../axios/profile";
 import CenteredView from "../../components/view/CenteredView";
 import AlertBox from "../../components/alert/AlertBox";
 import Button from "../../components/Button/Button";
+import { globalUIRatio } from "../../styles/base";
+import TextInputLabel from "../../../components/textinputs/TextInputLabel";
+import TextInputButton from "../../components/textinputs/TextInputButton";
+import CheckoutCourierItem from "../../components/checkout/CheckoutCourierItem";
 
 const defaultUploadingPhoto = {
   pending: false,
@@ -63,11 +61,10 @@ function EditProfileScreen(props) {
   const [user, setUser] = useState(UserData);
   const [loading, setLoading] = useState(null);
   const [error, setError] = useState(null);
+  const [errors, setErrors] = useState(UserData);
   const [success, setSuccess] = useState(false);
+
   const [uploadingPhoto, setUploadingPhoto] = useState(defaultUploadingPhoto);
-  const [bottomList, setBottomList] = useState([]);
-  const [genderArray, setGenderArray] = useState(genderchoices);
-  const [bankName, setBankName] = useState("");
   const [displayDatePicker, setDisplayDatePicker] = useState(false);
 
   const { token, currentUser, currentAddress, userUpdate, userProfilePicture } =
@@ -131,34 +128,10 @@ function EditProfileScreen(props) {
       nama_depan: currentUser?.detail_user?.nama_depan,
       nama_belakang: currentUser?.detail_user?.nama_belakang,
     });
-    setGenderArray(
-      genderArray.map((item) =>
-        item.value === currentUser?.detail_user?.jenis_kelamin
-          ? { ...item, selected: true }
-          : { ...item, selected: false },
-      ),
-    );
-    //console.log("EditProfile currentUser", currentUser);
-    let newBankId = currentUser?.detail_user?.bank?.id;
-    if (
-      props.banks?.length === undefined ||
-      props.banks?.length < 1 ||
-      newBankId === undefined ||
-      newBankId === null
-    ) {
-      setBankName(currentUser?.detail_user?.bank?.nama);
-      return;
-    }
-    for (let bank of props.banks) {
-      if (bank?.id === newBankId) {
-        setBankName(bank?.nama);
-        return;
-      }
-    }
   }, [currentUser]);
 
   useEffect(() => {
-    //console.log(user?.bank_id, user?.bank_name);
+    console.log("user data", user);
     setLoading(false);
   }, [user]);
 
@@ -166,9 +139,7 @@ function EditProfileScreen(props) {
     if (Platform.OS === "web" || props.profilePicture === null) {
       return;
     }
-    console.log(
-      "redux media profilePicture",
-      props.profilePicture);
+    console.log("redux media profilePicture", props.profilePicture);
   }, [props.profilePicture]);
 
   useEffect(() => {
@@ -210,57 +181,8 @@ function EditProfileScreen(props) {
     }
   }, [userUpdate]);
 
-  useEffect(() => {
-    if (loading) {
-      setLoading(false);
-      setBottomList(props.banks);
-      rbSheet.current.open();
-    }
-    //console.log(props.banks);
-  }, [props.banks]);
-
-  function onPressRadioButtonGender(radioButtonsArray) {
-    try {
-      const chosen = radioButtonsArray.find(
-        ({ selected }) => selected === true,
-      );
-      setUser({ ...user, jenis_kelamin: chosen.value });
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  function openBottomSheet() {
-    if (!loading) {
-      if (props.banks?.length > 0) {
-        setBottomList(props.banks);
-        rbSheet.current.open();
-      } else if (token !== null) {
-        setLoading(true);
-        props.getBank(token);
-      }
-    }
-  }
-
-  function getBSValue(item) {
-    if (
-      !(
-        item?.id === undefined ||
-        item?.id === null ||
-        item?.nama === undefined ||
-        item?.nama === null ||
-        item?.id == user?.bank_id
-      )
-    ) {
-      setUser({
-        ...user,
-        bank_id: item?.id,
-        bank_name: item?.nama,
-      });
-      setBankName(item?.nama);
-    }
-    //console.log(JSON.stringify(item));
-    rbSheet.current.close();
+  function onPressRadioButtonGender(jenis_kelamin) {
+    setUser({ ...user, jenis_kelamin });
   }
 
   function updateUserData() {
@@ -277,17 +199,6 @@ function EditProfileScreen(props) {
       user?.nomor_telp?.length < 8
     ) {
       setError("Nomor Telepon yang anda masukkan salah");
-    } else if (
-      (currentUser?.bank_set === undefined || !currentUser?.bank_set) &&
-      (user?.bank_id === "" ||
-        user?.bank_name === "" ||
-        user?.bank_id === null ||
-        user?.bank_name === null ||
-        user?.nomor_rekening === "" ||
-        user?.nomor_rekening?.length < 6)
-    ) {
-      console.log("user", user);
-      setError("Nama Bank dan Nomor Rekening harus diisi dengan benar");
     } else if (!loading && token !== null && currentUser?.id !== undefined) {
       setLoading(true);
       if (
@@ -349,415 +260,229 @@ function EditProfileScreen(props) {
     );
   };
 
-  /*function openFillAddress() {
-    rbSheetAddress.current.close();
-    navigation.navigate("LocationPin", {
-      isNew: true,
-      isDefault: true,
-      savedRegion: null,
-    });
-  }*/
 
   function openDatePicker() {
     setDisplayDatePicker(true);
   }
 
-  try {
-    return (
-      <CenteredView title="Edit Profil" style={styles.container}>
-        <ScrollView style={styles.scrollView}>
-          <TouchableOpacity
-            style={[
-              styles.containerPhoto,
-              {
-                opacity:
-                  uploadingPhoto.pending || uploadingPhoto.uploading ? 0.6 : 1,
-              },
-            ]}
-            onPress={() => rbSheetMedia.current.open()}
-          >
-            <Image
+  return (
+    <CenteredView title="Edit Profil" style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <TouchableOpacity
+          style={[
+            styles.containerPhoto,
+            {
+              opacity:
+                uploadingPhoto.pending || uploadingPhoto.uploading ? 0.6 : 1,
+            },
+          ]}
+          onPress={() => rbSheetMedia.current.open()}
+        >
+          {
+            props?.profilePicture || userProfilePicture ? (
+              <Image
               style={styles.image}
               source={
-                props.profilePicture === undefined ||
-                props.profilePicture === null ||
-                props.profilePicture === ""
-                  ? userProfilePicture
-                    ? userProfilePicture
-                    : require("../../assets/user.png")
-                  : props.profilePicture
+                props?.profilePicture 
+                  ? props?.profilePicture : userProfilePicture
+        
               }
-              alt={user?.nama_lengkap}
               contentFit={
                 Platform.OS === "ios" && userProfilePicture === null
                   ? "contain"
                   : "cover"
               }
-              placeholder={
-                Platform.OS === "ios" ? null : require("../../assets/user.png")
-              }
-              transition={100}
+              placeholder={null}
             />
-            {uploadingPhoto.pending || uploadingPhoto.uploading ? (
-              <View style={styles.containerPhotoSpinner}>
-                <ActivityIndicator
-                  size="small"
-                  color={colors.daclen_orange}
-                  style={{ alignSelf: "center" }}
-                />
-              </View>
             ) : (
-              <View style={styles.containerEdit}>
-                <MaterialCommunityIcons
-                  name="image-edit"
-                  size={28}
-                  color="white"
-                />
-              </View>
-            )}
-          </TouchableOpacity>
-
-          <Text allowFontScaling={false} style={styles.textCompulsory}>
-            Nomor Telepon*
-          </Text>
-          {currentUser?.nomor_telp_verified_at && (
-            <Text
-              allowFontScaling={false}
-              style={[styles.text, { marginBottom: 4 }]}
-            >
-              Telah diverifikasi pada
-              {moment(currentUser?.nomor_telp_verified_at).format(
-                " MMM DD YYYY, HH:mm",
-              )}
-            </Text>
-          )}
-          <TextInput
-            value={user?.nomor_telp}
-            style={[
-              styles.textInput,
-              {
-                backgroundColor:
-                  user?.nomor_telp === null || user?.nomor_telp === ""
-                    ? colors.daclen_lightgrey
-                    : colors.white,
-              },
-            ]}
-            inputMode="decimal"
-            editable={
-              !(
-                currentUser?.nomor_telp === undefined ||
-                currentUser?.nomor_telp === null ||
-                currentUser?.nomor_telp === ""
-              )
-            }
-            onChangeText={(nomor_telp) => setUser({ ...user, nomor_telp })}
-          />
-
-          <Text allowFontScaling={false} style={styles.textCompulsory}>
-            Email*
-          </Text>
-          {currentUser?.email_verified_at && (
-            <Text
-              allowFontScaling={false}
-              style={[styles.text, { marginBottom: 4 }]}
-            >
-              Telah diverifikasi pada
-              {moment(currentUser?.email_verified_at).format(
-                " MMM DD YYYY, HH:mm",
-              )}
-            </Text>
-          )}
-          <TextInput
-            value={user?.email}
-            style={[
-              styles.textInput,
-              {
-                backgroundColor:
-                  user?.email === null || user?.email === ""
-                    ? colors.daclen_lightgrey
-                    : colors.white,
-              },
-            ]}
-            editable={
-              !(
-                currentUser?.email === undefined ||
-                currentUser?.email === null ||
-                currentUser?.email === ""
-              )
-            }
-            onChangeText={(email) => setUser({ ...user, email })}
-          />
-
-          <Text allowFontScaling={false} style={styles.textCompulsory}>
-            Nama depan*
-          </Text>
-          <TextInput
-            value={user?.nama_depan}
-            style={[
-              styles.textInput,
-              {
-                backgroundColor:
-                  user?.nama_depan === null || user?.nama_depan === ""
-                    ? colors.daclen_lightgrey
-                    : colors.white,
-              },
-            ]}
-            onChangeText={(nama_depan) => setUser({ ...user, nama_depan })}
-            editable={
-              currentUser?.bank_set === undefined || !currentUser?.bank_set
-            }
-          />
-          <Text allowFontScaling={false} style={styles.text}>
-            Nama belakang (opsional)
-          </Text>
-          <TextInput
-            value={user?.nama_belakang}
-            style={styles.textInput}
-            onChangeText={(nama_belakang) =>
-              setUser({ ...user, nama_belakang })
-            }
-            editable={
-              currentUser?.bank_set === undefined || !currentUser?.bank_set
-            }
-          />
-
-          <Text allowFontScaling={false} style={styles.text}>
-            Jenis kelamin (opsional)
-          </Text>
-          <RadioGroup
-            containerStyle={styles.radioGroup}
-            radioButtons={genderArray}
-            onPress={onPressRadioButtonGender}
-            layout="row"
-          />
-
-          <Text allowFontScaling={false} style={styles.textCompulsory}>
-            Tanggal Lahir*
-          </Text>
-          {Platform.OS === "web" ? (
-            <TextInput
-              value={user?.tanggal_lahir ? user?.tanggal_lahir : ""}
-              style={[
-                styles.textInput,
-                {
-                  backgroundColor:
-                    user?.tanggal_lahir === null || user?.tanggal_lahir === ""
-                      ? colors.daclen_lightgrey
-                      : colors.white,
-                },
-              ]}
-              placeholder={birthdateplaceholder}
-              onChangeText={(tanggal_lahir) =>
-                setUser({ ...user, tanggal_lahir })
-              }
-            />
+              <MaterialCommunityIcons
+                name="account-circle"
+                size={200 * globalUIRatio}
+                color={colors.daclen_black}
+              />
+            )
+          }
+         
+          {uploadingPhoto.pending || uploadingPhoto.uploading ? (
+            <View style={styles.containerPhotoSpinner}>
+              <ActivityIndicator
+                size="small"
+                color={colors.daclen_grey_light}
+                style={{ alignSelf: "center" }}
+              />
+            </View>
           ) : (
-            <BSTextInput
-              value={user?.tanggal_lahir ? user?.tanggal_lahir : ""}
-              onPress={() => openDatePicker()}
-              style={[
-                styles.textInput,
-                {
-                  backgroundColor:
-                    user?.tanggal_lahir === null || user?.tanggal_lahir === ""
-                      ? colors.daclen_lightgrey
-                      : colors.white,
-                },
-              ]}
-              placeholder={birthdateplaceholder}
-              placeholderTextColor={colors.feed_desc_grey}
-            />
+            <View style={styles.containerEdit}>
+              <MaterialCommunityIcons
+                name="image-edit"
+                size={28 * globalUIRatio}
+                color="white"
+              />
+            </View>
           )}
+        </TouchableOpacity>
 
-          <Separator thickness={2} />
+        <TextInputLabel
+          label="Nomor Telepon"
+          compulsory
+          placeholder="Masukkan nomor Whatsapp aktif"
+          value={user?.nomor_telp}
+          error={errors?.nomor_telp}
+          inputMode="decimal"
+          containerStyle={styles.textInput}
+          onChangeText={(nomor_telp) => setUser({ ...user, nomor_telp })}
+          notes={currentUser?.nomor_telp_verified_at ? `Telah diverifikasi pada ${moment(currentUser?.nomor_telp_verified_at).format(
+            " MMM DD YYYY, HH:mm",
+          )}` : null}
+        />
 
-          <Text
-            allowFontScaling={false}
-            style={[
-              styles.textCompulsory,
-              {
-                fontFamily: "Poppins",
-                fontSize: 18,
-                marginTop: 20,
-                marginBottom: 4,
-              },
-            ]}
-          >
-            Info Bank
-          </Text>
-          <Text
-            allowFontScaling={false}
-            style={[styles.text, { marginBottom: 20, textAlign: "justify" }]}
-          >
-            {currentUser?.bank_set === undefined || !currentUser?.bank_set
-              ? bankinfodesc
-              : bankinfodescset}
-          </Text>
+        <TextInputLabel
+          label="Email"
+          compulsory
+          placeholder="Masukkan alamat email Anda"
+          value={user?.email}
+          error={errors?.email}
+          containerStyle={styles.textInput}
+          onChangeText={(email) => setUser({ ...user, email })}
+          notes={currentUser?.email_verified_at ? `Telah diverifikasi pada ${moment(currentUser?.email_verified_at).format(
+            " MMM DD YYYY, HH:mm",
+          )}` : ""}
+        />
 
-          <Text allowFontScaling={false} style={styles.textCompulsory}>
-            Nomor Rekening*
-          </Text>
-          <TextInput
-            value={
-              currentUser?.bank_set
-                ? currentUser?.detail_user?.nomor_rekening
-                  ? currentUser?.detail_user?.nomor_rekening
-                  : ""
-                : user?.nomor_rekening
-            }
-            style={[
-              styles.textInput,
-              {
-                backgroundColor:
-                  user?.nomor_rekening === null || user?.nomor_rekening === ""
-                    ? colors.daclen_lightgrey
-                    : colors.white,
-              },
-            ]}
-            onChangeText={(nomor_rekening) =>
-              setUser({ ...user, nomor_rekening })
-            }
-            inputMode="decimal"
-            editable={
-              currentUser?.bank_set === undefined || !currentUser?.bank_set
-            }
-          />
+       
 
-          <Text allowFontScaling={false} style={styles.textCompulsory}>
-            Nama Bank*
-          </Text>
-          <BSTextInput
-            disabled={loading || currentUser?.bank_set}
-            onPress={() => openBottomSheet()}
-            value={
-              currentUser?.bank_set
-                ? currentUser?.detail_user?.bank?.nama
-                  ? currentUser?.detail_user?.bank?.nama
-                  : ""
-                : bankName
-            }
-            style={[
-              styles.textInput,
-              {
-                backgroundColor: currentUser?.bank_set
-                  ? colors.white
-                  : colors.daclen_lightgrey,
-                color: currentUser?.bank_set
-                  ? colors.daclen_blue
-                  : colors.daclen_black,
-              },
-            ]}
-          />
+        <TextInputLabel
+          label="Nama Depan"
+          compulsory
+          placeholder="Masukkan nama depan Anda"
+          value={user?.nama_depan}
+          error={errors?.nama_depan}
+          editable={
+            currentUser?.bank_set === undefined || !currentUser?.bank_set
+          }
+          containerStyle={styles.textInput}
+          onChangeText={(nama_depan) => setUser({ ...user, nama_depan })}
+        />
 
-          <Text allowFontScaling={false} style={styles.text}>
-            Cabang Bank
-          </Text>
-          <TextInput
-            value={
-              currentUser?.bank_set
-                ? currentUser?.detail_user?.cabang_bank
-                  ? currentUser?.detail_user?.cabang_bank
-                  : ""
-                : user?.cabang_bank
-            }
-            style={styles.textInput}
-            onChangeText={(cabang_bank) => setUser({ ...user, cabang_bank })}
-            editable={
-              currentUser?.bank_set === undefined || !currentUser?.bank_set
-            }
-          />
+        <TextInputLabel
+          label="Nama Belakang"
+          placeholder="Masukkan nama belakang Anda"
+          value={user?.nama_belakang}
+          error={errors?.nama_belakang}
+          editable={
+            currentUser?.bank_set === undefined || !currentUser?.bank_set
+          }
+          containerStyle={styles.textInput}
+          onChangeText={(nama_belakang) =>
+            setUser({ ...user, nama_belakang })
+          }
+        />
 
-          <View style={styles.containerPrivacy}>
-            <Text allowFontScaling={false} style={styles.textUid}>
-              Informasi di atas akan digunakan untuk pengiriman Checkout Anda
-              dan dikirimkan ke pihak ketiga sebagai jasa pengantaran.
-            </Text>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("Webview", {
-                  webKey: "privacy",
-                  text: privacypolicy,
-                })
-              }
-              disabled={loading}
-            >
-              <Text allowFontScaling={false} style={styles.textChange}>
-                Baca {privacypolicy}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <Button
-            text="Simpan Profil"
-            loading={loading || uploadingPhoto.pending || uploadingPhoto.uploading}
-            onPress={() => updateUserData()}
-            style={styles.button}
-          />
-
-          <Button
-            inverted
-            fontColor={colors.daclen_danger}
-            text="Hapus Akun Daclen"
-            disabled={loading}
-            onPress={() => navigation.navigate("DeleteAccount")}
-            style={styles.button}
-          />
-
-
-        </ScrollView>
-        <AlertBox text={error} success={success} onClose={() => setError(null)} />
-        <RBSheet customStyles={{
-          wrapper: {
-            zIndex: 1,
-          },
-          container: {
-            backgroundColor: "transparent",
-          },
-        }}  ref={rbSheetMedia} openDuration={250} height={300}>
-          <BSMedia
-            mediaKey="profilePicture"
-            title="Ganti Profile Picture"
-            closeThis={() => rbSheetMedia.current.close()}
-          />
-        </RBSheet>
-        <RBSheet customStyles={{
-          wrapper: {
-            zIndex: 1,
-          },
-          container: {
-            backgroundColor: "transparent",
-          },
-        }}  ref={rbSheet} openDuration={250} height={250}>
-          <BSContainer
-            title={selectbank}
-            list={bottomList}
-            closeThis={() => rbSheet.current.close()}
-            onPress={(item) => getBSValue(item)}
-          />
-        </RBSheet>
-        {displayDatePicker ? (
-          <BSDatePicker
-            currentDate={
-              user?.tanggal_lahir
-                ? convertDisplayLocaleDatetoDateObject(user?.tanggal_lahir)
-                : new Date()
-            }
-            onPress={(tanggal_lahir) => setUser({ ...user, tanggal_lahir })}
-            onError={(e) => setError(e.toString())}
-            closeThis={() => setDisplayDatePicker(false)}
-          />
-        ) : null}
-      </CenteredView>
-    );
-  } catch (e) {
-    return (
-      <CenteredView title="Edit Profil" style={styles.container}>
-        <Text allowFontScaling={false} style={styles.textUid}>
-          {e?.message}
+        <Text allowFontScaling={false} style={[styles.text, { fontSize: 14 * globalUIRatio, fontFamily: "Poppins" }]}>
+          Jenis Kelamin
         </Text>
-      </CenteredView>
-    );
-  }
+        <View style={styles.radioGroup}>
+          {genderchoices.map((item, index) => (
+            <CheckoutCourierItem
+              key={index}
+              text={item?.label}
+              style={{ width: (dimensions.fullWidthAdjusted - 2 * staticDimensions.marginHorizontal) / 2, justifyContent: "flex-end",  flexDirection: "row-reverse", }}
+              textStyle={{ fontFamily: "Poppins", marginStart: 6 * globalUIRatio }}
+              selected={user?.jenis_kelamin === item?.value}
+              onPress={() => onPressRadioButtonGender(item?.value)}
+            />
+          ))}
+        </View>
+
+        <TextInputButton
+          label="Tanggal Lahir"
+          compulsory
+          error={errors?.tanggal_lahir}
+          containerStyle={styles.textInput}
+          value={user?.tanggal_lahir ? user?.tanggal_lahir : ""}
+          onPress={() => openDatePicker()}
+        />
+
+
+        <View style={styles.containerPrivacy}>
+          <Text allowFontScaling={false} style={styles.text}>
+            Informasi di atas akan digunakan untuk pengiriman Checkout Anda
+            dan dikirimkan ke pihak ketiga sebagai jasa pengantaran.
+          </Text>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Webview", {
+                webKey: "privacy",
+                text: privacypolicy,
+              })
+            }
+            disabled={loading}
+          >
+            <Text allowFontScaling={false} style={styles.textChange}>
+              Baca {privacypolicy}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <Button
+          text="Simpan Profil"
+          loading={
+            loading || uploadingPhoto.pending || uploadingPhoto.uploading
+          }
+          onPress={() => updateUserData()}
+          style={styles.button}
+        />
+
+        <Button
+          inverted
+          bordered
+          borderColor={colors.daclen_danger_border}
+          fontColor={colors.daclen_danger}
+          text="Hapus Akun Daclen"
+          disabled={loading}
+          onPress={() => navigation.navigate("DeleteAccount")}
+          style={styles.button}
+        />
+      </ScrollView>
+      <AlertBox
+        text={error}
+        success={success}
+        onClose={() => setError(null)}
+      />
+      <RBSheet
+        customStyles={{
+          wrapper: {
+            zIndex: 1,
+          },
+          container: {
+            backgroundColor: "transparent",
+          },
+        }}
+        ref={rbSheetMedia}
+        openDuration={250}
+        height={300}
+      >
+        <BSMedia
+          mediaKey="profilePicture"
+          title="Ganti Profile Picture"
+          closeThis={() => rbSheetMedia.current.close()}
+        />
+      </RBSheet>
+
+      {displayDatePicker ? (
+        <BSDatePicker
+          currentDate={
+            user?.tanggal_lahir
+              ? convertDisplayLocaleDatetoDateObject(user?.tanggal_lahir)
+              : new Date()
+          }
+          onPress={(tanggal_lahir) => setUser({ ...user, tanggal_lahir })}
+          onError={(e) => setError(e.toString())}
+          closeThis={() => setDisplayDatePicker(false)}
+        />
+      ) : null}
+    </CenteredView>
+  );
 }
 
 /*
@@ -787,123 +512,93 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    width: "100%",
+    width: dimensions.fullWidthAdjusted,
   },
   scrollView: {
     flex: 1,
     paddingBottom: staticDimensions.pageBottomPadding,
   },
   containerPrivacy: {
-    marginHorizontal: 20,
-    marginBottom: 20,
+    marginVertical: 20 * globalUIRatio,
     alignItems: "center",
   },
   containerPhoto: {
     justifyContent: "center",
     alignItems: "center",
-    marginVertical: 32,
-    marginHorizontal: 20,
-    width: 202,
-    height: 202,
+    marginVertical: 32 * globalUIRatio,
+    marginHorizontal: staticDimensions.marginHorizontal,
+    width: 202 * globalUIRatio,
+    height: 202 * globalUIRatio,
     alignSelf: "center",
     zIndex: 10,
-    padding: 4,
+    padding: 4 * globalUIRatio,
     backgroundColor: "transparent",
-    borderRadius: 101,
+    borderRadius: 101 * globalUIRatio,
   },
   containerPhotoSpinner: {
     position: "absolute",
     top: 0,
     start: 0,
-    width: 202,
-    height: 202,
+    width: 202 * globalUIRatio,
+    height: 202 * globalUIRatio,
     backgroundColor: "transparent",
     zIndex: 6,
-    borderRadius: 101,
+    borderRadius: 101 * globalUIRatio,
     justifyContent: "center",
     alignItems: "center",
   },
   containerEdit: {
     position: "absolute",
-    end: 10,
-    bottom: 10,
+    end: 10 * globalUIRatio,
+    bottom: 10 * globalUIRatio,
     zIndex: 12,
-    backgroundColor: colors.daclen_orange,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    backgroundColor: colors.daclen_black,
+    width: 40 * globalUIRatio,
+    height: 40 * globalUIRatio,
+    borderRadius: 20 * globalUIRatio,
     justifyContent: "center",
     alignItems: "center",
   },
   image: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: colors.daclen_light,
-    borderColor: colors.daclen_lightgrey,
-    borderWidth: 1,
-    aspectRatio: 1 / 1,
+    width: 200 * globalUIRatio,
+    height: 200 * globalUIRatio,
+    borderRadius: 100 * globalUIRatio,
+    backgroundColor: "transparent",
+  },
+  textHeader: {
+    fontSize: 18 * globalUIRatio,
+    fontFamily: "Poppins-SemiBold",
+    backgroundColor: "transparent",
+    color: colors.black,
+    marginHorizontal: staticDimensions.marginHorizontal,
   },
   text: {
-    color: colors.daclen_gray,
-    fontSize: 12,
-    fontFamily: "Poppins",
-    marginHorizontal: 20,
-  },
-  textCompulsory: {
-    color: colors.daclen_orange,
-    fontSize: 14,
-    fontFamily: "Poppins-Bold",
-    marginHorizontal: 20,
+    fontSize: 12 * globalUIRatio,
+    fontFamily: "Poppins-Light",
+    backgroundColor: "transparent",
+    color: colors.black,
+    marginHorizontal: staticDimensions.marginHorizontal,
   },
   textChange: {
-    color: colors.daclen_blue,
-    fontSize: 14,
-    fontFamily: "Poppins-Bold",
-    textAlign: "center",
-    marginVertical: 4,
-    marginHorizontal: 20,
+    color: colors.daclen_black,
+    fontSize: 14 * globalUIRatio,
+    fontFamily: "Poppins-Medium",
+    marginVertical: 6 * globalUIRatio,
+    marginHorizontal: 20 * globalUIRatio,
   },
   textInput: {
-    borderWidth: 1,
-    borderColor: colors.daclen_gray,
-    borderRadius: 4,
-    padding: 10,
-    marginTop: 2,
-    marginHorizontal: 20,
-    marginBottom: 20,
-    fontFamily: "Poppins",
-    fontSize: 14,
+    marginHorizontal: staticDimensions.marginHorizontal,
   },
   radioGroup: {
-    marginTop: 4,
-    marginBottom: 20,
-    marginHorizontal: 20,
+    marginTop: 6 * globalUIRatio,
+    marginBottom: 20 * globalUIRatio,
+    marginHorizontal: staticDimensions.marginHorizontal,
+    flexDirection: "row",
+    alignItems: "center",
   },
   button: {
     marginHorizontal: staticDimensions.marginHorizontal,
     marginBottom: staticDimensions.marginHorizontal,
-  },
-  textError: {
-    fontSize: 14,
-    fontFamily: "Poppins-SemiBold",
-    color: colors.white,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: colors.daclen_danger,
-    textAlign: "center",
-  },
-  textButton: {
-    fontSize: 14,
-    fontFamily: "Poppins-SemiBold",
-    color: colors.white,
-  },
-  textUid: {
-    fontFamily: "Poppins",
-    fontSize: 12,
-    color: colors.daclen_gray,
-    marginHorizontal: 20,
-    textAlign: "center",
   },
 });
 
@@ -913,7 +608,6 @@ const mapStateToProps = (store) => ({
   userProfilePicture: store.userState.profilePicture,
   currentAddress: store.userState.currentAddress,
   userUpdate: store.userState.userUpdate,
-  banks: store.userState.banks,
   profilePicture: store.mediaState.profilePicture,
 });
 
@@ -921,7 +615,6 @@ const mapDispatchProps = (dispatch) =>
   bindActionCreators(
     {
       updateUserData,
-      getBank,
       clearMediaData,
       getCurrentUser,
       updateReduxCurrentUserData,

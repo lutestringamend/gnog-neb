@@ -24,3 +24,11 @@
     "@config-plugins/ffmpeg-kit-react-native": "^5.0.0",
         "expo-build-properties": "~0.6.0",
             "ffmpeg-kit-react-native": "^5.1.0",
+
+
+APP.JSON ios
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDyou-mzQZLl0ufczHOTWCy0_yHEUnAB34"
+        }
+      },

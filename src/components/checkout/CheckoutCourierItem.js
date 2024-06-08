@@ -10,7 +10,7 @@ import {
 import RadioButton from "../radiobutton/RadioButton";
 
 const CheckoutCourierItem = (props) => {
-  const { selected, disabled, isArrow, text, style, isLast } = props;
+  const { selected, disabled, isArrow, text, style, textStyle, isLast } = props;
 
   function onPress() {
     if (props?.onPress === undefined || props?.onPress === null) {
@@ -31,7 +31,7 @@ const CheckoutCourierItem = (props) => {
       disabled={disabled}
       onPress={() => onPress()}
     >
-      <Text allowFontScaling={false} numberOfLines={1} style={styles.text}>
+      <Text allowFontScaling={false} numberOfLines={1} style={[styles.text, textStyle ? textStyle : null]}>
         {text}
       </Text>
       {isArrow ? (

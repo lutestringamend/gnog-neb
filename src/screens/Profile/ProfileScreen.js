@@ -181,9 +181,9 @@ function ProfileScreen(props) {
               />
               <ProfileMenuItem
                 text="Bank"
-                icon="card"
+                icon="credit-card"
                 screen={null}
-                onItemClick={() => navigation.navigate("EditProfile")}
+                onItemClick={() => navigation.navigate("EditBankDetails")}
                 thickness={3}
               />
               <ProfileMenuItem

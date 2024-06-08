@@ -4,7 +4,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ActivityIndicator,
   ScrollView,
 } from "react-native";
 import { Image } from "expo-image";
@@ -41,11 +40,6 @@ function BlogItem(props) {
           disabled={props?.isi !== undefined && props?.isi !== null}
         >
           <View style={styles.containerImage}>
-            <ActivityIndicator
-              size="small"
-              color={colors.daclen_gray}
-              style={{ alignSelf: "center", zIndex: 0 }}
-            />
             <Image
               style={styles.image}
               source={props?.foto_url}

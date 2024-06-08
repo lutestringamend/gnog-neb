@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { colors, staticDimensions } from "../../styles/base";
+import { colors, globalUIRatio, staticDimensions } from "../../styles/base";
 
 const Button = (props) => {
   function onPress() {
@@ -33,7 +33,7 @@ const Button = (props) => {
           borderColor: props?.borderColor
             ? props?.borderColor
             : colors.buttonBorder,
-          borderWidth: props?.bordered ? 1 : 0,
+          borderWidth: props?.bordered ? globalUIRatio : 0,
           paddingVertical: props?.paddingVertical ? props?.paddingVertical : 0,
         },
         props?.style ? props?.style : null,
@@ -42,7 +42,7 @@ const Button = (props) => {
       {props?.icon ? (
         <MaterialCommunityIcons
           name={props?.icon}
-          size={props?.iconSize ? props?.iconSize : 18}
+          size={props?.iconSize ? props?.iconSize : 18 * globalUIRatio}
           color={
             props?.fontColor
               ? props?.fontColor
@@ -57,7 +57,7 @@ const Button = (props) => {
       ) : null}
       {props?.loading ? (
         <ActivityIndicator
-          size={props?.fontSize ? props?.fontSize : 12}
+          size={props?.fontSize ? props?.fontSize : 12 * globalUIRatio}
           color={
             props?.fontColor
               ? props?.fontColor
@@ -81,7 +81,7 @@ const Button = (props) => {
                 : props?.inverted
                     ? colors.daclen_black_old
                     : colors.white,
-              fontSize: props?.fontSize ? props?.fontSize : 14,
+              fontSize: props?.fontSize ? props?.fontSize : 14 * globalUIRatio,
               fontFamily: props?.fontFamily
                 ? props?.fontFamily
                 : "Poppins-SemiBold",
@@ -97,7 +97,7 @@ const Button = (props) => {
       {props?.withArrow ? (
         <MaterialCommunityIcons
           name={props?.rightArrow ? props?.rightArrow : "chevron-right"}
-          size={props?.arrowSize ? props?.arrowSize : 14}
+          size={props?.arrowSize ? props?.arrowSize : 14 * globalUIRatio}
           color={
             props?.fontColor
               ? props?.fontColor
@@ -116,13 +116,13 @@ const Button = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 8,
+    borderRadius: 8 * globalUIRatio,
     borderColor: colors.daclen_black_old,
     paddingHorizontal: staticDimensions.marginHorizontal,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    height: 40,
+    height: 40 * globalUIRatio,
   },
   text: {
     color: colors.white,
@@ -130,17 +130,17 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     textAlign: "center",
     fontFamily: "Poppins-SemiBold",
-    fontSize: 14,
+    fontSize: 14 * globalUIRatio,
   },
   icon: {
     alignSelf: "center",
     backgroundColor: "transparent",
-    marginEnd: 6,
+    marginEnd: 6 * globalUIRatio,
   },
   arrow: {
     alignSelf: "center",
     backgroundColor: "transparent",
-    marginStart: 6,
+    marginStart: 6 * globalUIRatio,
   },
   spinner: {
     alignSelf: "center",

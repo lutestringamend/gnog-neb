@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import { colors, dimensions, staticDimensions } from "../../styles/base";
 import SearchBar from "../search/SearchBar";
+import { shortenNotifDesc } from "../../utils";
 
 const HeaderBar = (props) => {
   const {
@@ -101,13 +102,14 @@ const HeaderBar = (props) => {
       ) : (
         <Text
           allowFontScaling={false}
+           numberOfLines={1}
           style={[
             styles.textHeader,
             { color: color ? color : colors.white },
             textStyle ? textStyle : null,
           ]}
         >
-          {title ? title : ""}
+          {title ?  shortenNotifDesc(title, 27) : ""}
         </Text>
       )}
 

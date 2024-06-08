@@ -993,8 +993,8 @@ function CheckoutScreen(props) {
         openDuration={250}
         height={
           courierChoices?.length
-            ? (70 * courierChoices?.length + 20) * globalUIRatio
-            : 220
+            ? (70 * courierChoices?.length + 25) * globalUIRatio
+            : 230 * globalUIRatio
         }
         onClose={() => setCourierMode(0)}
       >
@@ -1057,7 +1057,7 @@ function CheckoutScreen(props) {
         }}
         ref={rbDisclaimer}
         openDuration={250}
-        height={400 * globalUIRatio}
+        height={410 * globalUIRatio}
       >
         <BSPopup
           title="Konfirmasi Checkout"
