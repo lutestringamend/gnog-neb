@@ -8,7 +8,9 @@ export const openWhatsapp = (no, template, forceNoTrim) => {
     try {
       if (forceNoTrim === undefined || forceNoTrim === null || !forceNoTrim) {
         number = number.trim();
-        number = number.replace("0", "62");
+        if (number.substring(0, 1) === "0") {
+          number = `62${number.substring(1, number?.length)}`;
+        }
         number = number.replaceAll("+", "");
         number = number.replaceAll(" ", "");
         number = number.replaceAll("-", "");

@@ -90,12 +90,12 @@ const DashboardButtons = (props) => {
   const navigation = useNavigation();
 
   function openDaclenCare() {
-    let template = adminWAnonusertemplate;
+    /*let template = adminWAnonusertemplate;
     if (!(username === undefined || username === null || username === "")) {
       template = adminWAtemplate.replace("#I#", username);
     }
     console.log("openDaclenCare", template);
-    openWhatsapp(adminWA, template, true);
+    openWhatsapp(adminWA, template, true);*/
   }
 
   /*function openKodeEtik() {
